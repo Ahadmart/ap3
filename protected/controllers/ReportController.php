@@ -25,9 +25,6 @@ class ReportController extends Controller {
          $model->attributes = $_POST['ReportPembelianForm'];
          if ($model->validate()) {
             $report = $model->reportPembelian();
-            echo '<pre>';
-            print_r($report);
-            echo '</pre>';
          }
       }
 

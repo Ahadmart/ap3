@@ -224,7 +224,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           array('id' => 6, 'nama' => 'Retur Jual', 'parent_id' => 1, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('id' => 7, 'nama' => 'Expense', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('id' => 8, 'nama' => 'Non Expense', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('id' => 9, 'nama' => 'Pendapatan Lain', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('id' => 9, 'nama' => 'Pendapatan Lain', 'jenis' => 1, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'Listrik', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'Alat Tulis Kantor', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'Gaji Karyawan', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -233,7 +233,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           array('nama' => 'Sampah', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'RT', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'Kasbon', 'parent_id' => 8, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'Jual Kardus', 'parent_id' => 9, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'Jual Kardus', 'jenis' => 1, 'parent_id' => 9, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
       ));
 
       $this->createTable('jenis_transaksi', array(
