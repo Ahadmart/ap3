@@ -1,0 +1,11 @@
+contoh: 0101141200001 [kode_kantor][kode_surat][tahun][bulan][nomor_urut]
+
+01 Pembelian BL
+02 Retur Pembelian RB
+03 Penjualan JU
+04 Retur Penjualan RJ
+05 SO
+06 Hutang HU
+07 Piutang PU
+08 Pengeluaran OU
+09 Penerimaan IN

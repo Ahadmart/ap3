@@ -1,0 +1,88 @@
+/* 
+    Created on : Mar 11, 2014, 10:07:14 AM
+    Author     : abumuhammad
+*/
+body, html {
+  height: 100%; }
+
+body {
+  color: #222222;
+  background: #dddcd6 url(../img/bg.png);
+  padding: 0;
+  margin: 0;
+  font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 1;
+  position: relative;
+  cursor: default; }
+
+.sidebar {
+  height: 100%;
+  background-color: #292929;
+  padding-top: 15px;
+  /*	&.kiri{
+  		 Collapsed 
+  		width: 0; 
+  		overflow: hidden;
+  		position: fixed;
+  		top: 0;
+  		left: 0;
+  	}*/ }
+  .sidebar .prefix .fa-2x {
+    padding-top: 4px; }
+  .sidebar .huruf {
+    /*font-weight: bold;*/
+    font-size: 1.5rem; }
+
+#info-tabel {
+  width: 100%; }
+  #info-tabel .key {
+    font-weight: bold;
+    text-align: right; }
+  #info-tabel td {
+    font-size: 0.825rem;
+    padding: 2px; }
+
+#transaksi {
+  padding-top: 15px; }
+
+.tabel-detail-jual {
+  width: 100%; }
+
+#total-belanja {
+  font-size: 2.825rem;
+  color: #FF0;
+  text-align: right;
+  padding: 5px 0px;
+  width: 100%;
+  text-shadow: 1px 1px black;
+  margin-top: 35px; }
+
+#surcharge {
+  font-size: 2rem;
+  color: #F00;
+  text-align: right;
+  padding: 5px 0px;
+  width: 100%;
+  text-shadow: 1px 1px black; }
+
+#kembali {
+  font-size: 2rem;
+  color: #ADFF2F;
+  text-align: right;
+  padding: 5px 0px;
+  width: 100%;
+  text-shadow: 1px 1px black;
+  margin-bottom: 15px; }
+
+#logo {
+  /*background-color: #fff;*/
+  /*padding: 10px;*/
+  margin-bottom: 35px; }
+
+#tombol-simpan {
+  float: right; }
+
+#tombol-batal {
+  float: left; }
