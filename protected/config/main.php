@@ -44,14 +44,7 @@ return array(
             ),
         ),
         // MySQL database
-        'db' => array(
-            'connectionString' => 'mysql:host=localhost;dbname=ahadpos32',
-            'emulatePrepare' => true,
-            'username' => 'root',
-            'password' => '',
-            'charset' => 'utf8',
-            'enableParamLogging' => true,
-        ),
+        'db' => require(dirname(__FILE__).'/db.php'),
         'errorHandler' => array(
             // action to display errors
             'errorAction' => 'app/error',

@@ -12,7 +12,7 @@ return array(
         'migrate' => array(
             'class' => 'system.cli.commands.MigrateCommand',
             'interactive' => 0,
-            'migrationTable' =>'migrasi_db'
+            'migrationTable' => 'migrasi_db'
         ),
     ),
     // application components
@@ -24,13 +24,7 @@ return array(
          */
         // uncomment the following to use a MySQL database
 
-        'db' => array(
-            'connectionString' => 'mysql:host=localhost;dbname=ahadpos32',
-            'emulatePrepare' => true,
-            'username' => 'root',
-            'password' => '',
-            'charset' => 'utf8',
-        ),
+        'db' => require(dirname(__FILE__).'/db.php'),
         'log' => array(
             'class' => 'CLogRouter',
             'routes' => array(
