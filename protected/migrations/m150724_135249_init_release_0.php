@@ -15,6 +15,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
 
    // Use safeUp/safeDown to do migration with transaction
    public function safeUp() {
+      $dbEngine='MyISAM'; //InnoDB
 
       $this->createTable('barang', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -35,7 +36,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           "KEY `fk_barang_kategori_idx` (`kategori_id`)",
           "KEY `fk_barang_satuan_idx` (`satuan_id`)",
           "KEY `fk_barang_rak_idx` (`rak_id`)"
-              ), 'ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+              ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
 
       $this->createTable('barang_harga_jual', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -47,7 +48,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'KEY `fk_barang_harga_jual_updatedby_idx` (`updated_by`)',
           'KEY `fk_barang_harga_jual_barang_idx` (`barang_id`)'
-              ), 'ENGINE=InnoDB  DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8');
 
       $this->createTable('barang_harga_jual_rekomendasi', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -59,7 +60,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'KEY `fk_barang_hjr_updatedby_idx` (`updated_by`)',
           'KEY `fk_barang_harga_jual_rekomendasi_barang_idx` (`barang_id`)'
-              ), 'ENGINE=InnoDB  DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8');
 
       $this->createTable('barang_kategori', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -70,7 +71,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'UNIQUE KEY `nama` (`nama`)',
           'KEY `fk_barang_kategori_updatedby_idx` (`updated_by`)'
-              ), 'ENGINE=InnoDB  DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8');
 
       $this->createTable('barang_rak', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -81,7 +82,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'UNIQUE KEY `nama` (`nama`)',
           'KEY `fk_barang_rak_updatedby_idx` (`updated_by`)'
-              ), 'ENGINE=InnoDB  DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8');
 
       $this->createTable('barang_satuan', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -92,7 +93,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'UNIQUE KEY `nama` (`nama`)',
           'KEY `fk_barang_satuan_updatedby_idx` (`updated_by`)'
-              ), 'ENGINE=InnoDB  DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8');
 
       $this->insertMultiple('barang_satuan', array(
           array('nama' => 'pcs', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -119,7 +120,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'UNIQUE KEY `nama` (`nama`)',
           'KEY `fk_config_updatedby_idx` (`updated_by`)'
-              ), 'ENGINE=InnoDB  DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8');
 
       $this->insertMultiple('config', array(
           array('nama' => 'nama', 'nilai' => 'Toko Mart', 'deskripsi' => 'Nama Toko', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -146,7 +147,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'KEY `fk_harga_pokok_penjualan_updatedby_idx` (`updated_by`)',
           'KEY `fk_harga_pokok_penjualan_belidetail_idx` (`pembelian_detail_id`)',
           'KEY `fk_harga_pokok_penjualan_jualdetail_idx` (`penjualan_detail_id`)'
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('hutang_piutang', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -164,7 +165,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'UNIQUE KEY `nomor` (`nomor`)',
           'KEY `fk_hutang_piutang_updatedby_idx` (`updated_by`)',
           'KEY `fk_hutang_piutang_profil_idx` (`profil_id`)'
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('hutang_piutang_detail', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -177,7 +178,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'KEY `fk_hutangpiutang_detail_header_idx` (`hutang_piutang_id`)',
           'KEY `fk_hutangpiutang_detail_updatedby_idx` (`updated_by`)'
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('inventory_balance', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -199,7 +200,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'KEY `fk_inventory_balance_pembeliandetail_idx` (`pembelian_detail_id`)',
           'KEY `fk_inventory_balance_sodetail_idx` (`stock_opname_detail_id`)',
           'KEY `fk_inventory_balance_returjualdetail_idx` (`retur_penjualan_detail_id`)',
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('item_keuangan', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -213,7 +214,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'UNIQUE KEY `nama` (`nama`)',
           'KEY `fk_item_keuangan_updatedby_idx` (`updated_by`)',
           'KEY `fk_item_keuangan_parent_idx` (`parent_id`)',
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=101');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8 AUTO_INCREMENT=101');
 
       $this->insertMultiple('item_keuangan', array(
           array('id' => 1, 'nama' => 'Bayar Hutang', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -245,7 +246,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'UNIQUE KEY `nama` (`nama`)',
           'KEY `fk_tipe_pembayaran_updatedby_idx` (`updated_by`)',
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=3');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8 AUTO_INCREMENT=3');
 
       $this->insertMultiple('jenis_transaksi', array(
           array('nama' => 'Tunai', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -264,7 +265,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'UNIQUE KEY `nomor_UNIQUE` (`nomor`)',
           'KEY `fk_jurnal_updatedby_idx` (`updated_by`)',
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('jurnal_detail', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -281,7 +282,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'KEY `fk_jurnal_detail_kodeakun_idx` (`kode_akun_id`)',
           'KEY `fk_jurnal_detail_header_idx` (`jurnal_id`)',
           'KEY `fk_jurnal_detail_updatedby_idx` (`updated_by`)',
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('kas_bank', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -294,7 +295,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'UNIQUE KEY `nama` (`nama`)',
           'KEY `fk_kas_bank_akun_idx` (`kode_akun_id`)',
           'KEY `fk_kas_bank_updatedby_idx` (`updated_by`)',
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->insert('kas_bank', array('nama' => 'Kas', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'));
 
@@ -312,7 +313,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'UNIQUE KEY `kode` (`kode`)',
           'KEY `fk_kode_akun_parent_idx` (`parent_id`)',
           'KEY `fk_kode_akun_updatedby_idx` (`updated_by`)',
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('kode_dokumen', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -324,7 +325,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'PRIMARY KEY (`id`)',
           'UNIQUE KEY `nama` (`nama`)',
           'UNIQUE KEY `kode_UNIQUE` (`kode`)',
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('pembelian', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -343,7 +344,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'KEY `fk_pembelian_updatedby_idx` (`updated_by`)',
           'KEY `fk_pembelian_hutangpiutang_idx` (`hutang_piutang_id`)',
           'KEY `fk_pembelian_profil_idx` (`profil_id`)',
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('pembelian_detail', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -361,7 +362,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_pembelian_detail_pemb_idx` (`pembelian_id`),
            KEY `fk_pembelian_detail_barang_idx` (`barang_id`),
            KEY `fk_pembelian_detail_updatedby_idx` (`updated_by`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('penerimaan', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -385,7 +386,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_penerimaan_kategori_idx` (`kategori_id`),
            KEY `fk_penerimaan_jenis_idx` (`jenis_transaksi_id`),
            KEY `fk_penerimaan_profil_idx` (`profil_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('penerimaan_detail', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -403,7 +404,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_penerimaan_detail_header_idx` (`penerimaan_id`),
            KEY `fk_penerimaan_detail_item_idx` (`item_id`),
            KEY `fk_penerimaan_detail_hp_idx` (`hutang_piutang_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('penerimaan_kategori', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -415,7 +416,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            PRIMARY KEY (`id`),
            UNIQUE KEY `nama_UNIQUE` (`nama`),
            KEY `fk_penerimaan_kategori_updatedby_idx` (`updated_by`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->insertMultiple('penerimaan_kategori', array(
           array('nama' => 'Penjualan/Retur Beli', 'deskripsi' => 'Transaksi Via Aplikasi', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -444,7 +445,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_pengeluaran_jenistrx_idx` (`jenis_transaksi_id`),
            KEY `fk_pengeluaran_kasbank_idx` (`kas_bank_id`),
            KEY `fk_pengeluaran_profil_idx` (`profil_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('pengeluaran_detail', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -462,7 +463,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_pengeluaran_detail_header_idx` (`pengeluaran_id`),
            KEY `fk_pengeluaran_detail_item_idx` (`item_id`),
            KEY `fk_pengeluaran_detail_hp_idx` (`hutang_piutang_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('pengeluaran_kategori', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -474,7 +475,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            PRIMARY KEY (`id`),
            UNIQUE KEY `nama_UNIQUE` (`nama`),
            KEY `fk_pengeluaran_kategori_updatedby_idx` (`updated_by`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->insertMultiple('pengeluaran_kategori', array(
           array('nama' => 'Pembelian / Retur Jual', 'deskripsi' => 'Transaksi Via Aplikasi', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -496,7 +497,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_penjualan_updatedby_idx` (`updated_by`),
            KEY `fk_penjualan_piutang_idx` (`hutang_piutang_id`),
            KEY `fk_penjualan_profil_idx` (`profil_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('penjualan_detail', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -514,7 +515,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_penjualan_detail_updatedby_idx` (`updated_by`),
            KEY `fk_penjualan_detail_header_idx` (`penjualan_id`),
            KEY `fk_penjualan_detail_barang_idx` (`barang_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('profil', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -531,7 +532,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            PRIMARY KEY (`id`),
            KEY `fk_profil_updatedby_idx` (`updated_by`),
            KEY `fk_profil_tipe_idx` (`tipe_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=101');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8 AUTO_INCREMENT=101');
 
       $this->insertMultiple('profil', array(
           array('id' => 1, 'tipe_id' => 1, 'nama' => 'Init', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -548,7 +549,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            UNIQUE KEY `nama` (`nama`),
            UNIQUE KEY `nama_UNIQUE` (`nama`),
            KEY `fk_profil_tipe_updatedby_idx` (`updated_by`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->insertMultiple('profil_tipe', array(
           array('id' => 1, 'nama' => 'Supplier', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -570,7 +571,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            UNIQUE KEY `nomor` (`nomor`),
            KEY `fk_retur_pembelian_updatedby_idx` (`updated_by`),
            KEY `fk_retur_pembelian_supplier_idx` (`profil_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('retur_pembelian_detail', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -584,7 +585,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_retur_pembelian_detail_header_idx` (`retur_pembelian_id`),
            KEY `fk_retur_pembelian_detail_updatedby_idx` (`updated_by`),
            KEY `fk_retur_pembelian_detail_inventory_idx` (`inventory_balance_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('retur_penjualan', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -601,7 +602,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_retur_penjualan_updatedby_idx` (`updated_by`),
            KEY `fk_retur_penjualan_customer_idx` (`profil_id`),
            KEY `fk_retur_penjualan_hutangpiutang_idx` (`hutang_piutang_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('retur_penjualan_detail', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -616,7 +617,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_retur_penjualan_detail_header_idx` (`retur_penjualan_id`),
            KEY `fk_retur_penjualan_detail_updatedby_idx` (`updated_by`),
            KEY `fk_retur_penjualan_detail_pjdetail_idx` (`penjualan_detail_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('stock_opname', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -632,7 +633,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            UNIQUE KEY `nomor` (`nomor`),
            KEY `fk_stock_opname_updatedby_idx` (`updated_by`),
            KEY `fk_stock_opname_rak_idx` (`rak_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('stock_opname_detail', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -647,7 +648,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_stock_opname_detail_updatedby_idx` (`updated_by`),
            KEY `fk_stock_opname_detail_barang_idx` (`barang_id`),
            KEY `fk_stock_opname_detail_header_idx` (`stock_opname_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('supplier_barang', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -661,7 +662,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            KEY `fk_supplier_barang_updatedby_idx` (`updated_by`),
            KEY `fk_supplier_barang_supplier_idx` (`supplier_id`),
            KEY `fk_supplier_barang_barang_idx` (`barang_id`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->createTable('theme', array(
           "`id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
@@ -672,7 +673,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
            `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_theme_updatedby_idx` (`updated_by`)"
-              ), 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->insertMultiple('theme', array(
           array('id' => 1, 'nama' => 'default', 'deskripsi' => 'Default', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
