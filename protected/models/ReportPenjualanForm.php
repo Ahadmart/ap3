@@ -60,13 +60,31 @@ class ReportPenjualanForm extends CFormModel {
    public function reportPenjualan() {
       $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
       $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
-      // echo $dari.' sampai '.$sampai;
-      $criteria = new CDbCriteria();
-      $criteria->addBetweenCondition("date_format(tanggal,'%Y-%m-%d')", $dari, $sampai);
-//      if (!empty($this->profilId)) {
-//         $criteria->addCondition('profil_id=:profilId', array(':profilId' => $this->profilId));
-//      }
-      $penjualan = Penjualan::model()->findAll($criteria);
+
+      $command = Yii::app()->db->createCommand();
+      $command->select('pj.tanggal,pj.nomor, sum(pd.harga_jual) total,sum(pd.harga_jual)-sum(hpp.harga_beli) margin');
+      $command->from(PenjualanDetail::model()->tableName().' pd');
+      $command->join(Penjualan::model()->tableName().' pj', 'pd.penjualan_id=pj.id');
+      $command->join(HargaPokokPenjualan::model()->tableName().' hpp', 'pd.id=hpp.penjualan_detail_id');
+      $command->where("date_format(pj.tanggal,'%Y-%m-%d') between :dari and :sampai", array(
+          ':dari' => $dari,
+          ':sampai' => $sampai));
+      $command->group('pj.id');
+      $command->order('pj.tanggal');
+
+      if (!empty($this->profilId)) {
+         $command->andWhere("pj.profil_id=:profilId", array(
+             ':profilId' => $this->profilId
+         ));
+      }
+
+      if (!empty($this->userId)) {
+         $command->andWhere("pj.updated_by=:userId", array(
+             ':userId' => $this->userId
+         ));
+      }
+
+      $penjualan = $command->queryAll();
       return $penjualan;
    }
 
