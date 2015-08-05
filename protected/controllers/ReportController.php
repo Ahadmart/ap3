@@ -49,6 +49,10 @@ class ReportController extends Controller {
          $model->attributes = $_POST['ReportPenjualanForm'];
          if ($model->validate()) {
             $report = $model->reportPenjualan();
+            echo '<pre>';
+            print_r($report);
+            echo '</pre>';
+            Yii::app()->end();
          }
       }
 
