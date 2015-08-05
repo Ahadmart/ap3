@@ -16,6 +16,7 @@ $form = $this->beginWidget('CActiveForm', array(
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
 
 <?php echo $form->hiddenField($model, 'profilId'); ?>
+<?php echo $form->hiddenField($model, 'userId'); ?>
 <div class="row">
    <div class="small-12 medium-4 large-2 columns">
       <?php echo $form->labelEx($model, 'dari'); ?>
