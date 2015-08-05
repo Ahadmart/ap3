@@ -506,8 +506,6 @@ class m150724_135249_init_release_0 extends CDbMigration {
            `qty` int(10) unsigned NOT NULL DEFAULT '1',
            `harga_jual` decimal(18,2) NOT NULL,
            `harga_jual_rekomendasi` decimal(18,2) DEFAULT NULL,
-           `harga_beli` decimal(18,2) DEFAULT NULL,
-           `harga_beli_temp` decimal(18,2) DEFAULT NULL COMMENT 'Diisi jika pada saat penjualan, stok < 0',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
            `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
