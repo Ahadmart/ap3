@@ -249,7 +249,7 @@ class Pembelian extends CActiveRecord {
     * 2. update stock.
     * 3. update harga jual & rrp
     * 4. create hutang.
-    * 5. update stok minus.
+    * 5. update stok minus. BELUM !!
     * @return boolean True jika proses berhasil
     * @throws Exception
     */
