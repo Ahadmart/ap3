@@ -24,6 +24,34 @@ $this->renderPartial('_form_penjualan', array('model' => $model));
       </div>
    </div>
 </div>
+<div class="row">
+   <table>
+      <thead>
+         <tr>
+            <th>Tanggal</th>
+            <th>Nomor</th>
+            <th>Total</th>
+            <th>Margin</th>
+            <th>Profit Margin</th>
+         </tr>
+      </thead>
+      <tbody>
+         <?php
+         foreach ($report as $barisReport):
+            ?>
+            <tr>
+               <td><?php echo $barisReport['tanggal']; ?></td>
+               <td><?php echo $barisReport['nomor']; ?></td>
+               <td><?php echo number_format($barisReport['total'],0,',','.'); ?></td>
+               <td><?php echo number_format($barisReport['margin'],0,',','.'); ?></td>
+               <td><?php echo number_format($barisReport['margin'] / $barisReport['total'] * 100,2,',','.').'%'; ?></td>
+            </tr>
+            <?php
+         endforeach;
+         ?>
+      </tbody>
+   </table>
+</div>
 <script>
    $(function () {
       $('.tanggalan').fdatepicker({

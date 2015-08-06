@@ -45,14 +45,11 @@ class ReportController extends Controller {
     */
    public function actionPenjualan() {
       $model = new ReportPenjualanForm;
+      $report = array();
       if (isset($_POST['ReportPenjualanForm'])) {
          $model->attributes = $_POST['ReportPenjualanForm'];
          if ($model->validate()) {
             $report = $model->reportPenjualan();
-            echo '<pre>';
-            print_r($report);
-            echo '</pre>';
-            Yii::app()->end();
          }
       }
 
@@ -71,7 +68,8 @@ class ReportController extends Controller {
       $this->render('penjualan', array(
           'model' => $model,
           'profil' => $profil,
-          'user' => $user
+          'user' => $user,
+          'report' => $report,
       ));
    }
 
