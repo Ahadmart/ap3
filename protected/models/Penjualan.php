@@ -108,7 +108,7 @@ class Penjualan extends CActiveRecord {
       $criteria = new CDbCriteria;
 
       $criteria->compare('id', $this->id, true);
-      $criteria->compare('nomor', $this->nomor, true);
+      $criteria->compare('t.nomor', $this->nomor, true);
       $criteria->compare('tanggal', $this->tanggal, true);
       $criteria->compare('profil_id', $this->profil_id, true);
       $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
