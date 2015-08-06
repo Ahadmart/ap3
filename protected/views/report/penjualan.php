@@ -24,34 +24,40 @@ $this->renderPartial('_form_penjualan', array('model' => $model));
       </div>
    </div>
 </div>
-<div class="row">
-   <table>
-      <thead>
-         <tr>
-            <th>Tanggal</th>
-            <th>Nomor</th>
-            <th>Total</th>
-            <th>Margin</th>
-            <th>Profit Margin</th>
-         </tr>
-      </thead>
-      <tbody>
-         <?php
-         foreach ($report as $barisReport):
-            ?>
+<?php
+if (!empty($report)):
+   ?>
+   <div class="row">
+      <table>
+         <thead>
             <tr>
-               <td><?php echo $barisReport['tanggal']; ?></td>
-               <td><?php echo $barisReport['nomor']; ?></td>
-               <td><?php echo number_format($barisReport['total'],0,',','.'); ?></td>
-               <td><?php echo number_format($barisReport['margin'],0,',','.'); ?></td>
-               <td><?php echo number_format($barisReport['margin'] / $barisReport['total'] * 100,2,',','.').'%'; ?></td>
+               <th>Tanggal</th>
+               <th>Nomor</th>
+               <th class="rata-kanan">Total</th>
+               <th class="rata-kanan">Margin</th>
+               <th class="rata-kanan">Profit Margin</th>
             </tr>
+         </thead>
+         <tbody>
             <?php
-         endforeach;
-         ?>
-      </tbody>
-   </table>
-</div>
+            foreach ($report as $barisReport):
+               ?>
+               <tr>
+                  <td><?php echo $barisReport['tanggal']; ?></td>
+                  <td><?php echo $barisReport['nomor']; ?></td>
+                  <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
+                  <td class="rata-kanan"><?php echo number_format($barisReport['margin'], 0, ',', '.'); ?></td>
+                  <td class="rata-kanan"><?php echo number_format($barisReport['margin'] / $barisReport['total'] * 100, 2, ',', '.').'%'; ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+         </tbody>
+      </table>
+   </div>
+   <?php
+endif;
+?>
 <script>
    $(function () {
       $('.tanggalan').fdatepicker({
