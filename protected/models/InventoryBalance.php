@@ -271,7 +271,7 @@ class InventoryBalance extends CActiveRecord {
           * Jika inventory <= 0. Stok MINUS/HABIS
           * 0 kan sisa, sesuaikan inventory 
           */
-         if (0 === $curLayer && $inventory->qty <= 0) {
+         if (0 === $curLayer && $inventory->qty <= 0 && $sisa > 0) {
             /* Kurangi inventory. 0 (nol) kan sisa */
             $inventory->qty -= $sisa;
             $inventoryTerpakai[] = array(

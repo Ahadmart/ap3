@@ -161,10 +161,10 @@ class PenerimaanController extends Controller {
 
       $this->render('index', array(
           'model' => $model,
-          'filterStatus' => Pengeluaran::model()->listFilterStatus(),
-          'filterKasBank' => Pengeluaran::model()->listFilterKasBank(),
-          'filterKategori' => Pengeluaran::model()->listFilterKategori(),
-          'filterJenisTr' => Pengeluaran::model()->listFilterJenisTransaksi(),
+          'filterStatus' => Penerimaan::model()->listFilterStatus(),
+          'filterKasBank' => Penerimaan::model()->listFilterKasBank(),
+          'filterKategori' => Penerimaan::model()->listFilterKategori(),
+          'filterJenisTr' => Penerimaan::model()->listFilterJenisTransaksi(),
       ));
    }
 

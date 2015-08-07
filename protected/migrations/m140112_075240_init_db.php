@@ -15,8 +15,8 @@ class m140112_075240_init_db extends CDbMigration {
 
    // Use safeUp/safeDown to do migration with transaction
    public function safeUp() {
-      $dbEngine='MyISAM'; //InnoDB
-      
+      $dbEngine = 'MyISAM'; //InnoDB
+
       $this->createTable('AuthAssignment', array(
           'itemname' => 'varchar(64) NOT NULL',
           'userid' => 'varchar(64) NOT NULL',

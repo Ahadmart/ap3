@@ -49,7 +49,7 @@ class Penerimaan extends CActiveRecord {
       // NOTE: you should only define rules for those attributes that
       // will receive user inputs.
       return array(
-          array('profil_id, kas_bank_id, kategori_id', 'required'),
+          array('profil_id, kas_bank_id, kategori_id, jenis_transaksi_id', 'required', 'message' => '{attribute} tidak boleh kosong'),
           array('status', 'numerical', 'integerOnly' => true),
           array('nomor, referensi', 'length', 'max' => 45),
           array('keterangan', 'length', 'max' => 500),
