@@ -20,12 +20,12 @@ $form = $this->beginWidget('CActiveForm', array(
 <div class="row">
    <div class="small-12 medium-4 large-2 columns">
       <?php echo $form->labelEx($model, 'dari'); ?>
-      <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan')); ?>
+      <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan', 'value' => empty($model->dari) ? date('d-m-Y') : $model->dari)); ?>
       <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
    </div>
    <div class="small-12 medium-4 large-2 columns">
       <?php echo $form->labelEx($model, 'sampai'); ?>
-      <?php echo $form->textField($model, 'sampai', array('class' => 'tanggalan')); ?>
+      <?php echo $form->textField($model, 'sampai', array('class' => 'tanggalan', 'value' => empty($model->sampai) ? date('d-m-Y') : $model->sampai)); ?>
       <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
    </div>
    <div class="medium-6 large-4 columns">
