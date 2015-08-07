@@ -73,23 +73,8 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'KEY `fk_barang_kategori_updatedby_idx` (`updated_by`)'
               ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8');
 
-      /* 8
-       * 
-        '12', 'minuman'
-        '13', 'Susu'
-        '14', 'ATK'
-        '15', 'Elektronik'
-        '16', 'Bayi'
-        '17', 'Detergent/Obat Nyamuk'
-        '18', 'Pecah Belah'
-        '19', 'Muslim'
-        '20', 'Sabun/Shampo'
-        '21', 'Mainan'
-        '22', 'Pakaian'
-        '23', 'Obat'
-       */
-
       $this->insertMultiple('barang_kategori', array(
+          array('nama' => 'umum', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'wafer', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'biskuit', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'sirup', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -341,6 +326,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
               ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
 
       $this->insert('kas_bank', array('nama' => 'Kas', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'));
+      $this->insert('kas_bank', array('nama' => 'Bank', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'));
 
       $this->createTable('kode_akun', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
