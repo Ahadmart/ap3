@@ -15,7 +15,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
 
    // Use safeUp/safeDown to do migration with transaction
    public function safeUp() {
-      $dbEngine='MyISAM'; //InnoDB
+      $dbEngine = 'MyISAM'; //InnoDB
 
       $this->createTable('barang', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -72,6 +72,49 @@ class m150724_135249_init_release_0 extends CDbMigration {
           'UNIQUE KEY `nama` (`nama`)',
           'KEY `fk_barang_kategori_updatedby_idx` (`updated_by`)'
               ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8');
+
+      /* 8
+       * 
+        '12', 'minuman'
+        '13', 'Susu'
+        '14', 'ATK'
+        '15', 'Elektronik'
+        '16', 'Bayi'
+        '17', 'Detergent/Obat Nyamuk'
+        '18', 'Pecah Belah'
+        '19', 'Muslim'
+        '20', 'Sabun/Shampo'
+        '21', 'Mainan'
+        '22', 'Pakaian'
+        '23', 'Obat'
+       */
+
+      $this->insertMultiple('barang_kategori', array(
+          array('nama' => 'wafer', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'biskuit', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'sirup', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'mie', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'kopi', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'isotonik drink', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'makanan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'gula', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'kosmetik', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'perlengkapan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'sabun cuci', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'minuman', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'susu', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'atk', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'elektronik', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'bayi', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'obat nyamuk', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'pecah belah', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'muslim', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'sabun', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'shampo', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'mainan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'pakaian', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'obat', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+      ));
 
       $this->createTable('barang_rak', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
