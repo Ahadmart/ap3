@@ -278,6 +278,33 @@ class Penjualan extends CActiveRecord {
       return number_format($this->ambilTotal(), 0, ',', '.');
    }
 
+   public function ambilMargin() {
+      $command = Yii::app()->db->createCommand();
+      $command->select('sum(pd.harga_jual)-sum(hpp.harga_beli) margin');
+      $command->from(PenjualanDetail::model()->tableName().' pd');
+      $command->join(Penjualan::model()->tableName().' pj', 'pd.penjualan_id=pj.id and pj.id='.$this->id);
+      $command->join(HargaPokokPenjualan::model()->tableName().' hpp', 'pd.id=hpp.penjualan_detail_id');
+
+      $penjualan = $command->queryRow();
+      return $penjualan['margin'];
+   }
+
+   /**
+    * Total Margin
+    * @return text Total margin dalam format 0.000
+    */
+   public function getMargin() {
+      return number_format($this->ambilMargin(), 0, ',', '.');
+   }
+
+   /**
+    * Total Profit Margin
+    * @return text Total margin dalam persen
+    */
+   public function getProfitMargin() {
+      return number_format($this->ambilMargin() / $this->ambilTotal() * 100, 2, ',', '.');
+   }
+
    /**
     * Proses simpan penjualan.
     * Jika piutang, terbit nota debit (gudang)
