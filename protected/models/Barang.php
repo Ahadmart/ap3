@@ -126,7 +126,7 @@ class Barang extends CActiveRecord {
       $criteria = new CDbCriteria;
 
       $criteria->compare('id', $this->id, true);
-      $criteria->compare('barcode', $this->barcode);
+      $criteria->compare('barcode', $this->barcode, true);
       $criteria->compare('t.nama', $this->nama, true);
       $criteria->compare('kategori_id', $this->kategori_id, true);
       $criteria->compare('satuan_id', $this->satuan_id, true);
