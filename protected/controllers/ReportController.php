@@ -76,7 +76,7 @@ class ReportController extends Controller {
    /**
     * Untuk menampilkan link nama_lengkap, untuk pilih user
     * @param obj $data
-    * @return string link pilih user
+    * @return text link pilih user
     */
    public function renderLinkPilihUser($data) {
       $return = '';
@@ -96,6 +96,50 @@ class ReportController extends Controller {
           'nama' => $user->nama,
       );
       $this->renderJSON($return);
+   }
+
+   /**
+    * Report Harian Form
+    */
+   public function actionHarian() {
+      $model = new ReportHarianForm;
+      if (isset($_POST['ReportHarianForm'])) {
+         $model->attributes = $_POST['ReportHarianForm'];
+         if ($model->validate()) {
+            $report = $model->reportHarian();
+            $report['tanggal'] = $model->tanggal;
+            $report['namaToko'] = $this->namaToko();
+            $this->harianPdf($report);
+            Yii::app()->end();
+         }
+      }
+
+      $this->render('harian', array(
+          'model' => $model,
+      ));
+   }
+
+   public function namaToko() {
+      $config = Config::model()->find('nama=:nama', array(':nama' => 'nama'));
+      return $config->nilai;
+   }
+
+   public function harianPdf($report) {
+
+      /*
+       * Persiapan render PDF
+       */
+      $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
+      $mPDF1->WriteHTML($this->renderPartial('harian_pdf', array(
+                  'report' => $report,
+                      ), true
+      ));
+
+      $mPDF1->SetDisplayMode('fullpage');
+      $mPDF1->pagenumPrefix = 'Hal ';
+      $mPDF1->pagenumSuffix = ' / ';
+      // Render PDF
+      $mPDF1->Output("{$report['namaToko']}-{$report['tanggal']}.pdf", 'I');
    }
 
 }
