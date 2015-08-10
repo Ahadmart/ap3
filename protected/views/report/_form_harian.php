@@ -11,19 +11,20 @@ $form = $this->beginWidget('CActiveForm', array(
     // See class documentation of CActiveForm for details on this,
     // you need to use the performAjaxValidation()-method described there.
     'enableAjaxValidation' => false,
+    'htmlOptions' => array('target'=> '_blank')
         ));
 ?>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
 
 <div class="row">
-   <div class="small-12 medium-4 large-2 columns">
+   <div class="small-12 columns">
       <?php echo $form->labelEx($model, 'tanggal'); ?>
-      <?php echo $form->textField($model, 'tanggal', array('class' => 'tanggalan', 'value' => empty($model->tanggal) ? date('d-m-Y') : $model->tanggal)); ?>
+      <?php echo $form->textField($model, 'tanggal', array('class' => 'tanggalan rata-kanan', 'value' => empty($model->tanggal) ? date('d-m-Y') : $model->tanggal)); ?>
       <?php echo $form->error($model, 'tanggal', array('class' => 'error')); ?>
    </div>
 </div>
 <div class="row">
-   <div class="small-12 medium-4 large-2 columns">
+   <div class="small-12 columns">
       <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
    </div>
 </div>
