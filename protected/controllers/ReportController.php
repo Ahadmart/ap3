@@ -124,7 +124,7 @@ class ReportController extends Controller {
       $config = Config::model()->find('nama=:nama', array(':nama' => 'nama'));
       return $config->nilai;
    }
-
+   
    public function harianPdf($report) {
 
       /*

@@ -94,18 +94,18 @@ function namaBulan($i) {
             <?php
          endif;
          ?>
-         <?php if (!empty($pembeliansTunai)):
+         <?php if (!empty($report['pembelianTunai'])):
             ?>
             <tr>
                <td class="tebal trx-header">PEMBELIAN TUNAI (-)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalPembelianTunai, 0, ',', '.'); ?></td>
+               <td class="kanan tebal trx-header"><?php //echo number_format($totalPembelianTunai, 0, ',', '.');  ?></td>
             </tr>
             <?php
-            foreach ($pembeliansTunai as $pembelianTunai):
+            foreach ($report['pembelianTunai'] as $pembelianTunai):
                ?>
                <tr>
-                  <td class="level-1"><?php echo "{$pembelianTunai->supplier->nama} {$pembelianTunai->keterangan}"; ?></td>
-                  <td class="kanan"><?php echo number_format($pembelianTunai->jumlah, 0, ',', '.'); ?></td>
+                  <td class="level-1"><?php echo "{$pembelianTunai['nomor']} {$pembelianTunai['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($pembelianTunai['bayar'] + $pembelianTunai['terima'], 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;
