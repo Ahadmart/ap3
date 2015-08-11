@@ -131,7 +131,8 @@ class ReportHarianForm extends CFormModel {
    }
 
    private function _totalPembelianHutang($tanggal) {
-      $command = Yii::app()->db->createCommand("select sum(total_hutang) total
+      $command = Yii::app()->db->createCommand("
+            select sum(total_hutang) total
             from(
             select hp.jumlah, hp.jumlah-(sum(ifnull(kd.jumlah,0))+sum(ifnull(pd.jumlah,0))) total_hutang
             from pembelian p
