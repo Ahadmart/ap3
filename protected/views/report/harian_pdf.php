@@ -41,7 +41,7 @@ function namaBulan($i) {
 ?>
 <html>
    <head>
-      <title>Buku Harian : <?php echo $report['namaToko'].' '.$report['tanggal']; ?></title>
+      <title>Buku Harian : <?php echo $report['kodeToko'].' '.$report['namaToko'].' '.$report['tanggal']; ?></title>
       <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf.css" />
       <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" />
    </head>
@@ -98,7 +98,7 @@ function namaBulan($i) {
             ?>
             <tr>
                <td class="tebal trx-header">PEMBELIAN TUNAI (-)</td>
-               <td class="kanan tebal trx-header"><?php //echo number_format($totalPembelianTunai, 0, ',', '.');  ?></td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPembelianTunai'], 0, ',', '.'); ?></td>
             </tr>
             <?php
             foreach ($report['pembelianTunai'] as $pembelianTunai):
@@ -284,18 +284,18 @@ function namaBulan($i) {
             <td class="kanan tebal"></td>
          </tr>
          <?php
-         if (!empty($hutangs)):
+         if (!empty($report['pembelianHutang'])):
             ?>
             <tr>
-               <td class="trx-header tebal">DAFTAR HUTANG</td>
-               <td></td>
+               <td class="trx-header tebal">DAFTAR HUTANG PEMBELIAN</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPembelianHutang'], 0, ',', '.'); ?></td>
             </tr>
             <?php
-            foreach ($hutangs as $hutang):
+            foreach ($report['pembelianHutang'] as $hutang):
                ?>
                <tr>
-                  <td class="level-1"><?php echo $hutang->supplier->nama.' ['.date('d-m-Y', strtotime($hutang->tanggal_jatuh_tempo)).'] '.$hutang->keterangan; ?></td>
-                  <td class="kanan"><?php echo number_format($hutang->jumlah, 0, ',', '.'); ?></td>
+                  <td class="level-1"><?php echo "{$hutang['nomor']} {$hutang['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($hutang['jumlah'] - ($hutang['bayar'] + $hutang['terima']), 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;
