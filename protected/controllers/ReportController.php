@@ -110,6 +110,7 @@ class ReportController extends Controller {
             $report = $model->reportHarian();
             $report['tanggal'] = $model->tanggal;
             $report['namaToko'] = $this->namaToko();
+            $report['kodeToko'] = $this->kodeToko();
             $this->harianPdf($report);
             Yii::app()->end();
          }
@@ -122,6 +123,11 @@ class ReportController extends Controller {
 
    public function namaToko() {
       $config = Config::model()->find('nama=:nama', array(':nama' => 'nama'));
+      return $config->nilai;
+   }
+   
+   public function kodeToko() {
+      $config = Config::model()->find('nama=:nama', array(':nama' => 'kode'));
       return $config->nilai;
    }
    
@@ -140,7 +146,7 @@ class ReportController extends Controller {
       $mPDF1->pagenumPrefix = 'Hal ';
       $mPDF1->pagenumSuffix = ' / ';
       // Render PDF
-      $mPDF1->Output("{$report['namaToko']}-{$report['tanggal']}.pdf", 'I');
+      $mPDF1->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
    }
 
 }
