@@ -71,7 +71,7 @@ class ReportHarianForm extends CFormModel {
    private function _pembelianTunai($tanggal) {
       $command = Yii::app()->db->createCommand();
       $command->select('distinct profil.nama,p.nomor, 
-        p.tanggal, hp.nomor, hp.jumlah,
+        p.tanggal, hp.nomor nomor_hp, hp.jumlah,
         sum(kd.jumlah) bayar, kd.updated_at, sum(pd.jumlah) terima, pd.updated_at');
       $command->from(Pembelian::model()->tableName().' p');
       $command->join(HutangPiutang::model()->tableName().' hp', 'p.hutang_piutang_id = hp.id');
@@ -113,7 +113,7 @@ class ReportHarianForm extends CFormModel {
    private function _pembelianHutang($tanggal) {
       $command = Yii::app()->db->createCommand();
       $command->select('distinct profil.nama,p.nomor, 
-        p.tanggal, hp.nomor, hp.jumlah,
+        p.tanggal, hp.nomor hp_nomor, hp.jumlah,
         sum(kd.jumlah) bayar, kd.updated_at, sum(pd.jumlah) terima, pd.updated_at');
       $command->from(Pembelian::model()->tableName().' p');
       $command->join(HutangPiutang::model()->tableName().' hp', 'p.hutang_piutang_id = hp.id');
