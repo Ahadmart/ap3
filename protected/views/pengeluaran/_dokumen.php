@@ -18,9 +18,9 @@ $this->widget('BGridView', array(
         array(
             'class' => 'BDataColumn',
             'name' => 'namaProfil',
-            'header' => 'Pro<span class="ak">f</span>il',
+            'header' => 'Profi<span class="ak">l</span>',
             'value' => '$data->profil->nama',
-            'accesskey' => 'f',
+            'accesskey' => 'l',
             'type' => 'raw',
         ),
         'nomor_dokumen_asal',
@@ -28,8 +28,8 @@ $this->widget('BGridView', array(
         array(
             'class' => 'BDataColumn',
             'name' => 'nomor',
-            'header' => 'Nomo<span class="ak">r</span>',
-            'accesskey' => 'r',
+            'header' => 'No<span class="ak">m</span>or',
+            'accesskey' => 'm',
             'type' => 'raw',
             'value' => function($data) {
                 return '<a href="' . Yii::app()->controller->createUrl('pilihdokumen', array('id' => $data->id)) . '" class="pilih dokumen">' . $data->nomor . '</a>';
