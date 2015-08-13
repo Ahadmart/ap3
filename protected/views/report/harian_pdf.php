@@ -75,18 +75,18 @@ function namaBulan($i) {
             <td class="kanan tebal"></td>
          </tr>
          <?php
-         if (!empty($pembayaranHutangs)):
+         if (!empty($report['pembelianBayar'])):
             ?>
             <tr>
-               <td class="tebal trx-header">PEMBAYARAN HUTANG (-)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalPembayaranHutang, 0, ',', '.'); ?></td>
+               <td class="tebal trx-header">PEMBAYARAN PEMBELIAN (-)</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPembelianBayar'], 0, ',', '.'); ?></td>
             </tr>
             <?php
-            foreach ($pembayaranHutangs as $pembayaranHutang):
+            foreach ($report['pembelianBayar'] as $pembayaran):
                ?>
                <tr>
-                  <td class="level-1"><?php echo date('d-m-Y', strtotime($pembayaranHutang->hutang->tanggal)).' '.$pembayaranHutang->hutang->supplier->nama.' '.$pembayaranHutang->hutang->keterangan; ?></td>
-                  <td class="kanan"><?php echo number_format($pembayaranHutang->jumlah, 0, ',', '.'); ?></td>
+                  <td class="level-1"><?php echo "{$pembayaran['nomor']} {$pembayaran['nama']} ".date('d-m-Y', strtotime($pembayaran['tanggal'])); ?></td>
+                  <td class="kanan"><?php echo number_format($pembayaran['total_bayar'], 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;

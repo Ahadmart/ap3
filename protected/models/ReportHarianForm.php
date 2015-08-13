@@ -42,7 +42,9 @@ class ReportHarianForm extends CFormModel {
           'pembelianTunai' => $this->_pembelianTunai($tanggal),
           'totalPembelianTunai' => $this->_totalPembelianTunai($tanggal),
           'pembelianHutang' => $this->_pembelianHutang($tanggal),
-          'totalPembelianHutang' => $this->_totalPembelianHutang($tanggal)
+          'totalPembelianHutang' => $this->_totalPembelianHutang($tanggal),
+          'pembelianBayar' => $this->_pembelianBayar($tanggal),
+          'totalPembelianBayar' => $this->_totalPembelianBayar($tanggal)
       );
    }
 
@@ -151,6 +153,69 @@ class ReportHarianForm extends CFormModel {
 
       $hutangPembelian = $command->queryRow();
       return $hutangPembelian['total'];
+   }
+
+   /**
+    * Pembelian yang dibayar pada tanggal $tanggal, per nomor pembelian
+    * @param date $tanggal
+    * @return array nomor pembelian, nama profil, tanggal pembelian, total pembayaran
+    */
+   private function _pembelianBayar($tanggal) {
+      $command = Yii::app()->db->createCommand("
+         select pembelian.nomor, profil.nama, pembelian.tanggal, t2.total_bayar
+         from
+         (
+            select id, sum(jumlah_bayar) total_bayar
+            from
+            (
+               select sum(pd.jumlah) jumlah_bayar, pembelian.id
+               from pengeluaran_detail pd
+               join pengeluaran on pd.pengeluaran_id = pengeluaran.id and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=1
+               join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
+               group by pembelian.id
+               union
+               select sum(pd.jumlah) jumlah_bayar, pembelian.id
+               from penerimaan_detail pd
+               join penerimaan on pd.penerimaan_id = penerimaan.id and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=1
+               join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
+               group by pembelian.id
+            ) t1
+            group by id
+         ) t2
+         join pembelian on t2.id=pembelian.id
+         join profil on pembelian.profil_id = profil.id");
+
+      $command->bindValue(':tanggal', $tanggal);
+
+      return $command->queryAll();
+   }
+
+   private function _totalPembelianBayar($tanggal) {
+      $command = Yii::app()->db->createCommand("
+         select sum(jumlah_bayar) total
+         from
+         (
+            select sum(pd.jumlah) jumlah_bayar, pembelian.id
+            from pengeluaran_detail pd
+            join pengeluaran on pd.pengeluaran_id = pengeluaran.id and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=1
+            join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            group by pembelian.id
+            union
+            select sum(pd.jumlah) jumlah_bayar, pembelian.id
+            from penerimaan_detail pd
+            join penerimaan on pd.penerimaan_id = penerimaan.id and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=1
+            join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            group by pembelian.id
+         ) t1");
+
+      $command->bindValue(':tanggal', $tanggal);
+
+      $bayarPembelian = $command->queryRow();
+      return $bayarPembelian['total'];
    }
 
 }
