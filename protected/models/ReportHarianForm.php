@@ -38,7 +38,7 @@ class ReportHarianForm extends CFormModel {
       $tanggal = date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d');
 
       return array(
-          'omzet' => $this->_omzet($tanggal),
+          'penjualanTunai' => $this->_penjualanTunai($tanggal),
           'pembelianTunai' => $this->_pembelianTunai($tanggal),
           'totalPembelianTunai' => $this->_totalPembelianTunai($tanggal),
           'pembelianHutang' => $this->_pembelianHutang($tanggal),
@@ -46,23 +46,6 @@ class ReportHarianForm extends CFormModel {
           'pembelianBayar' => $this->_pembelianBayar($tanggal),
           'totalPembelianBayar' => $this->_totalPembelianBayar($tanggal)
       );
-   }
-
-   /**
-    * Total omzet per tanggal
-    * @param date $tanggal
-    * @return decimal total omzet
-    */
-   private function _omzet($tanggal) {
-      $command = Yii::app()->db->createCommand();
-      $command->select('sum(harga_jual) total');
-      $command->from(PenjualanDetail::model()->tableName().' detail');
-      $command->join(Penjualan::model()->tableName().' pj', 'detail.penjualan_id=pj.id');
-      $command->where("date_format(pj.tanggal,'%Y-%m-%d') = :tanggal", array(
-          ':tanggal' => $tanggal,));
-
-      $omzet = $command->queryRow();
-      return $omzet['total'];
    }
 
    /**
@@ -79,13 +62,18 @@ class ReportHarianForm extends CFormModel {
       $command->join(HutangPiutang::model()->tableName().' hp', 'p.hutang_piutang_id = hp.id');
       $command->join(Profil::model()->tableName(), 'p.profil_id = profil.id');
       $command->leftJoin(PengeluaranDetail::model()->tableName().' kd', 'hp.id=kd.hutang_piutang_id');
-      $command->leftJoin(Pengeluaran::model()->tableName(), "kd.pengeluaran_id = pengeluaran.id and pengeluaran.status=1 and date_format(pengeluaran.tanggal,'%Y-%m-%d')= :tanggal");
+      $command->leftJoin(Pengeluaran::model()->tableName(), "kd.pengeluaran_id = pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')= :tanggal");
       $command->leftJoin(PenerimaanDetail::model()->tableName().' pd', 'hp.id=pd.hutang_piutang_id');
-      $command->leftJoin(Penerimaan::model()->tableName(), "pd.penerimaan_id = penerimaan.id and penerimaan.status=1 and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal");
+      $command->leftJoin(Penerimaan::model()->tableName(), "pd.penerimaan_id = penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal");
       $command->where("date_format(p.tanggal,'%Y-%m-%d') = :tanggal");
       $command->group('p.nomor, p.tanggal, hp.nomor');
       $command->having('sum(ifnull(kd.jumlah,0)) + sum(ifnull(pd.jumlah,0)) > 0');
-      $command->bindValue(':tanggal', $tanggal);
+
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+          ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
+      ));
 
       return $command->queryAll();
    }
@@ -96,12 +84,17 @@ class ReportHarianForm extends CFormModel {
       $command->from(Pembelian::model()->tableName().' p');
       $command->join(HutangPiutang::model()->tableName().' hp', 'p.hutang_piutang_id = hp.id');
       $command->leftJoin(PengeluaranDetail::model()->tableName().' kd', 'hp.id=kd.hutang_piutang_id');
-      $command->leftJoin(Pengeluaran::model()->tableName(), "kd.pengeluaran_id = pengeluaran.id and pengeluaran.status=1 and date_format(pengeluaran.tanggal,'%Y-%m-%d')= :tanggal");
+      $command->leftJoin(Pengeluaran::model()->tableName(), "kd.pengeluaran_id = pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')= :tanggal");
       $command->leftJoin(PenerimaanDetail::model()->tableName().' pd', 'hp.id=pd.hutang_piutang_id');
-      $command->leftJoin(Penerimaan::model()->tableName(), "pd.penerimaan_id = penerimaan.id and penerimaan.status=1 and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal");
+      $command->leftJoin(Penerimaan::model()->tableName(), "pd.penerimaan_id = penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal");
       $command->where("date_format(p.tanggal,'%Y-%m-%d') = :tanggal");
       $command->having('sum(ifnull(kd.jumlah,0)) + sum(ifnull(pd.jumlah,0)) > 0');
-      $command->bindValue(':tanggal', $tanggal);
+
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+          ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
+      ));
 
       $pembelian = $command->queryRow();
       return $pembelian['total'];
@@ -121,13 +114,18 @@ class ReportHarianForm extends CFormModel {
       $command->join(HutangPiutang::model()->tableName().' hp', 'p.hutang_piutang_id = hp.id');
       $command->join(Profil::model()->tableName(), 'p.profil_id = profil.id');
       $command->leftJoin(PengeluaranDetail::model()->tableName().' kd', 'hp.id=kd.hutang_piutang_id');
-      $command->leftJoin(Pengeluaran::model()->tableName(), "kd.pengeluaran_id = pengeluaran.id and pengeluaran.status=1 and date_format(pengeluaran.tanggal,'%Y-%m-%d')= :tanggal");
+      $command->leftJoin(Pengeluaran::model()->tableName(), "kd.pengeluaran_id = pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')= :tanggal");
       $command->leftJoin(PenerimaanDetail::model()->tableName().' pd', 'hp.id=pd.hutang_piutang_id');
-      $command->leftJoin(Penerimaan::model()->tableName(), "pd.penerimaan_id = penerimaan.id and penerimaan.status=1 and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal");
+      $command->leftJoin(Penerimaan::model()->tableName(), "pd.penerimaan_id = penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal");
       $command->where("date_format(p.tanggal,'%Y-%m-%d') = :tanggal");
       $command->group('p.nomor, p.tanggal, hp.nomor');
       $command->having('sum(ifnull(kd.jumlah,0)) + sum(ifnull(pd.jumlah,0)) < hp.jumlah');
-      $command->bindValue(':tanggal', $tanggal);
+
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+          ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
+      ));
 
       return $command->queryAll();
    }
@@ -141,15 +139,19 @@ class ReportHarianForm extends CFormModel {
             join hutang_piutang hp on p.hutang_piutang_id=hp.id
             join profil on p.profil_id = profil.id
             left join pengeluaran_detail kd on hp.id=kd.hutang_piutang_id
-            left join pengeluaran on kd.pengeluaran_id = pengeluaran.id and pengeluaran.status=1 and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            left join pengeluaran on kd.pengeluaran_id = pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
             left join penerimaan_detail pd on hp.id=pd.hutang_piutang_id
-            left join penerimaan on pd.penerimaan_id = penerimaan.id and penerimaan.status=1 and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            left join penerimaan on pd.penerimaan_id = penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
             where  date_format(p.tanggal,'%Y-%m-%d')=:tanggal
             group by p.nomor, p.tanggal, hp.nomor
             having sum(ifnull(kd.jumlah,0)) + sum(ifnull(pd.jumlah,0)) < hp.jumlah
             ) t");
 
-      $command->bindValue(':tanggal', $tanggal);
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+          ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
+      ));
 
       $hutangPembelian = $command->queryRow();
       return $hutangPembelian['total'];
@@ -171,14 +173,14 @@ class ReportHarianForm extends CFormModel {
                select sum(pd.jumlah) jumlah_bayar, pembelian.id
                from pengeluaran_detail pd
                join pengeluaran on pd.pengeluaran_id = pengeluaran.id and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
-               join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=1
+               join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
                join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
                group by pembelian.id
                union
                select sum(pd.jumlah) jumlah_bayar, pembelian.id
                from penerimaan_detail pd
                join penerimaan on pd.penerimaan_id = penerimaan.id and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
-               join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=1
+               join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
                join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
                group by pembelian.id
             ) t1
@@ -187,7 +189,10 @@ class ReportHarianForm extends CFormModel {
          join pembelian on t2.id=pembelian.id
          join profil on pembelian.profil_id = profil.id");
 
-      $command->bindValue(':tanggal', $tanggal);
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN
+      ));
 
       return $command->queryAll();
    }
@@ -200,7 +205,7 @@ class ReportHarianForm extends CFormModel {
             select sum(pd.jumlah) jumlah_bayar, pembelian.id
             from pengeluaran_detail pd
             join pengeluaran on pd.pengeluaran_id = pengeluaran.id and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
-            join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=1
+            join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
             join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
             group by pembelian.id
             union
@@ -212,10 +217,30 @@ class ReportHarianForm extends CFormModel {
             group by pembelian.id
          ) t1");
 
-      $command->bindValue(':tanggal', $tanggal);
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN
+      ));
 
       $bayarPembelian = $command->queryRow();
       return $bayarPembelian['total'];
+   }
+
+   private function _penjualanTunai($tanggal) {
+      $command = Yii::app()->db->createCommand("
+         select penjualan.nomor, d.jumlah, profil.nama
+         from penerimaan_detail d
+         join penerimaan p on d.penerimaan_id = p.id and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+         join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
+         join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+         join profil on penjualan.profil_id=profil.id");
+
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN
+      ));
+
+      return $command->queryAll();
    }
 
 }

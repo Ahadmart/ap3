@@ -274,11 +274,27 @@ function namaBulan($i) {
          <tr>
             <td class="tebal">SALDO AKHIR ASLI</td>
             <td class="kanan tebal"></td>
-         </tr>
-         <tr>
-            <td class="trx-header tebal">OMZET (+)</td>
-            <td class="kanan tebal trx-header"><?php echo number_format($report['omzet'], 0, ',', '.'); ?></td>
-         </tr>
+         </tr>         
+         <?php
+         if (!empty($report['penjualanTunai'])):
+            ?>
+            <tr>
+               <td class="trx-header tebal">PENJUALAN TUNAI (+)</td>
+               <td class="kanan tebal trx-header"><?php //echo number_format($report['totalPembelianHutang'], 0, ',', '.');  ?></td>
+            </tr>
+            <?php
+            foreach ($report['penjualanTunai'] as $penjualanTunai):
+               ?>
+               <tr>
+                  <td class="level-1"><?php echo "{$penjualanTunai['nomor']} {$penjualanTunai['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($penjualanTunai['jumlah'], 0, ',', '.'); ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+            <?php
+         endif;
+         ?>
          <tr>
             <td class="tebal">GROSS PROFIT</td>
             <td class="kanan tebal"></td>
