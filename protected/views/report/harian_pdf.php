@@ -280,7 +280,7 @@ function namaBulan($i) {
             ?>
             <tr>
                <td class="trx-header tebal">PENJUALAN TUNAI (+)</td>
-               <td class="kanan tebal trx-header"><?php //echo number_format($report['totalPembelianHutang'], 0, ',', '.');  ?></td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanTunai'], 0, ',', '.');  ?></td>
             </tr>
             <?php
             foreach ($report['penjualanTunai'] as $penjualanTunai):
