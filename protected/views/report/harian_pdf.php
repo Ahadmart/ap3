@@ -280,7 +280,7 @@ function namaBulan($i) {
             ?>
             <tr>
                <td class="trx-header tebal">PENJUALAN TUNAI (+)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanTunai'], 0, ',', '.');  ?></td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanTunai'], 0, ',', '.'); ?></td>
             </tr>
             <?php
             foreach ($report['penjualanTunai'] as $penjualanTunai):
@@ -288,6 +288,66 @@ function namaBulan($i) {
                <tr>
                   <td class="level-1"><?php echo "{$penjualanTunai['nomor']} {$penjualanTunai['nama']}"; ?></td>
                   <td class="kanan"><?php echo number_format($penjualanTunai['jumlah'], 0, ',', '.'); ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+            <?php
+         endif;
+         ?>   
+         <?php
+         if (!empty($report['penjualanPiutang'])):
+            ?>
+            <tr>
+               <td class="trx-header tebal">PIUTANG PENJUALAN</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanPiutang'], 0, ',', '.'); ?></td>
+            </tr>
+            <?php
+            foreach ($report['penjualanPiutang'] as $piutangPenjualan):
+               ?>
+               <tr>
+                  <td class="level-1"><?php echo "{$piutangPenjualan['nomor']} {$piutangPenjualan['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format(abs($piutangPenjualan['jml_bayar'] - $piutangPenjualan['jumlah']), 0, ',', '.'); ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+            <?php
+         endif;
+         ?>
+         <?php
+         if (!empty($report['penjualanBayar'])):
+            ?>
+            <tr>
+               <td class="trx-header tebal">PENERIMAAN PIUTANG PENJUALAN (+)</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanBayar'], 0, ',', '.'); ?></td>
+            </tr>
+            <?php
+            foreach ($report['penjualanBayar'] as $penerimaanPiutang):
+               ?>
+               <tr>
+                  <td class="level-1"><?php echo "{$penerimaanPiutang['nomor']} {$penerimaanPiutang['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($penerimaanPiutang['jumlah_bayar'], 0, ',', '.'); ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+            <?php
+         endif;
+         ?>
+         <?php
+         if (!empty($report['margin'])):
+            ?>
+            <tr>
+               <td class="trx-header tebal">GROSS PROFIT (MARGIN)</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalMargin'], 0, ',', '.');     ?></td>
+            </tr>
+            <?php
+            foreach ($report['margin'] as $marginPenjualan):
+               ?>
+               <tr>
+                  <td class="level-1"><?php echo "{$marginPenjualan['nomor']} {$marginPenjualan['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($marginPenjualan['margin'], 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;
