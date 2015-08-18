@@ -28,8 +28,8 @@ $this->widget('BGridView', array(
         array(
             'class' => 'BDataColumn',
             'name' => 'nomor',
-            'header' => 'No<span class="ak">m</span>or',
-            'accesskey' => 'm',
+            'header' => 'Nom<span class="ak">o</span>r',
+            'accesskey' => 'o',
             'type' => 'raw',
             'value' => function($data) {
                 return '<a href="' . Yii::app()->controller->createUrl('pilihdokumen', array('id' => $data->id)) . '" class="pilih dokumen">' . $data->nomor . '</a>';
