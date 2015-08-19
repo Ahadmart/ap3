@@ -51,7 +51,9 @@ class ReportHarianForm extends CFormModel {
           'pembelianHutang' => $this->_pembelianHutang($tanggal),
           'totalPembelianHutang' => $this->_totalPembelianHutang($tanggal),
           'pembelianBayar' => $this->_pembelianBayar($tanggal),
-          'totalPembelianBayar' => $this->_totalPembelianBayar($tanggal)
+          'totalPembelianBayar' => $this->_totalPembelianBayar($tanggal),
+          'itemPengeluaran' => $this->_itemPengeluaran($tanggal),
+          'itemPenerimaan' => $this->_itemPenerimaan($tanggal)
       );
    }
 
@@ -550,6 +552,144 @@ class ReportHarianForm extends CFormModel {
       ));
       $margin = $command->queryRow();
       return $margin['total'];
+   }
+
+   private function _itemPengeluaran($tanggal) {
+      $parents = ItemKeuangan::model()->findAll('parent_id is null');
+      $itemArr = array();
+
+      $command = Yii::app()->db->createCommand("
+         select profil.nama, item.nama akun, pd.keterangan, pd.jumlah
+         from penerimaan_detail pd
+         join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+         join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+         join profil on p.profil_id=profil.id
+         where pd.posisi=:posisiPenerimaan
+         union
+         select profil.nama, item.nama, pd.keterangan, pd.jumlah
+         from pengeluaran_detail pd
+         join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+         join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+         join profil on p.profil_id=profil.id
+         where pd.posisi=:posisiPengeluaran");
+
+      $commandTotal = Yii::app()->db->createCommand("
+         select sum(jumlah) total
+         from
+         (
+            select sum(pd.jumlah) jumlah
+            from penerimaan_detail pd
+            join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+            join profil on p.profil_id=profil.id
+            where pd.posisi=:posisiPenerimaan
+            union
+            select sum(pd.jumlah) jumlah
+            from pengeluaran_detail pd
+            join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+            join profil on p.profil_id=profil.id
+            where pd.posisi=:posisiPengeluaran
+         ) t");
+
+      foreach ($parents as $parent) {
+
+         $command->bindValues(array(
+             ':tanggal' => $tanggal,
+             ':itemTrx' => ItemKeuangan::ITEM_TRX_SAJA,
+             ':parentId' => $parent->id,
+             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+             ':posisiPengeluaran' => PengeluaranDetail::POSISI_DEBET,
+             ':posisiPenerimaan' => PenerimaanDetail::POSISI_KREDIT,
+         ));
+         $commandTotal->bindValues(array(
+             ':tanggal' => $tanggal,
+             ':itemTrx' => ItemKeuangan::ITEM_TRX_SAJA,
+             ':parentId' => $parent->id,
+             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+             ':posisiPengeluaran' => PengeluaranDetail::POSISI_DEBET,
+             ':posisiPenerimaan' => PenerimaanDetail::POSISI_KREDIT,
+         ));
+         $jumlah = $commandTotal->queryRow();
+         $itemArr[] = array(
+             'id' => $parent->id,
+             'nama' => $parent->nama,
+             'total' => $jumlah['total'],
+             'items' => $command->queryAll()
+         );
+      }
+      return $itemArr;
+   }
+
+   private function _itemPenerimaan($tanggal) {
+      $parents = ItemKeuangan::model()->findAll('parent_id is null');
+      $itemArr = array();
+
+      $command = Yii::app()->db->createCommand("
+         select profil.nama, item.nama akun, pd.keterangan, pd.jumlah
+         from penerimaan_detail pd
+         join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+         join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+         join profil on p.profil_id=profil.id
+         where pd.posisi=:posisiPenerimaan
+         union
+         select profil.nama, item.nama, pd.keterangan, pd.jumlah
+         from pengeluaran_detail pd
+         join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+         join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+         join profil on p.profil_id=profil.id
+         where pd.posisi=:posisiPengeluaran");
+
+      $commandTotal = Yii::app()->db->createCommand("
+         select sum(jumlah) total
+         from
+         (
+            select sum(pd.jumlah) jumlah
+            from penerimaan_detail pd
+            join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+            join profil on p.profil_id=profil.id
+            where pd.posisi=:posisiPenerimaan
+            union
+            select sum(pd.jumlah) jumlah
+            from pengeluaran_detail pd
+            join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+            join profil on p.profil_id=profil.id
+            where pd.posisi=:posisiPengeluaran
+         ) t");
+
+      foreach ($parents as $parent) {
+
+         $command->bindValues(array(
+             ':tanggal' => $tanggal,
+             ':itemTrx' => ItemKeuangan::ITEM_TRX_SAJA,
+             ':parentId' => $parent->id,
+             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+             ':posisiPengeluaran' => PengeluaranDetail::POSISI_KREDIT,
+             ':posisiPenerimaan' => PenerimaanDetail::POSISI_DEBET,
+         ));
+         $commandTotal->bindValues(array(
+             ':tanggal' => $tanggal,
+             ':itemTrx' => ItemKeuangan::ITEM_TRX_SAJA,
+             ':parentId' => $parent->id,
+             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+             ':posisiPengeluaran' => PengeluaranDetail::POSISI_KREDIT,
+             ':posisiPenerimaan' => PenerimaanDetail::POSISI_DEBET,
+         ));
+         $jumlah = $commandTotal->queryRow();
+         $itemArr[] = array(
+             'id' => $parent->id,
+             'nama' => $parent->nama,
+             'total' => $jumlah['total'],
+             'items' => $command->queryAll()
+         );
+      }
+      return $itemArr;
    }
 
 }

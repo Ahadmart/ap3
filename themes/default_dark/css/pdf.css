@@ -9,10 +9,10 @@ body{
 
 
 #header1{
-    //float:left;
-    text-align: center;
-    font-size: 1.25em;
-    width: 100%;
+    float:left;
+    text-align: left;
+    font-size: 2em;
+    width: 30%;
     /*    border-top: thin solid black;
         border-bottom: thin solid black;*/
     /*border-right: thin solid black;*/
@@ -24,10 +24,6 @@ body{
     margin-left: -2px; // Hack biar rata kiri karena font-size
 }
 
-#tanggal{
-    font-size: .75em;
-}
-
 #dari{
     float: right;
     text-align: right;
@@ -37,6 +33,38 @@ body{
     /*border-left: thin solid #333;*/
 }
 
+#kepada{
+    float:left;
+    width: 45%;
+}
+
+#faktur-info{
+    float:right;
+    width:30%;
+}
+
+.nama-toko{
+    font-size: 1.5em;
+}
+
+.nama-customer{
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.alamat{
+    font-size: 0.9em;
+}
+
+#dari .alamat{
+    border-top: 1px solid #000    
+}
+
+
+.email{
+    font-style: italic;
+}
+
 .garis{
     width: 100%;
     border-bottom: 1px solid #000;    
@@ -44,15 +72,12 @@ body{
     /*margin-top: -20px;*/
 }
 
+#header-total{
+    font-size: 1.1em;
+    text-transform: uppercase;
+}
+
 #total{
-    font-weight: bold;
-}
-
-.level-1{
-    padding-left: 25px;
-}
-
-.tebal{
     font-weight: bold;
 }
 
@@ -65,9 +90,6 @@ body{
     float: left;
 }
 
-.tengah{
-    text-align: center;
-}
 
 .miring{
     font-style: italic;
@@ -77,46 +99,52 @@ table{
     width: 100%;
 }
 
-th{
+#ttd tr td{
+    text-align: center;
+}
+
+#theader{
+    padding-left:7px;
+}
+
+
+#tdetail{
+    border-collapse: collapse;
+    border: thin solid black;
+}
+
+#tdetail tr th{
+    height: 30px;
     text-transform: uppercase;
-    padding: 2px 2px;
+    font-weight: normal;
 }
 
-td{
-    padding: 2px 0;
+#tdetail tr th, #tdetail tr td{
+    border: thin solid black;
+    text-align: center;
+    vertical-align: middle;
 }
 
-.trx-header{
-    padding-top: 10px;
+#tdetail tr td{
+    border-top: none;
+    border-bottom: none;
 }
 
-.table-bordered{     
+.table-bordered, .table-bordered tr td{
+    border:thin solid black;
     border-collapse: collapse;
 }
 
-.table-bordered tr td{
-    border-bottom:1px solid gray;
-    border-top:1px solid gray;
+.jenisKayu{
+    padding-left: 5px;
+    text-align: left;
 }
 
-.bordered{
-    border-collapse: collapse;
+.vol{
+    text-align: right;
 }
 
-.bordered th, .bordered td{
-    border: 1px solid gray;
-}
-
-.bordered td{
-    padding: 5px;
-}
-
-.remarks-h{
-    margin-top: 25px;
-    font-style: italic;
-    margin-bottom: 5px;
-}
-
-.remarks-d{
-    text-align: justify;
+#catatan{
+    font-size: 0.8em;
+    padding-left: 5px;
 }

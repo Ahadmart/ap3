@@ -42,7 +42,7 @@ function namaBulan($i) {
 <html>
    <head>
       <title>Buku Harian : <?php echo $report['kodeToko'].' '.$report['namaToko'].' '.$report['tanggal']; ?></title>
-      <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf.css" />
+      <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf-laporan.css" />
       <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" />
    </head>
    <body>
@@ -113,159 +113,45 @@ function namaBulan($i) {
             <?php
          endif;
          ?>
-         <?php if (!empty($banks)):
-            ?>
-            <tr>
-               <td class="tebal trx-header">BANK (-)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalBank, 0, ',', '.'); ?></td>
-            </tr>
-            <?php
-            foreach ($banks as $bank):
+         <?php
+         foreach ($report['itemPengeluaran'] as $pengeluaran) {
+            if (!empty($pengeluaran['items'])) {
                ?>
                <tr>
-                  <td class="level-1"><?php echo "{$bank->bank->nama} {$bank->keterangan}"; ?></td>
-                  <td class="kanan"><?php echo number_format($bank->jumlah, 0, ',', '.'); ?></td>
+                  <td class="tebal trx-header"><?php echo strtoupper($pengeluaran['nama']); ?> (-)</td>
+                  <td class="kanan tebal trx-header"><?php echo number_format($pengeluaran['total'], 0, ',', '.'); ?></td>
                </tr>
                <?php
-            endforeach;
-            ?>
-            <?php
-         endif;
-         ?>
-         <?php if (!empty($expenses)):
-            ?>
-            <tr>
-               <td class="tebal trx-header">EXPENSE (-)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalExpense, 0, ',', '.'); ?></td>
-            </tr>
-            <?php
-            foreach ($expenses as $expense):
-               ?>
-               <tr>
-                  <td class="level-1"><?php echo "{$expense->expense->nama} {$expense->keterangan}"; ?></td>
-                  <td class="kanan"><?php echo number_format($expense->jumlah, 0, ',', '.'); ?></td>
-               </tr>
-               <?php
-            endforeach;
-            ?>
-            <?php
-         endif;
-         ?>
-         <?php if (!empty($nonExpenses)):
-            ?>
-            <tr>
-               <td class="tebal trx-header">NON EXPENSE (-)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalNonExpense, 0, ',', '.'); ?></td>
-            </tr>
-            <?php
-            foreach ($nonExpenses as $nonExpense):
-               ?>
-               <tr>
-                  <td class="level-1"><?php echo "{$nonExpense->nonExpense->nama} {$nonExpense->keterangan}"; ?></td>
-                  <td class="kanan"><?php echo number_format($nonExpense->jumlah, 0, ',', '.'); ?></td>
-               </tr>
-               <?php
-            endforeach;
-            ?>
-            <?php
-         endif;
-         ?>
-         <?php if (!empty($kasbon)):
-            ?>
-            <tr>
-               <td class="tebal trx-header">KASBON (-)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalKasbon, 0, ',', '.'); ?></td>
-            </tr>
-            <?php
-            foreach ($kasbon as $kasbonKaryawan):
-               ?>
-               <tr>
-                  <td class="level-1"><?php echo "{$kasbonKaryawan->karyawan->nama} {$kasbonKaryawan->keterangan}"; ?></td>
-                  <td class="kanan"><?php echo number_format($kasbonKaryawan->jumlah, 0, ',', '.'); ?></td>
-               </tr>
-               <?php
-            endforeach;
-            ?>
-            <?php
-         endif;
-         ?>
-         <?php if (!empty($saukan)):
-            ?>
-            <tr>
-               <td class="tebal trx-header">SAUKAN (-)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalSaukan, 0, ',', '.'); ?></td>
-            </tr>
-            <?php
-            foreach ($saukan as $saukanKaryawan):
-               ?>
-               <tr>
-                  <td class="level-1"><?php echo "{$saukanKaryawan->karyawan->nama} {$saukanKaryawan->keterangan}"; ?></td>
-                  <td class="kanan"><?php echo number_format($saukanKaryawan->jumlah, 0, ',', '.'); ?></td>
-               </tr>
-               <?php
-            endforeach;
-            ?>
-            <?php
-         endif;
-         ?>
-         <?php if (!empty($penerimaanPiutangs)):
-            ?>
-            <tr>
-               <td class="tebal trx-header">PENERIMAAN PIUTANG (+)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalPenerimaanPiutang, 0, ',', '.'); ?></td>
-            </tr>
-            <?php
-            foreach ($penerimaanPiutangs as $penerimaanPiutang):
-               ?>
-               <tr>
-                  <td class="level-1"><?php echo date('d-m-Y', strtotime($penerimaanPiutang->piutang->tanggal)).' '.$penerimaanPiutang->piutang->rekanan->nama.' '.$penerimaanPiutang->piutang->nomor_nota.' '.$penerimaanPiutang->piutang->keterangan; ?></td>
-                  <td class="kanan"><?php echo number_format($penerimaanPiutang->jumlah, 0, ',', '.'); ?></td>
-               </tr>
-               <?php
-            endforeach;
-            ?>
-            <?php
-         endif;
+               foreach ($pengeluaran['items'] as $items):
+                  ?>
+                  <tr>
+                     <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$items['keterangan']}"; ?></td>
+                     <td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?></td>
+                  </tr>
+                  <?php
+               endforeach;
+            }
+         }
          ?>
          <?php
-         if (!empty($pendapatanLainLain)):
-            ?>
-            <tr>
-               <td class="tebal trx-header">PENDAPATAN LAIN-LAIN (+)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalPendapatanLain, 0, ',', '.'); ?></td>
-            </tr>
-            <?php
-            foreach ($pendapatanLainLain as $pendapatanLain):
+         foreach ($report['itemPenerimaan'] as $penerimaan) {
+            if (!empty($penerimaan['items'])) {
                ?>
                <tr>
-                  <td class="level-1"><?php echo "{$pendapatanLain->pendapatanLain->nama} {$pendapatanLain->keterangan}"; ?></td>
-                  <td class="kanan"><?php echo number_format($pendapatanLain->jumlah, 0, ',', '.'); ?></td>
+                  <td class="tebal trx-header"><?php echo strtoupper($penerimaan['nama']); ?> (+)</td>
+                  <td class="kanan tebal trx-header"><?php echo number_format($penerimaan['total'], 0, ',', '.'); ?></td>
                </tr>
                <?php
-            endforeach;
-            ?>
-            <?php
-         endif;
-         ?>
-         <?php
-         if (!empty($nonPendapatan)):
-            ?>
-            <tr>
-               <td class="tebal trx-header">NON PENDAPATAN (+)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($totalNonPendapatan, 0, ',', '.'); ?></td>
-            </tr>
-            <?php
-            foreach ($nonPendapatan as $nonP):
-               ?>
-               <tr>
-                  <td class="level-1"><?php echo "{$nonP->nonPendapatan->nama} {$nonP->keterangan}"; ?></td>
-                  <td class="kanan"><?php echo number_format($nonP->jumlah, 0, ',', '.'); ?></td>
-               </tr>
-               <?php
-            endforeach;
-            ?>
-            <?php
-         endif;
+               foreach ($penerimaan['items'] as $items):
+                  ?>
+                  <tr>
+                     <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$items['keterangan']}"; ?></td>
+                     <td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?></td>
+                  </tr>
+                  <?php
+               endforeach;
+            }
+         }
          ?>
          <tr>
             <td class="trx-header tebal">SALDO AKHIR BUKU</td>
@@ -294,27 +180,27 @@ function namaBulan($i) {
             ?>
             <?php
          endif;
-         ?>   
+         ?>  
          <?php
-         if (!empty($report['penjualanPiutang'])):
+         if (!empty($report['margin'])):
             ?>
             <tr>
-               <td class="trx-header tebal">PIUTANG PENJUALAN</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanPiutang'], 0, ',', '.'); ?></td>
+               <td class="trx-header tebal">GROSS PROFIT (MARGIN)</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalMargin'], 0, ',', '.'); ?></td>
             </tr>
             <?php
-            foreach ($report['penjualanPiutang'] as $piutangPenjualan):
+            foreach ($report['margin'] as $marginPenjualan):
                ?>
                <tr>
-                  <td class="level-1"><?php echo "{$piutangPenjualan['nomor']} {$piutangPenjualan['nama']}"; ?></td>
-                  <td class="kanan"><?php echo number_format(abs($piutangPenjualan['jml_bayar'] - $piutangPenjualan['jumlah']), 0, ',', '.'); ?></td>
+                  <td class="level-1"><?php echo "{$marginPenjualan['nomor']} {$marginPenjualan['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($marginPenjualan['margin'], 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;
             ?>
             <?php
          endif;
-         ?>
+         ?> 
          <?php
          if (!empty($report['penjualanBayar'])):
             ?>
@@ -336,18 +222,18 @@ function namaBulan($i) {
          endif;
          ?>
          <?php
-         if (!empty($report['margin'])):
+         if (!empty($report['penjualanPiutang'])):
             ?>
             <tr>
-               <td class="trx-header tebal">GROSS PROFIT (MARGIN)</td>
-               <td class="kanan tebal trx-header"><?php echo number_format($report['totalMargin'], 0, ',', '.');     ?></td>
+               <td class="trx-header tebal">PIUTANG PENJUALAN</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanPiutang'], 0, ',', '.'); ?></td>
             </tr>
             <?php
-            foreach ($report['margin'] as $marginPenjualan):
+            foreach ($report['penjualanPiutang'] as $piutangPenjualan):
                ?>
                <tr>
-                  <td class="level-1"><?php echo "{$marginPenjualan['nomor']} {$marginPenjualan['nama']}"; ?></td>
-                  <td class="kanan"><?php echo number_format($marginPenjualan['margin'], 0, ',', '.'); ?></td>
+                  <td class="level-1"><?php echo "{$piutangPenjualan['nomor']} {$piutangPenjualan['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format(abs($piutangPenjualan['jml_bayar'] - $piutangPenjualan['jumlah']), 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;
@@ -355,10 +241,6 @@ function namaBulan($i) {
             <?php
          endif;
          ?>
-         <tr>
-            <td class="tebal">GROSS PROFIT</td>
-            <td class="kanan tebal"></td>
-         </tr>
          <?php
          if (!empty($report['pembelianHutang'])):
             ?>
@@ -372,26 +254,6 @@ function namaBulan($i) {
                <tr>
                   <td class="level-1"><?php echo "{$hutang['nomor']} {$hutang['nama']}"; ?></td>
                   <td class="kanan"><?php echo number_format($hutang['jumlah'] - ($hutang['bayar'] + $hutang['terima']), 0, ',', '.'); ?></td>
-               </tr>
-               <?php
-            endforeach;
-            ?>
-            <?php
-         endif;
-         ?>
-         <?php
-         if (!empty($piutangs)):
-            ?>
-            <tr>
-               <td class="trx-header tebal">DAFTAR PIUTANG</td>
-               <td></td>
-            </tr>
-            <?php
-            foreach ($piutangs as $piutang):
-               ?>
-               <tr>
-                  <td class="level-1"><?php echo $piutang->rekanan->nama.' '.$piutang->nomor_nota.' '.date('d-m-Y', strtotime($piutang->tanggal_jatuh_tempo)).' '.$piutang->keterangan; ?></td>
-                  <td class="kanan"><?php echo number_format($piutang->jumlah, 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;
