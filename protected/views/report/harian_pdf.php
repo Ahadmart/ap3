@@ -105,7 +105,7 @@ function namaBulan($i) {
                ?>
                <tr>
                   <td class="level-1"><?php echo "{$pembelianTunai['nomor']} {$pembelianTunai['nama']}"; ?></td>
-                  <td class="kanan"><?php echo number_format($pembelianTunai['bayar'] + $pembelianTunai['terima'], 0, ',', '.'); ?></td>
+                  <td class="kanan"><?php echo number_format($pembelianTunai['jumlah'], 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;
@@ -266,7 +266,7 @@ function namaBulan($i) {
             ?>
             <tr>
                <td class="trx-header tebal">PENERIMAAN PIUTANG RETUR PEMBELIAN (+)</td>
-               <td class="kanan tebal trx-header"><?php //echo number_format($report['totalPenjualanBayar'], 0, ',', '.');  ?></td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalReturBeliBayar'], 0, ',', '.');  ?></td>
             </tr>
             <?php
             foreach ($report['returBeliBayar'] as $penerimaanPiutangReturBeli):
