@@ -53,7 +53,10 @@ class ReportHarianForm extends CFormModel {
           'pembelianBayar' => $this->_pembelianBayar($tanggal),
           'totalPembelianBayar' => $this->_totalPembelianBayar($tanggal),
           'itemPengeluaran' => $this->_itemPengeluaran($tanggal),
-          'itemPenerimaan' => $this->_itemPenerimaan($tanggal)
+          'itemPenerimaan' => $this->_itemPenerimaan($tanggal),
+          'returBeliPiutang' => $this->_returBeliPiutang($tanggal),
+          'totalReturBeliPiutang' => $this->_totalReturBeliPiutang($tanggal),
+          'returBeliBayar' => $this->_returBeliBayar($tanggal),
       );
    }
 
@@ -317,21 +320,29 @@ class ReportHarianForm extends CFormModel {
     */
    private function _penjualanPiutang($tanggal) {
       $command = Yii::app()->db->createCommand("
-         select t.id, nomor, profil.nama, jumlah, jml_bayar
+         select penjualan.nomor, profil.nama, t3.jumlah, t3.jml_bayar
          from
          (
-            select penjualan.id, penjualan.nomor, penjualan.profil_id, hp.jumlah, sum(ifnull(pd.jumlah,0)) + sum(ifnull(kd.jumlah,0)) jml_bayar
-            from penjualan
-            join hutang_piutang hp on penjualan.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            left join penerimaan_detail pd on hp.id=pd.hutang_piutang_id
-            left join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
-            left join pengeluaran_detail kd on hp.id=kd.hutang_piutang_id
-            left join pengeluaran on kd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
-            where date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
-            group by penjualan.id
-            having sum(ifnull(kd.jumlah,0)) + sum(ifnull(pd.jumlah,0)) < hp.jumlah
-         ) t
-         join profil on t.profil_id=profil.id");
+            select pj.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            from penjualan pj
+            join hutang_piutang hp on pj.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
+            left join
+            (
+               select pd.* from penerimaan_detail pd
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            ) t1 on hp.id=t1.hutang_piutang_id
+            left join
+            (
+               select pd.* from pengeluaran_detail pd
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            ) t2 on hp.id=t2.hutang_piutang_id
+            where date_format(pj.tanggal,'%Y-%m-%d')=:tanggal
+            group by pj.id
+            having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
+         ) t3
+         join penjualan on t3.id=penjualan.id
+         join profil on penjualan.profil_id=profil.id");
+      
 
       $command->bindValues(array(
           ':tanggal' => $tanggal,
@@ -344,20 +355,26 @@ class ReportHarianForm extends CFormModel {
 
    private function _totalPenjualanPiutang($tanggal) {
       $command = Yii::app()->db->createCommand("
-         select jumlah-jml_bayar total
+         select sum(t3.jumlah-t3.jml_bayar) total
          from
          (
-            select penjualan.id, penjualan.nomor, penjualan.profil_id, hp.jumlah, sum(ifnull(pd.jumlah,0)) + sum(ifnull(kd.jumlah,0)) jml_bayar
-            from penjualan
-            join hutang_piutang hp on penjualan.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            left join penerimaan_detail pd on hp.id=pd.hutang_piutang_id
-            left join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
-            left join pengeluaran_detail kd on hp.id=kd.hutang_piutang_id
-            left join pengeluaran on kd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
-            where date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
-            group by penjualan.id
-            having sum(ifnull(kd.jumlah,0)) + sum(ifnull(pd.jumlah,0)) < hp.jumlah
-         ) t");
+            select pj.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            from penjualan pj
+            join hutang_piutang hp on pj.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
+            left join
+            (
+               select pd.* from penerimaan_detail pd
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            ) t1 on hp.id=t1.hutang_piutang_id
+            left join
+            (
+               select pd.* from pengeluaran_detail pd
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            ) t2 on hp.id=t2.hutang_piutang_id
+            where date_format(pj.tanggal,'%Y-%m-%d')=:tanggal
+            group by pj.id
+            having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
+         ) t3");
 
       $command->bindValues(array(
           ':tanggal' => $tanggal,
@@ -690,6 +707,106 @@ class ReportHarianForm extends CFormModel {
          );
       }
       return $itemArr;
+   }
+
+   private function _returBeliPiutang($tanggal) {
+      $command = Yii::app()->db->createCommand("
+         select rb.nomor, profil.nama, t3.jumlah, t3.jml_bayar
+         from
+         (
+            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            from retur_pembelian rp
+            join hutang_piutang hp on rp.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
+            left join
+            (
+               select pd.* from penerimaan_detail pd
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            ) t1 on hp.id=t1.hutang_piutang_id
+            left join
+            (
+               select pd.* from pengeluaran_detail pd
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            ) t2 on hp.id=t2.hutang_piutang_id
+            where date_format(rp.tanggal,'%Y-%m-%d')=:tanggal
+            group by rp.id
+            having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
+         ) t3
+         join retur_pembelian rb on t3.id=rb.id
+         join profil on rb.profil_id=profil.id");
+
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
+          ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+          ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
+      ));
+      return $command->queryAll();
+   }
+
+   private function _totalReturBeliPiutang($tanggal) {
+      $command = Yii::app()->db->createCommand("
+         select sum(t3.jumlah-t3.jml_bayar) total
+         from
+         (
+            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            from retur_pembelian rp
+            join hutang_piutang hp on rp.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
+            left join
+            (
+               select pd.* from penerimaan_detail pd
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            ) t1 on hp.id=t1.hutang_piutang_id
+            left join
+            (
+               select pd.* from pengeluaran_detail pd
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            ) t2 on hp.id=t2.hutang_piutang_id
+            where date_format(rp.tanggal,'%Y-%m-%d')=:tanggal
+            group by rp.id
+            having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
+         ) t3
+         ");
+
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
+          ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+          ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
+      ));
+
+      $piutangReturBeli = $command->queryRow();
+      return abs($piutangReturBeli['total']);
+   }
+   
+   private function _returBeliBayar($tanggal) {
+      $command = Yii::app()->db->createCommand("
+         select retur_pembelian.nomor, profil.nama, t.jumlah_bayar
+         from
+         (
+            select sum(pd.jumlah) jumlah_bayar, retur_pembelian.id
+            from penerimaan_detail pd
+            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
+            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            group by retur_pembelian.id
+            union
+            select sum(pd.jumlah) jumlah_bayar, retur_pembelian.id
+            from pengeluaran_detail pd
+            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
+            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            group by retur_pembelian.id
+         ) t
+         join retur_pembelian on t.id=retur_pembelian.id
+         join profil on retur_pembelian.profil_id=profil.id");
+
+      $command->bindValues(array(
+          ':tanggal' => $tanggal,
+          ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
+          ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+          ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
+      ));
+      return $command->queryAll();
    }
 
 }

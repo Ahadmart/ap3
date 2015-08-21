@@ -242,6 +242,46 @@ function namaBulan($i) {
          endif;
          ?>
          <?php
+         if (!empty($report['returBeliPiutang'])):
+            ?>
+            <tr>
+               <td class="trx-header tebal">PIUTANG RETUR PEMBELIAN</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalReturBeliPiutang'], 0, ',', '.'); ?></td>
+            </tr>
+            <?php
+            foreach ($report['returBeliPiutang'] as $piutangReturBeli):
+               ?>
+               <tr>
+                  <td class="level-1"><?php echo "{$piutangReturBeli['nomor']} {$piutangReturBeli['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format(abs($piutangReturBeli['jml_bayar'] - $piutangReturBeli['jumlah']), 0, ',', '.'); ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+            <?php
+         endif;
+         ?>
+         <?php
+         if (!empty($report['returBeliBayar'])):
+            ?>
+            <tr>
+               <td class="trx-header tebal">PENERIMAAN PIUTANG RETUR PEMBELIAN (+)</td>
+               <td class="kanan tebal trx-header"><?php //echo number_format($report['totalPenjualanBayar'], 0, ',', '.'); ?></td>
+            </tr>
+            <?php
+            foreach ($report['returBeliBayar'] as $penerimaanPiutangReturBeli):
+               ?>
+               <tr>
+                  <td class="level-1"><?php echo "{$penerimaanPiutangReturBeli['nomor']} {$penerimaanPiutangReturBeli['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($penerimaanPiutangReturBeli['jumlah_bayar'], 0, ',', '.'); ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+            <?php
+         endif;
+         ?>
+         <?php
          if (!empty($report['pembelianHutang'])):
             ?>
             <tr>
