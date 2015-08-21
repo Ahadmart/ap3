@@ -68,7 +68,7 @@ class ReportHarianForm extends CFormModel {
           'returJualTunai' => $this->_returJualTunai($tanggal),
           'totalReturJualTunai' => $this->_totalReturJualTunai($tanggal),
           'returJualHutang' => $this->_returJualHutang($tanggal),
-          'totalReturJualHutang'=> $this->_totalReturJualHutang($tanggal),
+          'totalReturJualHutang' => $this->_totalReturJualHutang($tanggal),
           'returJualBayar' => $this->_returJualBayar($tanggal),
           'totalReturJualBayar' => $this->_totalReturJualBayar($tanggal),
       );
@@ -879,7 +879,7 @@ class ReportHarianForm extends CFormModel {
       ));
 
       $piutangReturBeli = $command->queryRow();
-      return abs($piutangReturBeli['total']);
+      return $piutangReturBeli['total'];
    }
 
    private function _returBeliBayar($tanggal) {
@@ -942,7 +942,7 @@ class ReportHarianForm extends CFormModel {
       ));
 
       $bayarReturBeli = $command->queryRow();
-      return abs($bayarReturBeli['total']);
+      return $bayarReturBeli['total'];
    }
 
    private function _returJualTunai($tanggal) {
@@ -1071,7 +1071,7 @@ class ReportHarianForm extends CFormModel {
       $returJualHutang = $command->queryRow();
       return $returJualHutang['total'];
    }
-   
+
    private function _returJualBayar($tanggal) {
       $command = Yii::app()->db->createCommand("
          select retur_penjualan.nomor, profil.nama, t.jumlah_bayar
@@ -1133,7 +1133,7 @@ class ReportHarianForm extends CFormModel {
       ));
 
       $bayarReturJual = $command->queryRow();
-      return abs($bayarReturJual['total']);
+      return $bayarReturJual['total'];
    }
 
 }
