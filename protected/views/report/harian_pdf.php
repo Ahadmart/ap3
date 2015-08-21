@@ -302,6 +302,26 @@ function namaBulan($i) {
          endif;
          ?>
          <?php
+         if (!empty($report['returJualBayar'])):
+            ?>
+            <tr>
+               <td class="trx-header tebal">PEMBAYARAN HUTANG RETUR PENJUALAN (-)</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalReturJualBayar'], 0, ',', '.'); ?></td>
+            </tr>
+            <?php
+            foreach ($report['returJualBayar'] as $pembayaran):
+               ?>
+               <tr>
+                  <td class="level-1"><?php echo "{$pembayaran['nomor']} {$pembayaran['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($pembayaran['jumlah_bayar'], 0, ',', '.'); ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+            <?php
+         endif;
+         ?>
+         <?php
          if (!empty($report['returBeliPiutang'])):
             ?>
             <tr>
