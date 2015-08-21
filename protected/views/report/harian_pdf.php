@@ -266,7 +266,7 @@ function namaBulan($i) {
             ?>
             <tr>
                <td class="trx-header tebal">PENERIMAAN PIUTANG RETUR PEMBELIAN (+)</td>
-               <td class="kanan tebal trx-header"><?php //echo number_format($report['totalPenjualanBayar'], 0, ',', '.'); ?></td>
+               <td class="kanan tebal trx-header"><?php //echo number_format($report['totalPenjualanBayar'], 0, ',', '.');  ?></td>
             </tr>
             <?php
             foreach ($report['returBeliBayar'] as $penerimaanPiutangReturBeli):
@@ -293,7 +293,7 @@ function namaBulan($i) {
                ?>
                <tr>
                   <td class="level-1"><?php echo "{$hutang['nomor']} {$hutang['nama']}"; ?></td>
-                  <td class="kanan"><?php echo number_format($hutang['jumlah'] - ($hutang['bayar'] + $hutang['terima']), 0, ',', '.'); ?></td>
+                  <td class="kanan"><?php echo number_format($hutang['jumlah'], 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;
