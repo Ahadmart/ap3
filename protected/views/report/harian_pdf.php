@@ -242,6 +242,26 @@ function namaBulan($i) {
          endif;
          ?>
          <?php
+         if (!empty($report['returJualTunai'])):
+            ?>
+            <tr>
+               <td class="trx-header tebal">RETUR PENJUALAN (-)</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalReturJualTunai'], 0, ',', '.'); ?></td>
+            </tr>
+            <?php
+            foreach ($report['returJualTunai'] as $returJual):
+               ?>
+               <tr>
+                  <td class="level-1"><?php echo "{$returJual['nomor']} {$returJual['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($returJual['jumlah'], 0, ',', '.'); ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+            <?php
+         endif;
+         ?>
+         <?php
          if (!empty($report['returBeliTunai'])):
             ?>
             <tr>
@@ -293,7 +313,27 @@ function namaBulan($i) {
                ?>
                <tr>
                   <td class="level-1"><?php echo "{$piutangReturBeli['nomor']} {$piutangReturBeli['nama']}"; ?></td>
-                  <td class="kanan"><?php echo number_format(abs($piutangReturBeli['jml_bayar'] - $piutangReturBeli['jumlah']), 0, ',', '.'); ?></td>
+                  <td class="kanan"><?php echo number_format($piutangReturBeli['jumlah'], 0, ',', '.'); ?></td>
+               </tr>
+               <?php
+            endforeach;
+            ?>
+            <?php
+         endif;
+         ?>
+         <?php
+         if (!empty($report['returJualHutang'])):
+            ?>
+            <tr>
+               <td class="trx-header tebal">HUTANG RETUR PENJUALAN</td>
+               <td class="kanan tebal trx-header"><?php echo number_format($report['totalReturJualHutang'], 0, ',', '.'); ?></td>
+            </tr>
+            <?php
+            foreach ($report['returJualHutang'] as $hutangReturJual):
+               ?>
+               <tr>
+                  <td class="level-1"><?php echo "{$hutangReturJual['nomor']} {$hutangReturJual['nama']}"; ?></td>
+                  <td class="kanan"><?php echo number_format($hutangReturJual['jumlah'], 0, ',', '.'); ?></td>
                </tr>
                <?php
             endforeach;
