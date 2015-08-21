@@ -154,23 +154,30 @@ class ReportHarianForm extends CFormModel {
 
    private function _totalPembelianHutang($tanggal) {
       $command = Yii::app()->db->createCommand("
-            select sum(total_hutang) total
-            from(
-            select hp.jumlah, hp.jumlah-(sum(ifnull(kd.jumlah,0))+sum(ifnull(pd.jumlah,0))) total_hutang
-            from pembelian p
-            join hutang_piutang hp on p.hutang_piutang_id=hp.id
-            join profil on p.profil_id = profil.id
-            left join pengeluaran_detail kd on hp.id=kd.hutang_piutang_id
-            left join pengeluaran on kd.pengeluaran_id = pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
-            left join penerimaan_detail pd on hp.id=pd.hutang_piutang_id
-            left join penerimaan on pd.penerimaan_id = penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
-            where  date_format(p.tanggal,'%Y-%m-%d')=:tanggal
-            group by p.nomor, p.tanggal, hp.nomor
-            having sum(ifnull(kd.jumlah,0)) + sum(ifnull(pd.jumlah,0)) < hp.jumlah
-            ) t");
+         select sum(t3.jumlah-t3.jml_bayar) total
+         from
+         (
+            select pb.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            from pembelian pb
+            join hutang_piutang hp on pb.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
+            left join
+            (
+               select pd.* from penerimaan_detail pd
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            ) t1 on hp.id=t1.hutang_piutang_id
+            left join
+            (
+               select pd.* from pengeluaran_detail pd
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            ) t2 on hp.id=t2.hutang_piutang_id
+            where date_format(pb.tanggal,'%Y-%m-%d')=:tanggal
+            group by pb.id
+            having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
+         ) t3");
 
       $command->bindValues(array(
           ':tanggal' => $tanggal,
+          ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
       ));
