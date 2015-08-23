@@ -2,21 +2,20 @@
 /* @var $this SatuanbarangController */
 /* @var $model SatuanBarang */
 
-$this->breadcrumbs=array(
-	'Satuan Barang'=>array('index'),
-	'Tambah',
+$this->breadcrumbs = array(
+    'Satuan Barang' => array('index'),
+    'Tambah',
 );
 
 $this->boxHeader['small'] = 'Tambah';
 $this->boxHeader['normal'] = 'Tambah Satuan Barang';
 ?>
-<div class="row">
-    <div class="large-6 columns">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
-    </div>
+<div class="row collapse">
+   <div class="large-6 large-centered columns">
+      <?php $this->renderPartial('_form', array('model' => $model)); ?>
+   </div>
 </div>
 <?php
-
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
