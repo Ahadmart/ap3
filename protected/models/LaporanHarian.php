@@ -1,97 +1,189 @@
 <?php
 
 /**
- * ReportHarianForm class.
- * ReportHarianForm is the data structure for keeping
- * report harian form data. It is used by the 'harian' action of 'ReportController'.
- * 
+ * This is the model class for table "laporan_harian".
+ *
+ * The followings are the available columns in table 'laporan_harian':
+ * @property string $id
+ * @property string $tanggal
+ * @property string $saldo_akhir
+ * @property string $keterangan
+ * @property string $updated_at
+ * @property string $updated_by
+ * @property string $created_at
+ *
  * The followings are the available model relations:
- * @property Profil $profil
+ * @property User $updatedBy
  */
-class ReportHarianForm extends CFormModel {
-
-   public $tanggal;
+class LaporanHarian extends CActiveRecord {
 
    /**
-    * Declares the validation rules.
+    * @return string the associated database table name
+    */
+   public function tableName() {
+      return 'laporan_harian';
+   }
+
+   /**
+    * @return array validation rules for model attributes.
     */
    public function rules() {
+      // NOTE: you should only define rules for those attributes that
+      // will receive user inputs.
       return array(
-          array('tanggal', 'required', 'message' => '{attribute} tidak boleh kosong'),
+          array('tanggal', 'required'),
+          array('tanggal', 'unique'),
+          array('saldo_akhir', 'length', 'max' => 18),
+          array('keterangan', 'length', 'max' => 5000),
+          array('updated_by', 'length', 'max' => 10),
+          array('created_at, updated_at, updated_by', 'safe'),
+          // The following rule is used by search().
+          // @todo Please remove those attributes that should not be searched.
+          array('id, tanggal, saldo_akhir, keterangan, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
       );
    }
 
    /**
-    * Declares attribute labels.
+    * @return array relational rules.
+    */
+   public function relations() {
+      // NOTE: you may need to adjust the relation name and the related
+      // class name for the relations automatically generated below.
+      return array(
+          'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
+      );
+   }
+
+   /**
+    * @return array customized attribute labels (name=>label)
     */
    public function attributeLabels() {
       return array(
-          'tanggal' => 'Tanggal'
+          'id' => 'ID',
+          'tanggal' => 'Tanggal',
+          'saldo_akhir' => 'Saldo Akhir Asli',
+          'keterangan' => 'Keterangan',
+          'updated_at' => 'Updated At',
+          'updated_by' => 'Updated By',
+          'created_at' => 'Created At',
       );
    }
 
    /**
-    * Report Harian
-    * @return array Nilai-nilai yang diperlukan untuk report harian
+    * Retrieves a list of models based on the current search/filter conditions.
+    *
+    * Typical usecase:
+    * - Initialize the model fields with values from filter form.
+    * - Execute this method to get CActiveDataProvider instance which will filter
+    * models according to data in model fields.
+    * - Pass data provider to CGridView, CListView or any similar widget.
+    *
+    * @return CActiveDataProvider the data provider that can return the models
+    * based on the search/filter conditions.
     */
-   public function reportHarian() {
-      $date = isset($this->tanggal) ? date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d') : NULL;
-      $laporanHarian = LaporanHarian::model()->find('tanggal=:tanggal', array(':tanggal' => $date));
-      if (is_null($laporanHarian)) {
-         /* Object, tidak untuk disimpan, hanya untuk mencari nilai per tanggal */
-         $laporanHarian = new LaporanHarian;
-         $laporanHarian->tanggal = date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d');
-      } else {
-         /* fixme: ganti afterFind() */
-         $laporanHarian->tanggal = date_format(date_create_from_format('d-m-Y', $laporanHarian->tanggal), 'Y-m-d');
+   public function search() {
+      // @todo Please modify the following code to remove attributes that should not be searched.
+
+      $criteria = new CDbCriteria;
+
+      $criteria->compare('id', $this->id, true);
+      $criteria->compare('tanggal', $this->tanggal, true);
+      $criteria->compare('saldo_akhir', $this->saldo_akhir, true);
+      $criteria->compare('keterangan', $this->keterangan, true);
+      $criteria->compare('updated_at', $this->updated_at, true);
+      $criteria->compare('updated_by', $this->updated_by, true);
+      $criteria->compare('created_at', $this->created_at, true);
+
+      return new CActiveDataProvider($this, array(
+          'criteria' => $criteria,
+      ));
+   }
+
+   /**
+    * Returns the static model of the specified AR class.
+    * Please note that you should have this exact method in all your CActiveRecord descendants!
+    * @param string $className active record class name.
+    * @return LaporanHarian the static model class
+    */
+   public static function model($className = __CLASS__) {
+      return parent::model($className);
+   }
+
+   public function beforeSave() {
+
+      if ($this->isNewRecord) {
+         $this->created_at = date('Y-m-d H:i:s');
       }
-      return array(
-          'saldoAwal' => $laporanHarian->saldoAwal(),
-          'saldoAkhir' => $laporanHarian->saldoAkhir(),
-          'saldoAkhirAsli' => $laporanHarian->saldo_akhir,
-          /* ========================================================== */
-          'penjualanTunai' => $laporanHarian->penjualanTunai(),
-          'totalPenjualanTunai' => $laporanHarian->totalPenjualanTunai(),
-          'penjualanPiutang' => $laporanHarian->penjualanPiutang(),
-          'totalPenjualanPiutang' => $laporanHarian->totalPenjualanPiutang(),
-          'penjualanBayar' => $laporanHarian->penjualanBayar(),
-          'totalPenjualanBayar' => $laporanHarian->totalPenjualanBayar(),
-          /* ========================================================== */
-          'margin' => $laporanHarian->marginPenjualanTunai(),
-          'totalMargin' => $laporanHarian->totalMarginPenjualanTunai(),
-          /* ========================================================== */
-          'pembelianTunai' => $laporanHarian->pembelianTunai(),
-          'totalPembelianTunai' => $laporanHarian->totalPembelianTunai(),
-          'pembelianHutang' => $laporanHarian->pembelianHutang(),
-          'totalPembelianHutang' => $laporanHarian->totalPembelianHutang(),
-          'pembelianBayar' => $laporanHarian->pembelianBayar(),
-          'totalPembelianBayar' => $laporanHarian->totalPembelianBayar(),
-          /* ========================================================== */
-          'itemPengeluaran' => $laporanHarian->itemPengeluaran(),
-          'itemPenerimaan' => $laporanHarian->itemPenerimaan(),
-          /* ========================================================== */
-          'returBeliTunai' => $laporanHarian->returBeliTunai(),
-          'totalReturBeliTunai' => $laporanHarian->totalReturBeliTunai(),
-          'returBeliPiutang' => $laporanHarian->returBeliPiutang(),
-          'totalReturBeliPiutang' => $laporanHarian->totalReturBeliPiutang(),
-          'returBeliBayar' => $laporanHarian->returBeliBayar(),
-          'totalReturBeliBayar' => $laporanHarian->totalReturBeliBayar(),
-          /* ========================================================== */
-          'returJualTunai' => $laporanHarian->returJualTunai(),
-          'totalReturJualTunai' => $laporanHarian->totalReturJualTunai(),
-          'returJualHutang' => $laporanHarian->returJualHutang(),
-          'totalReturJualHutang' => $laporanHarian->totalReturJualHutang(),
-          'returJualBayar' => $laporanHarian->returJualBayar(),
-          'totalReturJualBayar' => $laporanHarian->totalReturJualBayar(),
-      );
+      $this->updated_at = null; // Trigger current timestamp
+      $this->updated_by = Yii::app()->user->id;
+      return parent::beforeSave();
+   }
+
+   public function beforeValidate() {
+      $this->tanggal = !empty($this->tanggal) ? date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d') : NULL;
+      return parent::beforeValidate();
+   }
+
+   public function afterFind() {
+      $this->tanggal = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d', $this->tanggal), 'd-m-Y') : '0';
+      $this->saldo_akhir = number_format($this->saldo_akhir, 0, false, false);
+      return parent::afterFind();
+   }
+
+   public function saldoAwal() {
+      $command = Yii::app()->db->createCommand("
+         select harian.saldo_akhir
+         from laporan_harian harian
+         where tanggal=(select tanggal from laporan_harian where tanggal < :tanggal and saldo_akhir is not null order by tanggal desc limit 1)         
+              ");
+      $command->bindValue(':tanggal', $this->tanggal);
+      $harian = $command->queryRow();
+      return $harian ? $harian['saldo_akhir'] : Config::model()->find("nama='saldo_awal'")->nilai;
+   }
+
+   public function saldoAkhir() {
+      $pengeluaran = $this->itemPengeluaran();
+      $totalPengeluaran = 0;
+      foreach ($pengeluaran as $kategoriPengeluaran) {
+         $totalPengeluaran+=$kategoriPengeluaran['total'];
+      }
+
+      $penerimaan = $this->itemPenerimaan();
+      $totalPenerimaan = 0;
+      foreach ($penerimaan as $kategoriPenerimaan) {
+         $totalPenerimaan+=$kategoriPenerimaan['total'];
+      }
+      return $this->saldoAwal() // 
+              - $this->totalPembelianBayar() // 
+              - $this->totalPembelianTunai() //
+              - $this->totalReturJualBayar() //
+              - $this->totalReturJualTunai() //
+              + $this->totalPenjualanBayar() //
+              + $this->totalPenjualanTunai() //
+              + $this->totalReturBeliBayar() //
+              + $this->totalReturBeliTunai() //
+              - $totalPengeluaran //
+              + $totalPenerimaan;
+      /*
+        return $this->saldoAwal() //
+        .'-'. $this->totalPembelianBayar() //
+        .'-'.$this->totalPembelianTunai() //
+        .'-'.$this->totalReturJualBayar() //
+        .'-'.$this->totalReturJualTunai() //
+        .'+'. $this->totalPenjualanBayar() //
+        .'+'. $this->totalPenjualanTunai() //
+        .'+'. $this->totalReturBeliBayar() //
+        .'+'. $this->totalReturBeliTunai() //
+        .'-'.$totalPengeluaran //
+        .'+'. $totalPenerimaan;
+       */
    }
 
    /**
     * Pembelian yang dibayar di hari yang sama
-    * @param date $tanggal
     * @return array Pembelian tunai per trx (nomor pembelian, profil, total)
     */
-   private function _pembelianTunai($tanggal) {
+   public function pembelianTunai() {
       $command = Yii::app()->db->createCommand("
          select nomor, sum(jumlah) jumlah, profil.nama
          FROM
@@ -114,7 +206,7 @@ class ReportHarianForm extends CFormModel {
 
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -122,7 +214,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalPembelianTunai($tanggal) {
+   public function totalPembelianTunai() {
       $command = Yii::app()->db->createCommand("
         select sum(jumlah) total
          FROM
@@ -141,7 +233,7 @@ class ReportHarianForm extends CFormModel {
          ) t");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -153,10 +245,9 @@ class ReportHarianForm extends CFormModel {
 
    /**
     * Pembelian yang masih hutang
-    * @param date $tanggal
     * @return array Pembelian pada tanggal tsb yang masih hutang per trx (nomor pembelian, profil, total)
     */
-   private function _pembelianHutang($tanggal) {
+   public function pembelianHutang() {
       $command = Yii::app()->db->createCommand("
          select pembelian.nomor, profil.nama, t3.jumlah-t3.jml_bayar jumlah
          from
@@ -183,7 +274,7 @@ class ReportHarianForm extends CFormModel {
 
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -191,7 +282,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalPembelianHutang($tanggal) {
+   public function totalPembelianHutang() {
       $command = Yii::app()->db->createCommand("
          select sum(t3.jumlah-t3.jml_bayar) total
          from
@@ -215,7 +306,7 @@ class ReportHarianForm extends CFormModel {
          ) t3");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -226,11 +317,10 @@ class ReportHarianForm extends CFormModel {
    }
 
    /**
-    * Pembelian yang dibayar pada tanggal $tanggal, per nomor pembelian
-    * @param date $tanggal
+    * Pembelian yang dibayar pada tanggal tsb, per nomor pembelian
     * @return array nomor pembelian, nama profil, tanggal pembelian, total pembayaran
     */
-   private function _pembelianBayar($tanggal) {
+   public function pembelianBayar() {
       $command = Yii::app()->db->createCommand("
          select pembelian.nomor, profil.nama, pembelian.tanggal, t2.total_bayar
          from
@@ -258,7 +348,7 @@ class ReportHarianForm extends CFormModel {
          join profil on pembelian.profil_id = profil.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -267,7 +357,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalPembelianBayar($tanggal) {
+   public function totalPembelianBayar() {
       $command = Yii::app()->db->createCommand("
          select sum(jumlah_bayar) total
          from
@@ -288,7 +378,7 @@ class ReportHarianForm extends CFormModel {
          ) t1");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -299,11 +389,10 @@ class ReportHarianForm extends CFormModel {
    }
 
    /**
-    * Penjualan tunai yang terjadi pada tanggal $tanggal
-    * @param date $tanggal Tanggal transaksi
+    * Penjualan tunai yang terjadi pada tanggal tsb
     * @return array nomor, nama, jumlah dari penjualan tunai
     */
-   private function _penjualanTunai($tanggal) {
+   public function penjualanTunai() {
       $command = Yii::app()->db->createCommand("
          select nomor, sum(jumlah) jumlah, profil.nama
          FROM
@@ -325,7 +414,7 @@ class ReportHarianForm extends CFormModel {
          group by t.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -335,11 +424,10 @@ class ReportHarianForm extends CFormModel {
    }
 
    /**
-    * Total Penjualan Tunai pada tanggal $tanggal
-    * @param date $tanggal Tanggal Trx
+    * Total Penjualan Tunai pada tanggal tsb
     * @return text Total penjualan tunai
     */
-   private function _totalPenjualanTunai($tanggal) {
+   public function totalPenjualanTunai() {
       $command = Yii::app()->db->createCommand("
          select sum(jumlah) total
          FROM
@@ -359,7 +447,7 @@ class ReportHarianForm extends CFormModel {
          ");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -371,10 +459,9 @@ class ReportHarianForm extends CFormModel {
 
    /**
     * Penjualan yang belum dibayar / belum lunas pada tanggal $tanggal
-    * @param date $tanggal Tanggal trx
     * @return array penjualan_id, nomor (penjualan), nama (profil), jumlah (penjualan), jml_bayar (tunai)
     */
-   private function _penjualanPiutang($tanggal) {
+   public function penjualanPiutang() {
       $command = Yii::app()->db->createCommand("
          select penjualan.nomor, profil.nama, t3.jumlah, t3.jml_bayar
          from
@@ -401,7 +488,7 @@ class ReportHarianForm extends CFormModel {
 
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -409,7 +496,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalPenjualanPiutang($tanggal) {
+   public function totalPenjualanPiutang() {
       $command = Yii::app()->db->createCommand("
          select sum(t3.jumlah-t3.jml_bayar) total
          from
@@ -433,7 +520,7 @@ class ReportHarianForm extends CFormModel {
          ) t3");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -444,10 +531,9 @@ class ReportHarianForm extends CFormModel {
 
    /**
     * Pembayaran penjualan, baik lewat penerimaan maupun pengeluaran, untuk penjualan yang sudah lewat (sebelum tanggal $tanggal)
-    * @param date $tanggal Tanggal trx pembayaran
     * @return array nomor (penjualan), nama (profil), jumlah_bayar (jumlah pembayaran)
     */
-   private function _penjualanBayar($tanggal) {
+   public function penjualanBayar() {
       $command = Yii::app()->db->createCommand("
          select penjualan.nomor, profil.nama, t.jumlah_bayar
          from
@@ -470,7 +556,7 @@ class ReportHarianForm extends CFormModel {
          join profil on penjualan.profil_id=profil.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -478,7 +564,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalPenjualanBayar($tanggal) {
+   public function totalPenjualanBayar() {
       $command = Yii::app()->db->createCommand("
          select sum(jumlah_bayar) total
          from
@@ -501,7 +587,7 @@ class ReportHarianForm extends CFormModel {
          join profil on penjualan.profil_id=profil.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -510,7 +596,7 @@ class ReportHarianForm extends CFormModel {
       return $penjualanBayar['total'];
    }
 
-   private function _marginPenjualanTunai($tanggal) {
+   public function marginPenjualanTunai() {
       $command = Yii::app()->db->createCommand("
          select penjualan.nomor, profil.nama, jumlah_bayar, harga_beli, harga_jual, ((harga_jual - harga_beli)/harga_jual) * jumlah_bayar margin
          from
@@ -561,7 +647,7 @@ class ReportHarianForm extends CFormModel {
          join profil on penjualan.profil_id=profil.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -569,7 +655,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalMarginPenjualanTunai($tanggal) {
+   public function totalMarginPenjualanTunai() {
       $command = Yii::app()->db->createCommand("
          select sum(((harga_jual - harga_beli)/harga_jual) * jumlah_bayar) total
          from
@@ -618,7 +704,7 @@ class ReportHarianForm extends CFormModel {
          ) t_harga on t_bayar.id=t_harga.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -627,7 +713,7 @@ class ReportHarianForm extends CFormModel {
       return $margin['total'];
    }
 
-   private function _itemPengeluaran($tanggal) {
+   public function itemPengeluaran() {
       $parents = ItemKeuangan::model()->findAll('parent_id is null');
       $itemArr = array();
 
@@ -668,7 +754,7 @@ class ReportHarianForm extends CFormModel {
       foreach ($parents as $parent) {
 
          $command->bindValues(array(
-             ':tanggal' => $tanggal,
+             ':tanggal' => $this->tanggal,
              ':itemTrx' => ItemKeuangan::ITEM_TRX_SAJA,
              ':parentId' => $parent->id,
              ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
@@ -677,7 +763,7 @@ class ReportHarianForm extends CFormModel {
              ':posisiPenerimaan' => PenerimaanDetail::POSISI_KREDIT,
          ));
          $commandTotal->bindValues(array(
-             ':tanggal' => $tanggal,
+             ':tanggal' => $this->tanggal,
              ':itemTrx' => ItemKeuangan::ITEM_TRX_SAJA,
              ':parentId' => $parent->id,
              ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
@@ -696,7 +782,7 @@ class ReportHarianForm extends CFormModel {
       return $itemArr;
    }
 
-   private function _itemPenerimaan($tanggal) {
+   public function itemPenerimaan() {
       $parents = ItemKeuangan::model()->findAll('parent_id is null');
       $itemArr = array();
 
@@ -737,7 +823,7 @@ class ReportHarianForm extends CFormModel {
       foreach ($parents as $parent) {
 
          $command->bindValues(array(
-             ':tanggal' => $tanggal,
+             ':tanggal' => $this->tanggal,
              ':itemTrx' => ItemKeuangan::ITEM_TRX_SAJA,
              ':parentId' => $parent->id,
              ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
@@ -746,7 +832,7 @@ class ReportHarianForm extends CFormModel {
              ':posisiPenerimaan' => PenerimaanDetail::POSISI_DEBET,
          ));
          $commandTotal->bindValues(array(
-             ':tanggal' => $tanggal,
+             ':tanggal' => $this->tanggal,
              ':itemTrx' => ItemKeuangan::ITEM_TRX_SAJA,
              ':parentId' => $parent->id,
              ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
@@ -765,7 +851,7 @@ class ReportHarianForm extends CFormModel {
       return $itemArr;
    }
 
-   private function _returBeliTunai($tanggal) {
+   public function returBeliTunai() {
       $command = Yii::app()->db->createCommand("
          select nomor, sum(jumlah) jumlah, profil.nama
          FROM
@@ -787,7 +873,7 @@ class ReportHarianForm extends CFormModel {
          group by t.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -795,7 +881,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalReturBeliTunai($tanggal) {
+   public function totalReturBeliTunai() {
       $command = Yii::app()->db->createCommand("
          select sum(jumlah) total
          FROM
@@ -815,7 +901,7 @@ class ReportHarianForm extends CFormModel {
          ");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -825,7 +911,7 @@ class ReportHarianForm extends CFormModel {
       return $returBeliTunai['total'];
    }
 
-   private function _returBeliPiutang($tanggal) {
+   public function returBeliPiutang() {
       $command = Yii::app()->db->createCommand("
          select rb.nomor, profil.nama, t3.jumlah-t3.jml_bayar jumlah
          from
@@ -851,7 +937,7 @@ class ReportHarianForm extends CFormModel {
          join profil on rb.profil_id=profil.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -859,7 +945,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalReturBeliPiutang($tanggal) {
+   public function totalReturBeliPiutang() {
       $command = Yii::app()->db->createCommand("
          select sum(t3.jumlah-t3.jml_bayar) total
          from
@@ -884,7 +970,7 @@ class ReportHarianForm extends CFormModel {
          ");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -894,7 +980,7 @@ class ReportHarianForm extends CFormModel {
       return $piutangReturBeli['total'];
    }
 
-   private function _returBeliBayar($tanggal) {
+   public function returBeliBayar() {
       $command = Yii::app()->db->createCommand("
          select retur_pembelian.nomor, profil.nama, t.jumlah_bayar
          from
@@ -917,7 +1003,7 @@ class ReportHarianForm extends CFormModel {
          join profil on retur_pembelian.profil_id=profil.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -925,7 +1011,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalReturBeliBayar($tanggal) {
+   public function totalReturBeliBayar() {
       $command = Yii::app()->db->createCommand("
          select sum(t.jumlah_bayar) total
          from
@@ -947,7 +1033,7 @@ class ReportHarianForm extends CFormModel {
          ");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -957,7 +1043,7 @@ class ReportHarianForm extends CFormModel {
       return $bayarReturBeli['total'];
    }
 
-   private function _returJualTunai($tanggal) {
+   public function returJualTunai() {
       $command = Yii::app()->db->createCommand("
          select nomor, sum(jumlah) jumlah, profil.nama
          FROM
@@ -979,7 +1065,7 @@ class ReportHarianForm extends CFormModel {
          group by t.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -987,7 +1073,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalReturJualTunai($tanggal) {
+   public function totalReturJualTunai() {
       $command = Yii::app()->db->createCommand("
          select sum(jumlah) total
          FROM
@@ -1007,7 +1093,7 @@ class ReportHarianForm extends CFormModel {
          ");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1017,7 +1103,7 @@ class ReportHarianForm extends CFormModel {
       return $returJualTunai['total'];
    }
 
-   private function _returJualHutang($tanggal) {
+   public function returJualHutang() {
       $command = Yii::app()->db->createCommand("
          select rb.nomor, profil.nama, t3.jumlah-t3.jml_bayar jumlah
          from
@@ -1043,7 +1129,7 @@ class ReportHarianForm extends CFormModel {
          join profil on rb.profil_id=profil.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1051,7 +1137,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalReturJualHutang($tanggal) {
+   public function totalReturJualHutang() {
       $command = Yii::app()->db->createCommand("
          select sum(t3.jumlah-t3.jml_bayar) total
          from
@@ -1075,7 +1161,7 @@ class ReportHarianForm extends CFormModel {
          ) t3");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1084,7 +1170,7 @@ class ReportHarianForm extends CFormModel {
       return $returJualHutang['total'];
    }
 
-   private function _returJualBayar($tanggal) {
+   public function returJualBayar() {
       $command = Yii::app()->db->createCommand("
          select retur_penjualan.nomor, profil.nama, t.jumlah_bayar
          from
@@ -1107,7 +1193,7 @@ class ReportHarianForm extends CFormModel {
          join profil on retur_penjualan.profil_id=profil.id");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1116,7 +1202,7 @@ class ReportHarianForm extends CFormModel {
       return $command->queryAll();
    }
 
-   private function _totalReturJualBayar($tanggal) {
+   public function totalReturJualBayar() {
       $command = Yii::app()->db->createCommand("
          select sum(t.jumlah_bayar) total
          from
@@ -1138,7 +1224,7 @@ class ReportHarianForm extends CFormModel {
          ");
 
       $command->bindValues(array(
-          ':tanggal' => $tanggal,
+          ':tanggal' => $this->tanggal,
           ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
           ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
           ':statusPenerimaan' => Penerimaan::STATUS_BAYAR

@@ -72,7 +72,7 @@ function namaBulan($i) {
       <table width="90%" style="margin:0 auto" class="table-bordered">
          <tr>
             <td class="tebal">SALDO AWAL</td>
-            <td class="kanan tebal"></td>
+            <td class="kanan tebal"><?php echo number_format($report['saldoAwal'], 0, ',', '.'); ?></td>
          </tr>
          <?php
          if (!empty($report['pembelianBayar'])):
@@ -155,11 +155,11 @@ function namaBulan($i) {
          ?>
          <tr>
             <td class="trx-header tebal">SALDO AKHIR BUKU</td>
-            <td class="kanan tebal trx-header"></td>
+            <td class="kanan tebal trx-header"><?php echo number_format($report['saldoAkhir'], 0, ',', '.'); ?></td>
          </tr>
          <tr>
             <td class="tebal">SALDO AKHIR ASLI</td>
-            <td class="kanan tebal"></td>
+            <td class="kanan tebal"><?php echo number_format($report['saldoAkhirAsli'], 0, ',', '.'); ?></td>
          </tr>         
          <?php
          if (!empty($report['penjualanTunai'])):
