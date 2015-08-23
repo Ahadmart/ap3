@@ -383,10 +383,10 @@ function namaBulan($i) {
          ?>
       </table>
       <?php
-      if ($bhDetail->remarks > ''):
+      if ($report['keterangan'] > ''):
          ?>
          <div class="remarks-h">Remarks:</div>
-         <div class="remarks-d"></div>
+         <div class="remarks-d"><?php echo nl2br($report['keterangan']); ?></div>
          <?php
       endif;
       ?>

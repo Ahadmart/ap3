@@ -62,7 +62,7 @@ class LaporanHarian extends CActiveRecord {
           'id' => 'ID',
           'tanggal' => 'Tanggal',
           'saldo_akhir' => 'Saldo Akhir Asli',
-          'keterangan' => 'Keterangan',
+          'keterangan' => 'Remarks',
           'updated_at' => 'Updated At',
           'updated_by' => 'Updated By',
           'created_at' => 'Created At',

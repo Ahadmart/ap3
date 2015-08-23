@@ -11,7 +11,8 @@ $form = $this->beginWidget('CActiveForm', array(
     // See class documentation of CActiveForm for details on this,
     // you need to use the performAjaxValidation()-method described there.
     'enableAjaxValidation' => false,
-    'htmlOptions' => array('target'=> '_blank')
+    'htmlOptions' => array('target' => '_blank'),
+    'method' => 'GET'
         ));
 ?>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
@@ -25,7 +26,7 @@ $form = $this->beginWidget('CActiveForm', array(
 </div>
 <div class="row">
    <div class="small-12 columns">
-      <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
+      <?php echo CHtml::submitButton('Submit', array('name' => 'submit', 'class' => 'tiny bigfont button right')); ?>
    </div>
 </div>
 

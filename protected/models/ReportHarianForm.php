@@ -49,6 +49,7 @@ class ReportHarianForm extends CFormModel {
           'saldoAwal' => $laporanHarian->saldoAwal(),
           'saldoAkhir' => $laporanHarian->saldoAkhir(),
           'saldoAkhirAsli' => $laporanHarian->saldo_akhir,
+          'keterangan' => $laporanHarian->keterangan,
           /* ========================================================== */
           'penjualanTunai' => $laporanHarian->penjualanTunai(),
           'totalPenjualanTunai' => $laporanHarian->totalPenjualanTunai(),

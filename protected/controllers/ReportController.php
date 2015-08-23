@@ -104,8 +104,8 @@ class ReportController extends Controller {
    public function actionHarian() {
       $this->layout = '//layouts/box_kecil';
       $model = new ReportHarianForm;
-      if (isset($_POST['ReportHarianForm'])) {
-         $model->attributes = $_POST['ReportHarianForm'];
+      if (isset($_REQUEST['ReportHarianForm'])) {
+         $model->attributes = $_REQUEST['ReportHarianForm'];
          if ($model->validate()) {
             $report = $model->reportHarian();
             $report['tanggal'] = $model->tanggal;

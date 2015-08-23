@@ -38,7 +38,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/fou
    <div class="row">
       <div class="small-12 columns">
          <?php echo $form->labelEx($model, 'keterangan'); ?>
-         <?php echo $form->textField($model, 'keterangan', array('size' => 60, 'maxlength' => 5000)); ?>
+         <?php echo $form->textArea($model, 'keterangan', array('size' => 60, 'maxlength' => 5000)); ?>
          <?php echo $form->error($model, 'keterangan', array('class' => 'error')); ?>
       </div>
    </div>
@@ -61,17 +61,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/fou
 
    $("#LaporanHarian_tanggal").change(function () {
       var url = "<?php echo $this->createUrl('cari', array('tanggal' => '')); ?>" + $(this).val();
-//      $.ajax({
-//         'url': url,
-//      }).done(function (data) {
-//         console.log(data);
-//         if (data.sukses) {
-//            window.location = "<?php echo $this->createUrl('index', array('id' => '')); ?>" + data.id
-//         } else {
-//            $("#LaporanHarian_saldo_akhir").val('');
-//            $("#LaporanHarian_keterangan").val('');            
-//         }
-//      });
       window.location = url;
    });
 </script>
