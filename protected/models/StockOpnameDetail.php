@@ -147,6 +147,7 @@ class StockOpnameDetail extends CActiveRecord {
          $this->created_at = date('Y-m-d H:i:s');
       }
 
+      /* Ini sengaja. Assignment in condition */
       if ($soDetail = $this->_sudahAda()) {
          $this->_tambahkanQty($soDetail);
       }
