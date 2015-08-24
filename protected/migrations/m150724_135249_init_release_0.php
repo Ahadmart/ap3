@@ -159,6 +159,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           array('nama' => 'telp', 'nilai' => '', 'deskripsi' => 'Telp', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'email', 'nilai' => 'toko@mart.com', 'deskripsi' => 'E-mail', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'penjualan_jatuh_tempo', 'nilai' => '7', 'deskripsi' => 'Jatuh tempo pembayaran untuk penjualan (hari)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'saldo_awal', 'deskripsi' => 'Saldo Awal', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
       ));
 
       $this->createTable('harga_pokok_penjualan', array(
