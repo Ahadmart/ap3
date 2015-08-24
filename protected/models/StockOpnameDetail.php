@@ -71,7 +71,7 @@ class StockOpnameDetail extends CActiveRecord {
           'stock_opname_id' => 'Stock Opname',
           'barang_id' => 'Barang',
           'qty_tercatat' => 'Qty',
-          'qty_sebenarnya' => 'Qty SO',
+          'qty_sebenarnya' => 'Qty Asli',
           'updated_at' => 'Updated At',
           'updated_by' => 'Updated By',
           'created_at' => 'Created At',
@@ -179,6 +179,10 @@ class StockOpnameDetail extends CActiveRecord {
               ->where('stock_opname_id=:soId AND barang_id=:barangId', array(':soId' => $soId, ':barangId' => $barangId))
               ->queryRow();
       return $detail ? $detail['total'] : 0;
+   }
+
+   public function getSelisih() {
+      return $this->qty_sebenarnya - $this->qty_tercatat;
    }
 
 }
