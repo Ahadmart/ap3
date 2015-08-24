@@ -2,30 +2,67 @@
 /* @var $this StockopnameController */
 /* @var $model StockOpname */
 
-$this->breadcrumbs=array(
-	'Stock Opname'=>array('index'),
-	$model->id,
+$this->breadcrumbs = array(
+    'Stock Opname' => array('index'),
+    $model->id,
 );
 
 $this->boxHeader['small'] = 'View';
 $this->boxHeader['normal'] = 'Stock Opname: '.$model->nomor;
 ?>
 <div class="row">
-    <div class="small-12 columns">
-<?php $this->widget('BDetailView', array(
-	'data'=>$model,
-	'attributes'=>array(
-		'id',
-		'keterangan',
-		'nomor',
-		'tanggal',
-		'status',
-		'updated_at',
-		'updated_by',
-		'created_at',
-	),
-)); ?>
-    </div>
+   <div class="small-12 columns header">
+      <span class="secondary label">Tanggal</span><span class="label"><?php echo $model->tanggal; ?></span>
+      <span class="secondary label">Rak</span><span class="label"><?php echo $model->rak->nama; ?></span>
+      <span class="secondary label">Status</span><span class="warning label"><?php echo $model->getNamaStatus(); ?></span>
+   </div>
+</div>
+<div class="row">
+   <div class="small-12  columns">
+      <?php
+      $this->widget('BGridView', array(
+          'id' => 'so-detail-grid',
+          'dataProvider' => $detail->search(),
+          'filter' => $detail,
+          //'summaryText' => '{start}-{end} dari {count}, Total: ' . $model->total,
+          'columns' => array(
+              array(
+                  'class' => 'BDataColumn',
+                  'name' => 'barcode',
+                  'header' => '<span class="ak">B</span>arcode',
+                  'accesskey' => 'b',
+                  'value' => '$data->barang->barcode',
+              ),
+              array(
+                  'class' => 'BDataColumn',
+                  'name' => 'namaBarang',
+                  'value' => '$data->barang->nama',
+                  'header' => '<span class="ak">N</span>ama Barang',
+                  'accesskey' => 'n',
+              ),
+              array(
+                  'name' => 'qty_tercatat',
+                  'filter' => false,
+                  'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                  'htmlOptions' => array('class' => 'rata-kanan'),
+              ),
+              array(
+                  'name' => 'qty_sebenarnya',
+                  'filter' => false,
+                  'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                  'htmlOptions' => array('class' => 'rata-kanan'),
+              ),
+              array(
+                  'header' => 'Selisih',
+                  'value' => '$data->selisih',
+                  'filter' => false,
+                  'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                  'htmlOptions' => array('class' => 'rata-kanan'),
+              )
+          ),
+      ));
+      ?>
+   </div>
 </div>
 <?php
 $this->menu = array(
@@ -39,8 +76,8 @@ $this->menu = array(
             array('label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'alert button',
                     'accesskey' => 'h',
-                    'submit'=>array('hapus','id'=>$model->id),
-                    'confirm'=>'Anda yakin?'
+                    'submit' => array('hapus', 'id' => $model->id),
+                    'confirm' => 'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
@@ -56,8 +93,8 @@ $this->menu = array(
                 )),
             array('label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'alert button',
-                    'submit'=>array('hapus','id'=>$model->id),
-                    'confirm'=>'Anda yakin?'
+                    'submit' => array('hapus', 'id' => $model->id),
+                    'confirm' => 'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',

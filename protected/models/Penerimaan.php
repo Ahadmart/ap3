@@ -187,7 +187,7 @@ class Penerimaan extends CActiveRecord {
          }
          $this->status = Penerimaan::STATUS_BAYAR;
          $this->nomor = $this->generateNomor();
-         $this->tanggal = date('Y-m-d H:i:s');
+         // $this->tanggal = date('Y-m-d H:i:s');
       }
       return parent::beforeSave();
    }

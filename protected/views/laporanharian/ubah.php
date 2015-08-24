@@ -1,25 +1,30 @@
 <?php
-/* @var $this SatuanbarangController */
-/* @var $model SatuanBarang */
+/* @var $this LaporanharianController */
+/* @var $model LaporanHarian */
 
-$this->breadcrumbs = array(
-    'Satuan Barang' => array('index'),
-    'Tambah',
+$this->breadcrumbs=array(
+	'Laporan Harian'=>array('index'),
+	$model->id=>array('view','id'=>$model->id),
+	'Ubah',
 );
 
-$this->boxHeader['small'] = 'Tambah';
-$this->boxHeader['normal'] = 'Tambah Satuan Barang';
+$this->boxHeader['small'] = 'Ubah';
+$this->boxHeader['normal'] = "Laporan Harian: {$model->nama}";
 ?>
-<div class="row collapse">
-   <div class="large-6 large-centered columns">
-      <?php $this->renderPartial('_form', array('model' => $model)); ?>
-   </div>
+<div class="row">
+    <div class="large-6 columns">
+        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
+    </div>
 </div>
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
         'items' => array(
+            array('label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
+                    'class' => 'button',
+                    'accesskey' => 't'
+                )),
             array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
                     'accesskey' => 'i'
@@ -29,10 +34,12 @@ $this->menu = array(
     ),
     array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
         'items' => array(
+            array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
+                    'class' => 'button',
+                )),
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
-                    'accesskey' => 'i'
-                )),
+                ))
         ),
         'submenuOptions' => array('class' => 'button-group')
     )

@@ -12,8 +12,8 @@
 
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-      <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                      ?>/css/animate.min.css">-->
-      <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                   ?>/css/app.css">-->
+      <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                       ?>/css/animate.min.css">-->
+      <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                    ?>/css/app.css">-->
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
       <?php
       Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/app.css');
@@ -135,6 +135,8 @@
                                      array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                                      array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Pengeluaran', 'url' => array('/pengeluaran/index')),
                                      array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Penerimaan', 'url' => array('/penerimaan/index')),
+                                     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
+                                     array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Data Harian', 'url' => array('/laporanharian/index')),
                                  ),
                                  'itemOptions' => array('class' => 'has-dropdown'),
                                  'submenuOptions' => array('class' => 'dropdown'),

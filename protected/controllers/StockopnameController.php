@@ -30,8 +30,15 @@ class StockopnameController extends Controller {
     * @param integer $id the ID of the model to be displayed
     */
    public function actionView($id) {
+      $detail = new StockOpnameDetail('search');
+      $detail->unsetAttributes();
+      $detail->setAttribute('stock_opname_id', '='.$id);
+      if (isset($_GET['StockOpnameDetail'])) {
+         $detail->attributes = $_GET['StockOpnameDetail'];
+      }
       $this->render('view', array(
           'model' => $this->loadModel($id),
+          'detail' => $detail
       ));
    }
 

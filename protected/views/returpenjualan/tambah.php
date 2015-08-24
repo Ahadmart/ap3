@@ -11,7 +11,7 @@ $this->boxHeader['small'] = 'Tambah';
 $this->boxHeader['normal'] = 'Tambah Retur Penjualan';
 ?>
 <div class="row">
-	<div class="large-6 columns">
+	<div class="small-12 columns">
 		<?php
 		$this->renderPartial('_form', array(
 			 'model' => $model,

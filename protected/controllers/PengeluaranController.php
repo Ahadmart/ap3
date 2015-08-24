@@ -106,10 +106,10 @@ class PengeluaranController extends Controller {
 
 		$hutangPiutang = new HutangPiutang('search');
 		$hutangPiutang->unsetAttributes();
-		$hutangPiutang->scenario = 'pilihDokumen';
 		if (isset($_GET['HutangPiutang'])) {
 			$hutangPiutang->attributes = $_GET['HutangPiutang'];
 		}
+		$hutangPiutang->scenario = 'pilihDokumen';
 
 		$pengeluaranDetail = new PengeluaranDetail;
 

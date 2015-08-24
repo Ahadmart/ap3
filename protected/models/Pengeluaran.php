@@ -190,7 +190,7 @@ class Pengeluaran extends CActiveRecord {
          }
 			$this->status = Pengeluaran::STATUS_BAYAR;
 			$this->nomor = $this->generateNomor();
-			$this->tanggal = date('Y-m-d');
+			// $this->tanggal = date('Y-m-d');
 		}
 		return parent::beforeSave();
 	}

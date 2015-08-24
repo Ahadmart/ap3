@@ -1,21 +1,22 @@
 <?php
-/* @var $this SatuanbarangController */
-/* @var $model SatuanBarang */
+/* @var $this LaporanharianController */
+/* @var $model LaporanHarian */
 
-$this->breadcrumbs = array(
-    'Satuan Barang' => array('index'),
-    'Tambah',
+$this->breadcrumbs=array(
+	'Laporan Harian'=>array('index'),
+	'Tambah',
 );
 
 $this->boxHeader['small'] = 'Tambah';
-$this->boxHeader['normal'] = 'Tambah Satuan Barang';
+$this->boxHeader['normal'] = 'Tambah Laporan Harian';
 ?>
-<div class="row collapse">
-   <div class="large-6 large-centered columns">
-      <?php $this->renderPartial('_form', array('model' => $model)); ?>
-   </div>
+<div class="row">
+    <div class="large-6 columns">
+        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
+    </div>
 </div>
 <?php
+
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
@@ -31,7 +32,6 @@ $this->menu = array(
         'items' => array(
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
-                    'accesskey' => 'i'
                 )),
         ),
         'submenuOptions' => array('class' => 'button-group')
