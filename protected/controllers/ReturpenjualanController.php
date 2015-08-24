@@ -2,6 +2,8 @@
 
 class ReturpenjualanController extends Controller {
 
+   const PROFIL_ALL = 0;
+   const PROFIL_CUSTOMER = Profil::TIPE_CUSTOMER;
    /**
     * @return array action filters
     */
@@ -266,4 +268,22 @@ class ReturpenjualanController extends Controller {
 //   public function renderRadioButton($data, $row) {
 //      return CHtml::radioButton('penjualanid', $row == 0, array('value' => $data->id));
 //   }
+
+   public function actionAmbilProfil($tipe) {
+      /*
+       * Tampilkan daftar sesuai pilihan tipe
+       */
+      $condition = $tipe == Profil::TIPE_CUSTOMER ? 'id>'.Profil::AWAL_ID.' and tipe_id='.Profil::TIPE_CUSTOMER : 'id>'.Profil::AWAL_ID;
+      $profilList = Profil::model()->findAll(array(
+          'select' => 'id, nama',
+          'condition' => $condition,
+          'order' => 'nama'));
+      /* FIX ME: Pindahkan ke view */
+      $string = '<option>Pilih satu..</option>';
+      foreach ($profilList as $profil) {
+         $string.='<option value="'.$profil->id.'">';
+         $string.=$profil->nama.'</option>';
+      }
+      echo $string;
+   }
 }

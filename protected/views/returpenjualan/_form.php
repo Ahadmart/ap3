@@ -31,7 +31,22 @@
 			<?php echo $form->error($model, 'profil_id', array('class' => 'error')); ?>
 		</div>
 	</div>
-
+   <div class="row">
+      <div class="small-12 columns">
+         <input id="checkbox_profil" type="checkbox" name="semua_profil"><label for="checkbox_profil">Tampilkan semua profil</label>
+      </div>
+   </div>
+   <script>
+      $("#checkbox_profil").change(function () {
+         if (this.checked) {
+            console.log('semua');
+            $("#ReturPenjualan_profil_id").load("<?php echo $this->createUrl('ambilprofil', array('tipe' => $this::PROFIL_ALL)); ?>");
+         } else {
+            console.log('supplier');
+            $("#ReturPenjualan_profil_id").load("<?php echo $this->createUrl('ambilprofil', array('tipe' => $this::PROFIL_CUSTOMER)); ?>");
+         }
+      });
+   </script>
 	<div class="row">
 		<div class="small-12 columns">
 			<?php echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', array('class' => 'tiny bigfont button')); ?>
