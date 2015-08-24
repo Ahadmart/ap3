@@ -241,6 +241,7 @@ class StockOpname extends CActiveRecord {
             $details = StockOpnameDetail::model()->findAll('stock_opname_id='.$this->id);
             foreach ($details as $detail) {
                InventoryBalance::model()->so($detail);
+               Barang::model()->updateByPk($detail->barang_id, array('rak_id' => $this->rak_id));
             }
             $transaction->commit();
             return array(
