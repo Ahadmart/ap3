@@ -104,7 +104,8 @@ class Barang extends CActiveRecord {
           'updated_by' => 'Updated By',
           'created_at' => 'Created At',
           'namaSatuan' => 'Satuan',
-          'namaKategori' => 'Kategori'
+          'namaKategori' => 'Kategori',
+          'namaRak' => 'Rak'
       );
    }
 
