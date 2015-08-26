@@ -10,33 +10,34 @@ $this->breadcrumbs = array(
 $this->boxHeader['small'] = 'Kas Bank';
 $this->boxHeader['normal'] = 'Kas Bank';
 ?>
-<!--<div class="row">
-    <div class="medium-6 large-4 small-centered columns">-->
-        <?php
-        $this->widget('BGridView', array(
-            'id' => 'kas-bank-grid',
-            'dataProvider' => $model->search(),
-            'filter' => $model,
-            'columns' => array(
-                array(
-                    'class' => 'BDataColumn',
-                    'name' => 'nama',
-                    'header' => '<span class="ak">N</span>ama',
-                    'accesskey' => 'n',
-                    'type' => 'raw',
-                    'value' => function($data) {
-                        return '<a href="' . Yii::app()->controller->createUrl('view', array('id' => $data->id)) . '">' . $data->nama . '</a>';
-                    },
-                ),
-                'kode_akun_id',
-                array(
-                    'class' => 'BButtonColumn',
-                ),
-            ),
-        ));
-        ?>
-<!--    </div>
-</div>-->
+<div class="row">
+   <div class="small-12 columns">
+      <?php
+      $this->widget('BGridView', array(
+          'id' => 'kas-bank-grid',
+          'dataProvider' => $model->search(),
+          'filter' => $model,
+          'columns' => array(
+              array(
+                  'class' => 'BDataColumn',
+                  'name' => 'nama',
+                  'header' => '<span class="ak">N</span>ama',
+                  'accesskey' => 'n',
+                  'type' => 'raw',
+                  'value' => array($this, 'renderLinkToView'),
+              ),
+              array(
+                  'name' => 'kode_akun_id',
+                  'filter' => false
+              ),
+              array(
+                  'class' => 'BButtonColumn',
+              ),
+          ),
+      ));
+      ?>
+   </div>
+</div>
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
@@ -52,8 +53,7 @@ $this->menu = array(
     array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => '',
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
-                    'accesskey' => 't'
+                    'class' => 'button'
                 )),
         ),
         'submenuOptions' => array('class' => 'button-group')

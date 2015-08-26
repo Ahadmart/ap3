@@ -132,4 +132,14 @@ class KasbankController extends Controller {
         }
     }
 
+   public function renderLinkToView($data) {
+      $return = '';
+      if (isset($data->nama)) {
+         $return = '<a href="'.
+                 $this->createUrl('view', array('id' => $data->id)).'">'.
+                 $data->nama.'</a>';
+      }
+      return $return;
+   }
+
 }

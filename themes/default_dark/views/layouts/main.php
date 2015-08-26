@@ -12,8 +12,8 @@
 
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-      <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                       ?>/css/animate.min.css">-->
-      <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                    ?>/css/app.css">-->
+      <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                           ?>/css/animate.min.css">-->
+      <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                        ?>/css/app.css">-->
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
       <?php
       Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/app.css');
@@ -75,15 +75,16 @@
                      // Jika sudah login, tampilkan menu
                      $this->widget('zii.widgets.CMenu', array(
                          'htmlOptions' => array('class' => 'left'),
-                         //'activateParents' => true,
+                         'activateParents' => true,
                          'encodeLabel' => false,
                          'id' => '',
                          'items' => array(
                              array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-//									  array('label' => '<i class="fa fa-bar-chart-o fa-fw"></i>'.' Dashboard', 'url' => array('/dashboard/index'),),
-//									  array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-//									  array('label' => '<i class="fa fa-laptop fa-fw"></i>'.' Application '.'<b class="caret"></b>', 'url' => '',
-//											'items' => array(
+                             /*
+                               array('label' => '<i class="fa fa-bar-chart-o fa-fw"></i>'.' Dashboard', 'url' => array('/dashboard/index'),),
+                               array('itemOptions' => array('class' => 'divider'), 'label' => ''),
+                              * 
+                              */
                              array('label' => '<i class="fa fa-globe fa-fw fa-lg"></i>'.' Master', 'url' => '',
                                  'items' => array(
                                      array('label' => 'Barang', 'url' => '',
@@ -92,16 +93,6 @@
                                              array('label' => '<i class="fa fa-tag fa-fw"></i>'.' Satuan', 'url' => array('/satuanbarang/index')),
                                              array('label' => '<i class="fa fa-tags fa-fw"></i>'.' Kategori', 'url' => array('/kategoribarang/index')),
                                              array('label' => '<i class="fa fa-server fa-fw"></i>'.' Rak', 'url' => array('/rakbarang/index')),
-                                         ),
-                                         'itemOptions' => array('class' => 'has-dropdown'),
-                                         'submenuOptions' => array('class' => 'dropdown'),
-                                     ),
-                                     array('label' => 'Profil', 'url' => '',
-                                         'items' => array(
-                                             array('label' => '<i class="fa fa-user fa-fw"></i>'.' Profil', 'url' => array('/profil/index')),
-                                             array('label' => '<i class="fa fa-truck fa-fw"></i>'.' Supplier', 'url' => array('/supplier/index')),
-                                             array('label' => '<i class="fa fa-users fa-fw"></i>'.' Customer', 'url' => array('/customer/index')),
-                                             array('label' => '<i class="fa fa-tty fa-fw"></i>'.' Karyawan', 'url' => array('/karyawan/index')),
                                          ),
                                          'itemOptions' => array('class' => 'has-dropdown'),
                                          'submenuOptions' => array('class' => 'dropdown'),
@@ -119,6 +110,19 @@
                                          ),
                                          'itemOptions' => array('class' => 'has-dropdown'),
                                          'submenuOptions' => array('class' => 'dropdown'),
+                                     ),
+                                     array('label' => '<i class="fa fa-user fa-fw"></i>'.' Profil', 'url' => array('/profil/index'),
+                                     /*
+                                       'items' => array(
+                                       array('label' => '<i class="fa fa-user fa-fw"></i>'.' Profil', 'url' => array('/profil/index')),
+                                       array('label' => '<i class="fa fa-truck fa-fw"></i>'.' Supplier', 'url' => array('/supplier/index')),
+                                       array('label' => '<i class="fa fa-users fa-fw"></i>'.' Customer', 'url' => array('/customer/index')),
+                                       array('label' => '<i class="fa fa-tty fa-fw"></i>'.' Karyawan', 'url' => array('/karyawan/index')),
+                                       ),
+                                       'itemOptions' => array('class' => 'has-dropdown'),
+                                       'submenuOptions' => array('class' => 'dropdown'),
+                                      * 
+                                      */
                                      ),
                                  ),
                                  'itemOptions' => array('class' => 'has-dropdown'),
@@ -171,11 +175,6 @@
                              ),
                              array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                          ),
-//											'itemOptions' => array('class' => 'has-dropdown'),
-//											'submenuOptions' => array('class' => 'dropdown'),
-//									  ),
-//							array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-//							),
                      ));
                   }
                   ?>
