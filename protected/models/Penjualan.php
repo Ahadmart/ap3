@@ -302,6 +302,9 @@ class Penjualan extends CActiveRecord {
     * @return text Total margin dalam persen
     */
    public function getProfitMargin() {
+      if ($this->ambilTotal() == 0) {
+         return null;
+      }
       return number_format($this->ambilMargin() / $this->ambilTotal() * 100, 2, ',', '.');
    }
 
