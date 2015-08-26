@@ -52,16 +52,25 @@ $this->widget('BGridView', array(
             'filter' => array('1' => 'Aktif', '0' => 'Non Aktif')
         ),
         array(
-            'name' => 'restock_point',
+            'name' => 'Stok',
+            'value' => '$data->stok',
             'htmlOptions' => array('class' => 'rata-kanan'),
             'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
             'filter' => false
         ),
         array(
+            'name' => 'restock_point',
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+            'filter' => false,
+            'sortable' => false
+        ),
+        array(
             'name' => 'restock_level',
             'htmlOptions' => array('class' => 'rata-kanan'),
             'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
-            'filter' => false
+            'filter' => false,
+            'sortable' => false
         ),
         array(
             'class' => 'BButtonColumn',
