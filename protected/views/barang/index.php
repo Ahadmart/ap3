@@ -35,16 +35,19 @@ $this->widget('BGridView', array(
             'value' => array($this, 'renderLinkToView'),
         ),
         array(
-            'name' => 'namaSatuan',
-            'value' => '$data->satuan->nama'
+            'name' => 'satuan_id',
+            'value' => '$data->satuan->nama',
+            'filter' => $model->filterSatuan()
         ),
         array(
-            'name' => 'namaKategori',
-            'value' => '$data->kategori->nama'
+            'name' => 'kategori_id',
+            'value' => '$data->kategori->nama',
+            'filter' => $model->filterKategori()
         ),
         array(
-            'name' => 'namaRak',
-            'value' => '$data->rak->nama'
+            'name' => 'rak_id',
+            'value' => '$data->rak->nama',
+            'filter' => $model->filterRak()
         ),
         array(
             'name' => 'status',
