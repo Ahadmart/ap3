@@ -49,7 +49,7 @@ $this->widget('BGridView', array(
         array(
             'name' => 'status',
             'value' => '$data->namaStatus',
-            'filter' => array('1' => 'Aktif', '0' => 'Non Aktif')
+            'filter' => $model->filterStatus()
         ),
         array(
             'name' => 'Stok',

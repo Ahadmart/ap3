@@ -32,6 +32,9 @@
  */
 class Barang extends CActiveRecord {
 
+   const STATUS_TIDAK_AKTIF = 0;
+   const STATUS_AKTIF = 1;
+
    public $namaSatuan;
    public $namaKategori;
    public $namaRak;
@@ -211,6 +214,13 @@ class Barang extends CActiveRecord {
 					limit 1
 			  ")->queryRow();
       return number_format($hargaJual['harga'], 0, ',', '.');
+   }
+
+   public function filterStatus() {
+      return array(
+          Barang::STATUS_TIDAK_AKTIF => 'Non Aktif',
+          Barang::STATUS_AKTIF => 'Aktif'
+      );
    }
 
 }
