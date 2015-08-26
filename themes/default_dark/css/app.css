@@ -110,12 +110,10 @@ li.active > a {
     padding-right: 15px; }
 
 .block-content {
-  padding: 10px 15px 1px;
+  padding: 15px 0 1px;
   border-top: 1px solid #515356; }
-  .block-content > table {
-    margin: 0; }
-    .block-content > table tr td {
-      font-size: 0.75rem; }
+  .block-content > table tr td {
+    font-size: 0.75rem; }
   .block-content div.panel {
     padding: 0.75rem;
     padding-bottom: 0; }
