@@ -15,7 +15,8 @@ class m150724_135249_init_release_0 extends CDbMigration {
 
    // Use safeUp/safeDown to do migration with transaction
    public function safeUp() {
-      $dbEngine = 'MyISAM'; //InnoDB
+      $dbEngine = 'MyISAM';
+      // $dbEngine = 'InnoDB';
 
       $this->createTable('barang', array(
           'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -711,16 +712,36 @@ class m150724_135249_init_release_0 extends CDbMigration {
 
       $this->createTable('laporan_harian', array(
           "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-           `tanggal` date NOT NULL,
-           `saldo_akhir` decimal(18,2) DEFAULT NULL,
-           `keterangan` varchar(5000) DEFAULT NULL,
-           `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-           `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-           PRIMARY KEY (`id`),
-           UNIQUE KEY `tanggal_UNIQUE` (`tanggal`),
-           KEY `fk_laporan_harian_updatedby_idx` (`updated_by`)"
+            `tanggal` date NOT NULL,
+            `saldo_akhir` decimal(18,2) DEFAULT NULL,
+            `keterangan` varchar(5000) DEFAULT NULL,
+            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            `updated_by` int(10) unsigned NOT NULL,
+            `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `tanggal_UNIQUE` (`tanggal`),
+            KEY `fk_laporan_harian_updatedby_idx` (`updated_by`)"
               ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
+
+      $this->createTable('device', array(
+          "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+            `tipe_id` tinyint(4) NOT NULL COMMENT '0=pos client;1=lpr printer;2=plain/text;3=pdf',
+            `nama` varchar(100) NOT NULL,
+            `keterangan` varchar(500) DEFAULT NULL,
+            `address` varchar(100) DEFAULT NULL,
+            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            `updated_by` int(10) unsigned NOT NULL,
+            `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+            PRIMARY KEY (`id`),
+            UNIQUE KEY `nama_UNIQUE` (`nama`),
+            KEY `fk_device_updatedby_idx` (`updated_by`)"
+              ), 'ENGINE='.$dbEngine.' DEFAULT CHARSET=utf8');
+
+      $this->insertMultiple('device', array(
+          array('tipe_id' => 0, 'nama' => 'Kasir 1', 'keterangan' => 'Komputer Kasir 1', 'address' => '192.168.1.1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('tipe_id' => 1, 'nama' => 'printer192.168.1.1', 'keterangan' => 'Printer di Kasir 1', 'address' => '192.168.1.1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('tipe_id' => 2, 'nama' => 'Text', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00')
+      ));
 
       /* Foreign Key Tabel barang */
       $this->addForeignKey('fk_barang_kategori', 'barang', 'kategori_id', 'barang_kategori', 'id', 'NO ACTION', 'NO ACTION');
@@ -888,6 +909,9 @@ class m150724_135249_init_release_0 extends CDbMigration {
 
       /* Foreign Key Tabel laporan_harian */
       $this->addForeignKey('fk_laporan_harian_updatedby', 'laporan_harian', 'updated_by', 'user', 'id', 'NO ACTION', 'NO ACTION');
+      
+      /* Foreign Key Tabel device */
+      $this->addForeignKey('fk_device_updatedby', 'device', 'updated_by', 'user', 'id', 'NO ACTION', 'NO ACTION');
    }
 
    public function safeDown() {

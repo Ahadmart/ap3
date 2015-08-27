@@ -12,8 +12,8 @@
 
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-      <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                           ?>/css/animate.min.css">-->
-      <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                        ?>/css/app.css">-->
+      <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                            ?>/css/animate.min.css">-->
+      <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                         ?>/css/app.css">-->
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
       <?php
       Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/app.css');
@@ -158,8 +158,6 @@
                              array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                              array('label' => '<i class="fa fa-wrench fa-fw fa-lg"></i>'.' Settings', 'url' => '',
                                  'items' => array(
-                                     array('label' => '<i class="fa fa-cogs fa-fw"></i>'.' Aplikasi', 'url' => array('/config/index')),
-                                     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                                      array('label' => 'Akses', 'url' => '',
                                          'items' => array(
                                              array('label' => '<i class="fa fa-user fa-fw"></i>'.' User', 'url' => array('/user/index')),
@@ -169,6 +167,8 @@
                                          'itemOptions' => array('class' => 'has-dropdown'),
                                          'submenuOptions' => array('class' => 'dropdown'),
                                      ),
+                                     array('label' => '<i class="fa fa-cogs fa-fw"></i>'.' Aplikasi', 'url' => array('/config/index')),
+                                     array('label' => '<i class="fa fa-cogs fa-fw"></i>'.' Devices', 'url' => array('/device/index')),
                                  ),
                                  'itemOptions' => array('class' => 'has-dropdown'),
                                  'submenuOptions' => array('class' => 'dropdown'),
