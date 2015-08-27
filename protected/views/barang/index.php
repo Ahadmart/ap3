@@ -20,7 +20,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/res
           'id' => 'barang-grid',
           'dataProvider' => $model->search(),
           'filter' => $model,
-          'itemsCssClass' => 'item-index responsive',
+          'itemsCssClass' => 'tabel-index responsive',
           'columns' => array(
               array(
                   'class' => 'BDataColumn',

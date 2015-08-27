@@ -9,6 +9,9 @@ $this->breadcrumbs = array(
 
 $this->boxHeader['small'] = 'Retur Penjualan';
 $this->boxHeader['normal'] = 'Retur Penjualan';
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/responsive-tables.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/responsive-tables.js', CClientScript::POS_HEAD);
 ?>
 <div class="row">
    <div class="small-12 columns">
@@ -17,6 +20,7 @@ $this->boxHeader['normal'] = 'Retur Penjualan';
           'id' => 'retur-penjualan-grid',
           'dataProvider' => $model->search(),
           'filter' => $model,
+          'itemsCssClass' => 'tabel-index responsive',
           'columns' => array(
               array(
                   'class' => 'BDataColumn',
