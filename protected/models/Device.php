@@ -145,4 +145,17 @@ class Device extends CActiveRecord {
       return $listTipe[$this->tipe_id];
    }
 
+   public function listDevices($tipe = NULL) {
+      $command = Yii::app()->db->createCommand()
+              ->select('id, tipe_id, nama, keterangan, address')
+              ->from($this->tableName())
+              ->order('tipe_id, nama');
+      if (!is_null($tipe)) {
+         foreach ($tipe as $tipeId) {
+            $command->orWhere("tipe_id={$tipeId}");
+         }
+      }
+      return $command->queryAll();
+   }
+
 }

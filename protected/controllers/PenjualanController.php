@@ -40,9 +40,13 @@ class PenjualanController extends Controller {
          $penjualanDetail->attributes = $_GET['PenjualanDetail'];
       }
 
+      $tipePrinter = array(Device::DEV_LPR, Device::DEV_PDF_PRINTER);
+      $printerDevices = Device::model()->listDevices($tipePrinter);
+
       $this->render('view', array(
           'model' => $this->loadModel($id),
-          'penjualanDetail' => $penjualanDetail
+          'penjualanDetail' => $penjualanDetail,
+          'printerDevices' => $printerDevices
       ));
    }
 

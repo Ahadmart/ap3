@@ -18,6 +18,22 @@ $model->scenario = 'tampil';
       <ul class="button-group">	
          <li><a class="tiny bigfont success button" accesskey="f" href="<?php echo $this->createUrl('faktur', array('id' => $model->id)); ?>" target="_blank"><i class="fa fa-file-pdf-o fa-fw"></i> <span class="ak">F</span>aktur</a></li>
          <li><a class="tiny bigfont success button" accesskey="c" href="<?php echo $this->createUrl('eksporcsv', array('id' => $model->id)); ?>"><i class="fa fa-file-text fa-fw"></i> <span class="ak">C</span>SV</a></li>
+         <li>
+            <button href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">P</span>rint</a></button><br>
+            <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true">
+               <?php
+               foreach ($printerDevices as $printer) {
+                  ?>
+                  <li>
+                     <a href="<?php echo $this->createUrl('print', array('id' => $model->id, 'printId' => $printer['id'])) ?>">
+                        <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
+                  </li>
+                  <?php
+               }
+               ?>
+            </ul>
+
+         </li>
       </ul>
    </div>
    <div class="small-12 columns header">
