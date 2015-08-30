@@ -152,15 +152,19 @@ class m150724_135249_init_release_0 extends CDbMigration {
               ), 'ENGINE='.$dbEngine.'  DEFAULT CHARSET=utf8');
 
       $this->insertMultiple('config', array(
-          array('nama' => 'nama', 'nilai' => 'Toko Mart', 'deskripsi' => 'Nama Toko', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'kode', 'nilai' => '01', 'deskripsi' => 'Kode Toko (Nomor surat)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'alamat1', 'nilai' => '', 'deskripsi' => 'Alamat (baris 1)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'alamat2', 'nilai' => '', 'deskripsi' => 'Alamat (baris 2)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'alamat3', 'nilai' => '', 'deskripsi' => 'Alamat (baris 3)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'telp', 'nilai' => '', 'deskripsi' => 'Telp', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'email', 'nilai' => 'toko@mart.com', 'deskripsi' => 'E-mail', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'penjualan_jatuh_tempo', 'nilai' => '7', 'deskripsi' => 'Jatuh tempo pembayaran untuk penjualan (hari)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'saldo_awal', 'deskripsi' => 'Saldo Awal', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'toko.nama', 'nilai' => 'Toko Mart', 'deskripsi' => 'Nama Toko', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'toko.kode', 'nilai' => '01', 'deskripsi' => 'Kode Toko (Nomor surat)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'toko.alamat1', 'nilai' => '', 'deskripsi' => 'Alamat 1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'toko.alamat2', 'nilai' => '', 'deskripsi' => 'Alamat 2', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'toko.alamat3', 'nilai' => '', 'deskripsi' => 'Alamat 3', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'toko.telp', 'nilai' => '', 'deskripsi' => 'Telp', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'toko.email', 'nilai' => 'toko@mart.com', 'deskripsi' => 'E-mail', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'penjualan.jatuh_tempo', 'nilai' => '7', 'deskripsi' => 'Jatuh tempo pembayaran untuk penjualan (hari)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'keuangan.saldo_awal', 'deskripsi' => 'Saldo Awal', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'struk.header1', 'deskripsi' => 'Header 1 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'struk.header2', 'deskripsi' => 'Header 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'struk.footer1', 'deskripsi' => 'Footer 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'struk.footer2', 'deskripsi' => 'Footer 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
       ));
 
       $this->createTable('harga_pokok_penjualan', array(
