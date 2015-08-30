@@ -44,7 +44,7 @@
    /* display-inline emulation for IE7*/
    zoom: 1; 
    *display: inline;   
-	width: 100px;
+	width: 150px;
 	text-align: right;
 }
 
