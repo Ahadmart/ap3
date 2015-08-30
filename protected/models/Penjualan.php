@@ -465,7 +465,7 @@ class Penjualan extends CActiveRecord {
        */
 
       // Cari nama toko ini
-      $config = Config::model()->find("nama='nama'");
+      $config = Config::model()->find("nama='toko.nama'");
       foreach ($details as $detail):
          $csv.= "\"{$detail['barcode']}\","
                  ."\"{$detail['barang_id']}\","
@@ -481,6 +481,16 @@ class Penjualan extends CActiveRecord {
                  .PHP_EOL;
       endforeach;
       return $csv;
+   }
+
+   public function invoiceText($cpi = 15) {
+      $lebarKertas = 8; //inchi
+      $jumlahKarakter = $cpi * $lebarKertas;
+
+      $strNomor = 'Nomor   : '.$this->nomor;
+      $strTgl = 'Tanggal : '.$this->tanggal;
+      $strKasir = 'Kasir   : '.ucwords($this->updatedBy->nama);
+      
    }
 
 }

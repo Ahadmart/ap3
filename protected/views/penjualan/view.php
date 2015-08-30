@@ -14,25 +14,37 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
 $model->scenario = 'tampil';
 ?>
 <div class="row">
-   <div class="small-12 columns">
+   <div class="small-12 columns">   
       <ul class="button-group">	
-         <li><a class="tiny bigfont success button" accesskey="f" href="<?php echo $this->createUrl('faktur', array('id' => $model->id)); ?>" target="_blank"><i class="fa fa-file-pdf-o fa-fw"></i> <span class="ak">F</span>aktur</a></li>
-         <li><a class="tiny bigfont success button" accesskey="c" href="<?php echo $this->createUrl('eksporcsv', array('id' => $model->id)); ?>"><i class="fa fa-file-text fa-fw"></i> <span class="ak">C</span>SV</a></li>
          <li>
-            <button href="#" data-dropdown="drop1" aria-controls="drop1" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">P</span>rint</a></button><br>
-            <ul id="drop1" data-dropdown-content class="f-dropdown" aria-hidden="true">
+            <button href="#" accesskey="p" data-dropdown="printinvoice" aria-controls="printinvoice" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-file-text fa-fw"></i> <span class="ak">P</span>rint Invoice</button><br>
+            <ul id="printinvoice" data-dropdown-content class="f-dropdown" aria-hidden="true">
                <?php
-               foreach ($printerDevices as $printer) {
+               foreach ($printerInvoice as $printer) {
                   ?>
                   <li>
-                     <a href="<?php echo $this->createUrl('print', array('id' => $model->id, 'printId' => $printer['id'])) ?>">
+                     <a href="<?php echo $this->createUrl('printinvoice', array('id' => $model->id, 'printId' => $printer['id'])) ?>">
                         <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
                   </li>
                   <?php
                }
                ?>
             </ul>
-
+         </li>
+         <li>
+            <button href="#" accesskey="k" data-dropdown="printstruk" aria-controls="printstruk" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-file-text-o fa-fw"></i> Print Stru<span class="ak">k</span></button><br>
+            <ul id="printstruk" data-dropdown-content class="f-dropdown" aria-hidden="true">
+               <?php
+               foreach ($printerStruk as $printer) {
+                  ?>
+                  <li>
+                     <a href="<?php echo $this->createUrl('printstruk', array('id' => $model->id, 'printId' => $printer['id'])) ?>">
+                        <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
+                  </li>
+                  <?php
+               }
+               ?>
+            </ul>
          </li>
       </ul>
    </div>

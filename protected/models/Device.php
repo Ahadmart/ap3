@@ -18,10 +18,11 @@
  */
 class Device extends CActiveRecord {
 
-   const DEV_POS_CLIENT = 0;
-   const DEV_LPR = 1;
-   const DEV_TEXT_PRINTER = 2;
-   const DEV_PDF_PRINTER = 3;
+   const TIPE_POS_CLIENT = 0;
+   const TIPE_LPR = 1;
+   const TIPE_TEXT_PRINTER = 2;
+   const TIPE_PDF_PRINTER = 3;
+   const TIPE_CSV_PRINTER = 4;
 
    /**
     * @return string the associated database table name
@@ -133,10 +134,11 @@ class Device extends CActiveRecord {
 
    public function listTipe() {
       return array(
-          Device::DEV_POS_CLIENT => 'Client (Workstation)',
-          Device::DEV_LPR => 'Printer - LPR (Unix/Linux)',
-          Device::DEV_TEXT_PRINTER => 'Printer - Plain Text',
-          Device::DEV_PDF_PRINTER => 'Printer - PDF'
+          Device::TIPE_POS_CLIENT => 'Client (Workstation)',
+          Device::TIPE_LPR => 'Printer - LPR (Unix/Linux)',
+          Device::TIPE_TEXT_PRINTER => 'Printer - Plain Text',
+          Device::TIPE_PDF_PRINTER => 'Printer - PDF',
+          Device::TIPE_CSV_PRINTER => 'Printer - CSV'
       );
    }
 

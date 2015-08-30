@@ -40,13 +40,17 @@ class PenjualanController extends Controller {
          $penjualanDetail->attributes = $_GET['PenjualanDetail'];
       }
 
-      $tipePrinter = array(Device::DEV_LPR, Device::DEV_PDF_PRINTER);
-      $printerDevices = Device::model()->listDevices($tipePrinter);
+      $tipePrinterInvoice = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
+      $tipePrinterStruk = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER);
+
+      $printerInvoice = Device::model()->listDevices($tipePrinterInvoice);
+      $printerStruk = Device::model()->listDevices($tipePrinterStruk);
 
       $this->render('view', array(
           'model' => $this->loadModel($id),
           'penjualanDetail' => $penjualanDetail,
-          'printerDevices' => $printerDevices
+          'printerInvoice' => $printerInvoice,
+          'printerStruk' => $printerStruk
       ));
    }
 
@@ -268,10 +272,10 @@ class PenjualanController extends Controller {
    }
 
    /**
-    * Render Faktur dalam format PDF
+    * Render Faktur/Invoice dalam format PDF
     * @param int $id penjualan ID
     */
-   public function actionFaktur($id) {
+   public function exportPdf($id) {
 
       $modelHeader = $this->loadModel($id);
       $configs = Config::model()->findAll();
@@ -300,7 +304,7 @@ class PenjualanController extends Controller {
        * Persiapan render PDF
        */
       $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
-      $mPDF1->WriteHTML($this->renderPartial('_faktur', array(
+      $mPDF1->WriteHTML($this->renderPartial('_invoice', array(
                   'modelHeader' => $modelHeader,
                   'branchConfig' => $branchConfig,
                   'customer' => $customer,
@@ -319,7 +323,7 @@ class PenjualanController extends Controller {
     * Render csv untuk didownload
     * @param int $id penjualan ID
     */
-   public function actionEksporCsv($id) {
+   public function eksporCsv($id) {
       $model = $this->loadModel($id);
       $csv = $model->eksporCsv();
 
@@ -348,6 +352,29 @@ class PenjualanController extends Controller {
          $string.=$profil->nama.'</option>';
       }
       echo $string;
+   }
+
+   public function printLpr($id) {
+      
+   }
+
+   public function actionPrintInvoice($id) {
+//      $model = $this->loadModel($id);
+      if (isset($_GET['printId'])) {
+         $device = Device::model()->findByPk($_GET['printId']);
+         switch ($device->tipe_id) {
+            case Device::TIPE_LPR:
+
+
+               break;
+            case Device::TIPE_PDF_PRINTER:
+               $this->exportPdf($id);
+               break;
+            case Device::TIPE_CSV_PRINTER:
+               $this->eksporCsv($id);
+               break;
+         }
+      }
    }
 
 }
