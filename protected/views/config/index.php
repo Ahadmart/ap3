@@ -42,11 +42,15 @@ $this->boxHeader['normal'] = 'Konfigurasi Aplikasi';
           'dataProvider' => $model->search(),
           'filter' => $model,
           'columns' => array(
-              // 'nama',
+              array(
+                  'class' => 'BDataColumn',
+                  'name' => 'nama',
+                  'header' => '<span class="ak">N</span>ama',
+                  'accesskey' => 'n',
+              ),
               array(
                   'class' => 'BDataColumn',
                   'name' => 'deskripsi',
-                  'header' => '<span class="ak">D</span>eskripsi Nama',
                   'accesskey' => 'd',
               ),
               array(
@@ -54,8 +58,8 @@ $this->boxHeader['normal'] = 'Konfigurasi Aplikasi';
                   'value' => array($this, 'renderEditableNilai'),
                   'type' => 'raw',
                   'class' => 'BDataColumn',
-                  'header' => '<span class="ak">N</span>ilai',
-                  'accesskey' => 'n',
+                  'header' => 'Ni<span class="ak">l</span>ai',
+                  'accesskey' => 'l',
               )
           ),
       ));
