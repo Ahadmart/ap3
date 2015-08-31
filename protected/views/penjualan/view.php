@@ -16,11 +16,12 @@ $model->scenario = 'tampil';
 <div class="row">
    <div class="small-12 columns">   
       <ul class="button-group">	
+         <li><a href="<?php echo $this->createUrl('exportcsv', array('id' => $model->id)); ?>" class="tiny bigfont success button">Export <span class="ak">C</span>SV</a></li>
          <li>
-            <button href="#" accesskey="p" data-dropdown="printinvoice" aria-controls="printinvoice" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-file-text fa-fw"></i> <span class="ak">P</span>rint Invoice</button><br>
+            <button href="#" accesskey="p" data-dropdown="printinvoice" aria-controls="printinvoice" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-file-text fa-fw"></i> <span class="ak">P</span>rint Invoice (rrp)</button><br>
             <ul id="printinvoice" data-dropdown-content class="f-dropdown" aria-hidden="true">
                <?php
-               foreach ($printerInvoice as $printer) {
+               foreach ($printerInvoiceRrp as $printer) {
                   ?>
                   <li>
                      <a href="<?php echo $this->createUrl('printinvoice', array('id' => $model->id, 'printId' => $printer['id'])) ?>">

@@ -159,5 +159,12 @@ class Device extends CActiveRecord {
       }
       return $command->queryAll();
    }
+   
+   public function printLpr($text){
+      $perintahPrinter = "-H {$this->address} -P {$this->nama}";
+      
+      $perintah = "echo \"{$text}\" |lpr {$perintahPrinter} -l";
+      exec($perintah, $output);
+   }
 
 }

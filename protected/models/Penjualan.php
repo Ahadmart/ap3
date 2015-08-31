@@ -483,14 +483,116 @@ class Penjualan extends CActiveRecord {
       return $csv;
    }
 
+   public function toIndoDate($timeStamp) {
+      $tanggal = date_format(date_create($timeStamp), 'j');
+      $bulan = date_format(date_create($timeStamp), 'n');
+      $namabulan = $this->namaBulan($bulan);
+      $tahun = date_format(date_create($timeStamp), 'Y');
+      return $tanggal.' '.$namabulan.' '.$tahun;
+   }
+
+   public function namaBulan($i) {
+      static $bulan = array(
+          "Januari",
+          "Februari",
+          "Maret",
+          "April",
+          "Mei",
+          "Juni",
+          "Juli",
+          "Agustus",
+          "September",
+          "Oktober",
+          "November",
+          "Desember"
+      );
+      return $bulan[$i - 1];
+   }
+
    public function invoiceText($cpi = 15) {
       $lebarKertas = 8; //inchi
-      $jumlahKarakter = $cpi * $lebarKertas;
+      $jumlahKolom = $cpi * $lebarKertas;
 
-      $strNomor = 'Nomor   : '.$this->nomor;
-      $strTgl = 'Tanggal : '.$this->tanggal;
-      $strKasir = 'Kasir   : '.ucwords($this->updatedBy->nama);
-      
+      $configs = Config::model()->findAll();
+      /*
+       * Ubah config (object) jadi array
+       */
+      $branchConfig = array();
+      foreach ($configs as $config) {
+         $branchConfig[$config->nama] = $config->nilai;
+      }
+
+      $penjualanDetail = Yii::app()->db->createCommand("
+         select barang.barcode, barang.nama, pd.qty, pd.harga_jual, pd.harga_jual_rekomendasi
+         from penjualan_detail pd
+         join barang on pd.barang_id = barang.id
+         where pd.penjualan_id = :penjualanId
+              ")
+              ->bindValue(':penjualanId', $this->id)
+              ->queryAll();
+
+
+      $struk = '';
+
+      $strNomor = 'Nomor       : '.$this->nomor;
+      $strTgl = 'Tanggal     : '.$this->toIndoDate($this->tanggal);
+      $strTglDue = 'Jatuh Tempo : '.$this->toIndoDate(date('Y-m-d', strtotime("+{$branchConfig['penjualan.jatuh_tempo']} days", strtotime(date_format(date_create_from_format('d-m-Y H:i:s', $this->tanggal), 'Y-m-d')))));
+      $strKasir = 'Kasir       : '.ucwords($this->updatedBy->nama);
+      $strTotal = 'Total       : '.$this->getTotal();
+
+      $kananMaxLength = strlen($strNomor) > strlen($strTgl) ? strlen($strNomor) : strlen($strTgl);
+      /* Jika Nama kasir terlalu panjang, akan di truncate */
+      $strKasir = strlen($strKasir) > $kananMaxLength ? substr($strKasir, 0, $kananMaxLength - 2).'..' : $strKasir;
+
+      $strInvoice = 'INVOICE '; //Jumlah karakter harus genap!
+
+      $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
+              .$strInvoice.str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+              .PHP_EOL;
+      $struk .= str_pad($branchConfig['toko.alamat1'], $jumlahKolom - $kananMaxLength, ' ')
+              .str_pad($strTgl, $kananMaxLength, ' ')
+              .PHP_EOL;
+      $struk .= str_pad($branchConfig['toko.alamat2'], $jumlahKolom - $kananMaxLength, ' ')
+              .str_pad($strTglDue, $kananMaxLength, ' ')
+              .PHP_EOL;
+      $struk .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
+              .str_pad($strKasir, $kananMaxLength, ' ')
+              .PHP_EOL;
+      $struk .= str_pad($strTotal, $jumlahKolom - $kananMaxLength + strlen($strTotal), ' ', STR_PAD_LEFT)
+              .PHP_EOL;
+//      $struk .= PHP_EOL;
+
+      $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL;
+      $textHeader1 = ' No  Barang';
+      $textHeader2 = 'RRP      Harga     Qty  Sub Total ';
+      $textHeader = $textHeader1.str_pad($textHeader2, $jumlahKolom - strlen($textHeader1), ' ', STR_PAD_LEFT).PHP_EOL;
+      $struk .= $textHeader;
+      $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL;
+
+      $no = 1;
+      foreach ($penjualanDetail as $detail) {
+         $strNomor = str_pad($no, 3, ' ', STR_PAD_LEFT).'.';
+         $strBarang = str_pad(trim($detail['nama']), 44, ' ');
+         $strQty = str_pad($detail['qty'], 6, ' ', STR_PAD_LEFT);
+         $strHarga = str_pad(number_format($detail['harga_jual'], 0, ',', '.'), 9, ' ', STR_PAD_LEFT);
+         $strHargaJualRekomendasi = str_pad(number_format($detail['harga_jual_rekomendasi'], 0, ',', '.'), 9, ' ', STR_PAD_LEFT);
+         $strSubTotal = str_pad(number_format($detail['harga_jual'] * $detail['qty'], 0, ',', '.'), 9, ' ', STR_PAD_LEFT);
+         $row1 = $strNomor.' '.$strBarang.' ';
+         $row2 = $strHargaJualRekomendasi.'  '.$strHarga.'  '.$strQty.'  '.$strSubTotal;
+         $row = $row1.str_pad($row2.' ', $jumlahKolom - strlen($row1), ' ', STR_PAD_LEFT).PHP_EOL;
+
+         $struk .= $row;
+         $no++;
+      }
+      $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL.PHP_EOL;
+
+      $signatureHead1 = '          Diterima';
+      $signatureHead2 = 'a.n. '.$branchConfig['toko.nama'];
+
+      $struk .= $signatureHead1.str_pad($signatureHead2, 29 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT).PHP_EOL;
+      $struk .= PHP_EOL.PHP_EOL.PHP_EOL.PHP_EOL;
+      $struk .= '     (________________)              (________________)'.PHP_EOL;
+      return $struk;
    }
 
 }
