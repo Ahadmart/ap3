@@ -1,21 +1,17 @@
 <?php
-/* @var $this PenerimaanitemController */
-/* @var $model PenerimaanItem */
 
-$this->breadcrumbs=array(
-	'Penerimaan Item'=>array('index'),
-	'Tambah',
+/* @var $this DeviceController */
+/* @var $model Device */
+
+$this->breadcrumbs = array(
+    'Device' => array('index'),
+    'Tambah',
 );
 
 $this->boxHeader['small'] = 'Tambah';
-$this->boxHeader['normal'] = 'Tambah Penerimaan Item';
-?>
-<div class="row">
-    <div class="large-6 columns">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
-    </div>
-</div>
-<?php
+$this->boxHeader['normal'] = 'Tambah Device';
+
+$this->renderPartial('_form', array('model' => $model));
 
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
@@ -32,7 +28,6 @@ $this->menu = array(
         'items' => array(
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
-                    'accesskey' => 'i'
                 )),
         ),
         'submenuOptions' => array('class' => 'button-group')

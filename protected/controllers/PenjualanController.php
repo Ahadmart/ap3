@@ -40,9 +40,17 @@ class PenjualanController extends Controller {
          $penjualanDetail->attributes = $_GET['PenjualanDetail'];
       }
 
+      $tipePrinterInvoiceRrp = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
+      $tipePrinterStruk = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER);
+
+      $printerInvoiceRrp = Device::model()->listDevices($tipePrinterInvoiceRrp);
+      $printerStruk = Device::model()->listDevices($tipePrinterStruk);
+
       $this->render('view', array(
           'model' => $this->loadModel($id),
-          'penjualanDetail' => $penjualanDetail
+          'penjualanDetail' => $penjualanDetail,
+          'printerInvoiceRrp' => $printerInvoiceRrp,
+          'printerStruk' => $printerStruk
       ));
    }
 
@@ -264,10 +272,10 @@ class PenjualanController extends Controller {
    }
 
    /**
-    * Render Faktur dalam format PDF
+    * Render Faktur/Invoice dalam format PDF
     * @param int $id penjualan ID
     */
-   public function actionFaktur($id) {
+   public function exportPdf($id) {
 
       $modelHeader = $this->loadModel($id);
       $configs = Config::model()->findAll();
@@ -296,7 +304,7 @@ class PenjualanController extends Controller {
        * Persiapan render PDF
        */
       $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
-      $mPDF1->WriteHTML($this->renderPartial('_faktur', array(
+      $mPDF1->WriteHTML($this->renderPartial('_invoice', array(
                   'modelHeader' => $modelHeader,
                   'branchConfig' => $branchConfig,
                   'customer' => $customer,
@@ -315,7 +323,7 @@ class PenjualanController extends Controller {
     * Render csv untuk didownload
     * @param int $id penjualan ID
     */
-   public function actionEksporCsv($id) {
+   public function actionExportCsv($id) {
       $model = $this->loadModel($id);
       $csv = $model->eksporCsv();
 
@@ -344,6 +352,42 @@ class PenjualanController extends Controller {
          $string.=$profil->nama.'</option>';
       }
       echo $string;
+   }
+
+   public function exportText($id) {
+      $model = $this->loadModel($id);
+      header("Content-type: text/plain");
+      header("Content-Disposition: attachment; filename=\"invoice-{$model->nomor}.text\"");
+      header("Pragma: no-cache");
+      header("Expire: 0");
+      echo $model->invoiceText();
+      Yii::app()->end();
+   }
+
+   public function printLpr($id, $device) {
+      $model = $this->loadModel($id);
+      $device->printLpr($model->invoiceText());
+      Yii::app()->end();
+   }
+
+   public function actionPrintInvoice($id) {
+      if (isset($_GET['printId'])) {
+         $device = Device::model()->findByPk($_GET['printId']);
+         switch ($device->tipe_id) {
+            case Device::TIPE_LPR:
+               $this->printLpr($id, $device);
+               break;
+            case Device::TIPE_PDF_PRINTER:
+               $this->exportPdf($id);
+               break;
+            case Device::TIPE_CSV_PRINTER:
+               $this->eksporCsv($id);
+               break;
+            case Device::TIPE_TEXT_PRINTER:
+               $this->exportText($id);
+               break;
+         }
+      }
    }
 
 }
