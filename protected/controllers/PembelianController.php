@@ -309,10 +309,7 @@ class PembelianController extends Controller {
             /*
              * simpan pembelian jika hanya dan hanya jika status masih draft
              */
-            if ($pembelian->simpanPembelian()) {
-               $return = array('sukses' => true);
-               //$this->redirect(array('view', 'id' => $id));
-            }
+            $return = $pembelian->simpanPembelian();
          }
       }
       $this->renderJSON($return);

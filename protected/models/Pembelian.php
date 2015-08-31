@@ -258,8 +258,8 @@ class Pembelian extends CActiveRecord {
       $transaction = $this->dbConnection->beginTransaction();
 
       /* Uncomment untuk jumlah pembelian yang sangat banyak, misal: init data */
-      // ini_set('memory_limit', '-1');
-      // set_time_limit(0);
+      ini_set('memory_limit', '-1');
+      set_time_limit(0);
 
       try {
          if ($this->save()) {
@@ -325,13 +325,20 @@ class Pembelian extends CActiveRecord {
             }
 
             $transaction->commit();
-            return true;
+            return array('sukses' => true);
          } else {
             throw new Exception("Gagal Simpan Pembelian");
          }
-      } catch (Exception $up) {
+      } catch (Exception $ex) {
          $transaction->rollback();
-         throw $up;
+         // throw $up;
+
+         return array(
+             'sukses' => false,
+             'error' => array(
+                 'msg' => $ex->getMessage(),
+                 'code' => $ex->getCode(),
+         ));
       }
    }
 
@@ -355,7 +362,7 @@ class Pembelian extends CActiveRecord {
     * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
     */
    public function generateNomor() {
-      $config = Config::model()->find("nama='kode'");
+      $config = Config::model()->find("nama='toko.kode'");
       $kodeCabang = $config->nilai;
       $kodeDokumen = KodeDokumen::PEMBELIAN;
       $kodeTahunBulan = date('ym');
