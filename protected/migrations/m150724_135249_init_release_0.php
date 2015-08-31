@@ -153,7 +153,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
 
       $this->insertMultiple('config', array(
           array('nama' => 'toko.nama', 'nilai' => 'Toko Mart', 'deskripsi' => 'Nama Toko', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'toko.kode', 'nilai' => '01', 'deskripsi' => 'Kode Toko (Nomor surat)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'toko.kode', 'nilai' => '01', 'deskripsi' => 'Kode Toko', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'toko.alamat1', 'nilai' => '', 'deskripsi' => 'Alamat 1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'toko.alamat2', 'nilai' => '', 'deskripsi' => 'Alamat 2', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'toko.alamat3', 'nilai' => '', 'deskripsi' => 'Alamat 3', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -744,7 +744,9 @@ class m150724_135249_init_release_0 extends CDbMigration {
       $this->insertMultiple('device', array(
           array('tipe_id' => 0, 'nama' => 'Kasir 1', 'keterangan' => 'Komputer Kasir 1', 'address' => '192.168.1.1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('tipe_id' => 1, 'nama' => 'printer192.168.1.1', 'keterangan' => 'Printer di Kasir 1', 'address' => '192.168.1.1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('tipe_id' => 2, 'nama' => 'Text', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00')
+          array('tipe_id' => 2, 'nama' => 'Plain/Text','keterangan' => 'Export to text file',  'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('tipe_id' => 3, 'nama' => 'PDF','keterangan' => 'Export to PDF',  'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('tipe_id' => 4, 'nama' => 'CSV','keterangan' => 'Export to CSV',  'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00')
       ));
 
       /* Foreign Key Tabel barang */
