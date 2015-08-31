@@ -1,32 +1,38 @@
 <?php
-/* @var $this KategoripengeluaranController */
-/* @var $model KategoriPengeluaran */
+/* @var $this DeviceController */
+/* @var $model Device */
 
 $this->breadcrumbs = array(
-    'Kategori Pengeluaran' => array('index'),
+    'Device' => array('index'),
     'Index',
 );
 
-$this->boxHeader['small'] = 'Kategori Pengeluaran';
-$this->boxHeader['normal'] = 'Kategori Pengeluaran';
+$this->boxHeader['small'] = 'Device';
+$this->boxHeader['normal'] = 'Device';
 ?>
 <div class="row">
    <div class="small-12 columns">
       <?php
       $this->widget('BGridView', array(
-          'id' => 'kategori-pengeluaran-grid',
+          'id' => 'device-grid',
           'dataProvider' => $model->search(),
           'filter' => $model,
           'columns' => array(
+              array(
+                  'name' => 'tipe_id',
+                  'value' => '$data->namaTipe',
+                  'filter' => $model->listTipe()
+              ),
               array(
                   'class' => 'BDataColumn',
                   'name' => 'nama',
                   'header' => '<span class="ak">N</span>ama',
                   'accesskey' => 'n',
                   'type' => 'raw',
-                  'value' => array($this, 'renderLinkToView')
+                  'value' => array($this, 'renderLinkToView'),
               ),
-              'deskripsi',
+              'keterangan',
+              'address',
               array(
                   'class' => 'BButtonColumn',
               ),
@@ -50,7 +56,7 @@ $this->menu = array(
     array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => '',
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button'
+                    'class' => 'button',
                 )),
         ),
         'submenuOptions' => array('class' => 'button-group')

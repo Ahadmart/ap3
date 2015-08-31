@@ -1,15 +1,15 @@
 <?php
-/* @var $this KasBankController */
-/* @var $model KasBank */
+/* @var $this DeviceController */
+/* @var $model Device */
 
 $this->breadcrumbs=array(
-	'Kas Bank'=>array('index'),
+	'Device'=>array('index'),
 	$model->id=>array('view','id'=>$model->id),
 	'Ubah',
 );
 
 $this->boxHeader['small'] = 'Ubah';
-$this->boxHeader['normal'] = "Kas Bank: {$model->nama}";
+$this->boxHeader['normal'] = "Device: {$model->nama}";
 ?>
 <div class="row">
     <div class="large-6 columns">
@@ -36,11 +36,9 @@ $this->menu = array(
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
                     'class' => 'button',
-                    'accesskey' => 't'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
-                    'accesskey' => 'i'
                 ))
         ),
         'submenuOptions' => array('class' => 'button-group')

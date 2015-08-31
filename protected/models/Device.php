@@ -1,13 +1,14 @@
 <?php
 
 /**
- * This is the model class for table "config".
+ * This is the model class for table "device".
  *
- * The followings are the available columns in table 'config':
+ * The followings are the available columns in table 'device':
  * @property string $id
+ * @property integer $tipe_id
  * @property string $nama
- * @property string $nilai
- * @property string $deskripsi
+ * @property string $keterangan
+ * @property string $address
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
@@ -15,13 +16,19 @@
  * The followings are the available model relations:
  * @property User $updatedBy
  */
-class Config extends CActiveRecord {
+class Device extends CActiveRecord {
+
+   const TIPE_POS_CLIENT = 0;
+   const TIPE_LPR = 1;
+   const TIPE_TEXT_PRINTER = 2;
+   const TIPE_PDF_PRINTER = 3;
+   const TIPE_CSV_PRINTER = 4;
 
    /**
     * @return string the associated database table name
     */
    public function tableName() {
-      return 'config';
+      return 'device';
    }
 
    /**
@@ -31,15 +38,15 @@ class Config extends CActiveRecord {
       // NOTE: you should only define rules for those attributes that
       // will receive user inputs.
       return array(
-          array('nama, nilai', 'required'),
-          array('nama', 'length', 'max' => 45),
-          array('nilai', 'length', 'max' => 255),
-          array('deskripsi', 'length', 'max' => 1000),
+          array('tipe_id', 'required'),
+          array('tipe_id', 'numerical', 'integerOnly' => true),
+          array('nama, address', 'length', 'max' => 100),
+          array('keterangan', 'length', 'max' => 500),
           array('updated_by', 'length', 'max' => 10),
-          array('created_at, updated_at, updated_by', 'safe'),
+          array('created_at, nama, updated_at, updated_by', 'safe'),
           // The following rule is used by search().
           // @todo Please remove those attributes that should not be searched.
-          array('id, nama, nilai, deskripsi, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
+          array('id, tipe_id, nama, keterangan, address, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
       );
    }
 
@@ -60,12 +67,14 @@ class Config extends CActiveRecord {
    public function attributeLabels() {
       return array(
           'id' => 'ID',
+          'tipe_id' => 'Tipe',
           'nama' => 'Nama',
-          'nilai' => 'Nilai',
-          'deskripsi' => 'Deskripsi',
+          'keterangan' => 'Keterangan',
+          'address' => 'Address',
           'updated_at' => 'Updated At',
           'updated_by' => 'Updated By',
           'created_at' => 'Created At',
+          'namaTipe' => 'Tipe'
       );
    }
 
@@ -87,9 +96,10 @@ class Config extends CActiveRecord {
       $criteria = new CDbCriteria;
 
       $criteria->compare('id', $this->id, true);
+      $criteria->compare('tipe_id', $this->tipe_id);
       $criteria->compare('nama', $this->nama, true);
-      $criteria->compare('nilai', $this->nilai, true);
-      $criteria->compare('deskripsi', $this->deskripsi, true);
+      $criteria->compare('keterangan', $this->keterangan, true);
+      $criteria->compare('address', $this->address, true);
       $criteria->compare('updated_at', $this->updated_at, true);
       $criteria->compare('updated_by', $this->updated_by, true);
       $criteria->compare('created_at', $this->created_at, true);
@@ -97,7 +107,7 @@ class Config extends CActiveRecord {
       return new CActiveDataProvider($this, array(
           'criteria' => $criteria,
           'sort' => array(
-              'defaultOrder' => 'nama'
+              'defaultOrder' => 'tipe_id, nama'
           )
       ));
    }
@@ -106,7 +116,7 @@ class Config extends CActiveRecord {
     * Returns the static model of the specified AR class.
     * Please note that you should have this exact method in all your CActiveRecord descendants!
     * @param string $className active record class name.
-    * @return Config the static model class
+    * @return Device the static model class
     */
    public static function model($className = __CLASS__) {
       return parent::model($className);
@@ -120,6 +130,41 @@ class Config extends CActiveRecord {
       $this->updated_at = null; // Trigger current timestamp
       $this->updated_by = Yii::app()->user->id;
       return parent::beforeSave();
+   }
+
+   public function listTipe() {
+      return array(
+          Device::TIPE_POS_CLIENT => 'Client (Workstation)',
+          Device::TIPE_LPR => 'Printer - LPR (Unix/Linux)',
+          Device::TIPE_TEXT_PRINTER => 'Printer - Plain Text',
+          Device::TIPE_PDF_PRINTER => 'Printer - PDF',
+          Device::TIPE_CSV_PRINTER => 'Printer - CSV'
+      );
+   }
+
+   public function getNamaTipe() {
+      $listTipe = $this->listTipe();
+      return $listTipe[$this->tipe_id];
+   }
+
+   public function listDevices($tipe = NULL) {
+      $command = Yii::app()->db->createCommand()
+              ->select('id, tipe_id, nama, keterangan, address')
+              ->from($this->tableName())
+              ->order('tipe_id, nama');
+      if (!is_null($tipe)) {
+         foreach ($tipe as $tipeId) {
+            $command->orWhere("tipe_id={$tipeId}");
+         }
+      }
+      return $command->queryAll();
+   }
+   
+   public function printLpr($text){
+      $perintahPrinter = "-H {$this->address} -P {$this->nama}";
+      
+      $perintah = "echo \"{$text}\" |lpr {$perintahPrinter} -l";
+      exec($perintah, $output);
    }
 
 }

@@ -28,7 +28,7 @@ function namaBulan($i) {
 ?>
 <html>
    <head>	
-      <title>Faktur : <?php echo $modelHeader->nomor; ?></title>
+      <title>Invoice : <?php echo $modelHeader->nomor; ?></title>
       <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf.css" />
       <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" />
    </head>
@@ -37,7 +37,7 @@ function namaBulan($i) {
           <htmlpagefooter name="footer">
               <table style="border-top:thin solid black">
                   <tr>
-                      <td style="text-align:left">Faktur No. <?php
+                      <td style="text-align:left">Invoice No. <?php
       echo $modelHeader->nomor == '' ? '..................' : $modelHeader->nomor;
       ?>
                       </td>
@@ -51,14 +51,14 @@ function namaBulan($i) {
           <sethtmlpagefooter name="footer" value="on" />
         mpdf-->
       <div id="header1">
-         <div>FAKTUR</div>
+         <div>INVOICE</div>
          <barcode style="margin-left: -13px;" code="<?php echo $modelHeader->nomor; ?>" type="C128A" class="barcode" size="0.9" height="1" />
       </div>		
       <div id="dari">
-         <div class="nama-toko"><?php echo $branchConfig['nama']; ?></div>
-         <span class="alamat"><?php echo "{$branchConfig['alamat1']}, {$branchConfig['alamat2']}, {$branchConfig['alamat3']}"; ?></span>
-         <div><?php echo $branchConfig['telp']; ?></div>
-         <div class="email"><?php echo $branchConfig['email']; ?></div>
+         <div class="nama-toko"><?php echo $branchConfig['toko.nama']; ?></div>
+         <span class="alamat"><?php echo "{$branchConfig['toko.alamat1']}, {$branchConfig['toko.alamat2']}, {$branchConfig['toko.alamat3']}"; ?></span>
+         <div><?php echo $branchConfig['toko.telp']; ?></div>
+         <div class="email"><?php echo $branchConfig['toko.email']; ?></div>
       </div>
       <div class="garis">            
       </div>
@@ -72,7 +72,7 @@ function namaBulan($i) {
       <div id="faktur-info">
          <table>
             <tr>
-               <td>No. Faktur</td>
+               <td>No. Invoice</td>
                <td><b><?php echo $modelHeader->nomor; ?></b></td>
             </tr>
             <tr>
@@ -81,7 +81,7 @@ function namaBulan($i) {
             </tr>
             <tr>
                <td>Jatuh Tempo</td>
-               <td><b><?php echo toIndoDate(date('Y-m-d', strtotime("+{$branchConfig['penjualan_jatuh_tempo']} days", strtotime(date_format(date_create_from_format('d-m-Y H:i:s', $modelHeader->tanggal), 'Y-m-d'))))); ?></b></td>
+               <td><b><?php echo toIndoDate(date('Y-m-d', strtotime("+{$branchConfig['penjualan.jatuh_tempo']} days", strtotime(date_format(date_create_from_format('d-m-Y H:i:s', $modelHeader->tanggal), 'Y-m-d'))))); ?></b></td>
             </tr>            
             <tr>
                <td colspan="2" id="header-total">
@@ -191,7 +191,7 @@ function namaBulan($i) {
       <table id="ttd" class="table-bordered" style="PAGE-BREAK-inside: avoid">
          <tr>
             <td style="width:25%">Pembuat</td>
-            <td style="width:25%">a.n. <?php echo $branchConfig['nama']; ?></td>
+            <td style="width:25%">a.n. <?php echo $branchConfig['toko.nama']; ?></td>
             <td style="width:25%">Penerima</td>
             <td style="width:25%">a.n. <?php echo $customer['nama']; ?></td>
          </tr>

@@ -1,6 +1,6 @@
 <?php
 
-class JenistransaksiController extends Controller {
+class DeviceController extends Controller {
 
    public $layout = '//layouts/box_kecil';
 
@@ -42,13 +42,13 @@ class JenistransaksiController extends Controller {
     * If creation is successful, the browser will be redirected to the 'view' page.
     */
    public function actionTambah() {
-      $model = new JenisTransaksi;
+      $model = new Device;
 
       // Uncomment the following line if AJAX validation is needed
       // $this->performAjaxValidation($model);
 
-      if (isset($_POST['JenisTransaksi'])) {
-         $model->attributes = $_POST['JenisTransaksi'];
+      if (isset($_POST['Device'])) {
+         $model->attributes = $_POST['Device'];
          if ($model->save())
             $this->redirect(array('view', 'id' => $model->id));
       }
@@ -68,8 +68,8 @@ class JenistransaksiController extends Controller {
       // Uncomment the following line if AJAX validation is needed
       // $this->performAjaxValidation($model);
 
-      if (isset($_POST['JenisTransaksi'])) {
-         $model->attributes = $_POST['JenisTransaksi'];
+      if (isset($_POST['Device'])) {
+         $model->attributes = $_POST['Device'];
          if ($model->save())
             $this->redirect(array('view', 'id' => $id));
       }
@@ -96,12 +96,11 @@ class JenistransaksiController extends Controller {
     * Manages all models.
     */
    public function actionIndex() {
-      $model = new JenisTransaksi('search');
+      $model = new Device('search');
       $model->unsetAttributes();  // clear any default values
-      if (isset($_GET['JenisTransaksi']))
-         $model->attributes = $_GET['JenisTransaksi'];
+      if (isset($_GET['Device']))
+         $model->attributes = $_GET['Device'];
 
-      $this->pageTitle = Yii::app()->name.' - Jenis Transaksi';
       $this->render('index', array(
           'model' => $model,
       ));
@@ -111,11 +110,11 @@ class JenistransaksiController extends Controller {
     * Returns the data model based on the primary key given in the GET variable.
     * If the data model is not found, an HTTP exception will be raised.
     * @param integer $id the ID of the model to be loaded
-    * @return JenisTransaksi the loaded model
+    * @return Device the loaded model
     * @throws CHttpException
     */
    public function loadModel($id) {
-      $model = JenisTransaksi::model()->findByPk($id);
+      $model = Device::model()->findByPk($id);
       if ($model === null)
          throw new CHttpException(404, 'The requested page does not exist.');
       return $model;
@@ -123,10 +122,10 @@ class JenistransaksiController extends Controller {
 
    /**
     * Performs the AJAX validation.
-    * @param JenisTransaksi $model the model to be validated
+    * @param Device $model the model to be validated
     */
    protected function performAjaxValidation($model) {
-      if (isset($_POST['ajax']) && $_POST['ajax'] === 'jenis-transaksi-form') {
+      if (isset($_POST['ajax']) && $_POST['ajax'] === 'device-form') {
          echo CActiveForm::validate($model);
          Yii::app()->end();
       }

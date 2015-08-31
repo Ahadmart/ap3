@@ -1,29 +1,29 @@
 <?php
-/* @var $this Kas_bankController */
-/* @var $model KasBank */
+/* @var $this DeviceController */
+/* @var $model Device */
 
-$this->breadcrumbs=array(
-	'Kas Bank'=>array('index'),
-	$model->id,
+$this->breadcrumbs = array(
+    'Device' => array('index'),
+    $model->id,
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Kas Bank: '.$model->nama;
+$this->boxHeader['normal'] = 'Device: '.$model->nama;
 ?>
 <div class="row">
-    <div class="small-12 columns">
-<?php $this->widget('BDetailView', array(
-	'data'=>$model,
-	'attributes'=>array(
-		'id',
-		'nama',
-		'kode_akun_id',
-		'updated_at',
-		'updated_by',
-		'created_at',
-	),
-)); ?>
-    </div>
+   <div class="small-12 columns">
+      <?php
+      $this->widget('BDetailView', array(
+          'data' => $model,
+          'attributes' => array(
+              'namaTipe',
+              'nama',
+              'keterangan',
+              'address',
+          ),
+      ));
+      ?>
+   </div>
 </div>
 <?php
 $this->menu = array(
@@ -37,8 +37,8 @@ $this->menu = array(
             array('label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'alert button',
                     'accesskey' => 'h',
-                    'submit'=>array('hapus','id'=>$model->id),
-                    'confirm'=>'Anda yakin?'
+                    'submit' => array('hapus', 'id' => $model->id),
+                    'confirm' => 'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
@@ -51,17 +51,14 @@ $this->menu = array(
         'items' => array(
             array('label' => '<i class="fa fa-pencil"></i>', 'url' => $this->createUrl('ubah', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'button',
-                    'accesskey' => 'u'
                 )),
             array('label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'alert button',
-                    'accesskey' => 'h',
-                    'submit'=>array('hapus','id'=>$model->id),
-                    'confirm'=>'Anda yakin?'
+                    'submit' => array('hapus', 'id' => $model->id),
+                    'confirm' => 'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
-                    'accesskey' => 'i'
                 ))
         ),
         'submenuOptions' => array('class' => 'button-group')

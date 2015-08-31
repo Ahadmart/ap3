@@ -32,11 +32,8 @@
  */
 class Barang extends CActiveRecord {
 
-   public $namaSatuan;
-   public $namaKategori;
-   public $namaRak;
-
-//    public $namaStatus;
+   const STATUS_TIDAK_AKTIF = 0;
+   const STATUS_AKTIF = 1;
 
    /**
     * @return string the associated database table name
@@ -61,7 +58,7 @@ class Barang extends CActiveRecord {
           array('created_at, updated_at, updated_by', 'safe'),
           // The following rule is used by search().
           // @todo Please remove those attributes that should not be searched.
-          array('id, barcode, nama, kategori_id, satuan_id, rak_id, restock_point, restock_level, status, namaSatuan, namaKategori, namaRak', 'safe', 'on' => 'search'),
+          array('id, barcode, nama, kategori_id, satuan_id, rak_id, restock_point, restock_level, status', 'safe', 'on' => 'search'),
       );
    }
 
@@ -102,9 +99,7 @@ class Barang extends CActiveRecord {
           'status' => 'Status',
           'updated_at' => 'Updated At',
           'updated_by' => 'Updated By',
-          'created_at' => 'Created At',
-          'namaSatuan' => 'Satuan',
-          'namaKategori' => 'Kategori'
+          'created_at' => 'Created At'
       );
    }
 
@@ -138,32 +133,8 @@ class Barang extends CActiveRecord {
       $criteria->compare('updated_by', $this->updated_by, true);
       $criteria->compare('created_at', $this->created_at, true);
 
-      $criteria->with = array('kategori', 'satuan', 'rak');
-      $criteria->compare('satuan.nama', $this->namaSatuan, true);
-      $criteria->compare('kategori.nama', $this->namaKategori, true);
-      $criteria->compare('rak.nama', $this->namaRak, true);
-
-      $sort = array(
-          'attributes' => array(
-              '*',
-              'namaSatuan' => array(
-                  'asc' => 'satuan.nama',
-                  'desc' => 'satuan.nama desc'
-              ),
-              'namaKategori' => array(
-                  'asc' => 'kategori.nama',
-                  'desc' => 'kategori.nama desc'
-              ),
-              'namaRak' => array(
-                  'asc' => 'rak.nama',
-                  'desc' => 'rak.nama desc'
-              )
-          )
-      );
-
       return new CActiveDataProvider($this, array(
           'criteria' => $criteria,
-          'sort' => $sort
       ));
    }
 
@@ -198,7 +169,7 @@ class Barang extends CActiveRecord {
 				  from inventory_balance
 				  where barang_id = {$this->id}
 				  ")->queryRow();
-      return $stok['stok'] ? $stok['stok'] : 0;
+      return $stok['stok'] ? $stok['stok'] : null;
    }
 
    public function getHargaJual() {
@@ -210,6 +181,25 @@ class Barang extends CActiveRecord {
 					limit 1
 			  ")->queryRow();
       return number_format($hargaJual['harga'], 0, ',', '.');
+   }
+
+   public function filterStatus() {
+      return array(
+          Barang::STATUS_TIDAK_AKTIF => 'Non Aktif',
+          Barang::STATUS_AKTIF => 'Aktif'
+      );
+   }
+
+   public function filterKategori() {
+      return CHtml::listData(KategoriBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+   }
+
+   public function filterSatuan() {
+      return CHtml::listData(SatuanBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+   }
+
+   public function filterRak() {
+      return CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
    }
 
 }
