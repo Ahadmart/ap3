@@ -216,7 +216,7 @@ class StockOpname extends CActiveRecord {
     * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
     */
    public function generateNomor() {
-      $config = Config::model()->find("nama='kode'");
+      $config = Config::model()->find("nama='toko.kode'");
       $kodeCabang = $config->nilai;
       $kodeDokumen = KodeDokumen::SO;
       $kodeTahunBulan = date('ym');
