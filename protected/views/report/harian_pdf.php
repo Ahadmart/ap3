@@ -41,7 +41,7 @@ function namaBulan($i) {
 ?>
 <html>
    <head>
-      <title>Buku Harian : <?php echo $report['kodeToko'].' '.$report['namaToko'].' '.$report['tanggal']; ?></title>
+      <title>Laporan Harian : <?php echo $report['kodeToko'].' '.$report['namaToko'].' '.$report['tanggal']; ?></title>
       <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf-laporan.css" />
       <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" />
    </head>
@@ -50,7 +50,7 @@ function namaBulan($i) {
           <htmlpagefooter name="footer">
               <table style="border-top:thin solid black">
                   <tr>
-                      <td style="text-align:left">Buku Harian: <?php
+                      <td style="text-align:left">Laporan Harian: <?php
       echo $report['namaToko'].' '.$report['tanggal'];
       ?>
                       </td>
@@ -64,7 +64,7 @@ function namaBulan($i) {
           <sethtmlpagefooter name="footer" value="on" />
         mpdf-->
       <div id="header1">
-         <div>Buku Harian<br /><?php echo $report['namaToko']; ?></div>
+         <div>Laporan Harian<br /><?php echo $report['namaToko']; ?></div>
          <div id="tanggal"><?php echo namaHari($report['tanggal']).', '.toIndoDate($report['tanggal']); ?></div>
       </div>
       <br />

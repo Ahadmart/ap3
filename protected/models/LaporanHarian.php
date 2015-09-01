@@ -138,7 +138,7 @@ class LaporanHarian extends CActiveRecord {
               ");
       $command->bindValue(':tanggal', $this->tanggal);
       $harian = $command->queryRow();
-      return $harian ? $harian['saldo_akhir'] : Config::model()->find("nama='saldo_awal'")->nilai;
+      return $harian ? $harian['saldo_akhir'] : Config::model()->find("nama='keuangan.saldo_awal'")->nilai;
    }
 
    public function saldoAkhir() {
