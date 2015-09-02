@@ -1,21 +1,17 @@
 <?php
+
 /* @var $this BarangController */
 /* @var $model Barang */
 
-$this->breadcrumbs=array(
-	'Barang'=>array('index'),
-	'Tambah',
+$this->breadcrumbs = array(
+    'Barang' => array('index'),
+    'Tambah',
 );
 
 $this->boxHeader['small'] = 'Tambah';
 $this->boxHeader['normal'] = 'Tambah Barang';
-?>
-<div class="row">
-    <div class="large-6 columns">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
-    </div>
-</div>
-<?php
+
+$this->renderPartial('_form', array('model' => $model));
 
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),

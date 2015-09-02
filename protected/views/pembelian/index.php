@@ -41,8 +41,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/res
               array(
                   'class' => 'BDataColumn',
                   'name' => 'namaSupplier',
-                  'header' => '<span class="ak">S</span>upplier',
-                  'accesskey' => 's',
+                  'header' => 'Pro<span class="ak">f</span>il',
+                  'accesskey' => 'f',
                   'type' => 'raw',
                   'value' => '$data->profil->nama'
               // 'value' => array($this, 'renderLinkToSupplier')
