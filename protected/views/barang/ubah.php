@@ -60,7 +60,6 @@ $this->boxHeader['normal'] = "Barang: {$model->nama}";
             ?>
         </div>
     </div>
-</div>
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),

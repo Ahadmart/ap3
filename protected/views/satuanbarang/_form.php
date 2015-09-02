@@ -17,7 +17,7 @@
 
 	<?php echo $form->errorSummary($model,'Error: Perbaiki input',null,array('class'=>'panel callout')); ?>
 
-	<div class="row collapse">
+	<div class="row">
 		<div class="small-12 columns">
 		<?php echo $form->labelEx($model,'nama'); ?>
 				<?php echo $form->textField($model,'nama',array('size'=>45,'maxlength'=>45, 'autofocus' => 'autofocus')); ?>
@@ -25,7 +25,7 @@
 		</div>
 	</div>
 
-	<div class="row collapse">
+	<div class="row">
 		<div class="small-12 columns">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', array('class'=>'tiny bigfont button')); ?>
 		</div>

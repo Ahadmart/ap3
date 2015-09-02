@@ -176,6 +176,9 @@ li.active>a{
 		// padding override
 		padding: 0.75rem;
 		padding-bottom: 0;
+      form{
+         margin: 0 -15px;
+      }
 	}
 	.prefix .fa-2x{
 		padding-top:4px;

@@ -122,12 +122,12 @@ class ReportController extends Controller {
    }
 
    public function namaToko() {
-      $config = Config::model()->find('nama=:nama', array(':nama' => 'nama'));
+      $config = Config::model()->find('nama=:nama', array(':nama' => 'toko.nama'));
       return $config->nilai;
    }
    
    public function kodeToko() {
-      $config = Config::model()->find('nama=:nama', array(':nama' => 'kode'));
+      $config = Config::model()->find('nama=:nama', array(':nama' => 'toko.kode'));
       return $config->nilai;
    }
    
