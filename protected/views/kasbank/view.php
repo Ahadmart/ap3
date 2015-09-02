@@ -8,20 +8,20 @@ $this->breadcrumbs = array(
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Kas Bank: ' . $model->nama;
+$this->boxHeader['normal'] = 'Kas Bank: '.$model->nama;
 ?>
 <div class="row">
-    <div class="small-12 columns">
-        <?php
-        $this->widget('BDetailView', array(
-            'data' => $model,
-            'attributes' => array(
-                'nama',
-                'kode_akun_id',
-            ),
-        ));
-        ?>
-    </div>
+   <div class="small-12 columns">
+      <?php
+      $this->widget('BDetailView', array(
+          'data' => $model,
+          'attributes' => array(
+              'nama',
+              'kode_akun_id',
+          ),
+      ));
+      ?>
+   </div>
 </div>
 <?php
 $this->menu = array(
@@ -49,17 +49,14 @@ $this->menu = array(
         'items' => array(
             array('label' => '<i class="fa fa-pencil"></i>', 'url' => $this->createUrl('ubah', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'button',
-                    'accesskey' => 'u'
                 )),
             array('label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'alert button',
-                    'accesskey' => 'h',
                     'submit' => array('hapus', 'id' => $model->id),
                     'confirm' => 'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
-                    'accesskey' => 'i'
                 ))
         ),
         'submenuOptions' => array('class' => 'button-group')
