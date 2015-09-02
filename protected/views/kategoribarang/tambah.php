@@ -1,21 +1,17 @@
 <?php
+
 /* @var $this KategoribarangController */
 /* @var $model KategoriBarang */
 
-$this->breadcrumbs=array(
-	'Kategori Barang'=>array('index'),
-	'Tambah',
+$this->breadcrumbs = array(
+    'Kategori Barang' => array('index'),
+    'Tambah',
 );
 
 $this->boxHeader['small'] = 'Tambah';
 $this->boxHeader['normal'] = 'Tambah Kategori Barang';
-?>
-<div class="row">
-    <div class="large-6 columns">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
-    </div>
-</div>
-<?php
+
+$this->renderPartial('_form', array('model' => $model));
 
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
@@ -31,8 +27,7 @@ $this->menu = array(
     array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
         'items' => array(
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                    'accesskey' => 'i'
+                    'class' => 'success button'
                 )),
         ),
         'submenuOptions' => array('class' => 'button-group')
