@@ -117,6 +117,8 @@ li.active > a {
   .block-content div.panel {
     padding: 0.75rem;
     padding-bottom: 0; }
+    .block-content div.panel form {
+      margin: 0 -15px; }
   .block-content .prefix .fa-2x {
     padding-top: 4px; }
 
