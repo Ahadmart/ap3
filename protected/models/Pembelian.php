@@ -80,7 +80,7 @@ class Pembelian extends CActiveRecord {
           'id' => 'ID',
           'nomor' => 'Nomor',
           'tanggal' => 'Tanggal',
-          'profil_id' => 'Supplier',
+          'profil_id' => 'Profil',
           'referensi' => 'Referensi',
           'tanggal_referensi' => 'Tanggal Referensi',
           'hutang_piutang_id' => 'Hutang Piutang',
