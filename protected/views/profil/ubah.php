@@ -1,22 +1,19 @@
 <?php
+
 /* @var $this ProfilController */
 /* @var $model Profil */
 
-$this->breadcrumbs=array(
-	'Profil'=>array('index'),
-	$model->id=>array('view','id'=>$model->id),
-	'Ubah',
+$this->breadcrumbs = array(
+    'Profil' => array('index'),
+    $model->id => array('view', 'id' => $model->id),
+    'Ubah',
 );
 
 $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "Profil: {$model->nama}";
-?>
-<div class="row">
-    <div class="small-12 columns">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
-    </div>
-</div>
-<?php
+
+$this->renderPartial('_form', array('model' => $model));
+
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,

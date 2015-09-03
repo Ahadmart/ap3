@@ -1,4 +1,5 @@
 <?php
+
 /* @var $this PembelianController */
 /* @var $model Pembelian */
 
@@ -9,18 +10,12 @@ $this->breadcrumbs = array(
 
 $this->boxHeader['small'] = 'Tambah';
 $this->boxHeader['normal'] = 'Tambah Pembelian';
-?>
-<div class="row">
-    <div class="small-12 columns">
-        <?php
-        $this->renderPartial('_form', array(
-            'model' => $model,
-            'supplierList' => $supplierList
-        ));
-        ?>
-    </div>
-</div>
-<?php
+
+$this->renderPartial('_form', array(
+    'model' => $model,
+    'supplierList' => $supplierList
+));
+
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,

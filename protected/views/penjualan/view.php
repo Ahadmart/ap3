@@ -78,13 +78,15 @@ $model->scenario = 'tampil';
                   'htmlOptions' => array('class' => 'rata-kanan'),
                   'filter' => false
               ),
-//			  array(
-//					'name' => 'harga_beli',
-//					'htmlOptions' => array('class' => 'rata-kanan'),
-//					'value' => function($data) {
-//			 return number_format($data->harga_beli, 0, ',', '.');
-//		 }
-//			  ),
+              /*
+                array(
+                'name' => 'harga_beli',
+                'htmlOptions' => array('class' => 'rata-kanan'),
+                'value' => function($data) {
+                return number_format($data->harga_beli, 0, ',', '.');
+                }
+                ),
+               */
               array(
                   'name' => 'harga_jual',
                   'headerHtmlOptions' => array('class' => 'rata-kanan'),

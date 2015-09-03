@@ -1,5 +1,10 @@
-<div class="panel" id="barang-info" style="display: none; padding-top: 0">
-   <p></p>
+
+<div class="small-12 columns">
+   <div class="panel" id="barang-info" style="display: none; padding-top: 0">
+      <!--<div class="row">-->
+      <p></p>
+      <!--</div>-->
+   </div>
 </div>
 <div id="input-barang">
    <div class="medium-4 large-3 columns">
@@ -18,7 +23,7 @@
       </form>
    </div>
    <div class="medium-4 column">
-      <form>
+      <form id="form-caribarang">
          <div class="row collapse">
             <div class="small-3 large-2 columns">
                <span class="prefix"><i class="fa fa-search fa-2x"></i></span>
@@ -106,6 +111,10 @@
       return false;
    });
 
+   $("#form-caribarang").on('submit', function () {
+      return false;
+   });
+
    $("#qty").keyup(function (e) {
       if (e.keyCode === 13) {
          $("#tombol-ok-tambah").click();
@@ -138,6 +147,14 @@
             }
          }
       });
+   });
+
+   $("#namabarang").keyup(function (e) {
+      if (e.keyCode === 13) {
+         $("#tombol-cari").click();
+         $("#tombol-cari").focus();
+      }
+      return false;
    });
 
    $("#tombol-cari").click(function () {
