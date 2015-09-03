@@ -140,7 +140,7 @@
                                      array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Pengeluaran', 'url' => array('/pengeluaran/index')),
                                      array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Penerimaan', 'url' => array('/penerimaan/index')),
                                      array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                     array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Data Harian', 'url' => array('/laporanharian/index')),
+                                     array('label' => '<i class="fa fa-list fa-fw"></i>'.' Data Harian', 'url' => array('/laporanharian/index')),
                                  ),
                                  'itemOptions' => array('class' => 'has-dropdown'),
                                  'submenuOptions' => array('class' => 'dropdown'),
