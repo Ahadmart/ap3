@@ -20,7 +20,7 @@ $this->boxHeader['normal'] = 'Pembelian: ' . $model->nomor;
     </div>
 </div>
 <div class="row">
-    <div class="small-12  columns">
+    <div class="small-12 columns">
         <?php
         $this->widget('BGridView', array(
             'id' => 'pembelian-detail-grid',

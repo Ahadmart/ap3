@@ -18,50 +18,55 @@ $this->boxHeader['normal'] = 'Retur Penjualan: '.$model->nomor;
       <span class="secondary label">Status</span><span class="warning label"><?php echo $model->getNamaStatus(); ?></span>
    </div>
 </div>
+<div class="row">
+   <div class="small-12 columns">
+      <?php
+      $this->widget('BGridView', array(
+          'id' => 'retur-penjualan-detail-grid',
+          'dataProvider' => $returPenjualanDetail->search(),
+          //'filter' => $returPenjualanDetail,
+          'enableSorting' => false,
+          'columns' => array(
+              array(
+                  'name' => 'barcode',
+                  'value' => '$data->penjualanDetail->barang->barcode',
+              ),
+              array(
+                  'name' => 'namaBarang',
+                  'value' => '$data->penjualanDetail->barang->nama',
+              ),
+              array(
+                  'header' => 'Penjualan',
+                  'value' => '$data->penjualanDetail->penjualan->nomor',
+              ),
+              array(
+                  'header' => 'Tanggal Penjualan',
+                  'value' => '$data->penjualanDetail->penjualan->tanggal',
+              ),
+              array(
+                  'header' => 'Harga Jual',
+                  'value' => 'number_format($data->penjualanDetail->harga_jual,0,",",".")',
+                  'headerHtmlOptions' => array('class' => 'rata-kanan'),
+                  'htmlOptions' => array('class' => 'rata-kanan')
+              ),
+              array(
+                  'name' => 'qty',
+                  'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
+                  'htmlOptions' => array('class' => 'rata-kanan'),
+              ),
+              array(
+                  'name' => 'subTotal',
+                  'value' => 'number_format($data->total,0,",",".")',
+                  'headerHtmlOptions' => array('class' => 'rata-kanan'),
+                  'htmlOptions' => array('class' => 'rata-kanan'),
+                  'filter' => false
+              ),
+          ),
+      ));
+      ?>      
+   </div>
+</div>             
 <?php
- $this->widget('BGridView', array(
-       'id' => 'retur-penjualan-detail-grid',
-       'dataProvider' => $returPenjualanDetail->search(),
-       //'filter' => $returPenjualanDetail,
-       'enableSorting' => false,
-       'columns' => array(
-           array(
-               'name' => 'barcode',
-               'value' => '$data->penjualanDetail->barang->barcode',
-           ),
-           array(
-               'name' => 'namaBarang',
-               'value' => '$data->penjualanDetail->barang->nama',
-           ),
-           array(
-               'header' => 'Penjualan',
-               'value' => '$data->penjualanDetail->penjualan->nomor',
-           ),
-           array(
-               'header' => 'Tanggal Penjualan',
-               'value' => '$data->penjualanDetail->penjualan->tanggal',
-           ),
-           array(
-               'header' => 'Harga Jual',
-               'value' => 'number_format($data->penjualanDetail->harga_jual,0,",",".")',
-               'headerHtmlOptions' => array('class' => 'rata-kanan'),
-               'htmlOptions' => array('class' => 'rata-kanan')
-           ),
-           array(
-               'name' => 'qty',
-               'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
-               'htmlOptions' => array('class' => 'rata-kanan'),
-           ),
-			  array(
-					'name' => 'subTotal',
-					'value' => 'number_format($data->total,0,",",".")',
-					'headerHtmlOptions' => array('class' => 'rata-kanan'),
-					'htmlOptions' => array('class' => 'rata-kanan'),
-					'filter' => false
-			  ),
-       ),
-   ));                    
-                        
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,

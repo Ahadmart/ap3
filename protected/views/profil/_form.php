@@ -19,17 +19,6 @@
 
    <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
 
-   <?php /*
-     <div class="row">
-     <div class="small-12 columns">
-     <?php echo $form->labelEx($model, 'tipe_id'); ?>
-     <?php echo $form->textField($model, 'tipe_id'); ?>
-     <?php echo $form->error($model, 'tipe_id', array('class' => 'error')); ?>
-     </div>
-     </div>
-    * 
-    */
-   ?>
    <div class="row">
       <div class="small-12 columns">
          <?php echo $form->labelEx($model, 'tipe_id'); ?>
