@@ -373,4 +373,59 @@ class PembelianController extends Controller {
       $this->renderJSON($return);
    }
 
+   public function actionImport() {
+      if (isset($_POST['nomor'])) {
+         $dbGudang = 'gudang';
+         $nomor = $_POST['nomor'];
+         $pembelianPos2 = Yii::app()->db
+                 ->createCommand("
+                     SELECT tb.tglTransaksiBeli, s.namaSupplier
+                     FROM {$dbGudang}.transaksibeli tb 
+                     JOIN {$dbGudang}.supplier s on tb.idSupplier = s.idSupplier
+                     WHERE idTransaksiBeli = :nomor")
+                 ->bindValue(':nomor', $nomor)
+                 ->queryRow();
+         // print_r($pembelianPos2);
+         $profil = Profil::model()->find('nama=:nama', array('nama' => trim($pembelianPos2['namaSupplier'])));
+         // print_r($supplier);
+         if (!is_nul($profil)) {
+            $pembelian = new Pembelian;
+            $pembelian->profil_id = $profil->id;
+            $pembelian->referensi = $nomor;
+            $pembelian->tanggal_referensi = $pembelianPos2['tglTransaksiBeli'];
+            if ($pembelian->save()) {
+
+               $pembelianDetailPos2 = Yii::app()->db
+                       ->createCommand("
+                           select db.barcode, hargaBeli, gb.hargaJual, RRP, jumBarangAsli, tglExpire, barang.id
+                           from gudang.detail_beli db
+                           join gudang.barang gb on db.barcode = gb.barcode
+                           left join barang on db.barcode = barang.barcode
+                           where idTransaksiBeli = :nomor
+                               ")
+                       ->bindValue(':nomor', $nomor)
+                       ->queryAll();
+
+               foreach ($pembelianDetailPos2 as $detailPos2) {
+                  // Jika barang.id belum ada, buat data barang baru
+                  $barangId = $detailPos2['id'];
+                  if (is_null($detailPos2['id'])) {
+                     // Fix Me: Buat data barang baru
+                  }
+                  $detail = new PembelianDetail;
+                  $detail->pembelian_id = $pembelian->id;
+                  $detail->barang_id = $barangId;
+                  $detail->harga_beli = $detailPos2['hargaBeli'];
+                  $detail->harga_jual = $detailPos2['hargaJual'];
+                  $detail->harga_jual_rekomendasi = $detailPos2['RRP'];
+                  $detail->tanggal_kadaluwarsa = $detailPos2['tglExpire'];
+                  $detail->save();
+               }
+               $this->redirect('index');
+            }
+         }
+      }
+      $this->render('import');
+   }
+
 }
