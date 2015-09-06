@@ -77,6 +77,10 @@ $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => '',
         'items' => array(
+            array('label' => '<i class="fa fa-download"></i> <span class="ak">I</span>mport', 'url' => $this->createUrl('import'), 'linkOptions' => array(
+                    'class' => 'alert button',
+                    'accesskey' => 'i'
+                )),
             array('label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
                     'class' => 'button',
                     'accesskey' => 't'
@@ -86,6 +90,9 @@ $this->menu = array(
     ),
     array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => '',
         'items' => array(
+            array('label' => '<i class="fa fa-download"></i>', 'url' => $this->createUrl('import'), 'linkOptions' => array(
+                    'class' => 'button',
+                )),
             array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
                     'class' => 'button',
                 )),

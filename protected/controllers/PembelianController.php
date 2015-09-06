@@ -373,4 +373,104 @@ class PembelianController extends Controller {
       $this->renderJSON($return);
    }
 
+   public function actionImport() {
+      if (isset($_POST['nomor'])) {
+         $dbGudang = 'gudang';
+         $nomor = $_POST['nomor'];
+         $pembelianPos2 = Yii::app()->db
+                 ->createCommand("
+                     SELECT tb.tglTransaksiBeli, s.namaSupplier
+                     FROM {$dbGudang}.transaksibeli tb 
+                     JOIN {$dbGudang}.supplier s on tb.idSupplier = s.idSupplier
+                     WHERE idTransaksiBeli = :nomor")
+                 ->bindValue(':nomor', $nomor)
+                 ->queryRow();
+         // print_r($pembelianPos2);
+         $profil = Profil::model()->find('nama=:nama', array('nama' => trim($pembelianPos2['namaSupplier'])));
+         // print_r($supplier);
+         if (!is_null($profil)) {
+            $pembelian = new Pembelian;
+            $pembelian->profil_id = $profil->id;
+            $pembelian->referensi = $nomor;
+            $pembelian->tanggal_referensi = date_format(date_create_from_format('Y-m-d', $pembelianPos2['tglTransaksiBeli']), 'd-m-Y'); //$pembelianPos2['tglTransaksiBeli'].' 00:00:00';
+            if ($pembelian->save()) {
+
+               $pembelianDetailPos2 = Yii::app()->db
+                       ->createCommand("
+                           select db.barcode, hargaBeli, gb.hargaJual, RRP, jumBarangAsli, tglExpire, barang.id
+                           from gudang.detail_beli db
+                           join gudang.barang gb on db.barcode = gb.barcode
+                           left join barang on db.barcode = barang.barcode
+                           where idTransaksiBeli = :nomor
+                               ")
+                       ->bindValue(':nomor', $nomor)
+                       ->queryAll();
+
+               foreach ($pembelianDetailPos2 as $detailPos2) {
+                  // Jika barang.id belum ada, buat data barang baru
+                  $barangId = $detailPos2['id'];
+                  if (is_null($detailPos2['id'])) {
+                     $barangBaru = Yii::app()->db->createCommand("
+                        select b.barcode, b.namaBarang, k.namaKategoriBarang, s.namaSatuanBarang, r.namaRak
+                        from gudang.barang b
+                        left join gudang.kategori_barang k on b.idKategoriBarang=k.idKategoriBarang
+                        left join gudang.satuan_barang s on b.idSatuanBarang=s.idSatuanBarang
+                        left join gudang.rak r on b.idRak = r.idRak
+                        where barcode = :barcode
+                             ")
+                             ->bindValue(':barcode', $detailPos2['barcode'])
+                             ->queryRow();
+
+                     $kategoriBarang = KategoriBarang::model()->find("nama='{$barangBaru['namaKategoriBarang']}'");
+                     if (is_null($kategoriBarang)) {
+                        $kategoriId = 1;
+                     } else {
+                        $kategoriId = $kategoriBarang->id;
+                     }
+
+                     $satuanBarang = SatuanBarang::model()->find("nama='{$barangBaru['namaSatuanBarang']}'");
+                     if (is_null($satuanBarang)) {
+                        $satuanId = 1;
+                     } else {
+                        $satuanId = $satuanBarang->id;
+                     }
+
+                     $rakBarang = RakBarang::model()->find("nama='{$barangBaru['namaRak']}'");
+                     if (is_null($rakBarang)) {
+                        $rakId = 1;
+                     } else {
+                        $rakId = $rakBarang->id;
+                     }
+
+                     $barang = new Barang;
+                     $barang->barcode = $barangBaru['barcode'];
+                     $barang->nama = $barangBaru['namaBarang'];
+                     $barang->kategori_id = $kategoriId;
+                     $barang->satuan_id = $satuanId;
+                     $barang->rak_id = $rakId;
+                     if ($barang->save()) {
+                        $barangId = $barang->id;
+                        $supplierBarang = new SupplierBarang;
+                        $supplierBarang->barang_id = $barangId;
+                        $supplierBarang->supplier_id = $profil->id;
+                        $supplierBarang->save();
+                     }
+                  }
+                  $detail = new PembelianDetail;
+                  $detail->pembelian_id = $pembelian->id;
+                  $detail->barang_id = $barangId;
+                  $detail->qty = $detailPos2['jumBarangAsli'];
+                  $detail->harga_beli = $detailPos2['hargaBeli'];
+                  $detail->harga_jual = $detailPos2['hargaJual'];
+                  $detail->harga_jual_rekomendasi = $detailPos2['RRP'];
+                  $detail->tanggal_kadaluwarsa = $detailPos2['tglExpire'];
+                  $detail->save();
+               }
+               $this->redirect('index');
+            }
+         }
+      }
+      $this->render('import');
+   }
+
 }
