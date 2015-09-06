@@ -53,7 +53,7 @@
 	<div class="row">
 		<div class="small-12 columns">
 			<?php echo $form->labelEx($model, 'theme_id'); ?>
-			<?php echo $form->dropDownList($model, 'theme_id', CHtml::listData(Theme::model()->findAll(), 'id', 'nama')); ?>
+			<?php echo $form->dropDownList($model, 'theme_id', Theme::model()->listTheme()); ?>
 			<?php echo $form->error($model, 'theme_id', array('class' => 'error')); ?>
 		</div>
 	</div>

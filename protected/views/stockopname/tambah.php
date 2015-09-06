@@ -1,21 +1,17 @@
 <?php
+
 /* @var $this StockopnameController */
 /* @var $model StockOpname */
 
-$this->breadcrumbs=array(
-	'Stock Opname'=>array('index'),
-	'Tambah',
+$this->breadcrumbs = array(
+    'Stock Opname' => array('index'),
+    'Tambah',
 );
 
 $this->boxHeader['small'] = 'Tambah';
 $this->boxHeader['normal'] = 'Tambah Stock Opname';
-?>
-<div class="row">
-    <div class="small-12 columns">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
-    </div>
-</div>
-<?php
+
+$this->renderPartial('_form', array('model' => $model));
 
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),

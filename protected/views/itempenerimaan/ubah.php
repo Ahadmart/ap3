@@ -1,22 +1,19 @@
 <?php
+
 /* @var $this ItempenerimaanController */
 /* @var $model ItemKeuangan */
 
-$this->breadcrumbs=array(
-	'Item Keuangan'=>array('index'),
-	$model->id=>array('view','id'=>$model->id),
-	'Ubah',
+$this->breadcrumbs = array(
+    'Item Keuangan' => array('index'),
+    $model->id => array('view', 'id' => $model->id),
+    'Ubah',
 );
 
 $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "Item Keuangan: {$model->nama}";
-?>
-<div class="row">
-    <div class="large-6 columns">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
-    </div>
-</div>
-<?php
+
+$this->renderPartial('_form', array('model' => $model));
+
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
