@@ -541,6 +541,7 @@ class Penjualan extends CActiveRecord {
       $strTotal = 'Total       : '.$this->getTotal();
 
       $kananMaxLength = strlen($strNomor) > strlen($strTgl) ? strlen($strNomor) : strlen($strTgl);
+      $kananMaxLength = $kananMaxLength > $strTglDue ? $kananMaxLength : strlen($strTglDue);
       /* Jika Nama kasir terlalu panjang, akan di truncate */
       $strKasir = strlen($strKasir) > $kananMaxLength ? substr($strKasir, 0, $kananMaxLength - 2).'..' : $strKasir;
 
