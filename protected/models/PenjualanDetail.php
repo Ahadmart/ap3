@@ -10,8 +10,6 @@
  * @property string $qty
  * @property string $harga_jual
  * @property string $harga_jual_rekomendasi
- * @property string $harga_beli
- * @property string $harga_beli_temp
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
@@ -45,11 +43,11 @@ class PenjualanDetail extends CActiveRecord {
       return array(
           array('penjualan_id, barang_id, harga_jual', 'required'),
           array('penjualan_id, barang_id, qty, updated_by', 'length', 'max' => 10),
-          array('harga_jual, harga_jual_rekomendasi, harga_beli, harga_beli_temp', 'length', 'max' => 18),
+          array('harga_jual, harga_jual_rekomendasi', 'length', 'max' => 18),
           array('created_at, updated_at, updated_by', 'safe'),
           // The following rule is used by search().
           // @todo Please remove those attributes that should not be searched.
-          array('id, penjualan_id, barang_id, qty, harga_jual, harga_jual_rekomendasi, harga_beli, harga_beli_temp, updated_at, updated_by, created_at, namaBarang, barcode, nomorPenjualan, nomorPenjualan', 'safe', 'on' => 'search'),
+          array('id, penjualan_id, barang_id, qty, harga_jual, harga_jual_rekomendasi, updated_at, updated_by, created_at, namaBarang, barcode, nomorPenjualan, nomorPenjualan', 'safe', 'on' => 'search'),
       );
    }
 

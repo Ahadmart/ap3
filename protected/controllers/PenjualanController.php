@@ -390,4 +390,50 @@ class PenjualanController extends Controller {
       }
    }
 
+   public function actionImport() {
+      if (isset($_POST['nomor'])) {
+         $dbGudang = 'gudang';
+         $nomor = $_POST['nomor'];
+         $penjualanPos2 = Yii::app()->db->createCommand("
+                     SELECT t.tglTransaksiJual, c.namaCustomer
+                     FROM {$dbGudang}.transaksijual t
+                     JOIN {$dbGudang}.customer c on t.idCustomer=c.idCustomer
+                     WHERE idTransaksiJual = :nomor")
+                 ->bindValue(':nomor', $nomor)
+                 ->queryRow();
+         $profil = Profil::model()->find('nama=:nama', array('nama' => trim($penjualanPos2['namaCustomer'])));
+         if (!is_null($profil)) {
+            $penjualan = new Penjualan;
+            $penjualan->profil_id = $profil->id;
+            if ($penjualan->save()) {
+
+               $penjualanDetailPos2 = Yii::app()->db
+                       ->createCommand("
+                           select d.barcode, d.jumBarang, d.hargaBeli, d.hargaJual, d.RRP, barang.id
+                           from gudang.detail_jual d
+                           join barang on d.barcode=barang.barcode
+                           where d.nomorStruk = :nomor
+                               ")
+                       ->bindValue(':nomor', $nomor)
+                       ->queryAll();
+
+               foreach ($penjualanDetailPos2 as $detailPos2) {
+                  $barangId = $detailPos2['id'];
+
+                  $detail = new PenjualanDetail;
+                  $detail->barang_id = $barangId;
+                  $detail->penjualan_id = $penjualan->id;
+                  $detail->qty = $detailPos2['jumBarang'];
+                  $detail->harga_jual = $detailPos2['hargaJual'];
+                  $detail->harga_jual_rekomendasi = $detailPos2['RRP'];
+                  $detail->save();
+               }
+               $this->redirect('index');
+            }
+         }
+      }
+
+      $this->render('import');
+   }
+
 }
