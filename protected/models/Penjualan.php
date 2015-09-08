@@ -590,7 +590,7 @@ class Penjualan extends CActiveRecord {
       $signatureHead1 = '          Diterima';
       $signatureHead2 = 'a.n. '.$branchConfig['toko.nama'];
 
-      $struk .= $signatureHead1.str_pad($signatureHead2, 29 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT).PHP_EOL;
+      $struk .= $signatureHead1.str_pad($signatureHead2, 28 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT).PHP_EOL;
       $struk .= PHP_EOL.PHP_EOL.PHP_EOL.PHP_EOL;
       $struk .= '     (________________)              (________________)'.PHP_EOL;
       return $struk;

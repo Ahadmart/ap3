@@ -118,6 +118,10 @@ $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
         'items' => array(
+            array('label' => '<i class="fa fa-download"></i> I<span class="ak">m</span>port', 'url' => $this->createUrl('import'), 'linkOptions' => array(
+                    'class' => 'warning button',
+                    'accesskey' => 'm'
+                )),
             array('label' => '<i class="fa fa-pencil"></i> <span class="ak">U</span>bah', 'url' => $this->createUrl('ubah', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'button',
                     'accesskey' => 'u'
@@ -137,6 +141,9 @@ $this->menu = array(
     ),
     array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
         'items' => array(
+            array('label' => '<i class="fa fa-download"></i>', 'url' => $this->createUrl('import'), 'linkOptions' => array(
+                    'class' => 'warning button',
+                )),
             array('label' => '<i class="fa fa-pencil"></i>', 'url' => $this->createUrl('ubah', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'button',
                 )),
