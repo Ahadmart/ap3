@@ -512,8 +512,9 @@ class Penjualan extends CActiveRecord {
    public function invoiceText($cpi = 10) {
       $lebarKertas = 8; //inchi
       $jumlahKolom = $cpi * $lebarKertas;
-      $rowPerPage = 36;
-      $row = 0;
+      $rowPerPage = 44;
+      $rowCount = 0;
+      $halaman = 1;
 
       $configs = Config::model()->findAll();
       /*
@@ -532,7 +533,6 @@ class Penjualan extends CActiveRecord {
               ")
               ->bindValue(':penjualanId', $this->id)
               ->queryAll();
-
 
       $struk = '';
 
@@ -565,12 +565,16 @@ class Penjualan extends CActiveRecord {
               .PHP_EOL;
 //      $struk .= PHP_EOL;
 
+      $struk .= 'Kepada: '.$this->profil->nama.PHP_EOL;
+      $struk .= '        '.substr($this->profil->alamat1.' '.$this->profil->alamat2.' '.$this->profil->alamat3, 0, $jumlahKolom - 8).PHP_EOL;
+
       $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL;
       $textHeader1 = ' Barang';
       $textHeader2 = 'RRP     Harga    Qty Sub Total ';
       $textHeader = $textHeader1.str_pad($textHeader2, $jumlahKolom - strlen($textHeader1), ' ', STR_PAD_LEFT).PHP_EOL;
       $struk .= $textHeader;
       $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL;
+      $rowCount = 11;
 
       $no = 1;
       foreach ($penjualanDetail as $detail) {
@@ -584,11 +588,39 @@ class Penjualan extends CActiveRecord {
          $row2 = $strHargaJualRekomendasi.'  '.$strHarga.'  '.$strQty.'  '.$strSubTotal;
          $row = $row1.str_pad($row2.' ', $jumlahKolom - strlen($row1), ' ', STR_PAD_LEFT).PHP_EOL;
 
+         /* Jika ini seharusnya halaman baru */
+         if ($rowCount > $rowPerPage) {
+            $halaman++;
+            $halamanStr = $this->nomor.' '.$halaman;
+
+            $struk .= PHP_EOL;
+            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+            $rowCount = 1; // Reset row counter
+         }
+
          $struk .= $row;
          $no++;
+         $rowCount++;
+      }
+      /* Jika ini seharusnya halaman baru */
+      if ($rowCount > $rowPerPage && $halaman > 0) {
+         $halaman++;
+         $halamanStr = $this->nomor.' '.$halaman;
+
+         $struk .= PHP_EOL;
+         $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+         $rowCount = 1; // Reset row counter
       }
       $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL.PHP_EOL;
 
+      if ($rowCount > $rowPerPage - 6) {
+         $halaman++;
+         $halamanStr = $this->nomor.' '.$halaman;
+
+         $struk .= PHP_EOL;
+         $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+         $rowCount = 1; // Reset row counter
+      }
       $signatureHead1 = '          Diterima';
       $signatureHead2 = 'a.n. '.$branchConfig['toko.nama'];
 
