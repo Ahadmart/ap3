@@ -514,7 +514,7 @@ class Penjualan extends CActiveRecord {
       $jumlahKolom = $cpi * $lebarKertas;
       $rowPerPage = 44;
       $rowCount = 0;
-      $halaman = 1;
+      $halaman = 0;
 
       $configs = Config::model()->findAll();
       /*
