@@ -509,9 +509,12 @@ class Penjualan extends CActiveRecord {
       return $bulan[$i - 1];
    }
 
-   public function invoiceText($cpi = 15) {
+   public function invoiceText($cpi = 10) {
       $lebarKertas = 8; //inchi
       $jumlahKolom = $cpi * $lebarKertas;
+      $rowPerPage = 44;
+      $rowCount = 0;
+      $halaman = 1;
 
       $configs = Config::model()->findAll();
       /*
@@ -530,7 +533,6 @@ class Penjualan extends CActiveRecord {
               ")
               ->bindValue(':penjualanId', $this->id)
               ->queryAll();
-
 
       $struk = '';
 
@@ -563,36 +565,68 @@ class Penjualan extends CActiveRecord {
               .PHP_EOL;
 //      $struk .= PHP_EOL;
 
+      $struk .= 'Kepada: '.$this->profil->nama.PHP_EOL;
+      $struk .= '        '.substr($this->profil->alamat1.' '.$this->profil->alamat2.' '.$this->profil->alamat3, 0, $jumlahKolom - 8).PHP_EOL;
+
       $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL;
-      $textHeader1 = ' No  Barang';
-      $textHeader2 = 'RRP      Harga     Qty  Sub Total ';
+      $textHeader1 = ' Barang';
+      $textHeader2 = 'RRP     Harga    Qty Sub Total ';
       $textHeader = $textHeader1.str_pad($textHeader2, $jumlahKolom - strlen($textHeader1), ' ', STR_PAD_LEFT).PHP_EOL;
       $struk .= $textHeader;
       $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL;
+      $rowCount = 11;
 
       $no = 1;
       foreach ($penjualanDetail as $detail) {
-         $strNomor = str_pad($no, 3, ' ', STR_PAD_LEFT).'.';
-         $strBarang = str_pad(trim($detail['nama']), 44, ' ');
-         $strQty = str_pad($detail['qty'], 6, ' ', STR_PAD_LEFT);
-         $strHarga = str_pad(number_format($detail['harga_jual'], 0, ',', '.'), 9, ' ', STR_PAD_LEFT);
-         $strHargaJualRekomendasi = str_pad(number_format($detail['harga_jual_rekomendasi'], 0, ',', '.'), 9, ' ', STR_PAD_LEFT);
-         $strSubTotal = str_pad(number_format($detail['harga_jual'] * $detail['qty'], 0, ',', '.'), 9, ' ', STR_PAD_LEFT);
-         $row1 = $strNomor.' '.$strBarang.' ';
+         $strBarcode = str_pad(substr($detail['barcode'], 0, 13), 13, ' '); // Barcode hanya diambil 13 char pertama
+         $strBarang = str_pad(trim(substr($detail['nama'], 0, 28)), 28, ' '); //Nama Barang hanya diambil 28 char pertama
+         $strQty = str_pad($detail['qty'], 5, ' ', STR_PAD_LEFT);
+         $strHarga = str_pad(number_format($detail['harga_jual'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
+         $strHargaJualRekomendasi = str_pad(number_format($detail['harga_jual_rekomendasi'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
+         $strSubTotal = str_pad(number_format($detail['harga_jual'] * $detail['qty'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
+         $row1 = ' '.$strBarcode.' '.$strBarang.' ';
          $row2 = $strHargaJualRekomendasi.'  '.$strHarga.'  '.$strQty.'  '.$strSubTotal;
          $row = $row1.str_pad($row2.' ', $jumlahKolom - strlen($row1), ' ', STR_PAD_LEFT).PHP_EOL;
 
+         /* Jika ini seharusnya halaman baru */
+         if ($rowCount > $rowPerPage) {
+            $halaman++;
+            $halamanStr = $this->nomor.' '.$halaman;
+
+            $struk .= PHP_EOL;
+            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+            $rowCount = 1; // Reset row counter
+         }
+
          $struk .= $row;
          $no++;
+         $rowCount++;
+      }
+      /* Jika ini seharusnya halaman baru */
+      if ($rowCount > $rowPerPage && $halaman > 0) {
+         $halaman++;
+         $halamanStr = $this->nomor.' '.$halaman;
+
+         $struk .= PHP_EOL;
+         $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+         $rowCount = 1; // Reset row counter
       }
       $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL.PHP_EOL;
 
+      if ($rowCount > $rowPerPage - 6) {
+         $halaman++;
+         $halamanStr = $this->nomor.' '.$halaman;
+
+         $struk .= PHP_EOL;
+         $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+         $rowCount = 1; // Reset row counter
+      }
       $signatureHead1 = '          Diterima';
       $signatureHead2 = 'a.n. '.$branchConfig['toko.nama'];
 
       $struk .= $signatureHead1.str_pad($signatureHead2, 28 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT).PHP_EOL;
       $struk .= PHP_EOL.PHP_EOL.PHP_EOL.PHP_EOL;
-      $struk .= '     (________________)              (________________)'.PHP_EOL;
+      $struk .= '     (                )              (                )'.PHP_EOL;
       return $struk;
    }
 

@@ -1,5 +1,7 @@
 <?php /* @var $this Controller */ ?>
 <?php $this->beginContent('//layouts/pos'); ?>
+<?php
+/*
 <div class="medium-2 columns sidebar kiri">
 	<div id="logo">
 		<img src="<?php echo Yii::app()->theme->baseUrl.'/img/' ?>ahadmart-logo-d.png" />
@@ -29,10 +31,10 @@
 		<div class="row collapse">
 			<div class="small-9 columns">
 				<?php
-				echo CHtml::dropDownList('customer', '', CHtml::listData(Customer::model()->findAll(), 'id', 'nama'), array(
-					 'id' => 'customer',
-					 'accesskey' => 'p',
-				));
+//				echo CHtml::dropDownList('customer', '', CHtml::listData(Customer::model()->findAll(), 'id', 'nama'), array(
+//					 'id' => 'customer',
+//					 'accesskey' => 'p',
+//				));
 				?>
 			</div>
 			<div class="small-3 columns">
@@ -43,19 +45,22 @@
 	<a href="<?php echo Yii::app()->baseUrl; ?>" class="secondary expand button"><i class="fa fa-home fa-2x fa-fw"></i></a>
 	<a href="<?php echo Yii::app()->createUrl('/customer'); ?>" class="secondary expand button"><i class="fa fa-user fa-2x fa-fw"></i></a>
 </div>
-<div class="medium-7 columns">
+ * 
+ */
+?>
+<div class="medium-8 large-9 columns">
 	<div id="transaksi">
 		<?php echo $content; ?>
 	</div>
 </div>
-<div class="medium-3 columns sidebar kanan">
+<div class="medium-4 large-3 columns sidebar kanan">
 	<form>
 		<div class="row collapse">
 			<div class="small-3 large-2 columns">
 				<span class="prefix"><i class="fa fa-barcode fa-2x"></i></span>
 			</div>
 			<div class="small-9 large-10 columns">
-				<input id="scan" type="text"  placeholder="Scan [B]arcode" accesskey="b"/>
+            <input id="scan" type="text"  placeholder="Scan [B]arcode" accesskey="b" autofocus="autofocus"/>
 			</div>
 		</div>
 		<div class="row collapse">
