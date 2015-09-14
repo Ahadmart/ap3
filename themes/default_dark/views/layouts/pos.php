@@ -13,11 +13,13 @@
 
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-      <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/animate.min.css">
+      <!--<link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/animate.min.css">-->
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/app.css">
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pos.css">
       <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
+      <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/jquery-ui-ac.min.css">
       <script src="<?php echo Yii::app()->theme->baseUrl; ?>/js/modernizr.js"></script>
+      <script src="<?php echo Yii::app()->theme->baseUrl; ?>/js/jquery-ui.min-ac.js"></script>
       <?php Yii::app()->clientScript->registerCoreScript('jquery'); ?>
    </head>
    <body>
@@ -33,7 +35,7 @@
 
                <section class="middle tab-bar-section" style="text-align: left">
                   <span class="title"><img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" /></span>
-                  <span class="right" style="font-size: 0.9em"><i class="fa fa-user fa-fw"></i> <?php echo Yii::app()->user->namaLengkap; ?>&nbsp;&nbsp;&nbsp;<i class="fa fa-clock-o fa-fw"></i> <span id="clock"></span></span>
+                  <span class="right" style="font-size: 0.9em"><i class="fa fa-user fa-fw"></i> <?php echo Yii::app()->user->namaLengkap; ?>&nbsp;&nbsp;&nbsp;<i class="fa fa-clock-o fa-fw"></i> <span id="clock">00:00:00</span></span>
                </section>
 
                <section class="right-small">
@@ -60,9 +62,14 @@
                      </ul>
                   </li>
                   <li><a href="#">The Encyclopedists</a></li>
-                  <li><a href="#">The Mayors</a></li>
-                  <li><a href="#">The Traders</a></li>
-                  <li><a href="#">The Merchant Princes</a></li>
+                  <form>
+                     <div class="small-12 columns">
+                        <input type="text" accesskey="z"/>
+                     </div>
+                     <div class="small-12 columns">
+                        <input type="submit" class="bigfont tiny button" />
+                     </div>
+                  </form>
                </ul>
             </aside>
 

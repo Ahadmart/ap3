@@ -4,94 +4,126 @@
 */
 
 body, html {
-	height: 100%;
+   height: 100%;
 }
 body{
-	color: #222222;
-	background: #dddcd6 url(../img/bg-b.jpg) repeat-y center fixed;// url(../img/bg.png);
-	padding: 0;
-	margin: 0;
-	font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
-	font-style: normal;
-	font-weight: 300;
-	line-height: 1;
-	position: relative;
-	cursor: default;
+   color: #222222;
+   background: #dddcd6 url(../img/bg-b.jpg) repeat-y center fixed;// url(../img/bg.png);
+   padding: 0;
+   margin: 0;
+   font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
+   font-style: normal;
+   font-weight: 300;
+   line-height: 1;
+   position: relative;
+   cursor: default;
 }
 .sidebar {
-	height: 100%;
-	background-color: #292929;
-	padding-top: 15px;	
-	.prefix .fa-2x{
-		padding-top:4px;
-	}
-	.huruf{
-		/*font-weight: bold;*/
-		font-size: 1.5rem;
-	}
-/*	&.kiri{
-		 Collapsed 
-		width: 0; 
-		overflow: hidden;
-		position: fixed;
-		top: 0;
-		left: 0;
-	}*/
+   height: 100%;
+   background-color: rgba(0,0,0,0.5);
+   padding-top: 15px;	
+   .prefix .fa-2x{
+      padding-top:4px;
+   }
+   .postfix .fa-2x{
+      padding-top:4px;
+   }
+   .huruf{
+      /*font-weight: bold;*/
+      font-size: 1.5rem;
+   }
+   /*	&.kiri{
+          Collapsed 
+         width: 0; 
+         overflow: hidden;
+         position: fixed;
+         top: 0;
+         left: 0;
+      }*/
 }
 #info-tabel{
-	width: 100%;
-	.key{
-		font-weight: bold;
-		text-align: right;
-	}
-	td{
-		font-size: 0.825rem;
-		padding: 2px;
-	}
+   width: 100%;
+   .key{
+      font-weight: bold;
+      text-align: right;
+   }
+   td{
+      font-size: 0.825rem;
+      padding: 2px;
+   }
 }
 #transaksi{
-	padding-top:15px;
+   padding-top:15px;
 }
 .tabel-detail-jual{
-	width: 100%;
+   width: 100%;
 }
 #total-belanja{
-	font-size: 2.825rem;
-	color: #FF0;
-	text-align: right;
-	padding: 5px 0px;
-	width: 100%;
-	text-shadow: 1px 1px black;
-	margin-top: 35px;
+   font-size: 2.825rem;
+   color: #FF0;
+   text-align: right;
+   padding: 5px 0px;
+   width: 100%;
+   text-shadow: 1px 1px black;
+   margin-top: 35px;
 }
 #surcharge{
-	font-size: 2rem;
-	color: #F00;
-	text-align: right;
-	padding: 5px 0px;
-	width: 100%;
-	text-shadow: 1px 1px black;
+   font-size: 2rem;
+   color: #F00;
+   text-align: right;
+   padding: 5px 0px;
+   width: 100%;
+   text-shadow: 1px 1px black;
 }
 #kembali{
-	font-size: 2rem;
-	color: #ADFF2F;
-	text-align: right;
-	padding: 5px 0px;
-	width: 100%;
-	text-shadow: 1px 1px black;
-	margin-bottom: 15px;
+   font-size: 2rem;
+   color: #ADFF2F;
+   text-align: right;
+   padding: 5px 0px;
+   width: 100%;
+   text-shadow: 1px 1px black;
+   margin-bottom: 15px;
 }
 
 #logo{
-	/*background-color: #fff;*/
-	/*padding: 10px;*/
-	margin-bottom: 35px;
+   /*background-color: #fff;*/
+   /*padding: 10px;*/
+   margin-bottom: 35px;
 }
 
 #tombol-simpan{
-	float: right;
+   float: right;
 }
 
 #tombol-batal{
-	float: left;
+   float: left;
+}
+.ui-autocomplete{
+   background-color: #fff;
+   border: 1px solid #dddcd6;
+}
+
+.ui-menu-item{
+   a{
+      color: #333;    
+      font-size: 0.9rem;
+      small{
+         font-size: 0.75rem;
+      }
+   }
+   &.ui-state-focus{
+      box-shadow: 0px 0px 15px #AFD8F8;
+      border: 1px solid #AFD8F8;
+      margin: 0;
+   }
+}
+
+.off-canvas-wrap, .main-section, .inner-wrap{
+   height: 100%;
+}
+
+#gritter-notice-wrapper{
+   left:33%;
+   right:33%;
+   top:3px;
 }

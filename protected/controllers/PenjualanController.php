@@ -256,10 +256,11 @@ class PenjualanController extends Controller {
     */
    public function actionTotal($id) {
       $penjualan = $this->loadModel($id);
-      $penjualan->scenario = 'tampil';
-      $total = $penjualan->total;
+      $total = $penjualan->ambilTotal();
+      $totalF = $penjualan->total;
       $return['sukses'] = true;
-      $return['totalF'] = $total;
+      $return['total'] = $total;
+      $return['totalF'] = $totalF;
       echo CJSON::encode($return);
    }
 

@@ -47,11 +47,10 @@ class PosController extends Controller {
       // Uncomment the following line if AJAX validation is needed
       // $this->performAjaxValidation($model);
 
-      if (isset($_POST['Penjualan'])) {
-         $model->attributes = $_POST['Penjualan'];
-         if ($model->save())
-            $this->redirect(array('view', 'id' => $model->id));
-      }
+      $model->profil_id = Profil::PROFIL_UMUM;
+
+      if ($model->save())
+         $this->redirect(array('ubah', 'id' => $model->id));
 
       $this->render('tambah', array(
           'model' => $model,
@@ -68,14 +67,13 @@ class PosController extends Controller {
       // Uncomment the following line if AJAX validation is needed
       // $this->performAjaxValidation($model);
 
-      if (isset($_POST['Penjualan'])) {
-         $model->attributes = $_POST['Penjualan'];
-         if ($model->save())
-            $this->redirect(array('view', 'id' => $id));
-      }
+      $penjualanDetail = new PenjualanDetail('search');
+      $penjualanDetail->unsetAttributes();
+      $penjualanDetail->setAttribute('penjualan_id', '='.$id);
 
       $this->render('ubah', array(
           'model' => $model,
+          'penjualanDetail' => $penjualanDetail
       ));
    }
 
@@ -129,6 +127,69 @@ class PosController extends Controller {
          echo CActiveForm::validate($model);
          Yii::app()->end();
       }
+   }
+
+   public function actionCariBarang($term) {
+      $arrTerm = explode(' ', $term);
+      $wBarcode = '(';
+      $wNama = '(';
+      $pBarcode = array();
+      $param = array();
+      $firstRow = true;
+      $i = 1;
+      foreach ($arrTerm as $bTerm) {
+         if (!$firstRow) {
+            $wBarcode.=' AND ';
+            $wNama.=' AND ';
+         }
+         $wBarcode.="barcode like :term{$i}";
+         $wNama.="nama like :term{$i}";
+         $param[":term{$i}"] = "%{$bTerm}%";
+         $firstRow = FALSE;
+         $i++;
+      }
+      $wBarcode .= ')';
+      $wNama .= ')';
+//      echo $wBarcode.' AND '.$wNama;
+//      print_r($param);
+
+      $q = new CDbCriteria();
+      $q->addCondition("{$wBarcode} OR {$wNama}");
+      $q->params = $param;
+      $barangs = Barang::model()->findAll($q);
+
+      $r = array();
+      foreach ($barangs as $barang) {
+         $r[] = array(
+             'label' => $barang->nama,
+             'value' => $barang->barcode,
+             'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
+             'harga' => $barang->hargaJual
+         );
+      }
+
+      $this->renderJSON($r);
+   }
+
+   /**
+    * Tambah barang jual
+    * @param int $id ID Penjualan
+    * @return JSON boolean sukses, array error[code, msg]
+    */
+   public function actionTambahBarang($id) {
+      $return = array(
+          'sukses' => false,
+          'error' => array(
+              'code' => '500',
+              'msg' => 'Sempurnakan input!',
+          )
+      );
+      if (isset($_POST['barcode'])) {
+         $penjualan = $this->loadModel($id);
+         $barcode = $_POST['barcode'];
+         $return = $penjualan->tambahBarang($barcode, 1);
+      }
+      $this->renderJSON($return);
    }
 
 }

@@ -19,17 +19,19 @@ body {
 
 .sidebar {
   height: 100%;
-  background-color: #292929;
+  background-color: rgba(0, 0, 0, 0.5);
   padding-top: 15px;
   /*	&.kiri{
-  		 Collapsed 
-  		width: 0; 
-  		overflow: hidden;
-  		position: fixed;
-  		top: 0;
-  		left: 0;
-  	}*/ }
+         Collapsed 
+        width: 0; 
+        overflow: hidden;
+        position: fixed;
+        top: 0;
+        left: 0;
+     }*/ }
   .sidebar .prefix .fa-2x {
+    padding-top: 4px; }
+  .sidebar .postfix .fa-2x {
     padding-top: 4px; }
   .sidebar .huruf {
     /*font-weight: bold;*/
@@ -86,5 +88,27 @@ body {
 
 #tombol-batal {
   float: left; }
+
+.ui-autocomplete {
+  background-color: #fff;
+  border: 1px solid #dddcd6; }
+
+.ui-menu-item a {
+  color: #333;
+  font-size: 0.9rem; }
+  .ui-menu-item a small {
+    font-size: 0.75rem; }
+.ui-menu-item.ui-state-focus {
+  box-shadow: 0px 0px 15px #AFD8F8;
+  border: 1px solid #AFD8F8;
+  margin: 0; }
+
+.off-canvas-wrap, .main-section, .inner-wrap {
+  height: 100%; }
+
+#gritter-notice-wrapper {
+  left: 33%;
+  right: 33%;
+  top: 3px; }
 
 /*# sourceMappingURL=pos.css.map */
