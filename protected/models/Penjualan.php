@@ -512,9 +512,9 @@ class Penjualan extends CActiveRecord {
    public function invoiceText($cpi = 10) {
       $lebarKertas = 8; //inchi
       $jumlahKolom = $cpi * $lebarKertas;
-      $rowPerPage = 44;
+      $rowPerPage = 59;
       $rowCount = 0;
-      $halaman = 1;
+      $halaman = 0;
 
       $configs = Config::model()->findAll();
       /*
