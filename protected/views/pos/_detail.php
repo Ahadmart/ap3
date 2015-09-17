@@ -1,40 +1,13 @@
 <?php
-
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/vendor/jquery.poshytip.js', CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/vendor/jquery-editable-poshytip.min.js', CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/jquery-editable.css');
-/*
- * 	Menambahkan rutin pada saat edit qty
- * 1. Update Grid Pembelian detail
- * 2. Update Total Pembelian
- */
-Yii::app()->clientScript->registerScript('editableQty', ''
-        .'$( document ).ajaxComplete(function() {'
-        .'$(".editable-qty").editable({'
-        . ' mode: "inline",'
-        .'	success: function(response, newValue) {'
-        .'					if (response.sukses) {'
-        .'						$.fn.yiiGridView.update("penjualan-detail-grid");'
-        .'						updateTotal();'
-        .'					}'
-        .'				}  '
-        .'});'
-        .'});'
-        .'$(".editable-qty").editable({'
-        . ' mode: "inline",'
-        .'	success: function(response, newValue) {'
-        .'					if (response.sukses) {'
-        .'						$.fn.yiiGridView.update("penjualan-detail-grid");'
-        .'						updateTotal();'
-        .'					}'
-        .'				}  '
-        .'});', CClientScript::POS_END);
 
 $this->widget('BGridView', array(
     'id' => 'penjualan-detail-grid',
     'dataProvider' => $penjualanDetail->search(),
     //'filter' => $penjualanDetail,
-//       'summaryText' => false,
+    //'summaryText' => false,
     'enableSorting' => false,
     'columns' => array(
         array(
@@ -85,3 +58,35 @@ $this->widget('BGridView', array(
         ),
     ),
 ));
+?>
+<script>
+
+   function enableEditable() {
+      $(".editable-qty").editable({
+         mode: "inline",
+         success: function (response, newValue) {
+            if (response.sukses) {
+               $.fn.yiiGridView.update("penjualan-detail-grid");
+               updateTotal();
+            }
+         }
+      });
+      $('.editable-qty').on('shown', function (e, editable) {
+         setTimeout(function () {
+            editable.input.$input.select();
+         }, 0);
+      });
+      $('.editable-qty').on('hidden', function (e, reason) {
+            // focus on input barcode
+            $("#scan").focus();
+      });
+   }
+
+   $(function () {
+      enableEditable();
+   });
+
+   $(document).ajaxComplete(function () {
+      enableEditable();
+   });
+</script>

@@ -12,7 +12,13 @@ $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 ?>
 
-<div class="medium-6 large-7 columns" style="/*height: 100%; overflow: scroll*/">
+<div class="medium-6 large-7 columns" style="height: 100%; overflow: scroll">
+   <div id="total-belanja">
+      <?php echo $model->getTotal(); ?>
+   </div>
+   <div id="kembali">
+      0
+   </div>
    <div id="transaksi">
       <?php
       $this->renderPartial('_detail', array(
@@ -34,12 +40,6 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
          <a href="#" class="button postfix" id="tombol-tambah-barang"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
       </div>
    </div>
-   <div id="total-belanja">
-      <?php echo $model->getTotal(); ?>
-   </div>
-   <div id="kembali">
-      0
-   </div>
    <div class="row collapse">
       <div class="small-3 large-2 columns">
          <span class="prefix"><i class="fa fa-2x fa-bars"></i></span>
@@ -47,30 +47,12 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
       <div class="small-6 large-7 columns">
          <select accesskey="a">
             <option value="1">Cash</option>
-            <option value="2">Transfer</option>
-            <option value="3">Debit</option>
-            <option value="4">Kredit</option>
          </select>
       </div>
       <div class="small-3 large-3 columns">
          <span class="postfix"><kbd>Alt</kbd> <kbd>a</kbd></span>
       </div>
    </div>	
-   <?php
-   /*
-     <div class="row collapse">
-     <div class="small-3 large-2 columns">
-     <span class="prefix"><i class="fa fa-credit-card fa-2x"></i></span>
-     </div>
-     <div class="small-6 large-8 columns">
-     <input type="text"  placeholder="Surcharge"/>
-     </div>
-     <div class="small-3 large-2 columns">
-     <span class="postfix huruf">%</span>
-     </div>
-     </div>
-    */
-   ?>
    <div class="row collapse">
       <div class="small-3 large-2 columns">
          <span class="prefix huruf">IDR</span>
@@ -79,8 +61,8 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
          <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
       </div>
    </div>
-   <a href="" class="button" id="tombol-simpan">Simpan</a>
-   <a href="" class="secondary button" id="tombol-batal">Batal</a>
+   <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
+   <a href="" class="alert bigfont tiny  button" id="tombol-batal">Batal</a>
 </div>
 <div style="display: none" id="total-belanja-h"><?php echo $model->ambilTotal(); ?></div>
 <?php
@@ -88,21 +70,25 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/jquer
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 ?>
 <script>
-   $("#uang-dibayar").change(function () {
-//      var kembali = $(this).val() - $("#total-belanja-h").text();
-      console.log("this:" + $(this).val() + "; total:" + $("#total-belanja-h").text());
+   function tampilkanKembalian() {
+      //console.log("this:" + $(this).val() + "; total:" + $("#total-belanja-h").text());
       var dataKirim = {
          total: $("#total-belanja-h").text(),
-         bayar: $(this).val()
+         bayar: $("#uang-dibayar").val()
       };
       $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
-   });
+   }
 
    $(function () {
       $(document).on('click', "#tombol-tambah-barang", function () {
          dataUrl = '<?php echo $this->createUrl('tambahbarang', array('id' => $model->id)); ?>';
          dataKirim = {barcode: $("#scan").val()};
          console.log(dataUrl);
+         /* Jika tidak ada barang, keluar! */
+         if ($("#scan").val() === '') {
+            return false;
+         }
+
          $.ajax({
             type: 'POST',
             url: dataUrl,
@@ -166,12 +152,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/ven
             if (data.sukses) {
                $("#total-belanja-h").text(data.total);
                $("#total-belanja").text(data.totalF);
+               tampilkanKembalian();
                console.log(data.totalF);
             }
          }
       });
    }
 
+   $("#uang-dibayar").change(function () {
+      tampilkanKembalian();
+   });
 </script>
 <?php
 $this->menu = array(

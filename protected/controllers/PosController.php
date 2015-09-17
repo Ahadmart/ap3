@@ -193,15 +193,36 @@ class PosController extends Controller {
    }
 
    public function actionKembalian() {
-      echo number_format($_POST['bayar'] - $_POST['total'], 0, ',', '.');
+      echo ($_POST['bayar'] - $_POST['total']) < 0 ? '&nbsp' : number_format($_POST['bayar'] - $_POST['total'], 0, ',', '.');
    }
 
-   public function renderQtyLinkEditable($data) {
-      return '<a href="#" class="editable-qty" data-type="text" data-pk="'.
-              $data->id.
-              '" data-url="'.
+   public function renderQtyLinkEditable($data, $row) {
+      $ak = '';
+      if ($row == 0) {
+         $ak = 'accesskey="q"';
+      }
+      return '<a href="#" class="editable-qty" data-type="text" data-pk="'.$data->id.'" '.$ak.' data-url="'.
               Yii::app()->controller->createUrl('updateqty').'">'.
               $data->qty.'</a>';
+   }
+
+   /**
+    * Update qty detail pembelian via ajax
+    */
+   public function actionUpdateQty() {
+      if (isset($_POST['pk'])) {
+         $pk = $_POST['pk'];
+         $qty = $_POST['value'];
+         $detail = PenjualanDetail::model()->findByPk($pk);
+         $detail->qty = $qty;
+
+         $return = array('sukses' => false);
+         if ($detail->save()) {
+            $return = array('sukses' => true);
+         }
+
+         $this->renderJSON($return);
+      }
    }
 
 }

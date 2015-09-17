@@ -47,7 +47,7 @@ body {
     padding: 2px; }
 
 #transaksi {
-  padding-top: 15px;
+  padding-top: 0;
   padding-bottom: 30px; }
 
 .tabel-detail-jual {
@@ -59,8 +59,7 @@ body {
   text-align: right;
   padding: 5px 0px;
   width: 100%;
-  text-shadow: 1px 1px black;
-  margin-top: 35px; }
+  text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px; }
 
 #surcharge {
   font-size: 2rem;
@@ -76,7 +75,8 @@ body {
   text-align: right;
   padding: 5px 0px;
   width: 100%;
-  text-shadow: 1px 1px black;
+  text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   margin-bottom: 15px; }
 
 #logo {
@@ -92,7 +92,11 @@ body {
 
 .ui-autocomplete {
   background-color: #fff;
-  border: 1px solid #dddcd6; }
+  border: 1px solid #dddcd6;
+  max-height: 500px;
+  overflow-y: auto;
+  /* prevent horizontal scrollbar */
+  overflow-x: hidden; }
 
 .ui-menu-item a {
   color: #333;
@@ -119,9 +123,12 @@ body {
 .editable-buttons button {
   height: 25px;
   line-height: 12px;
-  text-transform: capitalize; }
+  text-transform: capitalize;
+  width: 30px; }
   .editable-buttons button.editable-cancel {
-    top: -25px; }
+    top: -25px;
+    left: 31px;
+    width: 30px; }
 
 .editable-container {
   height: 20px;
@@ -129,7 +136,10 @@ body {
 
 .tabel-index input.edit-input, .tabel-index .editable-input input {
   height: 25px;
-  padding: 2px 8px; }
+  padding: 2px 2px; }
+
+.tabel-index tr td {
+  font-size: 1.05rem; }
 
 /* ============== */
 
