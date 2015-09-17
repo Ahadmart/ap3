@@ -192,4 +192,16 @@ class PosController extends Controller {
       $this->renderJSON($return);
    }
 
+   public function actionKembalian() {
+      echo number_format($_POST['bayar'] - $_POST['total'], 0, ',', '.');
+   }
+
+   public function renderQtyLinkEditable($data) {
+      return '<a href="#" class="editable-qty" data-type="text" data-pk="'.
+              $data->id.
+              '" data-url="'.
+              Yii::app()->controller->createUrl('updateqty').'">'.
+              $data->qty.'</a>';
+   }
+
 }

@@ -47,7 +47,8 @@ body {
     padding: 2px; }
 
 #transaksi {
-  padding-top: 15px; }
+  padding-top: 15px;
+  padding-bottom: 30px; }
 
 .tabel-detail-jual {
   width: 100%; }
@@ -110,5 +111,26 @@ body {
   left: 33%;
   right: 33%;
   top: 3px; }
+
+/* Custom editable untuk POS */
+.editable-input {
+  width: 50px; }
+
+.editable-buttons button {
+  height: 25px;
+  line-height: 12px;
+  text-transform: capitalize; }
+  .editable-buttons button.editable-cancel {
+    top: -25px; }
+
+.editable-container {
+  height: 20px;
+  margin-top: -10px; }
+
+.tabel-index input.edit-input, .tabel-index .editable-input input {
+  height: 25px;
+  padding: 2px 8px; }
+
+/* ============== */
 
 /*# sourceMappingURL=pos.css.map */

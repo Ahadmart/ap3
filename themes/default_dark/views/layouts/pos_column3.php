@@ -3,7 +3,7 @@
 
 <div class="medium-2 columns sidebar kiri">
    <div id="logo">
-      <img src="<?php echo Yii::app()->theme->baseUrl.'/img/' ?>ahadmart-logo-d.png" />
+      <img src="<?php echo Yii::app()->theme->baseUrl.'/img/' ?>ahadmart-logo.png" />
    </div>
    <!--   <div  id="info">
          <table id="info-tabel">
