@@ -49,13 +49,13 @@ $this->widget('BGridView', array(
             'htmlOptions' => array('class' => 'rata-kanan'),
             'filter' => false
         ),
-        // Jika penjualan masih draft tampilkan tombol hapus
-        array(
-            'class' => 'BButtonColumn',
-            'template' => $penjualan->status == Penjualan::STATUS_DRAFT ? '{delete}' : '',
-            'deleteButtonUrl' => 'Yii::app()->controller->createUrl("penjualan/hapusdetail", array("id"=>$data->primaryKey))',
-            'afterDelete' => 'function(link,success,data){ if(success) updateTotal();}',
-        ),
+    // Jika penjualan masih draft tampilkan tombol hapus
+//        array(
+//            'class' => 'BButtonColumn',
+//            'template' => $penjualan->status == Penjualan::STATUS_DRAFT ? '{delete}' : '',
+//            'deleteButtonUrl' => 'Yii::app()->controller->createUrl("penjualan/hapusdetail", array("id"=>$data->primaryKey))',
+//            'afterDelete' => 'function(link,success,data){ if(success) updateTotal();}',
+//        ),
     ),
 ));
 ?>
@@ -77,10 +77,26 @@ $this->widget('BGridView', array(
          }, 0);
       });
       $('.editable-qty').on('hidden', function (e, reason) {
-            // focus on input barcode
-            $("#scan").focus();
+         // focus on input barcode
+         $("#scan").focus();
       });
+//      $(".editable-qty").keyup(function (e) {
+//         console.log(e);
+//         if (e.keyCode === 13) {
+//            
+//         }
+//      });
+
    }
+
+   $(document).on('keydown', ".editable-input input", function (event) {
+      // console.log(event.which);
+      if (event.which === 40) {
+         $(this).closest('tr').next().find('.editable').editable('show');
+      } else if (event.which === 38) {
+         $(this).closest('tr').prev().find('.editable').editable('show');
+      }
+   });
 
    $(function () {
       enableEditable();

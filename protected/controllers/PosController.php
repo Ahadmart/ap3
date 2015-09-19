@@ -214,15 +214,45 @@ class PosController extends Controller {
          $pk = $_POST['pk'];
          $qty = $_POST['value'];
          $detail = PenjualanDetail::model()->findByPk($pk);
-         $detail->qty = $qty;
+         if ($qty > 0) {
+            $detail->qty = $qty;
 
-         $return = array('sukses' => false);
-         if ($detail->save()) {
-            $return = array('sukses' => true);
+            $return = array('sukses' => false);
+            if ($detail->save()) {
+               
+            }
+         } else {
+            $detail->delete();
          }
-
+         $return = array('sukses' => true);
          $this->renderJSON($return);
       }
+   }
+
+   public function actionSuspended() {
+      $model = new Penjualan('search');
+      $model->unsetAttributes();  // clear any default values
+      if (isset($_GET['Penjualan'])) {
+         $model->attributes = $_GET['Penjualan'];
+      }
+      $model->status = '='.Penjualan::STATUS_DRAFT;
+
+      $this->render('suspended', array(
+          'model' => $model,
+      ));
+   }
+
+   /**
+    * render link actionUbah
+    * @param obj $data
+    * @return string tanggal, beserta link
+    */
+   public function renderLinkToUbah($data) {
+      $return = '<a href="'.
+              $this->createUrl('ubah', array('id' => $data->id)).'">'.
+              $data->tanggal.'</a>';
+
+      return $return;
    }
 
 }

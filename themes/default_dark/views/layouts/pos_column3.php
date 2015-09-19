@@ -25,7 +25,7 @@
       </div>-->
    <ul class="stack radius button-group">
       <li><a href="<?php echo $this->createUrl('tambah'); ?>" class="expand bigfont tiny button">New</a></li>
-      <li><a href="<?php echo Yii::app()->createUrl('/customer'); ?>" class="success expand bigfont tiny button">Suspended</a></li>
+      <li><a href="<?php echo $this->createUrl('suspended'); ?>" class="success expand bigfont tiny button">Suspended</a></li>
    </ul>
 </div>
 <?php echo $content; ?>
