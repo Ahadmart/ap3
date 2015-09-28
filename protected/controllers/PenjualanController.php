@@ -261,7 +261,7 @@ class PenjualanController extends Controller {
       $return['sukses'] = true;
       $return['total'] = $total;
       $return['totalF'] = $totalF;
-      echo CJSON::encode($return);
+      $this->renderJSON($return);
    }
 
    public function formatHargaJual($data) {

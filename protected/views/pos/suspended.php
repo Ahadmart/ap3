@@ -24,8 +24,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/res
            array(
                'class' => 'BDataColumn',
                'name' => 'tanggal',
-               'header' => 'Tangga<span class="ak">l</span>',
-               'accesskey' => 'l',
+               'header' => 'Tang<span class="ak">g</span>al',
+               'accesskey' => 'g',
                'type' => 'raw',
                'value' => array($this, 'renderLinkToUbah')
            ),

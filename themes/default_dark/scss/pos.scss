@@ -18,8 +18,11 @@ body{
    position: relative;
    cursor: default;
 }
+a{
+   color: #35e9c5;
+}
 .sidebar {
-   height: 100%;
+   // height: 100%;
    background-color: rgba(0,0,0,0.5);
    padding-top: 15px;	
    .prefix .fa-2x{
@@ -53,7 +56,6 @@ body{
    }
 }
 #transaksi{
-   padding-top:0;
    padding-bottom: 30px;
 }
 .tabel-detail-jual{
@@ -104,7 +106,7 @@ body{
 .ui-autocomplete{
    background-color: #fff;
    border: 1px solid #dddcd6; 
-   max-height: 500px;
+   max-height: 400px;
    overflow-y: auto;
    /* prevent horizontal scrollbar */
    overflow-x: hidden;
@@ -164,7 +166,42 @@ body{
 }
 
 .tabel-index tr td{
-   font-family: monospace;
-   font-size: 0.9rem;
+   font-family: "Open Sans";
+   font-size: 1rem;
+   font-weight: 500;
 }
 /* ============== */
+
+.stack {
+   margin-top: 15px;
+   margin-bottom: 15px;
+}
+
+.main-section{
+   margin: 15px;
+}
+
+table, table thead{
+   background: none;
+}
+
+table thead tr th, table thead tr td {
+   color: #f0fff4;
+   font-size: 0.9rem;
+   font-weight: bold;
+   padding: 0.5rem 0.625rem 0.625rem;
+   background-color: rgba(19, 37, 49, 0.7);
+}
+
+table tr.even, table tr.alt, table tr:nth-of-type(even) {
+   background-color: rgba(12, 28, 41, 0.7);
+
+}
+
+table tr.odd{
+   background-color: rgba(7, 81, 108, 0.45);
+}
+
+table tr th, table tr td {
+   color: #E4EA4C;
+}

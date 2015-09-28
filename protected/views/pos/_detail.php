@@ -8,6 +8,7 @@ $this->widget('BGridView', array(
     'dataProvider' => $penjualanDetail->search(),
     //'filter' => $penjualanDetail,
     //'summaryText' => false,
+    'template' => '{items}{summary}{pager}',
     'enableSorting' => false,
     'columns' => array(
         array(

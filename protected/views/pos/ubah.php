@@ -12,13 +12,7 @@ $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 ?>
 
-<div class="medium-6 large-7 columns" style="height: 100%; overflow: scroll">
-   <div id="total-belanja">
-      <?php echo $model->getTotal(); ?>
-   </div>
-   <div id="kembali">
-      0
-   </div>
+<div class="medium-6 large-7 columns" style="/*height: 100%; overflow: scroll*/">
    <div id="transaksi">
       <?php
       $this->renderPartial('_detail', array(
@@ -29,6 +23,12 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
    </div>
 </div>
 <div class="medium-4 large-3 columns sidebar kanan">
+   <div id="total-belanja">
+      <?php echo $model->getTotal(); ?>
+   </div>
+   <div id="kembali">
+      0
+   </div>
    <div class="row collapse">
       <div class="small-3 large-2 columns">
          <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
@@ -147,7 +147,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/ven
       $.ajax({
          url: dataurl,
          type: "GET",
-         dataType: "json",
          success: function (data) {
             if (data.sukses) {
                $("#total-belanja-h").text(data.total);

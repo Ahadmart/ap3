@@ -3,6 +3,7 @@
 class PosController extends Controller {
 
    public $layout = '//layouts/pos_column3';
+   public $namaProfil = null;
 
    /**
     * @return array action filters
@@ -63,6 +64,7 @@ class PosController extends Controller {
     */
    public function actionUbah($id) {
       $model = $this->loadModel($id);
+      $this->namaProfil = $model->profil->nama;
 
       // Uncomment the following line if AJAX validation is needed
       // $this->performAjaxValidation($model);
