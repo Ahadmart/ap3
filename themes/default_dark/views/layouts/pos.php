@@ -46,7 +46,7 @@
             <aside class="left-off-canvas-menu">
                <ul class="off-canvas-list">
                   <li><label>Menu</label></li>
-                  <li class="has-submenu"><a href="#">The Psychohistorians</a>
+                  <li class="has-submenu"><a href="#">Menu1</a>
                      <ul class="left-submenu">
                         <li class="back"><a href="#">Back</a></li>
                         <li><label>Level 1</label></li>
@@ -61,7 +61,7 @@
                         <li><a href="#">...</a></li>
                      </ul>
                   </li>
-                  <li><a href="#">The Encyclopedists</a></li>
+                  <li><a href="<?php echo Yii::app()->baseUrl; ?>">Home</a></li>
                   <form>
                      <div class="small-12 columns">
                         <input type="text" accesskey="z"/>
@@ -76,8 +76,8 @@
             <aside class="right-off-canvas-menu">
                <ul class="off-canvas-list">
                   <li><label>Users</label></li>
-                  <li><a href="#">Hari Seldon</a></li>
-                  <li class="has-submenu"><a href="#">R. Giskard Reventlov</a>
+                  <li><a href="#">Menu1</a></li>
+                  <li class="has-submenu"><a href="#">Menu2</a>
                      <ul class="right-submenu">
                         <li class="back"><a href="#">Back</a></li>
                         <li><label>Level 1</label></li>

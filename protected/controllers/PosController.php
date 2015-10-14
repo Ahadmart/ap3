@@ -257,4 +257,19 @@ class PosController extends Controller {
       return $return;
    }
 
+   public function actionSimpan($id) {
+      $return = array(
+          'sukses' => false,
+          'error' => array(
+              'code' => '500',
+              'msg' => 'Sempurnakan input!',
+          )
+      );
+      if (isset($_POST['pos'])) {
+         $penjualan = $this->loadModel($id);
+         $return = $penjualan->simpan();
+      }
+      $this->renderJSON($return);
+   }
+
 }

@@ -8,6 +8,7 @@ $this->widget('BGridView', array(
     'dataProvider' => $penjualanDetail->search(),
     //'filter' => $penjualanDetail,
     //'summaryText' => false,
+    'itemsCssClass' => 'tabel-index responsive',
     'template' => '{items}{summary}{pager}',
     'enableSorting' => false,
     'columns' => array(
@@ -21,15 +22,8 @@ $this->widget('BGridView', array(
         ),
         array(
             'name' => 'qty',
+            'header' => '<span class="ak">Q</span>ty',
             'type' => 'raw',
-            //'value' => 'CHtml::activeTextField($data, "[$row]qty", array("class"=>"rata-kanan edit-input"))',
-//            'value' => function($data, $row) {
-//               $ak = '';
-//               if ($row == 0) {
-//                  $ak = 'q';
-//               }
-//               return CHtml::activeTextField($data, "[$data->id]qty", array("class" => "rata-kanan edit-input", 'accesskey'=> $ak));
-//            },
             'value' => array($this, 'renderQtyLinkEditable'),
             'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
             'htmlOptions' => array('class' => 'rata-kanan'),
@@ -39,9 +33,7 @@ $this->widget('BGridView', array(
             'header' => 'harga',
             'headerHtmlOptions' => array('class' => 'rata-kanan'),
             'htmlOptions' => array('class' => 'rata-kanan'),
-            'value' => function($data) {
-       return number_format($data->harga_jual, 0, ',', '.');
-    }
+            'value' => function($data) {return number_format($data->harga_jual, 0, ',', '.');}
         ),
         array(
             'name' => 'subTotal',
@@ -50,13 +42,6 @@ $this->widget('BGridView', array(
             'htmlOptions' => array('class' => 'rata-kanan'),
             'filter' => false
         ),
-    // Jika penjualan masih draft tampilkan tombol hapus
-//        array(
-//            'class' => 'BButtonColumn',
-//            'template' => $penjualan->status == Penjualan::STATUS_DRAFT ? '{delete}' : '',
-//            'deleteButtonUrl' => 'Yii::app()->controller->createUrl("penjualan/hapusdetail", array("id"=>$data->primaryKey))',
-//            'afterDelete' => 'function(link,success,data){ if(success) updateTotal();}',
-//        ),
     ),
 ));
 ?>

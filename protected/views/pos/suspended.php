@@ -13,13 +13,14 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Suspende
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/responsive-tables.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/responsive-tables.js', CClientScript::POS_HEAD);
 ?>
-<div class="medium-10 columns" style="height: 100%; overflow: scroll">
+<div class="medium-10 columns" style="/*height: 100%; overflow: scroll*/">
    <?php
    $this->widget('BGridView', array(
        'id' => 'penjualan-grid',
        'dataProvider' => $model->search(),
-       'filter' => $model,
+       //'filter' => $model,
        'itemsCssClass' => 'tabel-index responsive',
+       'template' => '{items}{summary}{pager}',
        'columns' => array(
            array(
                'class' => 'BDataColumn',
@@ -36,7 +37,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/res
            array(
                'header' => 'Total',
                'value' => '$data->total',
-               'htmlOptions' => array('class' => 'rata-kanan')
+               'htmlOptions' => array('class' => 'rata-kanan'),
+               'headerHtmlOptions' => array('class' => 'rata-kanan')
            ),
            array(
                'class' => 'BButtonColumn',

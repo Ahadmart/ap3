@@ -320,65 +320,69 @@ class Penjualan extends CActiveRecord {
     * 5. Buat nota debit (piutang)
     * 
     */
+   public function simpanPenjualan() {
+      if (!$this->save()) {
+         throw new Exception('Gagal simpan penjualan', 500);
+      }
+      $details = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', array(':penjualanId' => $this->id));
+      foreach ($details as $detail) {
+         $inventoryTerpakai = InventoryBalance::model()->jual($detail->barang_id, $detail->qty);
+         $count = 1;
+         foreach ($inventoryTerpakai as $layer) {
+            $hpp = new HargaPokokPenjualan;
+            $hpp->penjualan_detail_id = $detail->id;
+            $hpp->pembelian_detail_id = $layer['pembelianDetailId'];
+            $hpp->qty = $layer['qtyTerpakai'];
+            $hpp->harga_beli = $layer['hargaBeli'];
+
+            // Jika negatif simpan juga di harga_beli_temp
+            // FIX ME, jika pembelian harga beli nya beda
+            if (isset($layer['negatif']) && $layer['negatif']) {
+               $hpp->harga_beli_temp = $layer['hargaBeli'];
+            }
+            if (!$hpp->save()) {
+               throw new Exception("Gagal simpan HPP", 500);
+            }
+            $count++;
+         }
+      }
+
+      $jumlahPenjualan = $this->ambilTotal();
+      // Buat Hutang Piutang
+      $piutang = new HutangPiutang;
+      $piutang->profil_id = $this->profil_id;
+      $piutang->jumlah = $jumlahPenjualan;
+      $piutang->tipe = HutangPiutang::TIPE_PIUTANG;
+      $piutang->asal = HutangPiutang::DARI_PENJUALAN;
+      $piutang->nomor_dokumen_asal = $this->nomor;
+      if (!$piutang->save()) {
+         throw new Exception("Gagal simpan piutang", 500);
+      }
+
+      /*
+       * Piutang Detail
+       */
+      $piutangDetail = new HutangPiutangDetail;
+      $piutangDetail->hutang_piutang_id = $piutang->id;
+      $piutangDetail->keterangan = 'Pembelian: '.$this->nomor;
+      $piutangDetail->jumlah = $jumlahPenjualan;
+      if (!$piutangDetail->save()) {
+         throw new Exception("Gagal simpan piutang detail", 500);
+      }
+
+      /*
+       * Simpan hutang_piutang_id ke penjualan
+       */
+      if (!Penjualan::model()->updateByPk($this->id, array('hutang_piutang_id' => $piutang->id)) > 1) {
+         throw new Exception("Gagal simpan piutang_id", 500);
+      }
+   }
+
    public function simpan() {
       $transaction = $this->dbConnection->beginTransaction();
       $this->scenario = 'simpanPenjualan';
       try {
-         if (!$this->save()) {
-            throw new Exception('Gagal simpan penjualan', 500);
-         }
-         $details = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', array(':penjualanId' => $this->id));
-         foreach ($details as $detail) {
-            $inventoryTerpakai = InventoryBalance::model()->jual($detail->barang_id, $detail->qty);
-            $count = 1;
-            foreach ($inventoryTerpakai as $layer) {
-               $hpp = new HargaPokokPenjualan;
-               $hpp->penjualan_detail_id = $detail->id;
-               $hpp->pembelian_detail_id = $layer['pembelianDetailId'];
-               $hpp->qty = $layer['qtyTerpakai'];
-               $hpp->harga_beli = $layer['hargaBeli'];
-
-               // Jika negatif simpan juga di harga_beli_temp
-               // FIX ME, jika pembelian harga beli nya beda
-               if (isset($layer['negatif']) && $layer['negatif']) {
-                  $hpp->harga_beli_temp = $layer['hargaBeli'];
-               }
-               if (!$hpp->save()) {
-                  throw new Exception("Gagal simpan HPP", 500);
-               }
-               $count++;
-            }
-         }
-
-         $jumlahPenjualan = $this->ambilTotal();
-         // Buat Hutang Piutang
-         $piutang = new HutangPiutang;
-         $piutang->profil_id = $this->profil_id;
-         $piutang->jumlah = $jumlahPenjualan;
-         $piutang->tipe = HutangPiutang::TIPE_PIUTANG;
-         $piutang->asal = HutangPiutang::DARI_PENJUALAN;
-         $piutang->nomor_dokumen_asal = $this->nomor;
-         if (!$piutang->save()) {
-            throw new Exception("Gagal simpan piutang", 500);
-         }
-
-         /*
-          * Piutang Detail
-          */
-         $piutangDetail = new HutangPiutangDetail;
-         $piutangDetail->hutang_piutang_id = $piutang->id;
-         $piutangDetail->keterangan = 'Pembelian: '.$this->nomor;
-         $piutangDetail->jumlah = $jumlahPenjualan;
-         if (!$piutangDetail->save()) {
-            throw new Exception("Gagal simpan piutang detail", 500);
-         }
-
-         /*
-          * Simpan hutang_piutang_id ke penjualan
-          */
-         if (!Penjualan::model()->updateByPk($this->id, array('hutang_piutang_id' => $piutang->id)) > 1) {
-            throw new Exception("Gagal simpan piutang_id", 500);
-         }
+         $this->simpanPenjualan();
          $transaction->commit();
          return array(
              'sukses' => true
@@ -637,6 +641,33 @@ class Penjualan extends CActiveRecord {
       $struk .= PHP_EOL;
       $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
       return $struk;
+   }
+
+   /**
+    * Simpan POS
+    * 1. Simpan penjualan
+    * 2. Proses penerimaan
+    */
+   public function simpanPOS() {
+      $transaction = $this->dbConnection->beginTransaction();
+      $this->scenario = 'simpanPenjualan';
+      try {
+         $this->simpanPenjualan();
+         $penerimaan = new Penerimaan;
+         $penerimaan->
+         $transaction->commit();
+         return array(
+             'sukses' => true
+         );
+      } catch (Exception $ex) {
+         $transaction->rollback();
+         return array(
+             'sukses' => false,
+             'error' => array(
+                 'msg' => $ex->getMessage(),
+                 'code' => $ex->getCode(),
+         ));
+      }
    }
 
 }

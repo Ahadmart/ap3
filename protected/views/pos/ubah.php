@@ -41,16 +41,40 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
       </div>
    </div>
    <div class="row collapse">
+      <?php /* Company account */ ?>
       <div class="small-3 large-2 columns">
-         <span class="prefix"><i class="fa fa-2x fa-bars"></i></span>
+         <span class="prefix"><i class="fa fa-2x fa-circle-thin"></i></span>
       </div>
       <div class="small-6 large-7 columns">
-         <select accesskey="a">
+<!--         <select accesskey="a">
             <option value="1">Cash</option>
-         </select>
+         </select>-->
+         <?php
+         echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), array(
+             'accesskey' => 'a',
+             'id' => 'account'
+         ));
+         ?>
       </div>
       <div class="small-3 large-3 columns">
          <span class="postfix"><kbd>Alt</kbd> <kbd>a</kbd></span>
+      </div>
+   </div>
+   <div class="row collapse">
+      <?php /* Jenis Pembayaran */ ?>
+      <div class="small-3 large-2 columns">
+         <span class="prefix"><i class="fa fa-2x fa-circle-thin"></i></span>
+      </div>
+      <div class="small-6 large-7 columns">
+         <?php
+         echo CHtml::dropDownList('jenisbayar', 1, CHtml::listData(JenisTransaksi::model()->findAll(), 'id', 'nama'), array(
+             'accesskey' => 'd',
+             'id' => 'jenisbayar'
+         ));
+         ?>
+      </div>
+      <div class="small-3 large-3 columns">
+         <span class="postfix"><kbd>Alt</kbd> <kbd>d</kbd></span>
       </div>
    </div>	
    <div class="row collapse">
@@ -158,8 +182,36 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/ven
       });
    }
 
-   $("#uang-dibayar").change(function () {
+   $("#uang-dibayar").keyup(function () {
       tampilkanKembalian();
+   });
+
+   $("#tombol-simpan").click(function () {
+      dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
+      dataKirim = {
+         'pos[account]': $("#account").val(),
+         'pos[jenistr]': $("#jenisbayar").val(),
+         'pos[uang]': $("#uang-dibayar").val()
+      };
+      console.log(dataUrl);
+      $.ajax({
+         type: 'POST',
+         url: dataUrl,
+         data: dataKirim,
+         success: function (data) {
+            if (data.sukses) {
+            } else {
+               $.gritter.add({
+                  title: 'Error ' + data.error.code,
+                  text: data.error.msg,
+                  time: 3000,
+               });
+            }
+            $("#scan").val("");
+            $("#scan").focus();
+         }
+      });
+      return false;
    });
 </script>
 <?php
