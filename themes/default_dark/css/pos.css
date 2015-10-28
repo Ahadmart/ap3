@@ -144,6 +144,9 @@ a {
   font-size: 1rem;
   font-weight: 500; }
 
+tr.pilih, tr.selected {
+  background-color: rgba(0, 0, 0, 0.5) !important; }
+
 /* ============== */
 .stack {
   margin-top: 15px;
