@@ -163,7 +163,7 @@ class m150724_135249_init_release_0 extends CDbMigration {
           array('nama' => 'keuangan.saldo_awal', 'deskripsi' => 'Saldo Awal', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'struk.header1', 'deskripsi' => 'Header 1 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'struk.header2', 'deskripsi' => 'Header 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-          array('nama' => 'struk.footer1', 'deskripsi' => 'Footer 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+          array('nama' => 'struk.footer1', 'deskripsi' => 'Footer 1 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
           array('nama' => 'struk.footer2', 'deskripsi' => 'Footer 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
       ));
 
