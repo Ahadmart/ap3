@@ -669,4 +669,41 @@ class Penjualan extends CActiveRecord
         return $struk;
     }
 
+    public function strukText()
+    {
+        $jumlahKolom = 40;
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        $user = User::model()->findByPk(Yii::app()->user->id);
+
+        $penjualanDetail = Yii::app()->db->createCommand("
+         select barang.barcode, barang.nama, pd.qty, pd.harga_jual, pd.harga_jual_rekomendasi
+         from penjualan_detail pd
+         join barang on pd.barang_id = barang.id
+         where pd.penjualan_id = :penjualanId
+              ")
+                ->bindValue(':penjualanId', $this->id)
+                ->queryAll();
+
+        $struk = '';
+        $struk .= str_pad($branchConfig['toko.nama'], $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL;
+        $struk .=!empty($branchConfig['struk.header1']) ? str_pad($branchConfig['struk.header1'], $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL : '';
+        $struk .=!empty($branchConfig['struk.header2']) ? str_pad($branchConfig['struk.header2'], $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL : '';
+        $struk .= str_pad($user->nama_lengkap.': #'.$this->nomor, $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL;
+        $struk .= str_pad('', $jumlahKolom, '-').PHP_EOL;
+
+        if (!empty($branchConfig['struk.header1'])) {
+            
+        }
+        return $struk;
+    }
+
 }

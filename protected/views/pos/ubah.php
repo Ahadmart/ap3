@@ -200,6 +200,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/ven
             data: dataKirim,
             success: function (data) {
                 if (data.sukses) {
+                    
                 } else {
                     $.gritter.add({
                         title: 'Error ' + data.error.code,
