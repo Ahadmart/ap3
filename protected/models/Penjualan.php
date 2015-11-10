@@ -9,6 +9,7 @@
  * @property string $tanggal
  * @property string $profil_id
  * @property string $hutang_piutang_id
+ * @property string $uang_dibayar
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
@@ -53,6 +54,7 @@ class Penjualan extends CActiveRecord
             array('status', 'numerical', 'integerOnly' => true),
             array('nomor', 'length', 'max' => 45),
             array('profil_id, hutang_piutang_id, updated_by', 'length', 'max' => 10),
+            array('uang_dibayar', 'length', 'max' => 18),
             array('created_at, updated_at, updated_by, tanggal', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -86,6 +88,7 @@ class Penjualan extends CActiveRecord
             'tanggal' => 'Tanggal',
             'profil_id' => 'Profil',
             'hutang_piutang_id' => 'Hutang Piutang',
+            'uang_dibayar' => 'Uang Dibayar',
             'status' => 'Status',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
@@ -118,6 +121,7 @@ class Penjualan extends CActiveRecord
         $criteria->compare('tanggal', $this->tanggal, true);
         $criteria->compare('profil_id', $this->profil_id, true);
         $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
+        $criteria->compare('uang_dibayar', $this->uang_dibayar, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
@@ -684,11 +688,11 @@ class Penjualan extends CActiveRecord
 
         $user = User::model()->findByPk(Yii::app()->user->id);
 
-        $penjualanDetail = Yii::app()->db->createCommand("
-         select barang.barcode, barang.nama, pd.qty, pd.harga_jual, pd.harga_jual_rekomendasi
-         from penjualan_detail pd
-         join barang on pd.barang_id = barang.id
-         where pd.penjualan_id = :penjualanId
+        $details = Yii::app()->db->createCommand("
+            select barang.barcode, barang.nama, pd.qty, pd.harga_jual, pd.harga_jual_rekomendasi
+            from penjualan_detail pd
+            join barang on pd.barang_id = barang.id
+            where pd.penjualan_id = :penjualanId
               ")
                 ->bindValue(':penjualanId', $this->id)
                 ->queryAll();
@@ -698,11 +702,31 @@ class Penjualan extends CActiveRecord
         $struk .=!empty($branchConfig['struk.header1']) ? str_pad($branchConfig['struk.header1'], $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL : '';
         $struk .=!empty($branchConfig['struk.header2']) ? str_pad($branchConfig['struk.header2'], $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL : '';
         $struk .= str_pad($user->nama_lengkap.': #'.$this->nomor, $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL;
+
         $struk .= str_pad('', $jumlahKolom, '-').PHP_EOL;
 
-        if (!empty($branchConfig['struk.header1'])) {
-            
+        $total = 0;
+        foreach ($details as $detail) {
+            $txtHarga = $detail['qty'].' x @ '.number_format($detail['harga_jual']).' : ';
+            $subTotal = $detail['qty'] * $detail['harga_jual'];
+            $txtSubTotal = str_pad(number_format($subTotal, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+
+            $struk .= str_pad(' '.$detail['nama'], $jumlahKolom, ' ').PHP_EOL;
+            $struk .= str_pad($txtHarga.$txtSubTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT).PHP_EOL;
+
+            $total += $subTotal;
         }
+
+        $struk .= str_pad('', $jumlahKolom, '-').PHP_EOL;
+
+        $txtTotal = 'Total   : '.str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+        $txtBayar = 'Dibayar : ';
+        $txtKbali = 'Kembali : ';
+
+        $struk .= str_pad($txtTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT).PHP_EOL;
+        $struk .= str_pad($txtBayar, $jumlahKolom - 1, ' ', STR_PAD_LEFT).PHP_EOL;
+        $struk .= str_pad($txtKbali, $jumlahKolom - 1, ' ', STR_PAD_LEFT).PHP_EOL;
+
         return $struk;
     }
 
