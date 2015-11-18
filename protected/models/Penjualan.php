@@ -9,7 +9,6 @@
  * @property string $tanggal
  * @property string $profil_id
  * @property string $hutang_piutang_id
- * @property string $uang_dibayar
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
@@ -54,7 +53,6 @@ class Penjualan extends CActiveRecord
             array('status', 'numerical', 'integerOnly' => true),
             array('nomor', 'length', 'max' => 45),
             array('profil_id, hutang_piutang_id, updated_by', 'length', 'max' => 10),
-            array('uang_dibayar', 'length', 'max' => 18),
             array('created_at, updated_at, updated_by, tanggal', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -88,7 +86,6 @@ class Penjualan extends CActiveRecord
             'tanggal' => 'Tanggal',
             'profil_id' => 'Profil',
             'hutang_piutang_id' => 'Hutang Piutang',
-            'uang_dibayar' => 'Uang Dibayar',
             'status' => 'Status',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
@@ -121,7 +118,6 @@ class Penjualan extends CActiveRecord
         $criteria->compare('tanggal', $this->tanggal, true);
         $criteria->compare('profil_id', $this->profil_id, true);
         $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
-        $criteria->compare('uang_dibayar', $this->uang_dibayar, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
