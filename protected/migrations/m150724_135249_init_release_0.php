@@ -167,6 +167,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             array('nama' => 'struk.header2', 'deskripsi' => 'Header 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('nama' => 'struk.footer1', 'deskripsi' => 'Footer 1 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('nama' => 'struk.footer2', 'deskripsi' => 'Footer 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('nama' => 'pos.autoprint', 'nilai' => '1', 'deskripsi' => 'Langsung print ketika disimpan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
         ));
 
         $this->createTable('harga_pokok_penjualan', array(
@@ -412,6 +413,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `jenis_transaksi_id` int(10) unsigned NOT NULL DEFAULT '1',
            `referensi` varchar(45) DEFAULT NULL,
            `tanggal_referensi` date DEFAULT NULL,
+           `uang_dibayar` decimal(18,2) DEFAULT NULL,
            `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0:draft; 1:bayar;',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
@@ -471,6 +473,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `jenis_transaksi_id` int(10) unsigned NOT NULL DEFAULT '1',
            `referensi` varchar(45) DEFAULT NULL,
            `tanggal_referensi` date DEFAULT NULL,
+           `uang_dibayar` decimal(18,2) DEFAULT NULL,
            `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:draft; 1:bayar;',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
@@ -525,7 +528,6 @@ class m150724_135249_init_release_0 extends CDbMigration
            `tanggal` datetime NOT NULL,
            `profil_id` int(10) unsigned NOT NULL,
            `hutang_piutang_id` int(10) unsigned DEFAULT NULL,
-           `uang_dibayar` decimal(18,2) DEFAULT NULL,
            `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0:draft; 1:piutang; 2:lunas;',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
