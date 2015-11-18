@@ -140,6 +140,9 @@ a {
   height: 25px;
   padding: 2px 2px; }
 
+.editable-clear-x {
+  margin-top: -7px; }
+
 .tabel-index tr td {
   font-family: "Open Sans";
   font-size: 1rem;
