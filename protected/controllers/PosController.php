@@ -70,6 +70,11 @@ class PosController extends Controller
     public function actionUbah($id)
     {
         $model = $this->loadModel($id);
+        // Penjualan tidak bisa diubah kecuali statusnya draft
+        if ($model->status != Penjualan::STATUS_DRAFT) {
+            $this->redirect(array('index'));
+        }
+
         $this->namaProfil = $model->profil->nama;
 
         // Uncomment the following line if AJAX validation is needed
@@ -77,7 +82,7 @@ class PosController extends Controller
 
         $penjualanDetail = new PenjualanDetail('search');
         $penjualanDetail->unsetAttributes();
-        $penjualanDetail->setAttribute('penjualan_id', '='.$id);
+        $penjualanDetail->setAttribute('penjualan_id', '=' . $id);
 
         $this->render('ubah', array(
             'model' => $model,
@@ -200,8 +205,11 @@ class PosController extends Controller
         );
         if (isset($_POST['barcode'])) {
             $penjualan = $this->loadModel($id);
-            $barcode = $_POST['barcode'];
-            $return = $penjualan->tambahBarang($barcode, 1);
+            // Tambah barang hanya bisa jika status masih draft
+            if ($model->status == Penjualan::STATUS_DRAFT) {
+                $barcode = $_POST['barcode'];
+                $return = $penjualan->tambahBarang($barcode, 1);
+            }
         }
         $this->renderJSON($return);
     }
@@ -217,9 +225,9 @@ class PosController extends Controller
         if ($row == 0) {
             $ak = 'accesskey="q"';
         }
-        return '<a href="#" class="editable-qty" data-type="text" data-pk="'.$data->id.'" '.$ak.' data-url="'.
-                Yii::app()->controller->createUrl('updateqty').'">'.
-                $data->qty.'</a>';
+        return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
+                Yii::app()->controller->createUrl('updateqty') . '">' .
+                $data->qty . '</a>';
     }
 
     /**
@@ -253,7 +261,7 @@ class PosController extends Controller
         if (isset($_GET['Penjualan'])) {
             $model->attributes = $_GET['Penjualan'];
         }
-        $model->status = '='.Penjualan::STATUS_DRAFT;
+        $model->status = '=' . Penjualan::STATUS_DRAFT;
 
         $this->render('suspended', array(
             'model' => $model,
@@ -267,9 +275,9 @@ class PosController extends Controller
      */
     public function renderLinkToUbah($data)
     {
-        $return = '<a href="'.
-                $this->createUrl('ubah', array('id' => $data->id)).'">'.
-                $data->tanggal.'</a>';
+        $return = '<a href="' .
+                $this->createUrl('ubah', array('id' => $data->id)) . '">' .
+                $data->tanggal . '</a>';
 
         return $return;
     }
