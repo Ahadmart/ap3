@@ -25,6 +25,7 @@ class Pos extends Penjualan
             $penerimaan->kas_bank_id = $posData['account'];
             $penerimaan->jenis_transaksi_id = $posData['jenistr'];
             $penerimaan->kategori_id = self::KATEGORI_TRX;
+            $penerimaan->uang_dibayar = $posData['uang'];
             $penerimaan->save();
 
             $penjualan = Penjualan::model()->findByPk($this->id);
@@ -39,15 +40,22 @@ class Pos extends Penjualan
             $penerimaanDetail->penerimaan_id = $penerimaan->id;
             $penerimaanDetail->item_id = $item['itemId'];
             $penerimaanDetail->hutang_piutang_id = $hutangPiutangId;
-            $penerimaanDetail->keterangan = '[POS] '.$dokumen->keterangan();
+            $penerimaanDetail->keterangan = '[POS] ' . $dokumen->keterangan();
             $penerimaanDetail->jumlah = $dokumen->sisa;
 
             $penerimaanDetail->save();
 
             $penerimaanLoad = Penerimaan::model()->findByPk($penerimaan->id);
-            $penerimaanLoad->proses();
+            if (!$penerimaanLoad->prosesP()) {
+                throw new Exception("Gagal proses penerimaan", 500);
+            }
 
             $transaction->commit();
+            /* Jika berhasil sampai di sini, 
+             * panggil fungsi out(), untuk print/export/null,
+             * tergantung setting
+             */
+            //$this->out();
             return array(
                 'sukses' => true
             );
@@ -59,6 +67,16 @@ class Pos extends Penjualan
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
             ));
+        }
+    }
+
+    public function out()
+    {
+        $posAutoPrint = Config::model()->find("nama='pos.autoprint")->nilai;
+        if ($posAutoPrint) {
+            echo('AutoPrint');
+        } else {
+            echo('No auto print');
         }
     }
 
