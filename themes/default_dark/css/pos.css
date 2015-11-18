@@ -7,7 +7,7 @@ body, html {
 
 body {
   color: #222222;
-  background: #dddcd6 url(../img/bg.png);
+  background: #dddcd6 url(../img/bg-b.jpg) repeat-y center fixed;
   padding: 0;
   margin: 0;
   font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
@@ -17,19 +17,23 @@ body {
   position: relative;
   cursor: default; }
 
+a {
+  color: #35e9c5; }
+
 .sidebar {
-  height: 100%;
-  background-color: #292929;
+  background-color: rgba(0, 0, 0, 0.5);
   padding-top: 15px;
   /*	&.kiri{
-  		 Collapsed 
-  		width: 0; 
-  		overflow: hidden;
-  		position: fixed;
-  		top: 0;
-  		left: 0;
-  	}*/ }
+         Collapsed 
+        width: 0; 
+        overflow: hidden;
+        position: fixed;
+        top: 0;
+        left: 0;
+     }*/ }
   .sidebar .prefix .fa-2x {
+    padding-top: 4px; }
+  .sidebar .postfix .fa-2x {
     padding-top: 4px; }
   .sidebar .huruf {
     /*font-weight: bold;*/
@@ -45,7 +49,7 @@ body {
     padding: 2px; }
 
 #transaksi {
-  padding-top: 15px; }
+  padding-bottom: 30px; }
 
 .tabel-detail-jual {
   width: 100%; }
@@ -56,8 +60,7 @@ body {
   text-align: right;
   padding: 5px 0px;
   width: 100%;
-  text-shadow: 1px 1px black;
-  margin-top: 35px; }
+  text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px; }
 
 #surcharge {
   font-size: 2rem;
@@ -73,7 +76,8 @@ body {
   text-align: right;
   padding: 5px 0px;
   width: 100%;
-  text-shadow: 1px 1px black;
+  text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   margin-bottom: 15px; }
 
 #logo {
@@ -86,5 +90,92 @@ body {
 
 #tombol-batal {
   float: left; }
+
+.ui-autocomplete {
+  background-color: #fff;
+  border: 1px solid #dddcd6;
+  max-height: 400px;
+  overflow-y: auto;
+  /* prevent horizontal scrollbar */
+  overflow-x: hidden; }
+
+.ui-menu-item a {
+  color: #333;
+  font-size: 0.9rem; }
+  .ui-menu-item a small {
+    font-size: 0.75rem; }
+.ui-menu-item.ui-state-focus {
+  box-shadow: 0px 0px 15px #AFD8F8;
+  border: 1px solid #AFD8F8;
+  margin: 0;
+  background-color: #00B7F3; }
+
+.off-canvas-wrap, .main-section, .inner-wrap {
+  height: 100%; }
+
+#gritter-notice-wrapper {
+  left: 33%;
+  right: 33%;
+  top: 3px; }
+
+/* Custom editable untuk POS */
+.editable-input {
+  width: 50px; }
+
+.editable-buttons button {
+  height: 25px;
+  line-height: 12px;
+  text-transform: capitalize;
+  width: 30px; }
+  .editable-buttons button.editable-cancel {
+    top: -25px;
+    left: 31px;
+    width: 30px; }
+
+.editable-container {
+  height: 20px;
+  margin-top: -10px; }
+
+.tabel-index input.edit-input, .tabel-index .editable-input input {
+  height: 25px;
+  padding: 2px 2px; }
+
+.editable-clear-x {
+  margin-top: -7px; }
+
+.tabel-index tr td {
+  font-family: "Open Sans";
+  font-size: 1rem;
+  font-weight: 500; }
+
+tr.pilih, tr.selected {
+  background-color: rgba(0, 0, 0, 0.5) !important; }
+
+/* ============== */
+.stack {
+  margin-top: 15px;
+  margin-bottom: 15px; }
+
+.main-section {
+  margin: 15px; }
+
+table, table thead {
+  background: none; }
+
+table thead tr th, table thead tr td {
+  color: #f0fff4;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 0.5rem 0.625rem 0.625rem;
+  background-color: rgba(19, 37, 49, 0.7); }
+
+table tr.even, table tr.alt, table tr:nth-of-type(even) {
+  background-color: rgba(12, 28, 41, 0.7); }
+
+table tr.odd {
+  background-color: rgba(7, 81, 108, 0.45); }
+
+table tr th, table tr td {
+  color: #E4EA4C; }
 
 /*# sourceMappingURL=pos.css.map */
