@@ -206,7 +206,7 @@ class PosController extends Controller
         if (isset($_POST['barcode'])) {
             $penjualan = $this->loadModel($id);
             // Tambah barang hanya bisa jika status masih draft
-            if ($model->status == Penjualan::STATUS_DRAFT) {
+            if ($penjualan->status == Penjualan::STATUS_DRAFT) {
                 $barcode = $_POST['barcode'];
                 $return = $penjualan->tambahBarang($barcode, 1);
             }
