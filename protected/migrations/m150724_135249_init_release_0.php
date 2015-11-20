@@ -736,7 +736,7 @@ class m150724_135249_init_release_0 extends CDbMigration
 
         $this->createTable('device', array(
             "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-            `tipe_id` tinyint(4) NOT NULL COMMENT '0=pos client;1=lpr printer;2=plain/text;3=pdf',
+            `tipe_id` tinyint(4) NOT NULL COMMENT '0=pos client;1=lpr printer;2=plain/text;3=pdf;4=csv',
             `nama` varchar(100) NOT NULL,
             `keterangan` varchar(500) DEFAULT NULL,
             `address` varchar(100) DEFAULT NULL,
