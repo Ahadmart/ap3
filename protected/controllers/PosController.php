@@ -294,8 +294,18 @@ class PosController extends Controller
         if (isset($_POST['pos'])) {
             $pos = Pos::model('Pos')->findByPk($id);
             $return = $pos->simpanPOS($_POST['pos']);
+            if ($return['sukses']) {
+                
+            }
         }
         $this->renderJSON($return);
+    }
+
+    public function actionOut($id)
+    {
+        /* print txt */
+        $printId = 3;
+        $this->redirect(array('penjualan/printstruk', 'id' => $id, 'printId' => $printId));
     }
 
 }
