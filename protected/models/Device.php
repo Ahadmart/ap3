@@ -9,6 +9,8 @@
  * @property string $nama
  * @property string $keterangan
  * @property string $address
+ * @property integer $lf_sebelum
+ * @property integer $lf_setelah
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
@@ -39,7 +41,7 @@ class Device extends CActiveRecord {
       // will receive user inputs.
       return array(
           array('tipe_id', 'required'),
-          array('tipe_id', 'numerical', 'integerOnly' => true),
+          array('tipe_id, lf_sebelum, lf_setelah', 'numerical', 'integerOnly' => true),
           array('nama, address', 'length', 'max' => 100),
           array('keterangan', 'length', 'max' => 500),
           array('updated_by', 'length', 'max' => 10),
@@ -71,6 +73,8 @@ class Device extends CActiveRecord {
           'nama' => 'Nama',
           'keterangan' => 'Keterangan',
           'address' => 'Address',
+            'lf_sebelum' => 'Baris Kosong Sebelum',
+            'lf_setelah' => 'Baris Kosong Setelah',
           'updated_at' => 'Updated At',
           'updated_by' => 'Updated By',
           'created_at' => 'Created At',
@@ -100,6 +104,8 @@ class Device extends CActiveRecord {
       $criteria->compare('nama', $this->nama, true);
       $criteria->compare('keterangan', $this->keterangan, true);
       $criteria->compare('address', $this->address, true);
+        $criteria->compare('lf_sebelum',$this->lf_sebelum);
+        $criteria->compare('lf_setelah',$this->lf_setelah);
       $criteria->compare('updated_at', $this->updated_at, true);
       $criteria->compare('updated_by', $this->updated_by, true);
       $criteria->compare('created_at', $this->created_at, true);
