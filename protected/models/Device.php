@@ -177,11 +177,33 @@ class Device extends CActiveRecord
         return $command->queryAll();
     }
 
+    public function revisiText($text)
+    {
+        // Tambahkan line feed, jika ada
+        $revText = '';
+        for ($index = 0; $index < $this->lf_sebelum; $index++) {
+            $revText .= PHP_EOL;
+        }
+        $revText .= $text;
+        for ($index1 = 0; $index1 < $this->lf_setelah; $index1++) {
+            $revText .= PHP_EOL;
+        }
+        return $revText;
+    }
+
     public function printLpr($text)
     {
         $perintahPrinter = "-H {$this->address} -P {$this->nama}";
 
-        $perintah = "echo \"{$text}\" |lpr {$perintahPrinter} -l";
+        $perintah = "echo \"{$this->revisiText($text)}\" |lpr {$perintahPrinter} -l";
+        exec($perintah, $output);
+    }
+
+    public function exportText($text)
+    {
+        $perintahPrinter = "-H {$this->address} -P {$this->nama}";
+
+        $perintah = "echo \"{$this->revisiText($text)}\" |lpr {$perintahPrinter} -l";
         exec($perintah, $output);
     }
 

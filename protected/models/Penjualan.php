@@ -704,11 +704,6 @@ class Penjualan extends CActiveRecord
                 ->queryRow();
 
         $struk = '';
-        for ($index = 1; $index < $branchConfig['struk.lf_header']; $index++) {
-            $struk .= PHP_EOL;
-        }
-
-        $struk .= PHP_EOL;
         $struk .= str_pad($branchConfig['toko.nama'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
         $struk .=!empty($branchConfig['struk.header1']) ? str_pad($branchConfig['struk.header1'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
         $struk .=!empty($branchConfig['struk.header2']) ? str_pad($branchConfig['struk.header2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
@@ -748,10 +743,6 @@ class Penjualan extends CActiveRecord
         $struk .=!empty($branchConfig['struk.footer1']) ? str_pad($branchConfig['struk.footer1'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
         $struk .=!empty($branchConfig['struk.footer2']) ? str_pad($branchConfig['struk.footer2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
         $struk .= PHP_EOL;
-
-        for ($index = 1; $index < $branchConfig['struk.lf_footer']; $index++) {
-            $struk .= PHP_EOL;
-        }
 
         return $struk;
     }

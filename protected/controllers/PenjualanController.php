@@ -379,7 +379,7 @@ class PenjualanController extends Controller
         echo $string;
     }
 
-    public function exportText($id, $print = 0)
+    public function exportText($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
         $namaFile = $print === self::PRINT_INVOICE ? "invoice-{$model->nomor}" : "struk-{$model->nomor}";
@@ -387,14 +387,18 @@ class PenjualanController extends Controller
         header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
         header("Pragma: no-cache");
         header("Expire: 0");
-        echo $print === self::PRINT_INVOICE ? $model->invoiceText() : $model->strukText();
+        $text = $print === self::PRINT_INVOICE ? $model->invoiceText() : $model->strukText();
+
+        echo $device->revisiText($text);
+
         Yii::app()->end();
     }
 
-    public function printLpr($id, $device)
+    public function printLpr($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
-        $device->printLpr($model->invoiceText());
+        $text = $print === self::PRINT_INVOICE ? $model->invoiceText() : $model->strukText();
+        $device->printLpr($text);
         Yii::app()->end();
     }
 
@@ -472,7 +476,7 @@ class PenjualanController extends Controller
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_LPR:
-                    $this->printLpr($id, $device);
+                    $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
                 case Device::TIPE_PDF_PRINTER:
                     $this->exportPdf($id);
@@ -481,7 +485,7 @@ class PenjualanController extends Controller
                     $this->eksporCsv($id);
                     break;
                 case Device::TIPE_TEXT_PRINTER:
-                    $this->exportText($id, self::PRINT_STRUK);
+                    $this->exportText($id, $device, self::PRINT_STRUK);
                     break;
             }
         }
