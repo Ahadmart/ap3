@@ -90,8 +90,8 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 </div>
 <div style="display: none" id="total-belanja-h"><?php echo $model->ambilTotal(); ?></div>
 <?php
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/jquery.gritter.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 ?>
 <script>
     function tampilkanKembalian() {
@@ -194,13 +194,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/ven
             'pos[uang]': $("#uang-dibayar").val()
         };
         console.log(dataUrl);
+
         $.ajax({
             type: 'POST',
             url: dataUrl,
             data: dataKirim,
             success: function (data) {
                 if (data.sukses) {
-                    
+                    //cetak();
+                    window.open('<?php echo $this->createUrl('out', array('id' => $model->id)); ?>');
+                    window.location.href = "<?php echo $this->createUrl('index'); ?>";
                 } else {
                     $.gritter.add({
                         title: 'Error ' + data.error.code,

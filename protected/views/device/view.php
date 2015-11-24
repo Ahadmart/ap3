@@ -20,6 +20,8 @@ $this->boxHeader['normal'] = 'Device: '.$model->nama;
               'nama',
               'keterangan',
               'address',
+              'lf_sebelum',
+              'lf_setelah',
           ),
       ));
       ?>

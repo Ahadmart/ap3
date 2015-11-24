@@ -265,7 +265,7 @@ class Penjualan extends CActiveRecord
         $kodeCabang = $config->nilai;
         $kodeDokumen = KodeDokumen::PENJUALAN;
         $kodeTahunBulan = date('ym');
-        $sequence = substr('0000'.$this->cariNomor(), -5);
+        $sequence = substr('0000' . $this->cariNomor(), -5);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
@@ -296,9 +296,9 @@ class Penjualan extends CActiveRecord
     {
         $command = Yii::app()->db->createCommand();
         $command->select('sum(pd.harga_jual)-sum(hpp.harga_beli) margin');
-        $command->from(PenjualanDetail::model()->tableName().' pd');
-        $command->join(Penjualan::model()->tableName().' pj', 'pd.penjualan_id=pj.id and pj.id='.$this->id);
-        $command->join(HargaPokokPenjualan::model()->tableName().' hpp', 'pd.id=hpp.penjualan_detail_id');
+        $command->from(PenjualanDetail::model()->tableName() . ' pd');
+        $command->join(Penjualan::model()->tableName() . ' pj', 'pd.penjualan_id=pj.id and pj.id=' . $this->id);
+        $command->join(HargaPokokPenjualan::model()->tableName() . ' hpp', 'pd.id=hpp.penjualan_detail_id');
 
         $penjualan = $command->queryRow();
         return $penjualan['margin'];
@@ -382,7 +382,7 @@ class Penjualan extends CActiveRecord
          */
         $piutangDetail = new HutangPiutangDetail;
         $piutangDetail->hutang_piutang_id = $piutang->id;
-        $piutangDetail->keterangan = 'Pembelian: '.$this->nomor;
+        $piutangDetail->keterangan = 'Pembelian: ' . $this->nomor;
         $piutangDetail->jumlah = $jumlahPenjualan;
         if (!$piutangDetail->save()) {
             throw new Exception("Gagal simpan piutang detail", 500);
@@ -458,7 +458,7 @@ class Penjualan extends CActiveRecord
         /*
          * CSV Header, dari ahad POS 2
          */
-        $csv = '"barcode","idBarang","namaBarang","jumBarang","hargaBeli","hargaJual","RRP","SatuanBarang","KategoriBarang","Supplier","kasir"'.PHP_EOL;
+        $csv = '"barcode","idBarang","namaBarang","jumBarang","hargaBeli","hargaJual","RRP","SatuanBarang","KategoriBarang","Supplier","kasir"' . PHP_EOL;
 
         /*
          * Ambil data penjualan detail, untuk diexport ke csv
@@ -495,17 +495,17 @@ class Penjualan extends CActiveRecord
         $config = Config::model()->find("nama='toko.nama'");
         foreach ($details as $detail):
             $csv.= "\"{$detail['barcode']}\","
-                    ."\"{$detail['barang_id']}\","
-                    ."\"{$detail['nama_barang']}\","
-                    ."\"{$detail['qty']}\","
-                    ."\"\"," // harga beli dikosongkan
-                    ."\"{$detail['harga_jual']}\","
-                    ."\"{$detail['harga_jual_rekomendasi']}\","
-                    ."\"{$detail['satuan']}\","
-                    ."\"{$detail['kategori']}\","
-                    ."\"{$config->nilai}\"," //nama toko/gudang
-                    ."\"{$this->updatedBy->nama}\""
-                    .PHP_EOL;
+                    . "\"{$detail['barang_id']}\","
+                    . "\"{$detail['nama_barang']}\","
+                    . "\"{$detail['qty']}\","
+                    . "\"\"," // harga beli dikosongkan
+                    . "\"{$detail['harga_jual']}\","
+                    . "\"{$detail['harga_jual_rekomendasi']}\","
+                    . "\"{$detail['satuan']}\","
+                    . "\"{$detail['kategori']}\","
+                    . "\"{$config->nilai}\"," //nama toko/gudang
+                    . "\"{$this->updatedBy->nama}\""
+                    . PHP_EOL;
         endforeach;
         return $csv;
     }
@@ -516,7 +516,7 @@ class Penjualan extends CActiveRecord
         $bulan = date_format(date_create($timeStamp), 'n');
         $namabulan = $this->namaBulan($bulan);
         $tahun = date_format(date_create($timeStamp), 'Y');
-        return $tanggal.' '.$namabulan.' '.$tahun;
+        return $tanggal . ' ' . $namabulan . ' ' . $tahun;
     }
 
     public function namaBulan($i)
@@ -566,44 +566,44 @@ class Penjualan extends CActiveRecord
 
         $struk = '';
 
-        $strNomor = 'Nomor       : '.$this->nomor;
-        $strTgl = 'Tanggal     : '.$this->toIndoDate($this->tanggal);
-        $strTglDue = 'Jatuh Tempo : '.$this->toIndoDate(date('Y-m-d', strtotime("+{$branchConfig['penjualan.jatuh_tempo']} days", strtotime(date_format(date_create_from_format('d-m-Y H:i:s', $this->tanggal), 'Y-m-d')))));
-        $strKasir = 'Kasir       : '.ucwords($this->updatedBy->nama);
-        $strTotal = 'Total       : '.$this->getTotal();
+        $strNomor = 'Nomor       : ' . $this->nomor;
+        $strTgl = 'Tanggal     : ' . $this->toIndoDate($this->tanggal);
+        $strTglDue = 'Jatuh Tempo : ' . $this->toIndoDate(date('Y-m-d', strtotime("+{$branchConfig['penjualan.jatuh_tempo']} days", strtotime(date_format(date_create_from_format('d-m-Y H:i:s', $this->tanggal), 'Y-m-d')))));
+        $strKasir = 'Kasir       : ' . ucwords($this->updatedBy->nama);
+        $strTotal = 'Total       : ' . $this->getTotal();
 
         $kananMaxLength = strlen($strNomor) > strlen($strTgl) ? strlen($strNomor) : strlen($strTgl);
         $kananMaxLength = $kananMaxLength > strlen($strTglDue) ? $kananMaxLength : strlen($strTglDue);
         /* Jika Nama kasir terlalu panjang, akan di truncate */
-        $strKasir = strlen($strKasir) > $kananMaxLength ? substr($strKasir, 0, $kananMaxLength - 2).'..' : $strKasir;
+        $strKasir = strlen($strKasir) > $kananMaxLength ? substr($strKasir, 0, $kananMaxLength - 2) . '..' : $strKasir;
 
         $strInvoice = 'INVOICE '; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-                .$strInvoice.str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
-                .PHP_EOL;
+                . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+                . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat1'], $jumlahKolom - $kananMaxLength, ' ')
-                .str_pad($strTgl, $kananMaxLength, ' ')
-                .PHP_EOL;
+                . str_pad($strTgl, $kananMaxLength, ' ')
+                . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat2'], $jumlahKolom - $kananMaxLength, ' ')
-                .str_pad($strTglDue, $kananMaxLength, ' ')
-                .PHP_EOL;
+                . str_pad($strTglDue, $kananMaxLength, ' ')
+                . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
-                .str_pad($strKasir, $kananMaxLength, ' ')
-                .PHP_EOL;
+                . str_pad($strKasir, $kananMaxLength, ' ')
+                . PHP_EOL;
         $struk .= str_pad($strTotal, $jumlahKolom - $kananMaxLength + strlen($strTotal), ' ', STR_PAD_LEFT)
-                .PHP_EOL;
+                . PHP_EOL;
 //      $struk .= PHP_EOL;
 
-        $struk .= 'Kepada: '.$this->profil->nama.PHP_EOL;
-        $struk .= '        '.substr($this->profil->alamat1.' '.$this->profil->alamat2.' '.$this->profil->alamat3, 0, $jumlahKolom - 8).PHP_EOL;
+        $struk .= 'Kepada: ' . $this->profil->nama . PHP_EOL;
+        $struk .= '        ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 8) . PHP_EOL;
 
-        $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL;
+        $struk .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
         $textHeader1 = ' Barang';
         $textHeader2 = 'RRP     Harga    Qty Sub Total ';
-        $textHeader = $textHeader1.str_pad($textHeader2, $jumlahKolom - strlen($textHeader1), ' ', STR_PAD_LEFT).PHP_EOL;
+        $textHeader = $textHeader1 . str_pad($textHeader2, $jumlahKolom - strlen($textHeader1), ' ', STR_PAD_LEFT) . PHP_EOL;
         $struk .= $textHeader;
-        $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL;
+        $struk .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
         $rowCount = 11;
 
         $no = 1;
@@ -614,17 +614,17 @@ class Penjualan extends CActiveRecord
             $strHarga = str_pad(number_format($detail['harga_jual'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
             $strHargaJualRekomendasi = str_pad(number_format($detail['harga_jual_rekomendasi'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
             $strSubTotal = str_pad(number_format($detail['harga_jual'] * $detail['qty'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
-            $row1 = ' '.$strBarcode.' '.$strBarang.' ';
-            $row2 = $strHargaJualRekomendasi.'  '.$strHarga.'  '.$strQty.'  '.$strSubTotal;
-            $row = $row1.str_pad($row2.' ', $jumlahKolom - strlen($row1), ' ', STR_PAD_LEFT).PHP_EOL;
+            $row1 = ' ' . $strBarcode . ' ' . $strBarang . ' ';
+            $row2 = $strHargaJualRekomendasi . '  ' . $strHarga . '  ' . $strQty . '  ' . $strSubTotal;
+            $row = $row1 . str_pad($row2 . ' ', $jumlahKolom - strlen($row1), ' ', STR_PAD_LEFT) . PHP_EOL;
 
             /* Jika ini seharusnya halaman baru */
             if ($rowCount > $rowPerPage) {
                 $halaman++;
-                $halamanStr = $this->nomor.' '.$halaman;
+                $halamanStr = $this->nomor . ' ' . $halaman;
 
                 $struk .= PHP_EOL;
-                $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+                $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
                 $rowCount = 1; // Reset row counter
             }
 
@@ -635,37 +635,37 @@ class Penjualan extends CActiveRecord
         /* Jika ini seharusnya halaman baru */
         if ($rowCount > $rowPerPage && $halaman > 0) {
             $halaman++;
-            $halamanStr = $this->nomor.' '.$halaman;
+            $halamanStr = $this->nomor . ' ' . $halaman;
 
             $struk .= PHP_EOL;
-            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
             $rowCount = 1; // Reset row counter
         }
-        $struk .= str_pad('', $jumlahKolom, "-").PHP_EOL.PHP_EOL;
+        $struk .= str_pad('', $jumlahKolom, "-") . PHP_EOL . PHP_EOL;
 
         if ($rowCount > $rowPerPage - 6) {
             $halaman++;
-            $halamanStr = $this->nomor.' '.$halaman;
+            $halamanStr = $this->nomor . ' ' . $halaman;
 
             $struk .= PHP_EOL;
-            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
             $rowCount = 1; // Reset row counter
         }
         $signatureHead1 = '          Diterima';
-        $signatureHead2 = 'a.n. '.$branchConfig['toko.nama'];
+        $signatureHead2 = 'a.n. ' . $branchConfig['toko.nama'];
 
-        $struk .= $signatureHead1.str_pad($signatureHead2, 28 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT).PHP_EOL;
-        $struk .= PHP_EOL.PHP_EOL.PHP_EOL.PHP_EOL;
-        $struk .= '     (                )              (                )'.PHP_EOL;
+        $struk .= $signatureHead1 . str_pad($signatureHead2, 28 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) . PHP_EOL;
+        $struk .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
+        $struk .= '     (                )              (                )' . PHP_EOL;
         $rowCount+=7;
         for ($index = 0; $index < $rowPerPage - $rowCount; $index++) {
             $struk .= PHP_EOL;
         }
         $halaman++;
-        $halamanStr = $this->nomor.' '.$halaman;
+        $halamanStr = $this->nomor . ' ' . $halaman;
 
         $struk .= PHP_EOL;
-        $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT).PHP_EOL.PHP_EOL;
+        $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
         return $struk;
     }
 
@@ -689,39 +689,60 @@ class Penjualan extends CActiveRecord
             from penjualan_detail pd
             join barang on pd.barang_id = barang.id
             where pd.penjualan_id = :penjualanId
-              ")
+            ")
                 ->bindValue(':penjualanId', $this->id)
                 ->queryAll();
 
-        $struk = '';
-        $struk .= str_pad($branchConfig['toko.nama'], $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL;
-        $struk .=!empty($branchConfig['struk.header1']) ? str_pad($branchConfig['struk.header1'], $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL : '';
-        $struk .=!empty($branchConfig['struk.header2']) ? str_pad($branchConfig['struk.header2'], $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL : '';
-        $struk .= str_pad($user->nama_lengkap.': #'.$this->nomor, $jumlahKolom, ' ', STR_PAD_BOTH).PHP_EOL;
+        $penerimaan = Yii::app()->db->createCommand("
+            select penerimaan.uang_dibayar
+            from penerimaan
+            join penerimaan_detail pd on pd.penerimaan_id = penerimaan.id
+            join penjualan on penjualan.hutang_piutang_id = pd.hutang_piutang_id
+            where penjualan.id = :penjualanId
+            ")
+                ->bindValue(':penjualanId', $this->id)
+                ->queryRow();
 
-        $struk .= str_pad('', $jumlahKolom, '-').PHP_EOL;
+        $struk = '';
+        $struk .= str_pad($branchConfig['toko.nama'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
+        $struk .=!empty($branchConfig['struk.header1']) ? str_pad($branchConfig['struk.header1'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
+        $struk .=!empty($branchConfig['struk.header2']) ? str_pad($branchConfig['struk.header2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
+        $struk .= str_pad($user->nama_lengkap . ': #' . $this->nomor, $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
+
+        $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
         $total = 0;
         foreach ($details as $detail) {
-            $txtHarga = $detail['qty'].' x @ '.number_format($detail['harga_jual']).' : ';
+            $txtHarga = $detail['qty'] . ' x @ ' . number_format($detail['harga_jual']) . ' : ';
             $subTotal = $detail['qty'] * $detail['harga_jual'];
             $txtSubTotal = str_pad(number_format($subTotal, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
 
-            $struk .= str_pad(' '.$detail['nama'], $jumlahKolom, ' ').PHP_EOL;
-            $struk .= str_pad($txtHarga.$txtSubTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT).PHP_EOL;
+            $struk .= str_pad(' ' . $detail['nama'], $jumlahKolom, ' ') . PHP_EOL;
+            $struk .= str_pad($txtHarga . $txtSubTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
 
             $total += $subTotal;
         }
 
-        $struk .= str_pad('', $jumlahKolom, '-').PHP_EOL;
+        $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
-        $txtTotal = 'Total   : '.str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-        $txtBayar = 'Dibayar : ';
-        $txtKbali = 'Kembali : ';
+        $txtTotal = 'Total   : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
 
-        $struk .= str_pad($txtTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT).PHP_EOL;
-        $struk .= str_pad($txtBayar, $jumlahKolom - 1, ' ', STR_PAD_LEFT).PHP_EOL;
-        $struk .= str_pad($txtKbali, $jumlahKolom - 1, ' ', STR_PAD_LEFT).PHP_EOL;
+        $dibayar = is_null($penerimaan['uang_dibayar']) ? NULL : $penerimaan['uang_dibayar'];
+        if (!is_null($dibayar)) {
+            $txtBayar = 'Dibayar : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtKbali = 'Kembali : ' . str_pad(number_format($dibayar - $total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+        }
+
+        $struk .= str_pad($txtTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        if (!is_null($dibayar)) {
+            $struk .= str_pad($txtBayar, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+            $struk .= str_pad($txtKbali, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+
+        $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
+        $struk .=!empty($branchConfig['struk.footer1']) ? str_pad($branchConfig['struk.footer1'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
+        $struk .=!empty($branchConfig['struk.footer2']) ? str_pad($branchConfig['struk.footer2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
+        $struk .= PHP_EOL;
 
         return $struk;
     }

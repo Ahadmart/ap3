@@ -50,12 +50,11 @@ class Pos extends Penjualan
                 throw new Exception("Gagal proses penerimaan", 500);
             }
 
+//            if (!$penerimaan->prosesP()) {
+//                throw new Exception("Gagal proses penerimaan", 500);
+//            }
+
             $transaction->commit();
-            /* Jika berhasil sampai di sini, 
-             * panggil fungsi out(), untuk print/export/null,
-             * tergantung setting
-             */
-            //$this->out();
             return array(
                 'sukses' => true
             );
@@ -67,16 +66,6 @@ class Pos extends Penjualan
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
             ));
-        }
-    }
-
-    public function out()
-    {
-        $posAutoPrint = Config::model()->find("nama='pos.autoprint")->nilai;
-        if ($posAutoPrint) {
-            echo('AutoPrint');
-        } else {
-            echo('No auto print');
         }
     }
 

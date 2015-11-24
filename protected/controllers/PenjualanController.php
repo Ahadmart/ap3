@@ -42,7 +42,7 @@ class PenjualanController extends Controller
     {
         $penjualanDetail = new PenjualanDetail('search');
         $penjualanDetail->unsetAttributes();
-        $penjualanDetail->setAttribute('penjualan_id', '='.$id);
+        $penjualanDetail->setAttribute('penjualan_id', '=' . $id);
         if (isset($_GET['PenjualanDetail'])) {
             $penjualanDetail->attributes = $_GET['PenjualanDetail'];
         }
@@ -81,7 +81,7 @@ class PenjualanController extends Controller
 
         $customerList = Profil::model()->findAll(array(
             'select' => 'id, nama',
-            'condition' => 'id>'.Profil::AWAL_ID.' and tipe_id='.Profil::TIPE_CUSTOMER,
+            'condition' => 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER,
             'order' => 'nama'));
 
         $this->render('tambah', array(
@@ -116,7 +116,7 @@ class PenjualanController extends Controller
 
         $penjualanDetail = new PenjualanDetail('search');
         $penjualanDetail->unsetAttributes();
-        $penjualanDetail->setAttribute('penjualan_id', '='.$id);
+        $penjualanDetail->setAttribute('penjualan_id', '=' . $id);
 
         $barang = new Barang('search');
         $barang->unsetAttributes();
@@ -221,9 +221,9 @@ class PenjualanController extends Controller
     {
         $return = '';
         if (isset($data->nomor)) {
-            $return = '<a href="'.
-                    $this->createUrl('view', array('id' => $data->id)).'">'.
-                    $data->nomor.'</a>';
+            $return = '<a href="' .
+                    $this->createUrl('view', array('id' => $data->id)) . '">' .
+                    $data->nomor . '</a>';
         }
         return $return;
     }
@@ -236,9 +236,9 @@ class PenjualanController extends Controller
     public function renderLinkToUbah($data)
     {
         if (!isset($data->nomor)) {
-            $return = '<a href="'.
-                    $this->createUrl('ubah', array('id' => $data->id)).'">'.
-                    $data->tanggal.'</a>';
+            $return = '<a href="' .
+                    $this->createUrl('ubah', array('id' => $data->id)) . '">' .
+                    $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -365,7 +365,7 @@ class PenjualanController extends Controller
         /*
          * Tampilkan daftar sesuai pilihan tipe
          */
-        $condition = $tipe == Profil::TIPE_CUSTOMER ? 'id>'.Profil::AWAL_ID.' and tipe_id='.Profil::TIPE_CUSTOMER : 'id>'.Profil::AWAL_ID;
+        $condition = $tipe == Profil::TIPE_CUSTOMER ? 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER : 'id>' . Profil::AWAL_ID;
         $profilList = Profil::model()->findAll(array(
             'select' => 'id, nama',
             'condition' => $condition,
@@ -373,27 +373,32 @@ class PenjualanController extends Controller
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
         foreach ($profilList as $profil) {
-            $string.='<option value="'.$profil->id.'">';
-            $string.=$profil->nama.'</option>';
+            $string.='<option value="' . $profil->id . '">';
+            $string.=$profil->nama . '</option>';
         }
         echo $string;
     }
 
-    public function exportText($id, $print = 0)
+    public function exportText($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
+        $namaFile = $print === self::PRINT_INVOICE ? "invoice-{$model->nomor}" : "struk-{$model->nomor}";
         header("Content-type: text/plain");
-        header("Content-Disposition: attachment; filename=\"invoice-{$model->nomor}.text\"");
+        header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
         header("Pragma: no-cache");
         header("Expire: 0");
-        echo $print === self::PRINT_INVOICE ? $model->invoiceText() : $model->strukText();
+        $text = $print === self::PRINT_INVOICE ? $model->invoiceText() : $model->strukText();
+
+        echo $device->revisiText($text);
+
         Yii::app()->end();
     }
 
-    public function printLpr($id, $device)
+    public function printLpr($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
-        $device->printLpr($model->invoiceText());
+        $text = $print === self::PRINT_INVOICE ? $model->invoiceText() : $model->strukText();
+        $device->printLpr($text);
         Yii::app()->end();
     }
 
@@ -471,7 +476,7 @@ class PenjualanController extends Controller
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_LPR:
-                    $this->printLpr($id, $device);
+                    $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
                 case Device::TIPE_PDF_PRINTER:
                     $this->exportPdf($id);
@@ -480,7 +485,7 @@ class PenjualanController extends Controller
                     $this->eksporCsv($id);
                     break;
                 case Device::TIPE_TEXT_PRINTER:
-                    $this->exportText($id, self::PRINT_STRUK);
+                    $this->exportText($id, $device, self::PRINT_STRUK);
                     break;
             }
         }

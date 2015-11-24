@@ -161,7 +161,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             array('nama' => 'toko.telp', 'nilai' => '', 'deskripsi' => 'Telp', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('nama' => 'toko.email', 'nilai' => 'toko@mart.com', 'deskripsi' => 'E-mail', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('nama' => 'penjualan.jatuh_tempo', 'nilai' => '7', 'deskripsi' => 'Jatuh tempo pembayaran untuk penjualan (hari)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'keuangan.saldo_awal', 'deskripsi' => 'Saldo Awal', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('nama' => 'keuangan.saldo_awal', 'nilai' => '0', 'deskripsi' => 'Saldo Awal', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('nama' => 'struk.header1', 'deskripsi' => 'Header 1 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('nama' => 'struk.header2', 'deskripsi' => 'Header 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('nama' => 'struk.footer1', 'deskripsi' => 'Footer 1 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
@@ -733,10 +733,12 @@ class m150724_135249_init_release_0 extends CDbMigration
 
         $this->createTable('device', array(
             "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-            `tipe_id` tinyint(4) NOT NULL COMMENT '0=pos client;1=lpr printer;2=plain/text;3=pdf',
+            `tipe_id` tinyint(4) NOT NULL COMMENT '0=pos client;1=lpr printer;2=plain/text;3=pdf;4=csv',
             `nama` varchar(100) NOT NULL,
             `keterangan` varchar(500) DEFAULT NULL,
             `address` varchar(100) DEFAULT NULL,
+            `lf_sebelum` tinyint(4) DEFAULT NULL,
+            `lf_setelah` tinyint(4) DEFAULT NULL,
             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             `updated_by` int(10) unsigned NOT NULL,
             `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -747,7 +749,7 @@ class m150724_135249_init_release_0 extends CDbMigration
 
         $this->insertMultiple('device', array(
             array('tipe_id' => 0, 'nama' => 'Kasir 1', 'keterangan' => 'Komputer Kasir 1', 'address' => '192.168.1.1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('tipe_id' => 1, 'nama' => 'printer192.168.1.1', 'keterangan' => 'Printer di Kasir 1', 'address' => '192.168.1.1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('tipe_id' => 1, 'nama' => 'printer192.168.1.1', 'keterangan' => 'Printer di Kasir 1', 'address' => '192.168.1.1', 'lf_setelah' => '5', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('tipe_id' => 2, 'nama' => 'Plain/Text', 'keterangan' => 'Export to text file', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('tipe_id' => 3, 'nama' => 'PDF', 'keterangan' => 'Export to PDF', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
             array('tipe_id' => 4, 'nama' => 'CSV', 'keterangan' => 'Export to CSV', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00')

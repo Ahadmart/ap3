@@ -206,7 +206,7 @@ class PosController extends Controller
         if (isset($_POST['barcode'])) {
             $penjualan = $this->loadModel($id);
             // Tambah barang hanya bisa jika status masih draft
-            if ($model->status == Penjualan::STATUS_DRAFT) {
+            if ($penjualan->status == Penjualan::STATUS_DRAFT) {
                 $barcode = $_POST['barcode'];
                 $return = $penjualan->tambahBarang($barcode, 1);
             }
@@ -294,8 +294,18 @@ class PosController extends Controller
         if (isset($_POST['pos'])) {
             $pos = Pos::model('Pos')->findByPk($id);
             $return = $pos->simpanPOS($_POST['pos']);
+            if ($return['sukses']) {
+                
+            }
         }
         $this->renderJSON($return);
+    }
+
+    public function actionOut($id)
+    {
+        /* print txt */
+        $printId = 3;
+        $this->redirect(array('penjualan/printstruk', 'id' => $id, 'printId' => $printId));
     }
 
 }
