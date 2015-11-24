@@ -203,7 +203,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 if (data.sukses) {
                     //cetak();
                     window.open('<?php echo $this->createUrl('out', array('id' => $model->id)); ?>');
-                    //window.location.href = "<?php echo $this->createUrl('index'); ?>";
+                    window.location.href = "<?php echo $this->createUrl('index'); ?>";
                 } else {
                     $.gritter.add({
                         title: 'Error ' + data.error.code,
