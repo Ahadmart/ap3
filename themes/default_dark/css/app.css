@@ -278,4 +278,7 @@ select {
 .grid-loading {
   background: url(3.gif) no-repeat; }
 
+.editable-clear-x {
+  margin-top: -15px; }
+
 /*# sourceMappingURL=app.css.map */

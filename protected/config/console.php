@@ -15,6 +15,9 @@ return array(
             'migrationTable' => 'migrasi_db'
         ),
     ),
+    'import' => array(
+        'application.components.*',
+    ),
     // application components
     'components' => array(
         /*
