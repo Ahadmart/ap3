@@ -399,7 +399,7 @@ class PenjualanController extends Controller
         $model = $this->loadModel($id);
         $text = $print === self::PRINT_INVOICE ? $model->invoiceText() : $model->strukText();
         $device->printLpr($text);
-        Yii::app()->end();
+        $this->renderPartial('_print_autoclose');
     }
 
     public function actionPrintInvoice($id)

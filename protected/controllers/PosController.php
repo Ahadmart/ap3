@@ -304,7 +304,7 @@ class PosController extends Controller
     public function actionOut($id)
     {
         /* print txt */
-        $printId = 3;
+        $printId = 2;
         $this->redirect(array('penjualan/printstruk', 'id' => $id, 'printId' => $printId));
     }
 
