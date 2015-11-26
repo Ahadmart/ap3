@@ -26,7 +26,7 @@ class m151124_151405_create_table_kasir extends CDbMigration
             `device_id` int(10) unsigned NOT NULL,
             `waktu_buka` datetime NOT NULL,
             `waktu_tutup` datetime DEFAULT NULL,
-            `saldo_awal` decimal(18,2) DEFAULT NULL,
+            `saldo_awal` decimal(18,2) NOT NULL,
             `saldo_akhir_seharusnya` decimal(18,2) DEFAULT NULL,
             `saldo_akhir` decimal(18,2) DEFAULT NULL,
             `total_penjualan` decimal(18,2) DEFAULT NULL,
