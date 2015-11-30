@@ -50,22 +50,41 @@
             <?php echo $form->error($model, 'address', array('class' => 'error')); ?>
         </div>
     </div>
+    <?php
+    /* Fixme: logic di view - sebaiknya TIDAK di view */
 
-    <div class="row">
-        <div class="small-12 columns">
-            <?php echo $form->labelEx($model, 'lf_sebelum'); ?>
-            <?php echo $form->textField($model, 'lf_sebelum'); ?>
-            <?php echo $form->error($model, 'lf_sebelum', array('class' => 'error')); ?>
+    if ($model->tipe_id == Device::TIPE_POS_CLIENT) {
+        ?>
+        <div class="row">
+            <div class="small-12 columns">
+                <?php echo $form->labelEx($model, 'default_printer_id'); ?>
+                <?php
+                echo $form->dropDownList($model, 'default_printer_id', $model->listPrinter(), array('prompt' => 'Pilih satu..'));
+                ?>
+                <?php echo $form->error($model, 'default_printer_id', array('class' => 'error')); ?>
+            </div>
         </div>
-    </div>
+        <?php
+    } else {
+        ?>
+        <div class="row">
+            <div class="small-12 columns">
+                <?php echo $form->labelEx($model, 'lf_sebelum'); ?>
+                <?php echo $form->textField($model, 'lf_sebelum'); ?>
+                <?php echo $form->error($model, 'lf_sebelum', array('class' => 'error')); ?>
+            </div>
+        </div>
 
-    <div class="row">
-        <div class="small-12 columns">
-            <?php echo $form->labelEx($model, 'lf_setelah'); ?>
-            <?php echo $form->textField($model, 'lf_setelah'); ?>
-            <?php echo $form->error($model, 'lf_setelah', array('class' => 'error')); ?>
+        <div class="row">
+            <div class="small-12 columns">
+                <?php echo $form->labelEx($model, 'lf_setelah'); ?>
+                <?php echo $form->textField($model, 'lf_setelah'); ?>
+                <?php echo $form->error($model, 'lf_setelah', array('class' => 'error')); ?>
+            </div>
         </div>
-    </div>
+        <?php
+    }
+    ?>
 
     <div class="row">
         <div class="small-12 columns">

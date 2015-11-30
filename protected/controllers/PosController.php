@@ -32,6 +32,25 @@ class PosController extends Controller
     }
 
     /**
+     * Security Override, siapapun usernya, jika dibukakan kasir untuknya
+     * maka bisa akses controller ini
+     * Fixme: action yang ada di controller lain, dipindah ke sini,
+     * agar security override-nya bisa optimal
+     * @return boolean True jika kasir buka
+     * @throws CHttpException Error jika kasir tutup
+     */
+    protected function beforeAction($action)
+    {
+        //if (parent::beforeAction($action)) {
+        $kasirAktif = $this->posAktif();
+        if (is_null($kasirAktif)) {
+            throw new CHttpException(403, 'Akses ditolak - You have no power here!');
+        }
+        return true;
+        //}
+    }
+
+    /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
      */
@@ -50,8 +69,8 @@ class PosController extends Controller
     {
         $model = new Penjualan;
 
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+// Uncomment the following line if AJAX validation is needed
+// $this->performAjaxValidation($model);
 
         $model->profil_id = Profil::PROFIL_UMUM;
 
@@ -70,15 +89,15 @@ class PosController extends Controller
     public function actionUbah($id)
     {
         $model = $this->loadModel($id);
-        // Penjualan tidak bisa diubah kecuali statusnya draft
+// Penjualan tidak bisa diubah kecuali statusnya draft
         if ($model->status != Penjualan::STATUS_DRAFT) {
             $this->redirect(array('index'));
         }
 
         $this->namaProfil = $model->profil->nama;
 
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+// Uncomment the following line if AJAX validation is needed
+// $this->performAjaxValidation($model);
 
         $penjualanDetail = new PenjualanDetail('search');
         $penjualanDetail->unsetAttributes();
@@ -99,7 +118,7 @@ class PosController extends Controller
     {
         $this->loadModel($id)->delete();
 
-        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
     }
@@ -116,6 +135,18 @@ class PosController extends Controller
 
         $this->render('index', array(
             'model' => $model,
+        ));
+    }
+
+    /**
+     * Memeriksa apakah current user dengan current IP, aktif
+     * @return activeRecord Null if no record
+     */
+    public function posAktif()
+    {
+        return Kasir::model()
+                        ->find('user_id=:userId and waktu_tutup is null', array(
+                            ':userId' => Yii::app()->user->id
         ));
     }
 
@@ -205,7 +236,7 @@ class PosController extends Controller
         );
         if (isset($_POST['barcode'])) {
             $penjualan = $this->loadModel($id);
-            // Tambah barang hanya bisa jika status masih draft
+// Tambah barang hanya bisa jika status masih draft
             if ($penjualan->status == Penjualan::STATUS_DRAFT) {
                 $barcode = $_POST['barcode'];
                 $return = $penjualan->tambahBarang($barcode, 1);

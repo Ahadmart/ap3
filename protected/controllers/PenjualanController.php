@@ -417,7 +417,7 @@ class PenjualanController extends Controller
                     $this->eksporCsv($id);
                     break;
                 case Device::TIPE_TEXT_PRINTER:
-                    $this->exportText($id);
+                    $this->exportText($id, $device);
                     break;
             }
         }

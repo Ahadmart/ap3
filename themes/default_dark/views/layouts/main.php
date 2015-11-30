@@ -138,6 +138,7 @@
                                             array('label' => '<i class="fa fa-check-square-o fa-fw"></i>'.' Stock Opname', 'url' => array('/stockopname/index')),
                                             array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                                             array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>'.' POS', 'url' => array('/pos/index')),
+                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>'.' Kasir', 'url' => array('/kasir/index')),
                                             array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                                             array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Pengeluaran', 'url' => array('/pengeluaran/index')),
                                             array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Penerimaan', 'url' => array('/penerimaan/index')),
