@@ -32,33 +32,20 @@ class PosController extends Controller
     }
 
     /**
-     * Security Override, siapapun usernya, jika dibukakan kasir untuknya
-     * maka bisa akses controller ini
-     * Fixme: action yang ada di controller lain, dipindah ke sini,
-     * agar security override-nya bisa optimal
+     * Security tambahan, user yang bisa POS, adalah user dengan role kasir,
+     * dan dalam keadaan kasir buka / aktif
      * @return boolean True jika kasir buka
      * @throws CHttpException Error jika kasir tutup
      */
     protected function beforeAction($action)
     {
-        //if (parent::beforeAction($action)) {
-        $kasirAktif = $this->posAktif();
-        if (is_null($kasirAktif)) {
-            throw new CHttpException(403, 'Akses ditolak - You have no power here!');
+        if (parent::beforeAction($action)) {
+            $kasirAktif = $this->posAktif();
+            if (is_null($kasirAktif)) {
+                throw new CHttpException(403, 'Akses ditolak: YOU HAVE NO POWER HERE!');
+            }
+            return true;
         }
-        return true;
-        //}
-    }
-
-    /**
-     * Displays a particular model.
-     * @param integer $id the ID of the model to be displayed
-     */
-    public function actionView($id)
-    {
-        $this->render('view', array(
-            'model' => $this->loadModel($id),
-        ));
     }
 
     /**
@@ -69,8 +56,8 @@ class PosController extends Controller
     {
         $model = new Penjualan;
 
-// Uncomment the following line if AJAX validation is needed
-// $this->performAjaxValidation($model);
+        // Uncomment the following line if AJAX validation is needed
+        // $this->performAjaxValidation($model);
 
         $model->profil_id = Profil::PROFIL_UMUM;
 
@@ -89,15 +76,15 @@ class PosController extends Controller
     public function actionUbah($id)
     {
         $model = $this->loadModel($id);
-// Penjualan tidak bisa diubah kecuali statusnya draft
+        // Penjualan tidak bisa diubah kecuali statusnya draft
         if ($model->status != Penjualan::STATUS_DRAFT) {
             $this->redirect(array('index'));
         }
 
         $this->namaProfil = $model->profil->nama;
 
-// Uncomment the following line if AJAX validation is needed
-// $this->performAjaxValidation($model);
+        // Uncomment the following line if AJAX validation is needed
+        // $this->performAjaxValidation($model);
 
         $penjualanDetail = new PenjualanDetail('search');
         $penjualanDetail->unsetAttributes();
@@ -116,9 +103,13 @@ class PosController extends Controller
      */
     public function actionHapus($id)
     {
-        $this->loadModel($id)->delete();
+        $model = $this->loadModel($id);
+        if ($model->status == Penjualan::STATUS_DRAFT) {
+            PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
+            $model->delete();
+        }
 
-// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
     }
@@ -199,8 +190,8 @@ class PosController extends Controller
         }
         $wBarcode .= ')';
         $wNama .= ')';
-//      echo $wBarcode.' AND '.$wNama;
-//      print_r($param);
+        //      echo $wBarcode.' AND '.$wNama;
+        //      print_r($param);
 
         $q = new CDbCriteria();
         $q->addCondition("{$wBarcode} OR {$wNama}");
@@ -236,7 +227,7 @@ class PosController extends Controller
         );
         if (isset($_POST['barcode'])) {
             $penjualan = $this->loadModel($id);
-// Tambah barang hanya bisa jika status masih draft
+            // Tambah barang hanya bisa jika status masih draft
             if ($penjualan->status == Penjualan::STATUS_DRAFT) {
                 $barcode = $_POST['barcode'];
                 $return = $penjualan->tambahBarang($barcode, 1);
@@ -293,6 +284,7 @@ class PosController extends Controller
             $model->attributes = $_GET['Penjualan'];
         }
         $model->status = '=' . Penjualan::STATUS_DRAFT;
+        $model->updated_by = '=' . Yii::app()->user->id;
 
         $this->render('suspended', array(
             'model' => $model,
@@ -334,9 +326,11 @@ class PosController extends Controller
 
     public function actionOut($id)
     {
-        /* print txt */
-        $printId = 2;
-        $this->redirect(array('penjualan/printstruk', 'id' => $id, 'printId' => $printId));
+        $kasir = $this->posAktif();
+        $printId = $kasir->device->default_printer_id;
+        if (!is_null($printId)) {
+            $this->redirect(array('penjualan/printstruk', 'id' => $id, 'printId' => $printId));
+        }
     }
 
 }
