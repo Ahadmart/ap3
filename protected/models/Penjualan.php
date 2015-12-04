@@ -120,7 +120,7 @@ class Penjualan extends CActiveRecord
         $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
-        $criteria->compare('updated_by', $this->updated_by, true);
+        $criteria->compare('t.updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
         $criteria->with = array('profil', 'hutangPiutang');
