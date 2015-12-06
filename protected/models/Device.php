@@ -9,6 +9,7 @@
  * @property string $nama
  * @property string $keterangan
  * @property string $address
+ * @property string $default_printer_id
  * @property integer $lf_sebelum
  * @property integer $lf_setelah
  * @property string $updated_at
@@ -16,7 +17,10 @@
  * @property string $created_at
  *
  * The followings are the available model relations:
+ * @property Device $defaultPrinter
+ * @property Device[] $devices
  * @property User $updatedBy
+ * @property Kasir[] $kasirs
  */
 class Device extends CActiveRecord
 {
@@ -47,7 +51,7 @@ class Device extends CActiveRecord
             array('tipe_id, lf_sebelum, lf_setelah', 'numerical', 'integerOnly' => true),
             array('nama, address', 'length', 'max' => 100),
             array('keterangan', 'length', 'max' => 500),
-            array('updated_by', 'length', 'max' => 10),
+            array('default_printer_id, updated_by', 'length', 'max' => 10),
             array('created_at, nama, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -63,7 +67,10 @@ class Device extends CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            'defaultPrinter' => array(self::BELONGS_TO, 'Device', 'default_printer_id'),
+            'devices' => array(self::HAS_MANY, 'Device', 'default_printer_id'),
             'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
+            'kasirs' => array(self::HAS_MANY, 'Kasir', 'device_id'),
         );
     }
 
@@ -78,6 +85,7 @@ class Device extends CActiveRecord
             'nama' => 'Nama',
             'keterangan' => 'Keterangan',
             'address' => 'Address',
+            'default_printer_id' => 'Default Printer',
             'lf_sebelum' => 'LF Sebelum',
             'lf_setelah' => 'LF Setelah',
             'updated_at' => 'Updated At',
@@ -110,6 +118,7 @@ class Device extends CActiveRecord
         $criteria->compare('nama', $this->nama, true);
         $criteria->compare('keterangan', $this->keterangan, true);
         $criteria->compare('address', $this->address, true);
+        $criteria->compare('default_printer_id', $this->default_printer_id, true);
         $criteria->compare('lf_sebelum', $this->lf_sebelum);
         $criteria->compare('lf_setelah', $this->lf_setelah);
         $criteria->compare('updated_at', $this->updated_at, true);
@@ -155,6 +164,11 @@ class Device extends CActiveRecord
             Device::TIPE_PDF_PRINTER => 'Printer - PDF',
             Device::TIPE_CSV_PRINTER => 'Printer - CSV'
         );
+    }
+
+    public function listPrinter()
+    {
+        return CHtml::listData(Device::model()->findAll('tipe_id !=' . self::TIPE_POS_CLIENT), 'id', 'nama');
     }
 
     public function getNamaTipe()

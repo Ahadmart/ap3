@@ -1,4 +1,5 @@
 <?php
+
 /* @var $this UserController */
 /* @var $model User */
 
@@ -10,14 +11,9 @@ $this->breadcrumbs = array(
 
 $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "User: {$model->nama}";
-?>
-<div class="row">
-    <div class="large-6 columns">
-        <?php $this->renderPartial('_form', array('model' => $model)); ?>
-    </div>
-</div>
 
-<?php
+$this->renderPartial('_form', array('model' => $model));
+
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
