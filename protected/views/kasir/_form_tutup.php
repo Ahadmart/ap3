@@ -28,13 +28,39 @@
                     'name' => 'device.keterangan',
                     'label' => 'POS Client (Workstation)'
                 ),
-                'waktu_buka',
-                'saldo_awal',
-                //'saldo_akhir',
-                'total_penjualan',
-                'total_margin',
-                'total_retur',
-                'saldo_akhir_seharusnya',
+                //'waktu_buka',
+                array(
+                    'name' => 'waktu_buka',
+                    'value' => date_format(date_create_from_format("Y-m-d H:i:s", $model->waktu_buka), 'd-m-Y H:i:s')
+                ),
+                array(
+                    'name' => 'saldo_awal',
+                    'value' => number_format($model->saldo_awal, 0, ',', '.')
+                ),
+                array(
+                    'name' => 'total_penjualan',
+                    'value' => number_format($model->total_penjualan, 0, ',', '.')
+                ),
+                array(
+                    'name' => 'total_margin',
+                    'value' => number_format($model->total_margin, 0, ',', '.')
+                ),
+                array(
+                    'name' => 'total_retur',
+                    'value' => number_format($model->total_retur, 0, ',', '.')
+                ),
+                array(
+                    'name' => 'saldo_akhir_seharusnya',
+                    'value' => number_format($model->saldo_akhir_seharusnya, 0, ',', '.')
+                ),
+            /*
+              'saldo_akhir',
+              'total_penjualan',
+              'total_margin',
+              'total_retur',
+              'saldo_akhir_seharusnya',
+             * 
+             */
             ),
         ));
         ?>

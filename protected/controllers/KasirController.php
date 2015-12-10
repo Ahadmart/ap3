@@ -78,7 +78,7 @@ class KasirController extends Controller
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
-        $model->total_penjualan = 0;
+        $model->total_penjualan = $model->totalPenjualan()['jumlah'];
         $model->total_margin = 0;
         $model->total_retur = 0;
 
