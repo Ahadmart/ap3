@@ -122,7 +122,7 @@ class Kasir extends CActiveRecord
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
-        
+
         /* Tampilkan hanya kasir yang masih buka (belum ditutup) */
         $criteria->addCondition('waktu_tutup is null');
 
@@ -159,6 +159,25 @@ class Kasir extends CActiveRecord
             $this->waktu_buka = date('Y-m-d H:i:s');
         }
         return parent::beforeValidate();
+    }
+
+    public function totalPenjualan()
+    {
+        $command = Yii::app()->db->createCommand("
+            select sum(d.jumlah) jumlah
+            from penerimaan_detail d
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan
+            join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
+            join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal>=:waktu
+        ");
+
+        $command->bindValues(array(
+            ':waktu' => $this->waktu_buka,
+            ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
+            ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
+        ));
+
+        return $command->queryRow();
     }
 
 }
