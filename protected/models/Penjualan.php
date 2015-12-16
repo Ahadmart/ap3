@@ -295,7 +295,7 @@ class Penjualan extends CActiveRecord
     public function ambilMargin()
     {
         $command = Yii::app()->db->createCommand();
-        $command->select('sum(pd.harga_jual)-sum(hpp.harga_beli) margin');
+        $command->select('sum(pd.harga_jual * hpp.qty)-sum(hpp.harga_beli * hpp.qty) margin');
         $command->from(PenjualanDetail::model()->tableName() . ' pd');
         $command->join(Penjualan::model()->tableName() . ' pj', 'pd.penjualan_id=pj.id and pj.id=' . $this->id);
         $command->join(HargaPokokPenjualan::model()->tableName() . ' hpp', 'pd.id=hpp.penjualan_detail_id');
