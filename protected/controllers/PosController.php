@@ -32,14 +32,20 @@ class PosController extends Controller
     }
 
     /**
-     * Displays a particular model.
-     * @param integer $id the ID of the model to be displayed
+     * Security tambahan, user yang bisa POS, adalah user dengan role kasir,
+     * dan dalam keadaan kasir buka / aktif
+     * @return boolean True jika kasir buka
+     * @throws CHttpException Error jika kasir tutup
      */
-    public function actionView($id)
+    protected function beforeAction($action)
     {
-        $this->render('view', array(
-            'model' => $this->loadModel($id),
-        ));
+        if (parent::beforeAction($action)) {
+            $kasirAktif = $this->posAktif();
+            if (is_null($kasirAktif)) {
+                throw new CHttpException(403, 'Akses ditolak: YOU HAVE NO POWER HERE!');
+            }
+            return true;
+        }
     }
 
     /**
@@ -97,7 +103,11 @@ class PosController extends Controller
      */
     public function actionHapus($id)
     {
-        $this->loadModel($id)->delete();
+        $model = $this->loadModel($id);
+        if ($model->status == Penjualan::STATUS_DRAFT) {
+            PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
+            $model->delete();
+        }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))
@@ -116,6 +126,18 @@ class PosController extends Controller
 
         $this->render('index', array(
             'model' => $model,
+        ));
+    }
+
+    /**
+     * Memeriksa apakah current user dengan current IP, aktif
+     * @return activeRecord Null if no record
+     */
+    public function posAktif()
+    {
+        return Kasir::model()
+                        ->find('user_id=:userId and waktu_tutup is null', array(
+                            ':userId' => Yii::app()->user->id
         ));
     }
 
@@ -168,8 +190,8 @@ class PosController extends Controller
         }
         $wBarcode .= ')';
         $wNama .= ')';
-//      echo $wBarcode.' AND '.$wNama;
-//      print_r($param);
+        //      echo $wBarcode.' AND '.$wNama;
+        //      print_r($param);
 
         $q = new CDbCriteria();
         $q->addCondition("{$wBarcode} OR {$wNama}");
@@ -262,6 +284,7 @@ class PosController extends Controller
             $model->attributes = $_GET['Penjualan'];
         }
         $model->status = '=' . Penjualan::STATUS_DRAFT;
+        $model->updated_by = '=' . Yii::app()->user->id;
 
         $this->render('suspended', array(
             'model' => $model,
@@ -303,9 +326,11 @@ class PosController extends Controller
 
     public function actionOut($id)
     {
-        /* print txt */
-        $printId = 3;
-        $this->redirect(array('penjualan/printstruk', 'id' => $id, 'printId' => $printId));
+        $kasir = $this->posAktif();
+        $printId = $kasir->device->default_printer_id;
+        if (!is_null($printId)) {
+            $this->redirect(array('penjualan/printstruk', 'id' => $id, 'printId' => $printId));
+        }
     }
 
 }

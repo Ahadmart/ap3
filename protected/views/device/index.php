@@ -31,8 +31,19 @@ $this->boxHeader['normal'] = 'Device';
                     'type' => 'raw',
                     'value' => array($this, 'renderLinkToView'),
                 ),
-                'keterangan',
-                'address',
+                array(
+                    'name' => 'keterangan',
+                    'filter' => false
+                ),
+                array(
+                    'name' => 'address',
+                    'filter' => false
+                ),
+                array(
+                    'name' => 'default_printer_id',
+                    'value' => 'isset($data->defaultPrinter) ? $data->defaultPrinter->nama : ""',
+                    'filter' => false
+                ),
                 array(
                     'name' => 'lf_sebelum',
                     'filter' => false,

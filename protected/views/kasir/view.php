@@ -1,41 +1,36 @@
 <?php
-/* @var $this DeviceController */
-/* @var $model Device */
+/* @var $this KasirController */
+/* @var $model Kasir */
 
-$this->breadcrumbs = array(
-    'Device' => array('index'),
-    $model->id,
+$this->breadcrumbs=array(
+	'Kasir'=>array('index'),
+	$model->id,
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Device: ' . $model->nama;
+$this->boxHeader['normal'] = 'Kasir: '.$model->user->nama_lengkap;
 ?>
 <div class="row">
     <div class="small-12 columns">
-        <?php
-        /* Fixme: logic di view - sebaiknya TIDAK di view */
-        $attribute = array(
-            'namaTipe',
-            'nama',
-            'keterangan',
-            'address',
-        );
-
-        if ($model->tipe_id == Device::TIPE_POS_CLIENT) {
-            $attribute[] = array(
-                'name' => 'defaultPrinter.nama',
-                'label' => 'Default Printer'
-            );
-        } else {
-            $attribute[] = 'lf_sebelum';
-            $attribute[] = 'lf_setelah';
-        }
-
-        $this->widget('BDetailView', array(
-            'data' => $model,
-            'attributes' => $attribute
-        ));
-        ?>
+<?php $this->widget('BDetailView', array(
+	'data'=>$model,
+	'attributes'=>array(
+		'id',
+		'user_id',
+		'device_id',
+		'waktu_buka',
+		'waktu_tutup',
+		'saldo_awal',
+		'saldo_akhir_seharusnya',
+		'saldo_akhir',
+		'total_penjualan',
+		'total_margin',
+		'total_retur',
+		'updated_at',
+		'updated_by',
+		'created_at',
+	),
+)); ?>
     </div>
 </div>
 <?php
@@ -50,8 +45,8 @@ $this->menu = array(
             array('label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'alert button',
                     'accesskey' => 'h',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
+                    'submit'=>array('hapus','id'=>$model->id),
+                    'confirm'=>'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
@@ -67,8 +62,8 @@ $this->menu = array(
                 )),
             array('label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'alert button',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
+                    'submit'=>array('hapus','id'=>$model->id),
+                    'confirm'=>'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',

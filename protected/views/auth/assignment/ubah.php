@@ -11,14 +11,13 @@ $this->boxHeader['small'] = 'Assignment';
 $this->boxHeader['normal'] = "User Assignment: {$user->nama}";
 ?>
 <div class="row">
-    <div class="large-6 columns">
+    <div class="small-12 columns">
         <?php
         $this->renderPartial('_assignment', array(
             'user' => $user,
             'authItem' => $authItem
         ));
-        ?>
-        <?php
+
         $this->renderPartial('_list_assigned', array(
             'user' => $user,
             'model' => $model
@@ -26,6 +25,7 @@ $this->boxHeader['normal'] = "User Assignment: {$user->nama}";
         ?>
     </div>
 </div>
+
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),

@@ -3,7 +3,7 @@
 class Pos extends Penjualan
 {
 
-    const KATEGORI_TRX = 1;
+    const KATEGORI_TRX = 3; //Kategori Penerimaan untuk POS
 
     /**
      * Simpan POS
@@ -19,8 +19,8 @@ class Pos extends Penjualan
 
             $penerimaan = new Penerimaan;
             $penerimaan->tanggal = date('d-m-Y');
-            $penerimaan->referensi = '[POS]';
-            $penerimaan->tanggal_referensi = date('d-m-Y');
+            //$penerimaan->referensi = '[POS]';
+            //$penerimaan->tanggal_referensi = date('d-m-Y');
             $penerimaan->profil_id = $this->profil_id;
             $penerimaan->kas_bank_id = $posData['account'];
             $penerimaan->jenis_transaksi_id = $posData['jenistr'];

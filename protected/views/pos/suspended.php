@@ -18,7 +18,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/res
    $this->widget('BGridView', array(
        'id' => 'penjualan-grid',
        'dataProvider' => $model->search(),
-       //'filter' => $model,
+       'filter' => $model,
        'itemsCssClass' => 'tabel-index responsive',
        'template' => '{items}{summary}{pager}',
        'columns' => array(

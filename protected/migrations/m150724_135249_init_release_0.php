@@ -576,6 +576,8 @@ class m150724_135249_init_release_0 extends CDbMigration
             array('id' => 2, 'tipe_id' => 2, 'nama' => 'Umum', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00')
         ));
 
+        $this->execute('ALTER TABLE `profil` AUTO_INCREMENT = 101');
+
         $this->createTable('profil_tipe', array(
             "`id` tinyint(3) unsigned NOT NULL AUTO_INCREMENT,
            `nama` varchar(45) NOT NULL,

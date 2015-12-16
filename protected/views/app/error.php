@@ -1,5 +1,5 @@
 <?php
-/* @var $this SiteController */
+/* @var $this AppController */
 /* @var $error array */
 
 $this->pageTitle = Yii::app()->name . ' - Error';

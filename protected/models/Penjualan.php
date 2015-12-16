@@ -120,7 +120,7 @@ class Penjualan extends CActiveRecord
         $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
-        $criteria->compare('updated_by', $this->updated_by, true);
+        $criteria->compare('t.updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
         $criteria->with = array('profil', 'hutangPiutang');
@@ -295,7 +295,7 @@ class Penjualan extends CActiveRecord
     public function ambilMargin()
     {
         $command = Yii::app()->db->createCommand();
-        $command->select('sum(pd.harga_jual)-sum(hpp.harga_beli) margin');
+        $command->select('sum(pd.harga_jual * hpp.qty)-sum(hpp.harga_beli * hpp.qty) margin');
         $command->from(PenjualanDetail::model()->tableName() . ' pd');
         $command->join(Penjualan::model()->tableName() . ' pj', 'pd.penjualan_id=pj.id and pj.id=' . $this->id);
         $command->join(HargaPokokPenjualan::model()->tableName() . ' hpp', 'pd.id=hpp.penjualan_detail_id');

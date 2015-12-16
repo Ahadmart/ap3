@@ -313,7 +313,7 @@ class Penerimaan extends CActiveRecord
 
     public function listFilterKategori()
     {
-        return CHtml::listData(KategoriPengeluaran::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return CHtml::listData(KategoriPenerimaan::model()->findAll(array('order' => 'nama')), 'id', 'nama');
     }
 
     public function listFilterJenisTransaksi()

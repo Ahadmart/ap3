@@ -1,9 +1,7 @@
 <?php
 
-class DeviceController extends Controller
+class KasirController extends Controller
 {
-
-    public $layout = '//layouts/box_kecil';
 
     /**
      * @return array action filters
@@ -43,44 +41,57 @@ class DeviceController extends Controller
 
     /**
      * Creates a new model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
+     * If creation is successful, the browser will be redirected to the 'index' page.
      */
-    public function actionTambah()
+    public function actionBuka()
     {
-        $model = new Device;
+        $this->layout = '//layouts/box_kecil';
+        $model = new Kasir;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if (isset($_POST['Device'])) {
-            $model->attributes = $_POST['Device'];
+        if (isset($_POST['Kasir'])) {
+            $model->attributes = $_POST['Kasir'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->id));
+                $this->redirect('index');
         }
 
-        $this->render('tambah', array(
+        $listKasir = CHtml::listData(User::model()->findAll(), 'id', 'nama_lengkap');
+        $listPosClient = CHtml::listData(Device::model()->findAll('tipe_id=' . Device::TIPE_POS_CLIENT), 'id', 'nama');
+
+        $this->render('buka', array(
             'model' => $model,
+            'listKasir' => $listKasir,
+            'listPosClient' => $listPosClient
         ));
     }
 
     /**
-     * Updates a particular model.
+     * Tutup Kasir.
      * @param integer $id the ID of the model to be updated
      */
-    public function actionUbah($id)
+    public function actionTutup($id)
     {
+        $this->layout = '//layouts/box_kecil';
         $model = $this->loadModel($id);
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
+        $model->total_penjualan = $model->totalPenjualan()['jumlah'];
+        $model->total_margin = $model->totalMargin()['jumlah'];
+        $model->total_retur = $model->totalReturJual()['jumlah'];
 
-        if (isset($_POST['Device'])) {
-            $model->attributes = $_POST['Device'];
+        $model->saldo_akhir_seharusnya = $model->saldo_awal + $model->total_penjualan - $model->total_retur;
+
+        if (isset($_POST['Kasir'])) {
+            $model->attributes = $_POST['Kasir'];
+            $model->waktu_tutup = date('Y-m-d H:i:s');
             if ($model->save())
-                $this->redirect(array('view', 'id' => $id));
+                $this->redirect(array('index', 'id' => $id));
         }
 
-        $this->render('ubah', array(
+        $this->render('tutup', array(
             'model' => $model,
         ));
     }
@@ -104,11 +115,11 @@ class DeviceController extends Controller
      */
     public function actionIndex()
     {
-        $this->layout = '//layouts/box';
-        $model = new Device('search');
+        $model = new Kasir('search');
         $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['Device']))
-            $model->attributes = $_GET['Device'];
+        if (isset($_GET['Kasir']))
+            $model->attributes = $_GET['Kasir'];
+        //$model->waktu_tutup = 'isnull';
 
         $this->render('index', array(
             'model' => $model,
@@ -119,12 +130,12 @@ class DeviceController extends Controller
      * Returns the data model based on the primary key given in the GET variable.
      * If the data model is not found, an HTTP exception will be raised.
      * @param integer $id the ID of the model to be loaded
-     * @return Device the loaded model
+     * @return Kasir the loaded model
      * @throws CHttpException
      */
     public function loadModel($id)
     {
-        $model = Device::model()->findByPk($id);
+        $model = Kasir::model()->findByPk($id);
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
@@ -132,25 +143,14 @@ class DeviceController extends Controller
 
     /**
      * Performs the AJAX validation.
-     * @param Device $model the model to be validated
+     * @param Kasir $model the model to be validated
      */
     protected function performAjaxValidation($model)
     {
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'device-form') {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'kasir-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
-    }
-
-    public function renderLinkToView($data)
-    {
-        $return = '';
-        if (isset($data->nama)) {
-            $return = '<a href="' .
-                    $this->createUrl('view', array('id' => $data->id)) . '">' .
-                    $data->nama . '</a>';
-        }
-        return $return;
     }
 
 }
