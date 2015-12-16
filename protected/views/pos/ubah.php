@@ -86,7 +86,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         </div>
     </div>
     <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
-    <a href="" class="alert bigfont tiny  button" id="tombol-batal">Batal</a>
+    <!--<a href="" class="alert bigfont tiny  button" id="tombol-batal">Batal</a>-->
 </div>
 <div style="display: none" id="total-belanja-h"><?php echo $model->ambilTotal(); ?></div>
 <?php
