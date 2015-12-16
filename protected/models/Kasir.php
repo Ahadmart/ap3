@@ -180,4 +180,25 @@ class Kasir extends CActiveRecord
         return $command->queryRow();
     }
 
+    public function totalMargin()
+    {
+        $command = Yii::app()->db->createCommand("
+            select sum(jual_detail.harga_jual * hpp.qty) - sum(hpp.harga_beli * hpp.qty) jumlah
+            from penerimaan_detail d
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan
+            join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
+            join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal>=:waktu
+            join penjualan_detail jual_detail on penjualan.id = jual_detail.penjualan_id
+            join harga_pokok_penjualan hpp on jual_detail.id=hpp.penjualan_detail_id
+        ");
+
+        $command->bindValues(array(
+            ':waktu' => $this->waktu_buka,
+            ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
+            ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
+        ));
+
+        return $command->queryRow();
+    }
+
 }
