@@ -404,3 +404,28 @@ select {
 .editable-clear-x{
     margin-top: -15px;    
 }
+
+.ui-autocomplete{
+    background-color: #fff;
+    border: 1px solid #dddcd6; 
+    max-height: 400px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+
+.ui-menu-item{
+    a{
+        color: #333;    
+        font-size: 0.9rem;
+        small{
+            font-size: 0.75rem;
+        }
+    }
+    &.ui-state-focus{
+        box-shadow: 0px 0px 15px #AFD8F8;
+        border: 1px solid #AFD8F8;
+        margin: 0;
+        background-color: #00B7F3;
+    }
+}
