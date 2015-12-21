@@ -10,6 +10,6 @@ $this->breadcrumbs = array(
 $this->boxHeader['small'] = 'Error ' . $code;
 $this->boxHeader['normal'] = 'Error ' . $code;
 ?>
-<div class="error">
+<div class="error alone">
     <?php echo CHtml::encode($message); ?>
 </div>
