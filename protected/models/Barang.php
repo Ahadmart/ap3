@@ -184,13 +184,14 @@ class Barang extends CActiveRecord
 
     public function getHargaJualRaw()
     {
-        return Yii::app()->db->createCommand("
+        $hasil = Yii::app()->db->createCommand("
 					select harga
 					from " . HargaJual::model()->tableName() . "
 					where barang_id = {$this->id}
 					order by id desc
 					limit 1
 			  ")->queryRow();
+        return $hasil['harga'];
     }
 
     public function getHargaJual()
