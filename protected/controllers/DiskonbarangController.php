@@ -68,6 +68,7 @@ class DiskonbarangController extends Controller
      */
     public function actionUbah($id)
     {
+        $this->layout = '//layouts/box_kecil';
         $model = $this->loadModel($id);
 
         // Uncomment the following line if AJAX validation is needed

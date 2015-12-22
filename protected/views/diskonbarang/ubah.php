@@ -1,22 +1,19 @@
 <?php
+
 /* @var $this DiskonbarangController */
 /* @var $model DiskonBarang */
 
-$this->breadcrumbs=array(
-	'Diskon Barang'=>array('index'),
-	$model->id=>array('view','id'=>$model->id),
-	'Ubah',
+$this->breadcrumbs = array(
+    'Diskon Barang' => array('index'),
+    $model->id => array('view', 'id' => $model->id),
+    'Ubah',
 );
 
 $this->boxHeader['small'] = 'Ubah';
-$this->boxHeader['normal'] = "Diskon Barang: {$model->nama}";
-?>
-<div class="row">
-    <div class="large-6 columns">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
-    </div>
-</div>
-<?php
+$this->boxHeader['normal'] = "Diskon Barang: {$model->barang->nama}";
+
+$this->renderPartial('_form', array('model' => $model));
+
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,

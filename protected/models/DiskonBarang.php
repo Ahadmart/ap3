@@ -32,7 +32,7 @@ class DiskonBarang extends CActiveRecord
     /* ========= */
     const STATUS_TIDAK_AKTIF = 0;
     const STATUS_AKTIF = 1;
-    
+
     public $barcode;
     public $namaBarang;
 
@@ -52,7 +52,7 @@ class DiskonBarang extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('barang_id, tipe_diskon_id, nominal, dari', 'required'),
+            array('barang_id, tipe_diskon_id, nominal, dari', 'required', 'message' => '{attribute} harus diisi'),
             array('tipe_diskon_id, status', 'numerical', 'integerOnly' => true),
             array('persen', 'numerical'),
             array('barang_id, qty, qty_min, qty_max, updated_by', 'length', 'max' => 10),
@@ -91,8 +91,8 @@ class DiskonBarang extends CActiveRecord
             'dari' => 'Dari',
             'sampai' => 'Sampai',
             'qty' => 'Qty',
-            'qty_min' => 'Qty Min',
-            'qty_max' => 'Qty Max',
+            'qty_min' => 'Qty Minimum',
+            'qty_max' => 'Qty Maximum',
             'status' => 'Status',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
@@ -175,6 +175,29 @@ class DiskonBarang extends CActiveRecord
             self::STATUS_TIDAK_AKTIF => 'Tidak Aktif',
             self::STATUS_AKTIF => 'Aktif',
         );
+    }
+
+    public function beforeValidate()
+    {
+        $this->dari = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i') : NULL;
+        $this->sampai = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i') : NULL;
+
+        /* Fixme: Pindahkan cek validasi di bawah ini ke tempat yang seharusnya */
+        switch ($this->tipe_diskon_id) {
+            case self::TIPE_PROMO:
+                if (empty($this->qty_max)) {
+                    return false;
+                }
+            case self::TIPE_GROSIR:
+                if (empty($this->qty_min)) {
+                    return false;
+                }
+            case self::TIPE_BANDED:
+                if (empty($this->qty)) {
+                    return false;
+                }
+        }
+        return parent::beforeValidate();
     }
 
 }

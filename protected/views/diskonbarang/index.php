@@ -19,7 +19,7 @@ $this->widget('BGridView', array(
         //'id',
         'barang_id',
         'tipe_diskon_id',
-        'harga',
+        'nominal',
         'persen',
         'dari',
         'sampai',

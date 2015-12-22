@@ -8,7 +8,7 @@ $this->breadcrumbs=array(
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Diskon Barang: '.$model->nama;
+$this->boxHeader['normal'] = 'Diskon Barang: '.$model->barang->nama;
 ?>
 <div class="row">
     <div class="small-12 columns">
@@ -18,7 +18,7 @@ $this->boxHeader['normal'] = 'Diskon Barang: '.$model->nama;
 		'id',
 		'barang_id',
 		'tipe_diskon_id',
-		'harga',
+		'nominal',
 		'persen',
 		'dari',
 		'sampai',
