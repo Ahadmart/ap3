@@ -240,6 +240,10 @@ label {
     color: #fff; }
   .datepicker table td.old, .datepicker table td.new {
     color: #999; }
+  .datepicker table td span.hour {
+    color: #fff; }
+  .datepicker table td span.minute {
+    color: #fff; }
 
 .header .label {
   font-size: 0.85rem;
