@@ -129,9 +129,9 @@ class Barang extends CActiveRecord
         $criteria->compare('id', $this->id, true);
         $criteria->compare('barcode', $this->barcode, true);
         $criteria->compare('t.nama', $this->nama, true);
-        $criteria->compare('kategori_id', $this->kategori_id, true);
-        $criteria->compare('satuan_id', $this->satuan_id, true);
-        $criteria->compare('rak_id', $this->rak_id, true);
+        $criteria->compare('kategori_id', $this->kategori_id);
+        $criteria->compare('satuan_id', $this->satuan_id);
+        $criteria->compare('rak_id', $this->rak_id);
         $criteria->compare('restock_point', $this->restock_point, true);
         $criteria->compare('restock_level', $this->restock_level, true);
         $criteria->compare('status', $this->status);
