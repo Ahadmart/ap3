@@ -101,13 +101,13 @@
     <div class="row">
         <div class="small-6 columns">
             <?php echo $form->labelEx($model, 'dari'); ?>
-            <?php echo $form->textField($model, 'dari', array('class' => 'tanggal-waktu', 'value' => $model->isNewRecord ? date('d-m-Y H:i') : date_format(date_create_from_format('Y-m-d H:i:s', $model->dari), 'd-m-Y H:i'))); ?>
+            <?php echo $form->textField($model, 'dari', array('class' => 'tanggal-waktu', 'value' => $model->isNewRecord ? date('d-m-Y H:i') : $model->dari)); ?>
             <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
         </div>
         <div class="small-6 columns">
             <?php echo $form->labelEx($model, 'sampai'); ?>
             <?php //echo $form->textField($model, 'sampai', array('class' => 'tanggal-waktu', 'value' => $model->isNewRecord ? '' : date_format(date_create_from_format('Y-m-d', $model->sampai), 'd-m-Y'))); ?>
-            <?php echo $form->textField($model, 'sampai', array('class' => 'tanggal-waktu', 'value' => empty($model->sampai) ? '' : date_format(date_create_from_format('Y-m-d H:i:s', $model->sampai), 'd-m-Y H:i'))); ?>
+            <?php echo $form->textField($model, 'sampai', array('class' => 'tanggal-waktu', 'value' => empty($model->sampai) ? '' : $model->sampai)); ?>
             <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
         </div>
     </div>

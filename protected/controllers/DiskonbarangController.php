@@ -34,6 +34,7 @@ class DiskonbarangController extends Controller
      */
     public function actionView($id)
     {
+        $this->layout = '//layouts/box_kecil';
         $this->render('view', array(
             'model' => $this->loadModel($id),
         ));
@@ -211,6 +212,17 @@ class DiskonbarangController extends Controller
         }
 
         $this->renderJSON($r);
+    }
+
+    public function renderLinkToView($data)
+    {
+        $return = '';
+        if (isset($data->barang)) {
+            $return = '<a href="' .
+                    $this->createUrl('view', array('id' => $data->id)) . '">' .
+                    $data->barang->nama . '</a>';
+        }
+        return $return;
     }
 
 }

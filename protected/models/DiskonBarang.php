@@ -60,7 +60,7 @@ class DiskonBarang extends CActiveRecord
             array('sampai, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
+            array('id, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, status, namaBarang', 'safe', 'on' => 'search'),
         );
     }
 
@@ -118,7 +118,7 @@ class DiskonBarang extends CActiveRecord
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('id', $this->id, true);
+        $criteria->compare('t.id', $this->id, true);
         $criteria->compare('barang_id', $this->barang_id, true);
         $criteria->compare('tipe_diskon_id', $this->tipe_diskon_id);
         $criteria->compare('nominal', $this->nominal, true);
@@ -133,8 +133,23 @@ class DiskonBarang extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $criteria->with = array('barang');
+        $criteria->compare('barang.nama', $this->namaBarang, true);
+
+        $sort = array(
+            'defaultOrder' => 't.status desc, t.id desc',
+            'attributes' => array(
+                '*',
+                'namaBarang' => array(
+                    'asc' => 'barang.nama',
+                    'desc' => 'barang.nama desc'
+                )
+            )
+        );
+
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
+            'sort' => $sort
         ));
     }
 
@@ -169,6 +184,15 @@ class DiskonBarang extends CActiveRecord
         );
     }
 
+    public function listTipeSort()
+    {
+        return array(
+            self::TIPE_PROMO => 'Promo',
+            self::TIPE_GROSIR => 'Grosir',
+            self::TIPE_BANDED => 'Banded'
+        );
+    }
+
     public function listStatus()
     {
         return array(
@@ -177,10 +201,25 @@ class DiskonBarang extends CActiveRecord
         );
     }
 
+    public function getNamaTipe()
+    {
+        return $this->listTipe()[$this->tipe_diskon_id];
+    }
+
+    public function getNamaTipeSort()
+    {
+        return $this->listTipeSort()[$this->tipe_diskon_id];
+    }
+
+    public function getNamaStatus()
+    {
+        return $this->listStatus()[$this->status];
+    }
+
     public function beforeValidate()
     {
-        $this->dari = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i') : NULL;
-        $this->sampai = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i') : NULL;
+        $this->dari = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s') : NULL;
+        $this->sampai = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s') : NULL;
 
         /* Fixme: Pindahkan cek validasi di bawah ini ke tempat yang seharusnya */
         switch ($this->tipe_diskon_id) {
@@ -188,10 +227,12 @@ class DiskonBarang extends CActiveRecord
                 if (empty($this->qty_max)) {
                     return false;
                 }
+                break;
             case self::TIPE_GROSIR:
                 if (empty($this->qty_min)) {
                     return false;
                 }
+                break;
             case self::TIPE_BANDED:
                 if (empty($this->qty)) {
                     return false;
@@ -200,4 +241,10 @@ class DiskonBarang extends CActiveRecord
         return parent::beforeValidate();
     }
 
+    public function afterFind()
+    {
+        $this->dari = !is_null($this->dari) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->dari), 'd-m-Y H:i') : '';
+        $this->sampai = !is_null($this->sampai) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->sampai), 'd-m-Y H:i') : '';
+        return parent::afterFind();
+    }
 }
