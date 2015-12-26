@@ -8,7 +8,7 @@ body, html {
 }
 body{
     color: #222222;
-    background: #dddcd6 url(../img/bg-b.jpg) repeat-y center fixed;// url(../img/bg.png);
+    background: #dddcd6 url(../img/bg-b-m.jpg) repeat-y center fixed;// url(../img/bg.png);
     padding: 0;
     margin: 0;
     font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
@@ -146,8 +146,9 @@ a{
 }
 .tabel-index tr td{
     font-family: "Open Sans";
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
 }
 
 tr.pilih, tr.selected {
@@ -171,7 +172,7 @@ table, table thead{
 table thead tr th, table thead tr td {
     color: #f0fff4;
     font-size: 0.9rem;
-    font-weight: bold;
+    font-weight: normal;
     padding: 0.5rem 0.625rem 0.625rem;
     background-color: rgba(19, 37, 49, 0.7);
 }
