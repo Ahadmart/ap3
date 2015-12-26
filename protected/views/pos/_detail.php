@@ -30,14 +30,15 @@ $this->widget('BGridView', array(
         ),
         array(
             'type' => 'raw',
-            'value' => '"<small>".$data->barang->satuan->nama."</small>"'
+            'value' => '"<span class=\"info label\">".$data->barang->satuan->nama."</label>"',
+            'htmlOptions' => array('style' => 'padding-left:0'),
         ),
         array(
             'name' => 'harga_jual',
             'header' => 'harga',
             'headerHtmlOptions' => array('class' => 'rata-kanan'),
             'htmlOptions' => array('class' => 'rata-kanan'),
-            'value' => function($data) {return number_format($data->harga_jual, 0, ',', '.');}
+            'value' => function($data) { return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'),'0'),','); }
         ),
         array(
             'name' => 'subTotal',
