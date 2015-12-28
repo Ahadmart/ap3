@@ -38,11 +38,11 @@ class PenjualanDiskon extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('penjualan_detail_id, penjualan_id, harga, harga_normal, updated_at, updated_by', 'required'),
+            array('penjualan_detail_id, penjualan_id, harga, harga_normal', 'required'),
             array('tipe_diskon_id', 'numerical', 'integerOnly' => true),
             array('penjualan_detail_id, penjualan_id, updated_by', 'length', 'max' => 10),
             array('harga, harga_normal', 'length', 'max' => 18),
-            array('created_at', 'safe'),
+            array('created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('id, penjualan_detail_id, penjualan_id, harga, harga_normal, tipe_diskon_id, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),

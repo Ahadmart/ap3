@@ -212,7 +212,23 @@ class Penjualan extends CActiveRecord
 
             $barangAda = $this->barangAda($barang->id);
             if ($barangAda) {
+
+                $tabelPenjualanDiskon = PenjualanDiskon::model()->tableName();
+                $tabelPenjualanDetail = PenjualanDetail::model()->tableName();
+
                 $qty+=$barangAda;
+                Yii::app()->db->createCommand("
+                    DELETE {$tabelPenjualanDiskon} 
+                    FROM {$tabelPenjualanDiskon} 
+                    INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanDiskon}.penjualan_detail_id = {$tabelPenjualanDetail}.id
+                    WHERE {$tabelPenjualanDetail}.barang_id=:barangId AND {$tabelPenjualanDetail}.penjualan_id=:penjualanId
+                        ")
+                        ->bindValues(array(
+                            ':barangId' => $barang->id,
+                            ':penjualanId' => $this->id
+                        ))
+                        ->execute();
+
                 PenjualanDetail::model()->deleteAll('barang_id=:barangId AND penjualan_id=:penjualanId', array(
                     ':barangId' => $barang->id,
                     ':penjualanId' => $this->id
@@ -292,7 +308,7 @@ class Penjualan extends CActiveRecord
      * @param decimal $hargaJual
      * @throws Exception
      */
-    public function insertBarang($barangId, $qty, $hargaJual, $diskon)
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0)
     {
         $detail = new PenjualanDetail;
         $detail->penjualan_id = $this->id;
@@ -305,6 +321,22 @@ class Penjualan extends CActiveRecord
         }
         if (!$detail->save()) {
             throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$barangId}, qty:{$qty}", 500);
+        }
+        if ($diskon > 0) {
+            $this->insertDiskon($detail, DiskonBarang::TIPE_BANDED);
+        }
+    }
+
+    public function insertDiskon($penjualanDetail, $tipeDiskonId)
+    {
+        $trxDiskon = new PenjualanDiskon;
+        $trxDiskon->penjualan_detail_id = $penjualanDetail->id;
+        $trxDiskon->penjualan_id = $penjualanDetail->penjualan_id;
+        $trxDiskon->harga = $penjualanDetail->harga_jual;
+        $trxDiskon->harga_normal = $penjualanDetail->harga_jual + $penjualanDetail->diskon;
+        $trxDiskon->tipe_diskon_id = $tipeDiskonId;
+        if (!$trxDiskon->save()) {
+            throw new Exception("Gagal simpan diskon detail: penjualanDetailId:{$penjualanDetail->id}", 500);
         }
     }
 

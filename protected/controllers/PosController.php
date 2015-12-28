@@ -106,6 +106,7 @@ class PosController extends Controller
         $model = $this->loadModel($id);
         if ($model->status == Penjualan::STATUS_DRAFT) {
             PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
+            PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
             $model->delete();
         }
 
@@ -270,6 +271,8 @@ class PosController extends Controller
                 $penjualan = $this->loadModel($detail->penjualan_id);
                 $return = $penjualan->tambahBarang($detail->barang->barcode, $selisih);
             } else {
+                PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $pk);
+                
                 $detail->delete();
             }
             $return = array('sukses' => true);
