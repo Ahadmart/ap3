@@ -106,6 +106,7 @@ class PosController extends Controller
         $model = $this->loadModel($id);
         if ($model->status == Penjualan::STATUS_DRAFT) {
             PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
+            PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
             $model->delete();
         }
 
@@ -232,6 +233,8 @@ class PosController extends Controller
                 $barcode = $_POST['barcode'];
                 $return = $penjualan->tambahBarang($barcode, 1);
             }
+//            $barang = Barang::model()->find("barcode = '" . $barcode . "'");
+//            $return['error']['msg'] = $penjualan->cekDiskon($barang->id);
         }
         $this->renderJSON($return);
     }
@@ -259,21 +262,40 @@ class PosController extends Controller
     {
         if (isset($_POST['pk'])) {
             $pk = $_POST['pk'];
-            $qty = $_POST['value'];
+            $qtyInput = $_POST['value'];
             $detail = PenjualanDetail::model()->findByPk($pk);
-            if ($qty > 0) {
-                $detail->qty = $qty;
+            if ($qtyInput > 0) {
+                $selisih = $qtyInput - $detail->qty;
 
                 $return = array('sukses' => false);
-                if ($detail->save()) {
-                    
-                }
+                $penjualan = $this->loadModel($detail->penjualan_id);
+                $return = $penjualan->tambahBarang($detail->barang->barcode, $selisih);
             } else {
+                PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $pk);
+                
                 $detail->delete();
             }
             $return = array('sukses' => true);
             $this->renderJSON($return);
         }
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        );
+        if (isset($_POST['barcode'])) {
+            $penjualan = $this->loadModel($id);
+            // Tambah barang hanya bisa jika status masih draft
+            if ($penjualan->status == Penjualan::STATUS_DRAFT) {
+                $barcode = $_POST['barcode'];
+                $return = $penjualan->tambahBarang($barcode, 1);
+            }
+//            $barang = Barang::model()->find("barcode = '" . $barcode . "'");
+//            $return['error']['msg'] = $penjualan->cekDiskon($barang->id);
+        }
+        $this->renderJSON($return);
     }
 
     public function actionSuspended()

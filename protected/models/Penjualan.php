@@ -188,7 +188,168 @@ class Penjualan extends CActiveRecord
         return parent::beforeSave();
     }
 
+    public function barangAda($barangId)
+    {
+        $detail = Yii::app()->db->createCommand("
+        select sum(qty) qty from penjualan_detail
+        where penjualan_id=:penjualanId and barang_id=:barangId
+            ")->bindValues(array(':penjualanId' => $this->id, ':barangId' => $barangId))
+                ->queryRow();
+
+        return $detail['qty'];
+    }
+
     public function tambahBarang($barcode, $qty)
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+            $barang = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
+
+            /* Jika barang tidak ada */
+            if (is_null($barang)) {
+                throw new Exception('Barang tidak ditemukan', 500);
+            }
+
+            $barangAda = $this->barangAda($barang->id);
+            if ($barangAda) {
+
+                $tabelPenjualanDiskon = PenjualanDiskon::model()->tableName();
+                $tabelPenjualanDetail = PenjualanDetail::model()->tableName();
+
+                $qty+=$barangAda;
+                Yii::app()->db->createCommand("
+                    DELETE {$tabelPenjualanDiskon} 
+                    FROM {$tabelPenjualanDiskon} 
+                    INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanDiskon}.penjualan_detail_id = {$tabelPenjualanDetail}.id
+                    WHERE {$tabelPenjualanDetail}.barang_id=:barangId AND {$tabelPenjualanDetail}.penjualan_id=:penjualanId
+                        ")
+                        ->bindValues(array(
+                            ':barangId' => $barang->id,
+                            ':penjualanId' => $this->id
+                        ))
+                        ->execute();
+
+                PenjualanDetail::model()->deleteAll('barang_id=:barangId AND penjualan_id=:penjualanId', array(
+                    ':barangId' => $barang->id,
+                    ':penjualanId' => $this->id
+                ));
+            }
+            $this->tambahBarangDetail($barang, $qty);
+
+            $transaction->commit();
+            return array(
+                'sukses' => true
+            );
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return array(
+                'sukses' => false,
+                'error' => array(
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ));
+        }
+    }
+
+    public function tambahBarangDetail($barang, $qty)
+    {
+        $sisa = $qty;
+        $hargaJualNormal = HargaJual::model()->terkini($barang->id);
+        if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO))) {
+            //terapkan diskon promo
+            //ambil sisanya (yang tidak didiskon)
+        } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_GROSIR))) {
+            //terapkan diskon grosir
+            //ambil sisanya (yang tidak didiskon)
+        } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_BANDED))) {
+            //terapkan diskon banded
+            //ambil sisanya (yang tidak didiskon)
+            $sisa = $this->aksiDiskonBanded($barang->id, $qty, $hargaJualNormal);
+        }
+
+        /* Jika masih ada sisa, insert ke penjulan dg harga jual normal */
+        if ($sisa > 0) {
+            /* -------------- */
+            $this->insertBarang($barang->id, $sisa, $hargaJualNormal);
+            /* -------------- */
+        }
+    }
+
+    public function aksiDiskonBanded($barangId, $qty, $hargaJualNormal)
+    {
+        $diskons = DiskonBarang::model()->findAll(array(
+            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon',
+            'order' => 'qty desc',
+            'params' => array(
+                'barangId' => $barangId,
+                'status' => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon' => DiskonBarang::TIPE_BANDED
+            )
+        ));
+        $sisa = $qty;
+        foreach ($diskons as $banded) {
+            if ($sisa >= $banded->qty) {
+                $hargaJualSatuan = $hargaJualNormal - $banded->nominal;
+                $qtyBanded = floor($sisa / $banded->qty);
+                $qtyTotal = $qtyBanded * $banded->qty;
+                /* -------------- */
+                $this->insertBarang($barangId, $qtyTotal, $hargaJualSatuan, $banded->nominal);
+                /* -------------- */
+                $sisa = $sisa % $banded->qty;
+            }
+        }
+        return $sisa;
+    }
+
+    /**
+     * Insert penjualan detail
+     * @param int $barangId
+     * @param int $qty
+     * @param decimal $hargaJual
+     * @throws Exception
+     */
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0)
+    {
+        $detail = new PenjualanDetail;
+        $detail->penjualan_id = $this->id;
+        $detail->barang_id = $barangId;
+        $detail->qty = $qty;
+        $detail->harga_jual = $hargaJual;
+        $detail->harga_jual_rekomendasi = HargaJualRekomendasi::model()->terkini($barangId);
+        if ($diskon > 0) {
+            $detail->diskon = $diskon;
+        }
+        if (!$detail->save()) {
+            throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$barangId}, qty:{$qty}", 500);
+        }
+        if ($diskon > 0) {
+            $this->insertDiskon($detail, DiskonBarang::TIPE_BANDED);
+        }
+    }
+
+    public function insertDiskon($penjualanDetail, $tipeDiskonId)
+    {
+        $trxDiskon = new PenjualanDiskon;
+        $trxDiskon->penjualan_detail_id = $penjualanDetail->id;
+        $trxDiskon->penjualan_id = $penjualanDetail->penjualan_id;
+        $trxDiskon->harga = $penjualanDetail->harga_jual;
+        $trxDiskon->harga_normal = $penjualanDetail->harga_jual + $penjualanDetail->diskon;
+        $trxDiskon->tipe_diskon_id = $tipeDiskonId;
+        if (!$trxDiskon->save()) {
+            throw new Exception("Gagal simpan diskon detail: penjualanDetailId:{$penjualanDetail->id}", 500);
+        }
+    }
+
+    public function cekDiskon($barangId, $tipeDiskonId)
+    {
+        return DiskonBarang::model()->find(array(
+                    'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon',
+                    'order' => 'id desc',
+                    'params' => array('barangId' => $barangId, 'status' => DiskonBarang::STATUS_AKTIF, 'tipeDiskon' => $tipeDiskonId)
+        ));
+    }
+
+    public function tambahBarangBak($barcode, $qty)
     {
         $transaction = $this->dbConnection->beginTransaction();
         try {
@@ -208,13 +369,13 @@ class Penjualan extends CActiveRecord
             $detail->harga_jual_rekomendasi = HargaJualRekomendasi::model()->terkini($barang->id);
 
             /* Jika apakah barang sudah ada di detail? */
-            $sudahAda = PenjualanDetail::model()->find('barang_id=:barangId AND penjualan_id=:penjualanId', array(
+            $sudahAda = PenjualanDetail::model()->findAll('barang_id=:barangId AND penjualan_id=:penjualanId', array(
                 ':barangId' => $barang->id,
                 ':penjualanId' => $this->id
             ));
 
             /* Jika sudah ada, tambahkan $detail->qty, dan delete $sudahAda */
-            if (!is_null($sudahAda)) {
+            if (!empty($sudahAda)) {
                 $detail->qty += $sudahAda->qty;
                 $sudahAda->delete();
             }

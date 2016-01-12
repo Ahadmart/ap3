@@ -91,25 +91,6 @@ a {
 #tombol-batal {
   float: left; }
 
-.ui-autocomplete {
-  background-color: #fff;
-  border: 1px solid #dddcd6;
-  max-height: 400px;
-  overflow-y: auto;
-  /* prevent horizontal scrollbar */
-  overflow-x: hidden; }
-
-.ui-menu-item a {
-  color: #333;
-  font-size: 0.9rem; }
-  .ui-menu-item a small {
-    font-size: 0.75rem; }
-.ui-menu-item.ui-state-focus {
-  box-shadow: 0px 0px 15px #AFD8F8;
-  border: 1px solid #AFD8F8;
-  margin: 0;
-  background-color: #00B7F3; }
-
 .off-canvas-wrap, .main-section, .inner-wrap {
   height: 100%; }
 
@@ -145,8 +126,9 @@ a {
 
 .tabel-index tr td {
   font-family: "Open Sans";
-  font-size: 1rem;
-  font-weight: 500; }
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4); }
 
 tr.pilih, tr.selected {
   background-color: rgba(0, 0, 0, 0.5) !important; }
@@ -165,7 +147,7 @@ table, table thead {
 table thead tr th, table thead tr td {
   color: #f0fff4;
   font-size: 0.9rem;
-  font-weight: bold;
+  font-weight: normal;
   padding: 0.5rem 0.625rem 0.625rem;
   background-color: rgba(19, 37, 49, 0.7); }
 

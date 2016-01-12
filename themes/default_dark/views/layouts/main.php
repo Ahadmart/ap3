@@ -12,11 +12,11 @@
 
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                              ?>/css/animate.min.css">-->
-        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                           ?>/css/app.css">-->
+        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                    ?>/css/animate.min.css">-->
+        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                 ?>/css/app.css">-->
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
         <?php
-        Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/app.css');
+        Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/app.css');
         ?>
         <link rel="apple-touch-icon" sizes="57x57" href="<?php echo Yii::app()->theme->baseUrl; ?>/img/fav/apple-touch-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="<?php echo Yii::app()->theme->baseUrl; ?>/img/fav/apple-touch-icon-60x60.png">
@@ -85,33 +85,45 @@
                                       array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                                      * 
                                      */
-                                    array('label' => '<i class="fa fa-globe fa-fw fa-lg"></i>'.' Master', 'url' => '',
+                                    array('label' => '<i class="fa fa-cogs fa-fw fa-lg"></i>' . ' Config', 'url' => '',
                                         'items' => array(
                                             array('label' => 'Barang', 'url' => '',
                                                 'items' => array(
-                                                    array('label' => '<i class="fa fa-barcode fa-fw"></i>'.' Barang', 'url' => array('/barang/index')),
-                                                    array('label' => '<i class="fa fa-tag fa-fw"></i>'.' Satuan', 'url' => array('/satuanbarang/index')),
-                                                    array('label' => '<i class="fa fa-tags fa-fw"></i>'.' Kategori', 'url' => array('/kategoribarang/index')),
-                                                    array('label' => '<i class="fa fa-server fa-fw"></i>'.' Rak', 'url' => array('/rakbarang/index')),
+                                                    array('label' => '<i class="fa fa-barcode fa-fw"></i>' . ' Barang', 'url' => array('/barang/index')),
+                                                    array('label' => '<i class="fa fa-tag fa-fw"></i>' . ' Satuan', 'url' => array('/satuanbarang/index')),
+                                                    array('label' => '<i class="fa fa-tags fa-fw"></i>' . ' Kategori', 'url' => array('/kategoribarang/index')),
+                                                    array('label' => '<i class="fa fa-server fa-fw"></i>' . ' Rak', 'url' => array('/rakbarang/index')),
+                                                    array('label' => '<i class="fa fa-barcode fa-fw"></i>' . ' Diskon', 'url' => array('/diskonbarang/index')),
                                                 ),
                                                 'itemOptions' => array('class' => 'has-dropdown'),
                                                 'submenuOptions' => array('class' => 'dropdown'),
                                             ),
                                             array('label' => 'Keuangan', 'url' => '',
                                                 'items' => array(
-                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Kas/Bank', 'url' => array('/kasbank/index')),
-                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Jenis Transaksi', 'url' => array('/jenistransaksi/index')),
-                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Kategori Pengeluaran', 'url' => array('/kategoripengeluaran/index')),
-                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Kategori Penerimaan', 'url' => array('/kategoripenerimaan/index')),
+                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Kas/Bank', 'url' => array('/kasbank/index')),
+                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Jenis Transaksi', 'url' => array('/jenistransaksi/index')),
+                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Kategori Pengeluaran', 'url' => array('/kategoripengeluaran/index')),
+                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Kategori Penerimaan', 'url' => array('/kategoripenerimaan/index')),
                                                     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                                    array('label' => '<i class="fa fa-book fa-fw"></i>'.' Item Pengeluaran', 'url' => array('/itempengeluaran/index')),
-                                                    array('label' => '<i class="fa fa-book fa-fw"></i>'.' Item Penerimaan', 'url' => array('/itempenerimaan/index')),
+                                                    array('label' => '<i class="fa fa-book fa-fw"></i>' . ' Item Pengeluaran', 'url' => array('/itempengeluaran/index')),
+                                                    array('label' => '<i class="fa fa-book fa-fw"></i>' . ' Item Penerimaan', 'url' => array('/itempenerimaan/index')),
                                                 // array('label' => '<i class="fa fa-book fa-fw"></i>'.' Kode Akun', 'url' => ''),
                                                 ),
                                                 'itemOptions' => array('class' => 'has-dropdown'),
                                                 'submenuOptions' => array('class' => 'dropdown'),
                                             ),
-                                            array('label' => '<i class="fa fa-user fa-fw"></i>'.' Profil', 'url' => array('/profil/index'),
+                                            array('label' => 'Akses', 'url' => '',
+                                                'items' => array(
+                                                    array('label' => '<i class="fa fa-user fa-fw"></i>' . ' User', 'url' => array('/user/index')),
+                                                    array('label' => '<i class="fa fa-shield fa-fw"></i>' . ' Otorisasi Item', 'url' => array('/auth/item/index')),
+                                                    array('label' => '<i class="fa fa-user-plus fa-fw"></i>' . ' User Assignment', 'url' => array('/auth/assignment/index')),
+                                                ),
+                                                'itemOptions' => array('class' => 'has-dropdown'),
+                                                'submenuOptions' => array('class' => 'dropdown'),
+                                            ),
+                                            array('label' => '<i class="fa fa-cog fa-fw"></i>' . ' Aplikasi', 'url' => array('/config/index')),
+                                            array('label' => '<i class="fa fa-cog fa-fw"></i>' . ' Devices', 'url' => array('/device/index')),
+                                            array('label' => '<i class="fa fa-user fa-fw"></i>' . ' Profil', 'url' => array('/profil/index'),
                                             /*
                                               'items' => array(
                                               array('label' => '<i class="fa fa-user fa-fw"></i>'.' Profil', 'url' => array('/profil/index')),
@@ -129,49 +141,31 @@
                                         'submenuOptions' => array('class' => 'dropdown'),
                                     ),
                                     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-calculator fa-fw fa-lg"></i>'.' Transaksi', 'url' => '',
+                                    array('label' => '<i class="fa fa-calculator fa-fw fa-lg"></i>' . ' Transaksi', 'url' => '',
                                         'items' => array(
-                                            array('label' => '<i class="fa fa-truck fa-fw"></i>'.' Pembelian', 'url' => array('/pembelian/index')),
-                                            array('label' => '<i class="fa fa-truck fa-flip-horizontal fa-fw"></i>'.' Retur Pembelian', 'url' => array('/returpembelian/index')),
-                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>'.' Penjualan', 'url' => array('/penjualan/index')),
-                                            array('label' => '<i class="fa fa-shopping-cart fa-flip-horizontal fa-fw"></i>'.' Retur Penjualan', 'url' => array('/returpenjualan/index')),
-                                            array('label' => '<i class="fa fa-check-square-o fa-fw"></i>'.' Stock Opname', 'url' => array('/stockopname/index')),
+                                            array('label' => '<i class="fa fa-truck fa-fw"></i>' . ' Pembelian', 'url' => array('/pembelian/index')),
+                                            array('label' => '<i class="fa fa-truck fa-flip-horizontal fa-fw"></i>' . ' Retur Pembelian', 'url' => array('/returpembelian/index')),
+                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>' . ' Penjualan', 'url' => array('/penjualan/index')),
+                                            array('label' => '<i class="fa fa-shopping-cart fa-flip-horizontal fa-fw"></i>' . ' Retur Penjualan', 'url' => array('/returpenjualan/index')),
+                                            array('label' => '<i class="fa fa-check-square-o fa-fw"></i>' . ' Stock Opname', 'url' => array('/stockopname/index')),
                                             array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>'.' POS', 'url' => array('/pos/index')),
-                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>'.' Kasir', 'url' => array('/kasir/index')),
+                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>' . ' POS', 'url' => array('/pos/index')),
+                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>' . ' Kasir', 'url' => array('/kasir/index')),
                                             array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                            array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Pengeluaran', 'url' => array('/pengeluaran/index')),
-                                            array('label' => '<i class="fa fa-credit-card fa-fw"></i>'.' Penerimaan', 'url' => array('/penerimaan/index')),
+                                            array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Pengeluaran', 'url' => array('/pengeluaran/index')),
+                                            array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Penerimaan', 'url' => array('/penerimaan/index')),
                                             array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                            array('label' => '<i class="fa fa-list fa-fw"></i>'.' Data Harian', 'url' => array('/laporanharian/index')),
+                                            array('label' => '<i class="fa fa-list fa-fw"></i>' . ' Data Harian', 'url' => array('/laporanharian/index')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
                                     ),
                                     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-files-o fa-fw fa-lg"></i>'.' Laporan', 'url' => '',
+                                    array('label' => '<i class="fa fa-files-o fa-fw fa-lg"></i>' . ' Laporan', 'url' => '',
                                         'items' => array(
                                             // array('label' => '<i class="fa fa-file fa-fw"></i>'.' Pembelian', 'url' => array('/report/pembelian')),
                                             // array('label' => '<i class="fa fa-file fa-fw"></i>'.' Penjualan', 'url' => array('/report/penjualan')),
-                                            array('label' => '<i class="fa fa-file fa-fw"></i>'.' Harian', 'url' => array('/report/harian')),
-                                        ),
-                                        'itemOptions' => array('class' => 'has-dropdown'),
-                                        'submenuOptions' => array('class' => 'dropdown'),
-                                    ),
-                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-wrench fa-fw fa-lg"></i>'.' Settings', 'url' => '',
-                                        'items' => array(
-                                            array('label' => 'Akses', 'url' => '',
-                                                'items' => array(
-                                                    array('label' => '<i class="fa fa-user fa-fw"></i>'.' User', 'url' => array('/user/index')),
-                                                    array('label' => '<i class="fa fa-shield fa-fw"></i>'.' Otorisasi Item', 'url' => array('/auth/item/index')),
-                                                    array('label' => '<i class="fa fa-user-plus fa-fw"></i>'.' User Assignment', 'url' => array('/auth/assignment/index')),
-                                                ),
-                                                'itemOptions' => array('class' => 'has-dropdown'),
-                                                'submenuOptions' => array('class' => 'dropdown'),
-                                            ),
-                                            array('label' => '<i class="fa fa-cogs fa-fw"></i>'.' Aplikasi', 'url' => array('/config/index')),
-                                            array('label' => '<i class="fa fa-cogs fa-fw"></i>'.' Devices', 'url' => array('/device/index')),
+                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian', 'url' => array('/report/harian')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
@@ -191,7 +185,7 @@
                                 'id' => '',
                                 'items' => array(
                                     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-unlock-alt fa-fw"></i>'.' Login', 'url' => array('/app/login')
+                                    array('label' => '<i class="fa fa-unlock-alt fa-fw"></i>' . ' Login', 'url' => array('/app/login')
                                     ),
                                 ),
                             ));
@@ -205,10 +199,10 @@
                                     //array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                                     //array('label' => '<i class="fa fa-envelope-o fa-fw getar"></i>' . ' <span class="alert label">27</span>', 'url' => array('#'),),
                                     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-at fa-lg fa-fw"></i> '.Yii::app()->user->namaLengkap, 'url' => '',
+                                    array('label' => '<i class="fa fa-at fa-lg fa-fw"></i> ' . Yii::app()->user->namaLengkap, 'url' => '',
                                         'items' => array(
-                                            array('label' => '<i class="fa fa-user fa-fw"></i>'.' Profile', 'url' => array('user/ubah/'.Yii::app()->user->id)),
-                                            array('label' => '<i class="fa fa-power-off fa-fw"></i>'.' Logout', 'url' => array('/app/logout')),
+                                            array('label' => '<i class="fa fa-user fa-fw"></i>' . ' Profile', 'url' => array('user/ubah/' . Yii::app()->user->id)),
+                                            array('label' => '<i class="fa fa-power-off fa-fw"></i>' . ' Logout', 'url' => array('/app/logout')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
@@ -248,7 +242,7 @@
 
 
 
-<?php // if (isset($this->breadcrumbs)):       ?>
+<?php // if (isset($this->breadcrumbs)):         ?>
 <?php
 //	$this->widget('zii.widgets.CBreadcrumbs', array(
 //		 'links' => $this->breadcrumbs,
