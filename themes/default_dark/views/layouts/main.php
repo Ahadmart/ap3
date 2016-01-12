@@ -165,7 +165,8 @@
                                         'items' => array(
                                             // array('label' => '<i class="fa fa-file fa-fw"></i>'.' Pembelian', 'url' => array('/report/pembelian')),
                                             // array('label' => '<i class="fa fa-file fa-fw"></i>'.' Penjualan', 'url' => array('/report/penjualan')),
-                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian', 'url' => array('/report/harian')),
+                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian Detail', 'url' => array('/report/hariandetail')),
+                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
