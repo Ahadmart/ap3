@@ -175,7 +175,8 @@ li.active>a{
     div.panel{
         // padding override
         padding: 0.75rem;
-        padding-bottom: 0;
+        //padding-bottom: 0;
+        margin: 0 15px 15px;
         form{
             margin: 0 -15px;
         }
@@ -222,6 +223,12 @@ div.error{
     font-style: italic;
     background: #f04124;
     color: white;
+    &.alone{
+        font-size: 0.875rem;
+        margin: 0 15px;
+        margin-top: -1px;
+        margin-bottom: 0.88889rem;
+    }
 }
 
 #input-pemb-detail{
@@ -339,6 +346,12 @@ label{
         &.old, &.new{
             color: #999
         }
+        span.hour{
+            color: #fff;
+        }
+        span.minute{
+            color: #fff;
+        }
     }
 }
 
@@ -403,4 +416,29 @@ select {
 //jquery-editable overwrite
 .editable-clear-x{
     margin-top: -15px;    
+}
+
+.ui-autocomplete{
+    background-color: #fff;
+    border: 1px solid #dddcd6; 
+    max-height: 400px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+
+.ui-menu-item{
+    a{
+        color: #333;    
+        font-size: 0.9rem;
+        small{
+            font-size: 0.75rem;
+        }
+    }
+    &.ui-state-focus{
+        box-shadow: 0px 0px 15px #AFD8F8;
+        border: 1px solid #AFD8F8;
+        margin: 0;
+        background-color: #00B7F3;
+    }
 }

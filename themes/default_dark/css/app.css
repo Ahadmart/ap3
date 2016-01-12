@@ -116,7 +116,7 @@ li.active > a {
     font-size: 0.75rem; }
   .block-content div.panel {
     padding: 0.75rem;
-    padding-bottom: 0; }
+    margin: 0 15px 15px; }
     .block-content div.panel form {
       margin: 0 -15px; }
   .block-content .prefix .fa-2x {
@@ -148,6 +148,11 @@ div.error {
   font-style: italic;
   background: #f04124;
   color: white; }
+  div.error.alone {
+    font-size: 0.875rem;
+    margin: 0 15px;
+    margin-top: -1px;
+    margin-bottom: 0.88889rem; }
 
 #input-pemb-detail input {
   text-align: right; }
@@ -235,6 +240,10 @@ label {
     color: #fff; }
   .datepicker table td.old, .datepicker table td.new {
     color: #999; }
+  .datepicker table td span.hour {
+    color: #fff; }
+  .datepicker table td span.minute {
+    color: #fff; }
 
 .header .label {
   font-size: 0.85rem;
@@ -280,5 +289,24 @@ select {
 
 .editable-clear-x {
   margin-top: -15px; }
+
+.ui-autocomplete {
+  background-color: #fff;
+  border: 1px solid #dddcd6;
+  max-height: 400px;
+  overflow-y: auto;
+  /* prevent horizontal scrollbar */
+  overflow-x: hidden; }
+
+.ui-menu-item a {
+  color: #333;
+  font-size: 0.9rem; }
+  .ui-menu-item a small {
+    font-size: 0.75rem; }
+.ui-menu-item.ui-state-focus {
+  box-shadow: 0px 0px 15px #AFD8F8;
+  border: 1px solid #AFD8F8;
+  margin: 0;
+  background-color: #00B7F3; }
 
 /*# sourceMappingURL=app.css.map */
