@@ -258,6 +258,7 @@ class Penjualan extends CActiveRecord
         if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO))) {
             //terapkan diskon promo
             //ambil sisanya (yang tidak didiskon)
+            $sisa = $this->aksiDiskonPromo($barang->id, $qty, $hargaJualNormal);
         } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_GROSIR))) {
             //terapkan diskon grosir
             //ambil sisanya (yang tidak didiskon)
@@ -273,6 +274,31 @@ class Penjualan extends CActiveRecord
             $this->insertBarang($barang->id, $sisa, $hargaJualNormal);
             /* -------------- */
         }
+    }
+
+    public function aksiDiskonPromo($barangId, $qty, $hargaJualNormal)
+    {
+
+        $diskonPromo = DiskonBarang::model()->find(array(
+            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
+            'order' => 'id desc',
+            'params' => array(
+                'barangId' => $barangId,
+                'status' => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon' => DiskonBarang::TIPE_PROMO
+            )
+        ));
+        $sisa = $qty;
+        if ($qty > $diskonPromo->qty_max) {
+            $qtyPromo = $diskonPromo->qty_max;
+            $sisa-= $diskonPromo->qty_max;
+        } else {
+            $qtyPromo = $qty;
+            $sisa = 0;
+        }
+        $hargaJualSatuan = $hargaJualNormal - $diskonPromo->nominal;
+        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonPromo->nominal);
+        return $sisa;
     }
 
     public function aksiDiskonBanded($barangId, $qty, $hargaJualNormal)
