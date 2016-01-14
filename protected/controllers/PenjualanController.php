@@ -264,6 +264,7 @@ class PenjualanController extends Controller
     public function actionHapusDetail($id)
     {
         $detail = PenjualanDetail::model()->findByPk($id);
+        PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $detail->id);
         if (!$detail->delete()) {
             throw new Exception('Gagal hapus detail penjualan');
         }
