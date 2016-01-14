@@ -872,9 +872,10 @@ class Penjualan extends CActiveRecord
         $user = User::model()->findByPk(Yii::app()->user->id);
 
         $details = Yii::app()->db->createCommand("
-            select barang.barcode, barang.nama, pd.qty, pd.harga_jual, pd.harga_jual_rekomendasi
+            select barang.barcode, barang.nama, satuan.nama namasatuan, pd.qty, pd.harga_jual, pd.diskon, pd.harga_jual_rekomendasi
             from penjualan_detail pd
             join barang on pd.barang_id = barang.id
+            join barang_satuan satuan on satuan.id = barang.satuan_id
             where pd.penjualan_id = :penjualanId
             ")
                 ->bindValue(':penjualanId', $this->id)
@@ -899,31 +900,57 @@ class Penjualan extends CActiveRecord
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
         $total = 0;
+        $totalDiskon = 0;
         foreach ($details as $detail) {
-            $txtHarga = $detail['qty'] . ' x @ ' . number_format($detail['harga_jual']) . ' : ';
-            $subTotal = $detail['qty'] * $detail['harga_jual'];
-            $txtSubTotal = str_pad(number_format($subTotal, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtHarga = $detail['qty'] . ' ' . $detail['namasatuan'] . '  @ ' . number_format($detail['harga_jual']) . ' : ';
+
+            /* Jika ada diskon, maka tampilkan terlebih dahulu harga sebelum didiskon */
+            if (!is_null($detail['diskon'])) {
+                $txtHarga = $detail['qty'] . ' ' . $detail['namasatuan'] . '  @ ' . number_format($detail['harga_jual'] + $detail['diskon']) . ' : ';
+            }
+            $netSubTotal = $detail['qty'] * $detail['harga_jual'];
+            $txtSubTotal = str_pad(number_format($netSubTotal, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+
+            /* Jika ada diskon, maka tampilkan sub total sebelum diskon */
+            if (!is_null($detail['diskon'])) {
+                $subTotal = $detail['qty'] * ($detail['harga_jual'] + $detail['diskon']);
+                $txtSubTotal = str_pad(number_format($subTotal, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            }
 
             $struk .= str_pad(' ' . $detail['nama'], $jumlahKolom, ' ') . PHP_EOL;
             $struk .= str_pad($txtHarga . $txtSubTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
 
-            $total += $subTotal;
+            /* Jika ada diskon, maka tampilkan total diskon */
+            if (!is_null($detail['diskon'])) {
+                $diskonText = rtrim(rtrim(number_format($detail['diskon'], 2, ',', '.'), '0'), ',');
+                $subTotalDiskon = $detail['qty'] * $detail['diskon'];
+                $txtSubTotalDiskon = str_pad('(' . number_format($subTotalDiskon, 0, ',', '.') . ')', 12, ' ', STR_PAD_LEFT);
+                $struk .= str_pad('(@ ' . $diskonText . ') : ' . $txtSubTotalDiskon, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL;
+                $totalDiskon += $subTotalDiskon;
+            }
+
+            $total += $netSubTotal;
         }
 
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
-        $txtTotal = 'Total   : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+        $txtTotal = 'Total      : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
 
         $dibayar = is_null($penerimaan['uang_dibayar']) ? NULL : $penerimaan['uang_dibayar'];
         if (!is_null($dibayar)) {
-            $txtBayar = 'Dibayar : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-            $txtKbali = 'Kembali : ' . str_pad(number_format($dibayar - $total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtBayar = 'Dibayar    : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtKbali = 'Kembali    : ' . str_pad(number_format($dibayar - $total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
         }
 
         $struk .= str_pad($txtTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         if (!is_null($dibayar)) {
             $struk .= str_pad($txtBayar, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
             $struk .= str_pad($txtKbali, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+
+        if ($totalDiskon > 0) {
+            $txtDiskon = 'Anda Hemat : ' . str_pad(number_format($totalDiskon, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $struk .= str_pad($txtDiskon, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
 
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
