@@ -278,7 +278,7 @@ class Penjualan extends CActiveRecord
     public function aksiDiskonBanded($barangId, $qty, $hargaJualNormal)
     {
         $diskons = DiskonBarang::model()->findAll(array(
-            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon',
+            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
             'order' => 'qty desc',
             'params' => array(
                 'barangId' => $barangId,
@@ -343,7 +343,7 @@ class Penjualan extends CActiveRecord
     public function cekDiskon($barangId, $tipeDiskonId)
     {
         return DiskonBarang::model()->find(array(
-                    'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon',
+                    'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
                     'order' => 'id desc',
                     'params' => array('barangId' => $barangId, 'status' => DiskonBarang::STATUS_AKTIF, 'tipeDiskon' => $tipeDiskonId)
         ));
