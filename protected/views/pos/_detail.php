@@ -21,6 +21,26 @@ $this->widget('BGridView', array(
             'value' => '$data->barang->nama',
         ),
         array(
+            'header' => 'Harga',
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'value' => function($data) { return rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'),'0'),','); }
+        ),
+        array(
+            'name' => 'diskon',
+            'header' => 'Diskon',
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'value' => function($data) { return rtrim(rtrim(number_format($data->diskon, 2, ',', '.'),'0'),','); }
+        ),
+        array(
+            'name' => 'harga_jual',
+            'header' => 'Net',
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'value' => function($data) { return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'),'0'),','); }
+        ),
+        array(
             'name' => 'qty',
             'header' => '<span class="ak">Q</span>ty',
             'type' => 'raw',
@@ -32,13 +52,6 @@ $this->widget('BGridView', array(
             'type' => 'raw',
             'value' => '"<span class=\"info label\">".$data->barang->satuan->nama."</label>"',
             'htmlOptions' => array('style' => 'padding-left:0'),
-        ),
-        array(
-            'name' => 'harga_jual',
-            'header' => 'harga',
-            'headerHtmlOptions' => array('class' => 'rata-kanan'),
-            'htmlOptions' => array('class' => 'rata-kanan'),
-            'value' => function($data) { return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'),'0'),','); }
         ),
         array(
             'name' => 'subTotal',
