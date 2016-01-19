@@ -5,6 +5,7 @@ class PosController extends Controller
 
     public $layout = '//layouts/pos_column3';
     public $namaProfil = null;
+    public $penjualanId = null;
 
     /**
      * @return array action filters
@@ -42,7 +43,7 @@ class PosController extends Controller
         if (parent::beforeAction($action)) {
             $kasirAktif = $this->posAktif();
             if (is_null($kasirAktif)) {
-                throw new CHttpException(403, 'Akses ditolak: YOU HAVE NO POWER HERE!');
+                throw new CHttpException(403, 'Akses ditolak: Kasir belum aktif');
             }
             return true;
         }
@@ -75,6 +76,7 @@ class PosController extends Controller
      */
     public function actionUbah($id)
     {
+        $this->penjualanId = $id;
         $model = $this->loadModel($id);
         // Penjualan tidak bisa diubah kecuali statusnya draft
         if ($model->status != Penjualan::STATUS_DRAFT) {
@@ -272,7 +274,7 @@ class PosController extends Controller
                 $return = $penjualan->tambahBarang($detail->barang->barcode, $selisih);
             } else {
                 PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $pk);
-                
+
                 $detail->delete();
             }
             $return = array('sukses' => true);
@@ -353,6 +355,26 @@ class PosController extends Controller
         if (!is_null($printId)) {
             $this->redirect(array('penjualan/printstruk', 'id' => $id, 'printId' => $printId));
         }
+    }
+
+    /**
+     * Ganti Customer
+     * @param int $id ID Penjualan
+     * @return JSON boolean sukses, array error[code, msg]
+     */
+    public function actionGantiCustomer($id)
+    {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        );
+        if (isset($_POST['nomor'])) {
+            
+        }
+        $this->renderJSON($return);
     }
 
 }

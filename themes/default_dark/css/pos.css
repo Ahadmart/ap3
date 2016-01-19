@@ -160,4 +160,10 @@ table tr.odd {
 table tr th, table tr td {
   color: #E4EA4C; }
 
+#label-customer a {
+  color: #0b62a4; }
+
+#ganti-customer {
+  margin-top: 10px; }
+
 /*# sourceMappingURL=pos.css.map */

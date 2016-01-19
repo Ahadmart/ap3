@@ -3,6 +3,14 @@
     Author     : abumuhammad
 */
 
+$biru: #0b62a4;
+$biru-muda: #7A92A3;
+$hijau: #4da74d;
+$toska: #afd8f8;
+$oranye: #edc240;
+$merah: #cb4b4b;
+$violet: #9440ed;
+
 body, html {
     height: 100%;
 }
@@ -188,4 +196,12 @@ table tr.odd{
 
 table tr th, table tr td {
     color: #E4EA4C;
+}
+
+#label-customer a{
+    color: $biru;
+}
+
+#ganti-customer{
+    margin-top: 10px;
 }
