@@ -166,10 +166,20 @@ table tr th, table tr td {
 #ganti-customer {
   margin-top: 10px; }
 
-#tabel-customer {
-  width: 100%;
-  margin-top: 10px; }
-  #tabel-customer tr td {
-    padding: 2px; }
+#data-customer {
+  color: #fff;
+  margin-top: 10px;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  border-top: 1px solid #7A92A3;
+  border-bottom: 1px solid #7A92A3; }
+  #data-customer nomor {
+    font-weight: bold;
+    color: #4da74d;
+    display: block; }
+  #data-customer nama {
+    font-weight: bold;
+    display: block;
+    margin: 10px 0; }
 
 /*# sourceMappingURL=pos.css.map */

@@ -16,22 +16,16 @@
                 </div>
             </div>
         </form>
-        <span class="secondary label" id="label-customer"><a accesskey="c"><span class="ak">C</span>ustomer</span></a><span class="label" id="nama-customer"><?php echo $this->namaProfil; ?></span>
-    <table id="tabel-customer">
-        <tr>
-            <td>Nomor : <?php echo $this->profil->nomor; ?></td>
-        </tr>
-        <tr>
-            <td>Alamat :</td>
-        </tr>
-        <tr>
-            <td>
-                <?php echo $this->profil->alamat1; ?><br />
-                <?php echo $this->profil->alamat2; ?><br />
-                <?php echo $this->profil->alamat3; ?>
-            </td>
-        </tr>
-    </table>
+        <span class="secondary label" id="label-customer"><a accesskey="c"><span class="ak">C</span>ustomer</span></a>
+    <div id="data-customer">
+        <nomor>Nomor: <?php echo $this->profil->nomor; ?></nomor>
+        <nama><?php echo $this->namaProfil; ?></nama>
+        <address>
+            <?php echo !empty($this->profil->alamat1) ? $this->profil->alamat1 : ''; ?>
+            <?php echo !empty($this->profil->alamat2) ? '<br>'.$this->profil->alamat2 : '';?>
+            <?php echo !empty($this->profil->alamat3) ? '<br>'.$this->profil->alamat3 : ''; ?>
+        </address>
+    </div>
     <script>
 
         $(function () {
@@ -62,7 +56,9 @@
                 data: dataKirim,
                 success: function (data) {
                     if (data.sukses) {
-                        $("#nama-customer").html(data.nama);
+                        $("#data-customer nomor").html('Nomor: '+data.nomor);
+                        $("#data-customer nama").html(data.nama);
+                        $("#data-customer address").html(data.address);
                     } else {
                         $.gritter.add({
                             title: 'Error ' + data.error.code,
