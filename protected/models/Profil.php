@@ -41,6 +41,8 @@ class Profil extends CActiveRecord
     const TIPE_CUSTOMER = 2;
     const TIPE_KARYAWAN = 3;
     const AWAL_ID = 100; // id lebih kecil & / sama dari ini, untuk keperluan khusus. Untuk trx, mulai dari 101
+    const JENIS_KELAMIN_PRIA = 0;
+    const JENIS_KELAMIN_WANITA = 1;
     const PROFIL_INIT = 1; // Profil untuk init pembelian
     const PROFIL_UMUM = 2; // Default profil untuk penjualan
 
@@ -202,6 +204,14 @@ class Profil extends CActiveRecord
     {
         $tipeProfil = TipeProfil::model()->findByPk($this->tipe_id);
         return $tipeProfil->nama;
+    }
+
+    public function listJenisKelamin()
+    {
+        return array(
+            self::JENIS_KELAMIN_PRIA => 'Pria',
+            self::JENIS_KELAMIN_WANITA => 'Wanita'
+        );
     }
 
 }
