@@ -5,6 +5,7 @@ class PosController extends Controller
 
     public $layout = '//layouts/pos_column3';
     public $namaProfil = null;
+    public $profil = null;
     public $penjualanId = null;
 
     /**
@@ -84,6 +85,7 @@ class PosController extends Controller
         }
 
         $this->namaProfil = $model->profil->nama;
+        $this->profil = Profil::model()->findByPk($model->profil_id);
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
@@ -372,7 +374,21 @@ class PosController extends Controller
             )
         );
         if (isset($_POST['nomor'])) {
-            
+            $customer = Profil::model()->find('nomor=:nomor', array(':nomor' => $_POST['nomor']));
+            if (!is_null($customer)) {
+                /* Simpan profil ID ke penjualan */
+                $penjualan = $this->loadModel($id);
+                if ($penjualan->saveAttributes(array('profil_id' => $customer->id))) {
+                    $return = array(
+                        'sukses' => true,
+                        'nama' => $customer->nama,
+                        'nomor' => $customer->nomor,
+                        'alamat1' => $customer->alamat1,
+                        'alamat2' => $customer->alamat2,
+                        'alamat3' => $customer->alamat3
+                    );
+                }
+            }
         }
         $this->renderJSON($return);
     }

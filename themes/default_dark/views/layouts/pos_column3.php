@@ -6,26 +6,55 @@
     <!--</div>-->
     <?php if (!is_null($this->namaProfil)) {
         ?>
-        <span class="secondary label" id="label-customer"><a accesskey="c"><span class="ak">C</span>ustomer</span></a><span class="label"><?php echo $this->namaProfil; ?></span>
-
-    <form id="form-nomor-customer">
-        <div class="row collapse" id="ganti-customer" style="display: none">
-            <div class="small-9 large-10 columns">
-                <input type="text"  name="nomor-customer" id="nomor-customer" placeholder="Input nomor" accesskey="r"/>
+        <form id="form-nomor-customer">
+            <div class="row collapse" id="ganti-customer" style="display: none">
+                <div class="small-9 large-10 columns">
+                    <input type="text"  name="nomor-customer" id="nomor-customer" placeholder="Input nomor" accesskey="r"/>
+                </div>
+                <div class="small-3 large-2 columns">
+                    <a href="#" class="button postfix" id="tombol-ganti-customer"><i class="fa fa-check"></i></a>
+                </div>
             </div>
-            <div class="small-3 large-2 columns">
-                <a href="#" class="button postfix" id="tombol-ganti-customer"><i class="fa fa-check"></i></a>
-            </div>
-        </div>
-    </form>
+        </form>
+        <span class="secondary label" id="label-customer"><a accesskey="c"><span class="ak">C</span>ustomer</span></a><span class="label" id="nama-customer"><?php echo $this->namaProfil; ?></span>
+    <table id="tabel-customer">
+        <tr>
+            <td>Nomor : <?php echo $this->profil->nomor; ?></td>
+        </tr>
+        <tr>
+            <td>Alamat :</td>
+        </tr>
+        <tr>
+            <td>
+                <?php echo $this->profil->alamat1; ?><br />
+                <?php echo $this->profil->alamat2; ?><br />
+                <?php echo $this->profil->alamat3; ?>
+            </td>
+        </tr>
+    </table>
     <script>
-        $("#label-customer").click(function () {
-            $("#ganti-customer").toggle(500);
+
+        $(function () {
+            $(document).on('click', "#label-customer", function () {
+                $("#ganti-customer").toggle(500, function () {
+                    if ($("#ganti-customer").is(':visible')) {
+                        $("#nomor-customer").focus();
+                        console.log('nomor focus');
+                    } else {
+                        $("#scan").focus();
+                        console.log('scan focus');
+                    }
+                });
+            });
         });
+
+        $("#tombol-ganti-customer").click(function () {
+            $("#form-nomor-customer").submit();
+        });
+
         $("#form-nomor-customer").submit(function () {
             dataUrl = '<?php echo $this->createUrl('ganticustomer', array('id' => $this->penjualanId)); ?>';
             dataKirim = {nomor: $("#nomor-customer").val()};
-            console.log(dataUrl);
 
             $.ajax({
                 type: 'POST',
@@ -33,7 +62,7 @@
                 data: dataKirim,
                 success: function (data) {
                     if (data.sukses) {
-
+                        $("#nama-customer").html(data.nama);
                     } else {
                         $.gritter.add({
                             title: 'Error ' + data.error.code,
@@ -42,7 +71,8 @@
                         });
                     }
                     $("#nomor-customer").val("");
-                    $("#form-nomor-customer").hide(500);
+                    $("#ganti-customer").hide(500);
+                    $("#scan").focus();
                 }
             });
             return false;
