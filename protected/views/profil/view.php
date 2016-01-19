@@ -8,28 +8,37 @@ $this->breadcrumbs = array(
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Profil: '.$model->nama;
+$this->boxHeader['normal'] = 'Profil: ' . $model->nama;
 ?>
 <div class="row">
-   <div class="small-12 columns">
-      <?php
-      $this->widget('BDetailView', array(
-          'data' => $model,
-          'attributes' => array(
-              array(
-                  'name' => 'tipe.nama',
-                  'label' => 'Tipe'
-              ),
-              'nama',
-              'alamat1',
-              'alamat2',
-              'alamat3',
-              'telp',
-              'keterangan',
-          ),
-      ));
-      ?>
-   </div>
+    <div class="small-12 columns">
+        <?php
+        $this->widget('BDetailView', array(
+            'data' => $model,
+            'attributes' => array(
+                array(
+                    'name' => 'tipe.nama',
+                    'label' => 'Tipe'
+                ),
+                'nama',
+                'nomor',
+                'identitas',
+                'alamat1',
+                'alamat2',
+                'alamat3',
+                'telp',
+                'hp',
+                array(
+                    'label' => 'Jenis Kelamin',
+                    'value' => is_null($model->jenis_kelamin) ? '' : $model->listJenisKelamin()[$model->jenis_kelamin]
+                ),
+                'tanggal_lahir',
+                'surel',
+                'keterangan',
+            ),
+        ));
+        ?>
+    </div>
 </div>
 <?php
 $this->menu = array(

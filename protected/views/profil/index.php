@@ -11,42 +11,46 @@ $this->boxHeader['small'] = 'Profil';
 $this->boxHeader['normal'] = 'Profil';
 ?>
 <div class="row">
-   <div class="small-12 columns">
-      <?php
-      $this->widget('BGridView', array(
-          'id' => 'profil-grid',
-          'dataProvider' => $model->search(),
-          'filter' => $model,
-          'columns' => array(
-              array(
-                  'name' => 'tipe_id',
-                  'value' => '$data->namaTipe',
-                  'filter' => array(
-                      Profil::TIPE_SUPPLIER => 'Supplier',
-                      Profil::TIPE_CUSTOMER => 'Customer',
-                      Profil::TIPE_KARYAWAN => 'Karyawan'
-                  )
-              ),
-              array(
-                  'class' => 'BDataColumn',
-                  'name' => 'nama',
-                  'header' => '<span class="ak">N</span>ama',
-                  'accesskey' => 'n',
-                  'type' => 'raw',
-                  'value' => array($this, 'renderLinkToView'),
-              ),
-              'alamat1',
-              'alamat2',
-              'alamat3',
-              'telp',
-              'keterangan',
-              array(
-                  'class' => 'BButtonColumn',
-              ),
-          ),
-      ));
-      ?>
-   </div>
+    <div class="small-12 columns">
+        <?php
+        $this->widget('BGridView', array(
+            'id' => 'profil-grid',
+            'dataProvider' => $model->search(),
+            'filter' => $model,
+            'columns' => array(
+                array(
+                    'name' => 'tipe_id',
+                    'value' => '$data->namaTipe',
+//                    'filter' => array(
+//                        Profil::TIPE_SUPPLIER => 'Supplier',
+//                        Profil::TIPE_CUSTOMER => 'Customer',
+//                        Profil::TIPE_KARYAWAN => 'Karyawan'
+//                    )
+                    'filter' => $model->listTipe(),
+                ),
+                'nomor',
+                array(
+                    'class' => 'BDataColumn',
+                    'name' => 'nama',
+                    'header' => '<span class="ak">N</span>ama',
+                    'accesskey' => 'n',
+                    'type' => 'raw',
+                    'value' => array($this, 'renderLinkToView'),
+                ),
+                'alamat1',
+                'alamat2',
+                'alamat3',
+                'telp',
+                'hp',
+                'surel',
+                'keterangan',
+                array(
+                    'class' => 'BButtonColumn',
+                ),
+            ),
+        ));
+        ?>
+    </div>
 </div>
 <?php
 $this->menu = array(

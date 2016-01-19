@@ -41,7 +41,7 @@ class Profil extends CActiveRecord
     const TIPE_CUSTOMER = 2;
     const TIPE_KARYAWAN = 3;
     const AWAL_ID = 100; // id lebih kecil & / sama dari ini, untuk keperluan khusus. Untuk trx, mulai dari 101
-    const JENIS_KELAMIN_PRIA = 0;
+    const JENIS_KELAMIN_LAKI_LAKI = 0;
     const JENIS_KELAMIN_WANITA = 1;
     const PROFIL_INIT = 1; // Profil untuk init pembelian
     const PROFIL_UMUM = 2; // Default profil untuk penjualan
@@ -101,7 +101,7 @@ class Profil extends CActiveRecord
             'id' => 'ID',
             'tipe_id' => 'Tipe',
             'nomor' => 'Nomor',
-            'identitas' => 'Identitas',
+            'identitas' => '(Nomor) Identitas',
             'nama' => 'Nama',
             'alamat1' => 'Alamat1',
             'alamat2' => 'Alamat2',
@@ -209,9 +209,30 @@ class Profil extends CActiveRecord
     public function listJenisKelamin()
     {
         return array(
-            self::JENIS_KELAMIN_PRIA => 'Pria',
-            self::JENIS_KELAMIN_WANITA => 'Wanita'
+            self::JENIS_KELAMIN_LAKI_LAKI => 'Laki-laki',
+            self::JENIS_KELAMIN_WANITA => 'Perempuan'
         );
+    }
+
+    public function listTipe()
+    {
+        return array(
+            self::TIPE_SUPPLIER => 'Supplier',
+            self::TIPE_CUSTOMER => 'Customer',
+            self::TIPE_KARYAWAN => 'Karyawan'
+        );
+    }
+
+    public function beforeValidate()
+    {
+        $this->tanggal_lahir = !empty($this->tanggal_lahir) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_lahir), 'Y-m-d') : NULL;
+        return parent::beforeValidate();
+    }
+
+    public function afterFind()
+    {
+        $this->tanggal_lahir = !is_null($this->tanggal_lahir) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_lahir), 'd-m-Y') : '';
+        return parent::afterFind();
     }
 
 }
