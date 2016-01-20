@@ -373,7 +373,7 @@ class PosController extends Controller
                 'msg' => 'Sempurnakan input!',
             )
         );
-        if (isset($_POST['nomor'])) {
+        if (isset($_POST['nomor']) && !empty($_POST['nomor'])) {
             $customer = Profil::model()->find('nomor=:nomor', array(':nomor' => $_POST['nomor']));
             if (!is_null($customer)) {
                 /* Simpan profil ID ke penjualan */
