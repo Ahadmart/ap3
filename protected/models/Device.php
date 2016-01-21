@@ -177,6 +177,11 @@ class Device extends CActiveRecord
         return $listTipe[$this->tipe_id];
     }
 
+    /**
+     * Ambil data-data device(s) yang diperlukan
+     * @param array $tipe array of tipe printer
+     * @return array id, tipe_id, nama, keterangan dari device
+     */
     public function listDevices($tipe = NULL)
     {
         $command = Yii::app()->db->createCommand()

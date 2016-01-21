@@ -8,6 +8,7 @@ class PenjualanController extends Controller
     /* ============== */
     const PRINT_INVOICE = 0;
     const PRINT_STRUK = 1;
+    const PRINT_NOTA = 2;
 
     /**
      * @return array action filters
@@ -49,15 +50,18 @@ class PenjualanController extends Controller
 
         $tipePrinterInvoiceRrp = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
         $tipePrinterStruk = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER);
+        $tipePrinterNota = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER);
 
         $printerInvoiceRrp = Device::model()->listDevices($tipePrinterInvoiceRrp);
         $printerStruk = Device::model()->listDevices($tipePrinterStruk);
+        $printerNota = Device::model()->listDevices($tipePrinterNota);
 
         $this->render('view', array(
             'model' => $this->loadModel($id),
             'penjualanDetail' => $penjualanDetail,
             'printerInvoiceRrp' => $printerInvoiceRrp,
-            'printerStruk' => $printerStruk
+            'printerStruk' => $printerStruk,
+            'printerNota' => $printerNota
         ));
     }
 
@@ -383,16 +387,40 @@ class PenjualanController extends Controller
     public function exportText($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
-        $namaFile = $print === self::PRINT_INVOICE ? "invoice-{$model->nomor}" : "struk-{$model->nomor}";
+        $namaFile = $this->getNamaFile($model->nomor, $print);
         header("Content-type: text/plain");
         header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
         header("Pragma: no-cache");
         header("Expire: 0");
-        $text = $print === self::PRINT_INVOICE ? $model->invoiceText() : $model->strukText();
+        $text = $this->getText($model, $print);
 
         echo $device->revisiText($text);
 
         Yii::app()->end();
+    }
+
+    public function getNamaFile($nomor, $print)
+    {
+        switch ($print) {
+            case self::PRINT_INVOICE:
+                return "invoice-{$nomor}";
+            case self::PRINT_STRUK:
+                return "struk-{$nomor}";
+            case self::PRINT_NOTA:
+                return "nota-{$nomor}";
+        }
+    }
+
+    public function getText($model, $print)
+    {
+        switch ($print) {
+            case self::PRINT_INVOICE:
+                return $model->invoiceText();
+            case self::PRINT_STRUK:
+                return $model->strukText();
+            case self::PRINT_NOTA:
+                return $model->notaText();
+        }
     }
 
     public function printLpr($id, $device, $print = 0)
@@ -479,14 +507,39 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
-                case Device::TIPE_PDF_PRINTER:
-                    $this->exportPdf($id);
-                    break;
-                case Device::TIPE_CSV_PRINTER:
-                    $this->eksporCsv($id);
-                    break;
+                /*
+                  case Device::TIPE_PDF_PRINTER:
+                  $this->exportPdf($id);
+                  break;
+                  case Device::TIPE_CSV_PRINTER:
+                  $this->eksporCsv($id);
+                  break;
+                 */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_STRUK);
+                    break;
+            }
+        }
+    }
+
+    public function actionPrintNota($id)
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_LPR:
+                    $this->printLpr($id, $device, self::PRINT_NOTA);
+                    break;
+                /*
+                  case Device::TIPE_PDF_PRINTER:
+                  $this->exportPdf($id);
+                  break;
+                  case Device::TIPE_CSV_PRINTER:
+                  $this->eksporCsv($id);
+                  break;
+                 */
+                case Device::TIPE_TEXT_PRINTER:
+                    $this->exportText($id, $device, self::PRINT_NOTA);
                     break;
             }
         }

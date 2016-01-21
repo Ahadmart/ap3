@@ -961,4 +961,187 @@ class Penjualan extends CActiveRecord
         return $struk;
     }
 
+    public function notaText($cpi = 10)
+    {
+        $lebarKertas = 8; //inchi
+        $jumlahKolom = $cpi * $lebarKertas;
+        $rowPerPage = 59;
+        $rowCount = 0;
+        $halaman = 0;
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        $penjualanDetail = Yii::app()->db->createCommand("
+            select barang.barcode, barang.nama, satuan.nama namasatuan, pd.qty, pd.harga_jual, pd.diskon
+            from penjualan_detail pd
+            join barang on pd.barang_id = barang.id
+            join barang_satuan satuan on satuan.id = barang.satuan_id
+            where pd.penjualan_id = :penjualanId
+            ")
+                ->bindValue(':penjualanId', $this->id)
+                ->queryAll();
+
+        $penerimaan = Yii::app()->db->createCommand("
+            select penerimaan.uang_dibayar
+            from penerimaan
+            join penerimaan_detail pd on pd.penerimaan_id = penerimaan.id
+            join penjualan on penjualan.hutang_piutang_id = pd.hutang_piutang_id
+            where penjualan.id = :penjualanId
+            ")
+                ->bindValue(':penjualanId', $this->id)
+                ->queryRow();
+
+        $struk = '';
+
+        $strNomor = 'Nomor : ' . $this->nomor;
+        $strWaktu = 'Waktu : ' . date_format(date_create_from_format('d-m-Y H:i:s', $this->tanggal), 'd-m-Y H:i');
+        $strKasir = 'Kasir : ' . ucwords($this->updatedBy->nama);
+
+        $kananMaxLength = strlen($strNomor) > strlen($strWaktu) ? strlen($strNomor) : strlen($strWaktu);
+
+        /* Jika Nama kasir terlalu panjang, akan di truncate */
+        $strKasir = strlen($strKasir) > $kananMaxLength ? substr($strKasir, 0, $kananMaxLength - 2) . '..' : $strKasir;
+
+        $strInvoice = 'NOTA'; //Jumlah karakter harus genap!
+
+        $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
+                . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+                . PHP_EOL;
+        $struk .= str_pad($branchConfig['struk.header1'], $jumlahKolom - $kananMaxLength, ' ')
+                . str_pad($strKasir, $kananMaxLength, ' ')
+                . PHP_EOL;
+        $struk .= str_pad($branchConfig['struk.header2'], $jumlahKolom - $kananMaxLength, ' ')
+                . str_pad($strWaktu, $kananMaxLength, ' ')
+                . PHP_EOL;
+        $struk .= PHP_EOL;
+
+        $struk .= 'Kepada: ' . $this->profil->nama . PHP_EOL;
+        $struk .= '        ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 8) . PHP_EOL;
+
+        $struk .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
+        $textHeader1 = '  No  Barang';
+        $textHeader2 = 'Qty     Harga  Diskon Harga Net Sub Total ';
+        $textHeader = $textHeader1 . str_pad($textHeader2, $jumlahKolom - strlen($textHeader1), ' ', STR_PAD_LEFT) . PHP_EOL;
+        $struk .= $textHeader;
+        $struk .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
+        $rowCount = 11;
+
+        $no = 1;
+        $total = 0;
+        $totalDiskon = 0;
+        foreach ($penjualanDetail as $detail) {
+            $strNo = substr('  ' . $no . '.', -4);
+            $strBarang = str_pad(trim(substr($detail['nama'], 0, 28)), 28, ' '); //Nama Barang hanya diambil 28 char pertama
+            $strQty = str_pad($detail['qty'], 4, ' ', STR_PAD_LEFT);
+            $strHarga = str_pad(number_format($detail['harga_jual'] + $detail['diskon'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
+            $strDiskon = str_pad(number_format($detail['diskon'], 0, ',', '.'), 6, ' ', STR_PAD_LEFT);
+            $strHargaNet = str_pad(number_format($detail['harga_jual'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
+
+            $subTotalDiskon = $detail['qty'] * $detail['diskon'];
+            $totalDiskon += $subTotalDiskon;
+
+            $netSubTotal = $detail['qty'] * $detail['harga_jual'];
+            $strSubTotal = str_pad(number_format($netSubTotal, 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
+            $row1 = ' ' . $strNo . ' ' . $strBarang . ' ';
+            $row2 = $strQty . '  ' . $strHarga . '  ' . $strDiskon . '  ' . $strHargaNet . '  ' . $strSubTotal;
+            $row = $row1 . str_pad($row2 . ' ', $jumlahKolom - strlen($row1), ' ', STR_PAD_LEFT) . PHP_EOL;
+
+            /* Jika ini seharusnya halaman baru */
+            if ($rowCount > $rowPerPage) {
+                $halaman++;
+                $halamanStr = $this->nomor . ' ' . $halaman;
+
+                $struk .= PHP_EOL;
+                $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+                $rowCount = 1; // Reset row counter
+            }
+
+            $total += $netSubTotal;
+            $struk .= $row;
+            $no++;
+            $rowCount++;
+        }
+        /* Jika ini seharusnya halaman baru */
+        if ($rowCount > $rowPerPage && $halaman > 0) {
+            $halaman++;
+            $halamanStr = $this->nomor . ' ' . $halaman;
+
+            $struk .= PHP_EOL;
+            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+            $rowCount = 1; // Reset row counter
+        }
+
+        /* ======== footer ============ */
+        if ($rowCount > $rowPerPage - 4) {
+            $halaman++;
+            $halamanStr = $this->nomor . ' ' . $halaman;
+
+            $struk .= PHP_EOL;
+            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+            $rowCount = 1; // Reset row counter
+        }
+
+        $struk .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
+
+        $txtTotal = 'Total      : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+
+        $dibayar = is_null($penerimaan['uang_dibayar']) ? NULL : $penerimaan['uang_dibayar'];
+        if (is_null($dibayar)) {
+            $txtBayar = 'Dibayar    : ' . str_pad('', 11, ' ', STR_PAD_LEFT);
+            $txtKbali = 'Kembali    : ' . str_pad('', 11, ' ', STR_PAD_LEFT);
+        } else {
+            $txtBayar = 'Dibayar    : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtKbali = 'Kembali    : ' . str_pad(number_format($dibayar - $total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+        }
+        $strukFooter1 = $branchConfig['struk.footer1'];
+        $strukFooter2 = $branchConfig['struk.footer2'];
+
+        $struk .= $strukFooter1;
+        $struk .= str_pad($txtTotal, $jumlahKolom - strlen($strukFooter1) - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $struk .= $strukFooter2;
+        $struk .= str_pad($txtBayar, $jumlahKolom - strlen($strukFooter2) - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $struk .= str_pad($txtKbali, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+
+        if ($totalDiskon > 0) {
+            $txtDiskon = 'Anda Hemat : ' . str_pad(number_format($totalDiskon, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $struk .= str_pad($txtDiskon, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+
+        $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
+        /* ================= /footer ============= */
+
+        if ($rowCount > $rowPerPage - 6) {
+            $halaman++;
+            $halamanStr = $this->nomor . ' ' . $halaman;
+
+            $struk .= PHP_EOL;
+            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+            $rowCount = 1; // Reset row counter
+        }
+        $struk .= 'Barang yang sudah dibeli tidak bisa ditukar atau dikembalikan' . PHP_EOL . PHP_EOL;
+        $signatureHead1 = '        Hormat Kami';
+        $signatureHead2 = 'Pelanggan';
+
+        $struk .= $signatureHead1 . str_pad($signatureHead2, 28 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) . PHP_EOL;
+        $struk .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
+        $struk .= '     (                )               (                )' . PHP_EOL;
+        $rowCount+=7;
+        for ($index = 0; $index < $rowPerPage - $rowCount; $index++) {
+            $struk .= PHP_EOL;
+        }
+        $halaman++;
+        $halamanStr = $this->nomor . ' ' . $halaman;
+
+        $struk .= PHP_EOL;
+        $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+        return $struk;
+    }
+
 }
