@@ -426,7 +426,7 @@ class PenjualanController extends Controller
     public function printLpr($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
-        $text = $print === self::PRINT_INVOICE ? $model->invoiceText() : $model->strukText();
+        $text = $this->getText($model, $print);
         $device->printLpr($text);
         $this->renderPartial('_print_autoclose');
     }

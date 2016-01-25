@@ -33,7 +33,7 @@ $model->scenario = 'tampil';
                 </ul>
             </li>
             <li>
-                <button href="#" accesskey="w" data-dropdown="printnota" aria-controls="printnota" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-file-text-o fa-fw"></i> Print No<span class="ak">t</span>a</button><br>
+                <button href="#" accesskey="t" data-dropdown="printnota" aria-controls="printnota" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-file-text-o fa-fw"></i> Print No<span class="ak">t</span>a</button><br>
                 <ul id="printnota" data-dropdown-content class="f-dropdown" aria-hidden="true">
                     <?php
                     foreach ($printerNota as $printer) {

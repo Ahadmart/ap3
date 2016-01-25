@@ -1125,7 +1125,7 @@ class Penjualan extends CActiveRecord
             $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
             $rowCount = 1; // Reset row counter
         }
-        $struk .= 'Barang yang sudah dibeli tidak bisa ditukar atau dikembalikan' . PHP_EOL . PHP_EOL;
+        //$struk .= 'Barang yang sudah dibeli tidak bisa ditukar atau dikembalikan' . PHP_EOL . PHP_EOL;
         $signatureHead1 = '        Hormat Kami';
         $signatureHead2 = 'Pelanggan';
 

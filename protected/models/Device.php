@@ -143,6 +143,12 @@ class Device extends CActiveRecord
     {
         return parent::model($className);
     }
+    
+    public function beforeValidate()
+    {
+        $this->default_printer_id = empty($this->default_printer_id) ? NULL : $this->default_printer_id;
+        return parent::beforeValidate();
+    }
 
     public function beforeSave()
     {
