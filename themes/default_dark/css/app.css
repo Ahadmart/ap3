@@ -186,9 +186,14 @@ footer {
   position: fixed;
   bottom: 0;
   width: 100%;
-  padding-right: 15px;
   z-index: 3;
   box-shadow: 0 -1px #4e4e4e; }
+  footer span {
+    padding: 0 15px; }
+    footer span.left {
+      border-right: 1px solid #3E4144; }
+    footer span.right {
+      border-left: 1px solid #3E4144; }
 
 .jqstooltip-ovr {
   position: absolute;

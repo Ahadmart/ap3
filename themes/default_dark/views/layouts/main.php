@@ -12,8 +12,8 @@
 
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                      ?>/css/animate.min.css">-->
-        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                   ?>/css/app.css">-->
+        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                          ?>/css/animate.min.css">-->
+        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                       ?>/css/app.css">-->
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
         <?php
         Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/app.css');
@@ -224,14 +224,53 @@
         if (Yii::app()->controller->action->id != 'login'):
             ?>
             <footer>
-                Copyright &copy; <?php echo date('Y'); ?> by Ahadmart<br/>
+                <span class="left">Sponsored by Ahad Mart</span>
+                <span class="left" id="clock"></span>
+                <span class="right" id="arabictime"></span>
             </footer>
             <?php
         endif;
         ?>
         <script src="<?php echo Yii::app()->theme->baseUrl; ?>/js/foundation.min.js"></script>
+        <script src="<?php echo Yii::app()->theme->baseUrl; ?>/js/hijricalendar-kuwaiti.js"></script>
         <script>
             $(document).foundation();
+            function updateClock()
+            {
+                var currentTime = new Date();
+                var currentDate = currentTime.getDate();
+                var currentMonth = currentTime.getMonth() + 1;
+                var currentYear = currentTime.getFullYear();
+                var currentHours = currentTime.getHours();
+                var currentMinutes = currentTime.getMinutes();
+                var currentSeconds = currentTime.getSeconds();
+
+                // Pad the minutes and seconds with leading zeros, if required
+                currentMinutes = (currentMinutes < 10 ? "0" : "") + currentMinutes;
+                currentSeconds = (currentSeconds < 10 ? "0" : "") + currentSeconds;
+
+                // Choose either "AM" or "PM" as appropriate
+                var timeOfDay = (currentHours < 12) ? "AM" : "PM";
+
+                // Convert the hours component to 12-hour format if needed
+                // currentHours = (currentHours > 12) ? currentHours - 12 : currentHours;
+
+                // Convert an hours component of "0" to "12"
+                currentHours = (currentHours == 0) ? 12 : currentHours;
+                currentHours = (currentHours < 10 ? "0" : "") + currentHours;
+
+                // Compose the string for display
+                var currentDateString = currentDate + "-" + currentMonth + "-" + currentYear;
+                var currentTimeString = currentDateString + " " + currentHours + ":" + currentMinutes + ":" + currentSeconds + " ";// + timeOfDay;
+
+                $("#clock").html(currentTimeString);
+                $("#arabictime").html(writeIslamicDate());
+            }
+
+            $(document).ready(function ()
+            {
+                setInterval('updateClock()', 1000);
+            });
         </script>
         <?php
         /*
