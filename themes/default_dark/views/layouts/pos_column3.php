@@ -4,6 +4,10 @@
     <!--<div id="logo">-->
        <!--<img src="<?php /* echo Yii::app()->theme->baseUrl.'/img/' */ ?>ahadmart-logo.png" />-->
     <!--</div>-->
+    <ul class="stack button-group">
+        <li><a href="<?php echo $this->createUrl('tambah'); ?>" class="expand bigfont tiny button" accesskey="n"><span class="ak">N</span>ew</a></li>
+        <li><a href="<?php echo $this->createUrl('suspended'); ?>" class="success expand bigfont tiny button" accesskey="s"><span class="ak">S</span>uspended</a></li>
+    </ul>
     <?php if (!is_null($this->namaProfil)) {
         ?>
         <form id="form-nomor-customer">
@@ -21,9 +25,9 @@
         <nomor>Nomor: <?php echo $this->profil->nomor; ?></nomor>
         <nama><?php echo $this->namaProfil; ?></nama>
         <address>
-            <?php echo !empty($this->profil->alamat1) ? $this->profil->alamat1 : ''; ?>
-            <?php echo !empty($this->profil->alamat2) ? '<br>'.$this->profil->alamat2 : '';?>
-            <?php echo !empty($this->profil->alamat3) ? '<br>'.$this->profil->alamat3 : ''; ?>
+            <?php echo!empty($this->profil->alamat1) ? $this->profil->alamat1 : ''; ?>
+            <?php echo!empty($this->profil->alamat2) ? '<br>' . $this->profil->alamat2 : ''; ?>
+            <?php echo!empty($this->profil->alamat3) ? '<br>' . $this->profil->alamat3 : ''; ?>
         </address>
     </div>
     <script>
@@ -56,7 +60,7 @@
                 data: dataKirim,
                 success: function (data) {
                     if (data.sukses) {
-                        $("#data-customer nomor").html('Nomor: '+data.nomor);
+                        $("#data-customer nomor").html('Nomor: ' + data.nomor);
                         $("#data-customer nama").html(data.nama);
                         $("#data-customer address").html(data.address);
                     } else {
@@ -77,10 +81,6 @@
     <?php
 }
 ?>
-<ul class="stack button-group">
-    <li><a href="<?php echo $this->createUrl('tambah'); ?>" class="expand bigfont tiny button" accesskey="n"><span class="ak">N</span>ew</a></li>
-    <li><a href="<?php echo $this->createUrl('suspended'); ?>" class="success expand bigfont tiny button" accesskey="s"><span class="ak">S</span>uspended</a></li>
-</ul>
 </div>
 <?php echo $content; ?>
 <?php

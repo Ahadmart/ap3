@@ -135,7 +135,6 @@ tr.pilih, tr.selected {
 
 /* ============== */
 .stack {
-  margin-top: 15px;
   margin-bottom: 15px; }
 
 .main-section {
@@ -169,6 +168,7 @@ table tr th, table tr td {
 #data-customer {
   color: #fff;
   margin-top: 10px;
+  margin-bottom: 15px;
   padding: 10px 0;
   font-size: 0.9rem;
   border-top: 1px solid #7A92A3;
