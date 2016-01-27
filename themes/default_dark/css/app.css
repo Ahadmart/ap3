@@ -116,7 +116,7 @@ li.active > a {
     font-size: 0.75rem; }
   .block-content div.panel {
     padding: 0.75rem;
-    margin: 0 15px 15px; }
+    padding-bottom: 0; }
     .block-content div.panel form {
       margin: 0 -15px; }
   .block-content .prefix .fa-2x {
