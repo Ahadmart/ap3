@@ -175,8 +175,8 @@ li.active>a{
     div.panel{
         // padding override
         padding: 0.75rem;
-        //padding-bottom: 0;
-        margin: 0 15px 15px;
+        padding-bottom: 0;
+        //margin: 0 15px 15px;
         form{
             margin: 0 -15px;
         }
@@ -275,9 +275,18 @@ footer{
     position: fixed;
     bottom: 0;
     width: 100%;
-    padding-right: 15px;
+    //padding: 0 15px;
     z-index: 3;
     box-shadow: 0 -1px #4e4e4e;
+    span{
+        padding: 0 15px;
+        &.left{
+            border-right: 1px solid #3E4144;
+        }
+        &.right{
+            border-left: 1px solid #3E4144;
+        }
+    }
 }
 
 
