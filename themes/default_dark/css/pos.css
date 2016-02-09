@@ -135,7 +135,6 @@ tr.pilih, tr.selected {
 
 /* ============== */
 .stack {
-  margin-top: 15px;
   margin-bottom: 15px; }
 
 .main-section {
@@ -159,5 +158,28 @@ table tr.odd {
 
 table tr th, table tr td {
   color: #E4EA4C; }
+
+#label-customer a {
+  color: #0b62a4; }
+
+#ganti-customer {
+  margin-top: 10px; }
+
+#data-customer {
+  color: #fff;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  border-top: 1px solid #7A92A3;
+  border-bottom: 1px solid #7A92A3; }
+  #data-customer nomor {
+    font-weight: bold;
+    color: #4da74d;
+    display: block; }
+  #data-customer nama {
+    font-weight: bold;
+    display: block;
+    margin: 10px 0; }
 
 /*# sourceMappingURL=pos.css.map */

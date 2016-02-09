@@ -7,7 +7,7 @@ $this->widget('BGridView', array(
     'id' => 'penjualan-detail-grid',
     'dataProvider' => $penjualanDetail->search(),
     //'filter' => $penjualanDetail,
-    //'summaryText' => false,
+    'summaryText' => 'Poin: '.$penjualan->getCurPoin().' | {start}-{end} dari {count}',
     'itemsCssClass' => 'tabel-index responsive',
     'template' => '{items}{summary}{pager}',
     'enableSorting' => false,
@@ -19,6 +19,26 @@ $this->widget('BGridView', array(
         array(
             'name' => 'namaBarang',
             'value' => '$data->barang->nama',
+        ),
+        array(
+            'header' => 'Harga',
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'value' => function($data) { return rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'),'0'),','); }
+        ),
+        array(
+            'name' => 'diskon',
+            'header' => 'Diskon',
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'value' => function($data) { return rtrim(rtrim(number_format($data->diskon, 2, ',', '.'),'0'),','); }
+        ),
+        array(
+            'name' => 'harga_jual',
+            'header' => 'Net',
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'value' => function($data) { return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'),'0'),','); }
         ),
         array(
             'name' => 'qty',
@@ -34,13 +54,6 @@ $this->widget('BGridView', array(
             'htmlOptions' => array('style' => 'padding-left:0'),
         ),
         array(
-            'name' => 'harga_jual',
-            'header' => 'harga',
-            'headerHtmlOptions' => array('class' => 'rata-kanan'),
-            'htmlOptions' => array('class' => 'rata-kanan'),
-            'value' => function($data) { return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'),'0'),','); }
-        ),
-        array(
             'name' => 'subTotal',
             'value' => '$data->total',
             'headerHtmlOptions' => array('class' => 'rata-kanan'),
@@ -49,6 +62,7 @@ $this->widget('BGridView', array(
         ),
     ),
 ));
+        echo $penjualan->getCurPoin();
 ?>
 <script>
 

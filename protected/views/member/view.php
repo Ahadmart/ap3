@@ -1,43 +1,29 @@
 <?php
-/* @var $this ProfilController */
-/* @var $model Profil */
+/* @var $this MemberController */
+/* @var $model MemberPeriodePoin */
 
-$this->breadcrumbs = array(
-    'Profil' => array('index'),
-    $model->id,
+$this->breadcrumbs=array(
+	'Member Periode Poin'=>array('index'),
+	$model->id,
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Profil: ' . $model->nama;
+$this->boxHeader['normal'] = 'Member Periode Poin: '.$model->nama;
 ?>
 <div class="row">
     <div class="small-12 columns">
-        <?php
-        $this->widget('BDetailView', array(
-            'data' => $model,
-            'attributes' => array(
-                array(
-                    'name' => 'tipe.nama',
-                    'label' => 'Tipe'
-                ),
-                'nama',
-                'nomor',
-                'identitas',
-                'alamat1',
-                'alamat2',
-                'alamat3',
-                'telp',
-                'hp',
-                array(
-                    'label' => 'Jenis Kelamin',
-                    'value' => is_null($model->jenis_kelamin) ? '' : $model->listJenisKelamin()[$model->jenis_kelamin]
-                ),
-                'tanggal_lahir',
-                'surel',
-                'keterangan',
-            ),
-        ));
-        ?>
+<?php $this->widget('BDetailView', array(
+	'data'=>$model,
+	'attributes'=>array(
+		'id',
+		'nama',
+		'awal',
+		'akhir',
+		'updated_at',
+		'updated_by',
+		'created_at',
+	),
+)); ?>
     </div>
 </div>
 <?php
@@ -52,8 +38,8 @@ $this->menu = array(
             array('label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'alert button',
                     'accesskey' => 'h',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
+                    'submit'=>array('hapus','id'=>$model->id),
+                    'confirm'=>'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
@@ -69,8 +55,8 @@ $this->menu = array(
                 )),
             array('label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
                     'class' => 'alert button',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
+                    'submit'=>array('hapus','id'=>$model->id),
+                    'confirm'=>'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',

@@ -143,6 +143,12 @@ class Device extends CActiveRecord
     {
         return parent::model($className);
     }
+    
+    public function beforeValidate()
+    {
+        $this->default_printer_id = empty($this->default_printer_id) ? NULL : $this->default_printer_id;
+        return parent::beforeValidate();
+    }
 
     public function beforeSave()
     {
@@ -177,6 +183,11 @@ class Device extends CActiveRecord
         return $listTipe[$this->tipe_id];
     }
 
+    /**
+     * Ambil data-data device(s) yang diperlukan
+     * @param array $tipe array of tipe printer
+     * @return array id, tipe_id, nama, keterangan dari device
+     */
     public function listDevices($tipe = NULL)
     {
         $command = Yii::app()->db->createCommand()
