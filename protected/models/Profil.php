@@ -235,4 +235,14 @@ class Profil extends CActiveRecord
         return parent::afterFind();
     }
 
+    /**
+     * Memeriksa apakah profil mempunyai nomor member. 
+     * Fixme: Satu saat mungkin perlu status member atau bukan
+     * @return boolean true jika punya nomor, false jika bukan
+     */
+    public function isMember()
+    {
+        return is_null($this->nomor) || empty($this->nomor) || $this->nomor == 0 ? false : true;
+    }
+
 }

@@ -581,6 +581,17 @@ class Penjualan extends CActiveRecord
         if (!Penjualan::model()->updateByPk($this->id, array('hutang_piutang_id' => $piutang->id)) > 1) {
             throw new Exception("Gagal simpan piutang_id", 500);
         }
+
+        /* Simpan poin jika ada */
+        if ($this->getCurPoin() > 0) {
+            $penjualanMember = new PenjualanMember;
+            $penjualanMember->penjualan_id = $this->id;
+            $penjualanMember->profil_id = $this->profil_id;
+            $penjualanMember->poin = $this->getCurPoin();
+            if (!$penjualanMember->save()) {
+                throw new Exception("Gagal simpan poin ke penjualan", 500);
+            }
+        }
     }
 
     public function simpan()
@@ -1142,6 +1153,32 @@ class Penjualan extends CActiveRecord
         $struk .= PHP_EOL;
         $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
         return $struk;
+    }
+
+    /**
+     * Mengembalikan nilai poin, jika customer adalah member dan config 
+     * "member.nilai_1_poin" diisi nominal > 0
+     * @return int Jumlah Poin
+     */
+    public function getCurPoin()
+    {
+        $profil = Profil::model()->findByPk($this->profil_id);
+        if ($profil->isMember()) {
+            $penjualan = Yii::app()->db->createCommand("
+            select sum(harga_jual * qty) jumlah from penjualan_detail where penjualan_id=:penjualanId
+                ")->bindValues(array(':penjualanId' => $this->id))
+                    ->queryRow();
+
+            $configMember = Yii::app()->db->createCommand("
+            select nilai from config where nama=:namaConfig
+                ")->bindValues(array(':namaConfig' => 'member.nilai_1_poin'))
+                    ->queryRow();
+
+            /* Jika di config nilai = 0, berarti tidak memakai sistem poin */
+            return $configMember['nilai'] > 0 ? floor($penjualan['jumlah'] / $configMember['nilai']) : 0;
+        } else {
+            return 0;
+        }
     }
 
 }

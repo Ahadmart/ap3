@@ -7,7 +7,7 @@ $this->widget('BGridView', array(
     'id' => 'penjualan-detail-grid',
     'dataProvider' => $penjualanDetail->search(),
     //'filter' => $penjualanDetail,
-    //'summaryText' => false,
+    'summaryText' => 'Poin: '.$penjualan->getCurPoin().' | {start}-{end} dari {count}',
     'itemsCssClass' => 'tabel-index responsive',
     'template' => '{items}{summary}{pager}',
     'enableSorting' => false,
@@ -62,6 +62,7 @@ $this->widget('BGridView', array(
         ),
     ),
 ));
+        echo $penjualan->getCurPoin();
 ?>
 <script>
 

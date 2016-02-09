@@ -136,6 +136,7 @@
                                              * 
                                              */
                                             ),
+                                            array('label' => '<i class="fa fa-user-plus fa-fw"></i>' . ' Member', 'url' => array('/member/index')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),

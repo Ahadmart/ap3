@@ -34,8 +34,8 @@ $this->widget('BGridView', array(
         array(
             'class' => 'BDataColumn',
             'name' => 'nama',
-            'header' => '<span class="ak">N</span>ama',
-            'accesskey' => 'n',
+//            'header' => '<span class="ak">N</span>ama',
+//            'accesskey' => 'n',
         ),
         array(
             'class' => 'BDataColumn',
@@ -47,8 +47,8 @@ $this->widget('BGridView', array(
             'value' => array($this, 'renderEditableNilai'),
             'type' => 'raw',
             'class' => 'BDataColumn',
-            'header' => 'Ni<span class="ak">l</span>ai',
-            'accesskey' => 'l',
+//            'header' => 'Ni<span class="ak">l</span>ai',
+//            'accesskey' => 'l',
         )
     ),
 ));

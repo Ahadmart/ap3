@@ -2,7 +2,6 @@
 
 class MemberController extends Controller
 {
-
     //public $layout = '//layouts/box_kecil';
 
     /**
@@ -111,8 +110,7 @@ class MemberController extends Controller
 
         if (isset($_POST['MemberPeriodePoin'])) {
             $model->attributes = $_POST['MemberPeriodePoin'];
-            if ($model->save())
-                $this->redirect(array('index', 'id' => $model->id));
+            $model->save();
         }
 
         $modelConfig = new Config('search');
