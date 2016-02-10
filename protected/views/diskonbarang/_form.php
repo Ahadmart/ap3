@@ -56,7 +56,7 @@
     </div>
 
     <div class="row">
-        <div class="panel" id="info-barang" style="display: none">
+        <div class="panel" id="info-barang" style="display: none; padding-bottom: 15px; margin-left: none; margin-right: none">
 
         </div>
     </div>
@@ -203,6 +203,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                 .appendTo(ul);
     };
 
+    function tampilkanHargaBanded() {
+        var hargaNet = $("#harga-jual-raw").val() - $("#DiskonBarang_persen").val() / 100 * $("#harga-jual-raw").val();
+        var qty = $("#DiskonBarang_qty").val();
+        var hargaBanded = hargaNet * qty;
+        if (qty > 0) {
+            $("#harga_net").val($("#harga_net").val() + " [ " + number_format(hargaBanded, 0, ',', '.') + "/" + qty + " ]");
+        }
+    }
+
     $(function () {
         $(document).on('click', "#tombol-scan-ok", function () {
             dataUrl = '<?php echo $this->createUrl('getdatabarang'); ?>';
@@ -221,8 +230,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                     if (data.sukses) {
                         var hasil = "<h5>" + data.barcode +
                                 " " + data.nama + "</h5>" +
-                                "<h6><small>Stok</small>" + data.stok +
-                                " <small>Harga</small>" + data.hargaJual + "</h6>";
+                                "<h6><small>Stok</small> " + data.stok +
+                                " <small>Harga</small> " + data.hargaJual + " / " + data.satuan + "</h6>";
                         $("#info-barang").html(hasil);
                         $("#info-barang").show();
                         $("#harga-jual-raw").val(data.hargaJualRaw);
@@ -240,6 +249,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                 }
             });
             return false;
+        });
+        $(document).on('change', '#DiskonBarang_qty', function () {
+            kalkulasiDiskonDariNominal();
+            tampilkanHargaBanded();
         });
     });
 
@@ -265,10 +278,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     $("#DiskonBarang_nominal").change(function () {
         kalkulasiDiskonDariNominal();
+        tampilkanHargaBanded();// Jalan jika qty > 0
     });
 
     $("#DiskonBarang_persen").change(function () {
         kalkulasiDiskonDariPersen();
+        tampilkanHargaBanded();// Jalan jika qty > 0
     });
 
     $(function () {
