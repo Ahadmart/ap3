@@ -248,7 +248,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                     $("#DiskonBarang_nominal").focus();
                 }
             });
-            return false;
         });
         $(document).on('change', '#DiskonBarang_qty', function () {
             kalkulasiDiskonDariNominal();
@@ -256,8 +255,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         });
     });
 
-    $("#scan").keyup(function (e) {
+    $("#scan").on("keydown", function (e) {
         if (e.keyCode === 13) {
+            e.preventDefault();
             $("#tombol-scan-ok").click();
         }
     });
