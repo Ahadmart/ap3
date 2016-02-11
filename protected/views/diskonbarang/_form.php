@@ -230,7 +230,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                     if (data.sukses) {
                         var hasil = "<h5>" + data.barcode +
                                 " " + data.nama + "</h5>" +
-                                "<h6><small>Stok</small> " + data.stok +
+                                "<h6><small>Stok</small> " + data.stok + " " + data.satuan +
                                 " <small>Harga</small> " + data.hargaJual + " / " + data.satuan + "</h6>";
                         $("#info-barang").html(hasil);
                         $("#info-barang").show();
@@ -292,6 +292,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 if (!$model->isNewRecord) {
     ?>
             kalkulasiDiskonDariNominal();
+            tampilkanHargaBanded();// Jalan jika qty > 0
             $("#tombol-scan-ok").click();
     <?php
 }
