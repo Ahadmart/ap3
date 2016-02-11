@@ -163,6 +163,7 @@ class DiskonbarangController extends Controller
             'barangId' => $barang->id,
             'barcode' => $barang->barcode,
             'nama' => $barang->nama,
+            'satuan' => $barang->satuan->nama,
             'hargaJual' => $barang->getHargaJual(),
             'hargaJualRaw' => $barang->getHargaJualRaw(),
             'stok' => $barang->getStok()
