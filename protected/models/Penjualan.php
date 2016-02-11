@@ -251,10 +251,19 @@ class Penjualan extends CActiveRecord
         }
     }
 
+    /**
+     * Tambah barang ke tabel detail, sekaligus cek/apply diskon
+     * @param ActiveRecord $barang Object Barang
+     * @param int $qty Qty barang total yang akan ditambah
+     */
     public function tambahBarangDetail($barang, $qty)
     {
         $sisa = $qty;
         $hargaJualNormal = HargaJual::model()->terkini($barang->id);
+        /*
+         * Cek Diskon, dengan prioritas PROMO, GROSIR, BANDED
+         * Hanya bisa salah satu
+         */
         if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO))) {
             //terapkan diskon promo
             //ambil sisanya (yang tidak didiskon)
@@ -297,7 +306,7 @@ class Penjualan extends CActiveRecord
             $sisa = 0;
         }
         $hargaJualSatuan = $hargaJualNormal - $diskonPromo->nominal;
-        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonPromo->nominal);
+        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonPromo->nominal, DiskonBarang::TIPE_PROMO);
         return $sisa;
     }
 
@@ -319,7 +328,7 @@ class Penjualan extends CActiveRecord
                 $qtyBanded = floor($sisa / $banded->qty);
                 $qtyTotal = $qtyBanded * $banded->qty;
                 /* -------------- */
-                $this->insertBarang($barangId, $qtyTotal, $hargaJualSatuan, $banded->nominal);
+                $this->insertBarang($barangId, $qtyTotal, $hargaJualSatuan, $banded->nominal, DiskonBarang::TIPE_BANDED);
                 /* -------------- */
                 $sisa = $sisa % $banded->qty;
             }
@@ -334,7 +343,7 @@ class Penjualan extends CActiveRecord
      * @param decimal $hargaJual
      * @throws Exception
      */
-    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0)
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null)
     {
         $detail = new PenjualanDetail;
         $detail->penjualan_id = $this->id;
@@ -349,7 +358,7 @@ class Penjualan extends CActiveRecord
             throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$barangId}, qty:{$qty}", 500);
         }
         if ($diskon > 0) {
-            $this->insertDiskon($detail, DiskonBarang::TIPE_BANDED);
+            $this->insertDiskon($detail, $tipeDiskonId);
         }
     }
 
