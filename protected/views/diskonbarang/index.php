@@ -2,6 +2,9 @@
 /* @var $this DiskonbarangController */
 /* @var $model DiskonBarang */
 
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
+
 $this->breadcrumbs = array(
     'Diskon Barang' => array('index'),
     'Index',
@@ -16,6 +19,7 @@ $this->boxHeader['normal'] = 'Diskon Barang';
         $this->widget('BGridView', array(
             'id' => 'diskon-barang-grid',
             'dataProvider' => $model->search(),
+            'itemsCssClass' => 'tabel-index responsive',
             'filter' => $model,
             'columns' => array(
                 array(

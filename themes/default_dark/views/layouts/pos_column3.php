@@ -30,6 +30,10 @@
             <?php echo!empty($this->profil->alamat3) ? '<br>' . $this->profil->alamat3 : ''; ?>
         </address>
     </div>
+    <ul class="stack button-group">
+        <li><a href="" class="expand bigfont tiny button" accesskey="m">Harga <span class="ak">M</span>anual</a></li>
+        <!--<li><a href="<?php echo $this->createUrl('suspended'); ?>" class="success expand bigfont tiny button" accesskey="s"><span class="ak">S</span>uspended</a></li>-->
+    </ul>
     <script>
 
         $(function () {

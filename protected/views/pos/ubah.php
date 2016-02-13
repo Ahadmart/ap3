@@ -12,7 +12,7 @@ $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 ?>
 
-<div class="medium-6 large-7 columns" style="/*height: 100%; overflow: scroll*/">
+<div class="medium-7 large-7 columns" style="/*height: 100%; overflow: scroll*/">
     <div id="transaksi">
         <?php
         $this->renderPartial('_detail', array(
@@ -22,7 +22,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         ?>
     </div>
 </div>
-<div class="medium-4 large-3 columns sidebar kanan">
+<div class="medium-3 large-3 columns sidebar kanan">
     <div id="total-belanja">
         <?php echo $model->getTotal(); ?>
     </div>
