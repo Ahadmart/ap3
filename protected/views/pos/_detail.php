@@ -2,14 +2,14 @@
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.poshytip.js', CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery-editable-poshytip.min.js', CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-editable.css');
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/responsive-tables.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/responsive-tables.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 
 $this->widget('BGridView', array(
     'id' => 'penjualan-detail-grid',
     'dataProvider' => $penjualanDetail->search(),
     //'filter' => $penjualanDetail,
-    'summaryText' => 'Poin: '.$penjualan->getCurPoin().' | {start}-{end} dari {count}',
+    'summaryText' => 'Poin: ' . $penjualan->getCurPoin() . ' | {start}-{end} dari {count}',
     'itemsCssClass' => 'tabel-index responsive',
     'template' => '{items}{summary}{pager}',
     'enableSorting' => false,
@@ -26,21 +26,27 @@ $this->widget('BGridView', array(
             'header' => 'Harga',
             'headerHtmlOptions' => array('class' => 'rata-kanan'),
             'htmlOptions' => array('class' => 'rata-kanan'),
-            'value' => function($data) { return rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'),'0'),','); }
+            'value' => function($data) {
+        return rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',');
+    }
         ),
         array(
             'name' => 'diskon',
             'header' => 'Diskon',
             'headerHtmlOptions' => array('class' => 'rata-kanan'),
             'htmlOptions' => array('class' => 'rata-kanan'),
-            'value' => function($data) { return rtrim(rtrim(number_format($data->diskon, 2, ',', '.'),'0'),','); }
+            'value' => function($data) {
+        return rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',');
+    }
         ),
         array(
             'name' => 'harga_jual',
             'header' => 'Net',
             'headerHtmlOptions' => array('class' => 'rata-kanan'),
             'htmlOptions' => array('class' => 'rata-kanan'),
-            'value' => function($data) { return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'),'0'),','); }
+            'value' => function($data) {
+        return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',');
+    }
         ),
         array(
             'name' => 'qty',
@@ -64,7 +70,7 @@ $this->widget('BGridView', array(
         ),
     ),
 ));
-        echo $penjualan->getCurPoin();
+//echo $penjualan->getCurPoin();
 ?>
 <script>
 

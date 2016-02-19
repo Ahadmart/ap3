@@ -402,4 +402,60 @@ class PosController extends Controller
         $this->renderJSON($return);
     }
 
+    public function actionAdminLogin($id)
+    {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        );
+        if (isset($_POST['usr'])) {
+            $return = $this->authenticateAdmin($_POST['usr'], $_POST['pwd']);
+        }
+        $this->renderJSON($return);
+    }
+
+    /**
+     * Mengecek user dan password, apakah punya hak admin
+     * @param text $usr Nama user yang akan dicek
+     * @param text $pwd Password
+     * @return array status berhasil atau tidak
+     */
+    public function authenticateAdmin($usr, $pwd)
+    {
+        require_once __DIR__ . '/../vendors/password_compat/password.php';
+        $user = User::model()->find('LOWER(nama)=?', array($usr));
+        if ($user === null) {
+            $return = array(
+                'sukses' => false,
+                'error' => array(
+                    'code' => '500',
+                    'msg' => 'Invalid User Name',
+                )
+            );
+        } else if (!$user->validatePassword($pwd)) {
+            $return = array(
+                'sukses' => false,
+                'error' => array(
+                    'code' => '500',
+                    'msg' => 'Invalid Password',
+                )
+            );
+        } else if ($this->isAdmin($user)) {
+            $return = array(
+                'sukses' => true,
+            );
+            Yii::app()->user->setState('kasirOtorisasiAdmin', 1);
+            Yii::app()->user->setState('kasirOtorisasiUserId', $user->id);
+        }
+        return $return;
+    }
+
+    public function isAdmin($user)
+    {
+        return Yii::app()->authManager->getAuthAssignment(Yii::app()->params['useradmin'], $user->id) === null ? FALSE : TRUE;
+    }
+
 }
