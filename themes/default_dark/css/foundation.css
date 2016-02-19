@@ -4640,8 +4640,8 @@ table {
   .tooltip.tip-override.tip-left > .nub, .tooltip.tip-override.tip-right > .nub {
     margin-top: 0; } }
 meta.foundation-mq-topbar {
-  font-family: "/only screen and (min-width:40.0625em)/";
-  width: 40.0625em; }
+  font-family: "/only screen and (min-width:715px)/";
+  width: 715px; }
 
 /* Wrapped around .top-bar to contain to grid width */
 .contain-to-grid {
@@ -4987,7 +4987,7 @@ meta.foundation-mq-topbar {
 .js-generated {
   display: block; }
 
-@media only screen and (min-width: 40.0625em) {
+@media only screen and (min-width: 715px) {
   .top-bar {
     background: #333333;
     overflow: visible; }
