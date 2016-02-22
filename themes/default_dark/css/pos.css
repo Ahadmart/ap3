@@ -102,6 +102,8 @@ a {
 /* Custom editable untuk POS */
 .editable-input {
   width: 50px; }
+  .editable-input.input-editable-harga-p {
+    width: 75px; }
 
 .editable-buttons button {
   height: 25px;
@@ -129,6 +131,9 @@ a {
   font-size: 0.875rem;
   font-weight: 700;
   text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4); }
+  .tabel-index tr td.barcode {
+    font-size: 0.7rem;
+    font-weight: 700; }
 
 tr.pilih, tr.selected {
   background-color: rgba(0, 0, 0, 0.5) !important; }

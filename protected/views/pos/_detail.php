@@ -17,15 +17,29 @@ $this->widget('BGridView', array(
         array(
             'name' => 'barcode',
             'value' => '$data->barang->barcode',
+            'htmlOptions' => array('class' => 'barcode'),
         ),
         array(
             'name' => 'namaBarang',
-            'value' => '$data->barang->nama',
+            //'value' => '$data->barang->nama',
+            'type' => 'raw',
+            'value' => array($this, 'renderNamaBarang'),
+            'headerHtmlOptions' => array('class' => 'hide-for-large-up'),
+            'htmlOptions' => array('class' => 'hide-for-large-up'),
         ),
+        /*
+        array(
+            'name' => 'namaBarang',
+            'value' => '$data->barang->nama',
+            'headerHtmlOptions' => array('class' => 'show-for-large-up'),
+            'htmlOptions' => array('class' => 'show-for-large-up'),
+        ),
+         * 
+         */
         array(
             'header' => 'Harga',
-            'headerHtmlOptions' => array('class' => 'rata-kanan'),
-            'htmlOptions' => array('class' => 'rata-kanan'),
+            'headerHtmlOptions' => array('class' => 'rata-kanan show-for-large-up'),
+            'htmlOptions' => array('class' => 'rata-kanan show-for-large-up'),
             'value' => function($data) {
         return rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',');
     }
@@ -33,20 +47,31 @@ $this->widget('BGridView', array(
         array(
             'name' => 'diskon',
             'header' => 'Diskon',
-            'headerHtmlOptions' => array('class' => 'rata-kanan'),
-            'htmlOptions' => array('class' => 'rata-kanan'),
+            'headerHtmlOptions' => array('class' => 'rata-kanan show-for-large-up'),
+            'htmlOptions' => array('class' => 'rata-kanan show-for-large-up'),
             'value' => function($data) {
         return rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',');
     }
         ),
+        /*
+          array(
+          'name' => 'harga_jual',
+          'header' => 'Net',
+          'headerHtmlOptions' => array('class' => 'rata-kanan'),
+          'htmlOptions' => array('class' => 'rata-kanan'),
+          'value' => function($data) {
+          return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',');
+          }
+          ),
+         * 
+         */
         array(
             'name' => 'harga_jual',
-            'header' => 'Net',
+            'header' => 'Ne<span class="ak">t</span>',
+            'type' => 'raw',
+            'value' => array($this, 'renderHargaLinkEditable'),
             'headerHtmlOptions' => array('class' => 'rata-kanan'),
             'htmlOptions' => array('class' => 'rata-kanan'),
-            'value' => function($data) {
-        return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',');
-    }
         ),
         array(
             'name' => 'qty',
@@ -56,13 +81,16 @@ $this->widget('BGridView', array(
             'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
             'htmlOptions' => array('class' => 'rata-kanan'),
         ),
-        array(
-            'type' => 'raw',
-            'value' => '"<span class=\"info label\">".$data->barang->satuan->nama."</label>"',
-            'htmlOptions' => array('style' => 'padding-left:0'),
-        ),
+        /*
+          array(
+          'type' => 'raw',
+          'value' => '"<span class=\"info label\">".$data->barang->satuan->nama."</label>"',
+          'htmlOptions' => array('style' => 'padding-left:0'),
+          ),
+         */
         array(
             'name' => 'subTotal',
+            'header' => 'Total',
             'value' => '$data->total',
             'headerHtmlOptions' => array('class' => 'rata-kanan'),
             'htmlOptions' => array('class' => 'rata-kanan'),
@@ -77,6 +105,7 @@ $this->widget('BGridView', array(
     function enableEditable() {
         $(".editable-qty").editable({
             mode: "inline",
+            inputclass: "input-editable-qty",
             success: function (response, newValue) {
                 if (response.sukses) {
                     $.fn.yiiGridView.update("penjualan-detail-grid");
@@ -88,26 +117,56 @@ $this->widget('BGridView', array(
             setTimeout(function () {
                 editable.input.$input.select();
             }, 0);
+<?php /* Menambahkan selector agar width bisa diatur */ ?>
+            $(".input-editable-qty").parent('.editable-input').addClass('input-editable-qty-p');
         });
         $('.editable-qty').on('hidden', function (e, reason) {
             // focus on input barcode
             $("#scan").focus();
         });
-//      $(".editable-qty").keyup(function (e) {
-//         console.log(e);
-//         if (e.keyCode === 13) {
-//            
-//         }
-//      });
 
+        $(".editable-harga").editable({
+            mode: "inline",
+            inputclass: "input-editable-harga",
+            success: function (response, newValue) {
+                if (response.sukses) {
+                    $.fn.yiiGridView.update("penjualan-detail-grid");
+                    updateTotal();
+                }
+            }
+        });
+        $('.editable-harga').on('shown', function (e, editable) {
+            setTimeout(function () {
+                editable.input.$input.select();
+            }, 0);
+<?php /* Menambahkan selector agar width bisa diatur */ ?>
+            $(".input-editable-harga").parent('.editable-input').addClass('input-editable-harga-p');
+        });
+        $('.editable-harga').on('hidden', function (e, reason) {
+            // focus on input barcode
+            $("#scan").focus();
+        });
     }
 
-    $(document).on('keydown', ".editable-input input", function (event) {
+    $(document).on('keydown', ".editable-input input.input-editable-qty", function (event) {
         // console.log(event.which);
         if (event.which === 40) {
-            $(this).closest('tr').next().find('.editable').editable('show');
+            console.log('next');
+            $(this).closest('tr').next().find('.editable-qty').editable('show');
         } else if (event.which === 38) {
-            $(this).closest('tr').prev().find('.editable').editable('show');
+            console.log('prev');
+            $(this).closest('tr').prev().find('.editable-qty').editable('show');
+        }
+    });
+
+    $(document).on('keydown', ".editable-input input.input-editable-harga", function (event) {
+        // console.log(event.which);
+        if (event.which === 40) {
+            console.log('next');
+            $(this).closest('tr').next().find('.editable-harga').editable('show');
+        } else if (event.which === 38) {
+            console.log('prev');
+            $(this).closest('tr').prev().find('.editable-harga').editable('show');
         }
     });
 

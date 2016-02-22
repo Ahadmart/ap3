@@ -259,6 +259,17 @@ class PosController extends Controller
                 $data->qty . '</a>';
     }
 
+    public function renderHargaLinkEditable($data, $row)
+    {
+        $ak = '';
+        if ($row == 0) {
+            $ak = 'accesskey="t"';
+        }
+        return '<a href="#" class="editable-harga" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
+                Yii::app()->controller->createUrl('updatehargamanual') . '">' .
+                rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',') . '</a>';
+    }
+
     /**
      * Update qty detail pembelian via ajax
      */
@@ -456,6 +467,19 @@ class PosController extends Controller
     public function isAdmin($user)
     {
         return Yii::app()->authManager->getAuthAssignment(Yii::app()->params['useradmin'], $user->id) === null ? FALSE : TRUE;
+    }
+
+    public function renderNamaBarang($data, $row)
+    {
+        $diskon = $data->diskon > 0 ? ' (' . rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',') . ')' : '';
+        $smallMediumText = $data->barang->nama .
+                '<br />' .
+                rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
+                $diskon .
+                ' x ' . $data->qty . ' ' . $data->barang->satuan->nama;
+        $largeUpText = $data->barang->nama;
+        return '<span class="show-for-large-up">'.$largeUpText.'</span>'.
+            '<span class="hide-for-large-up">'.$smallMediumText.'</span>';
     }
 
 }
