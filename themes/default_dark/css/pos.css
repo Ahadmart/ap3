@@ -149,7 +149,7 @@ table, table thead {
   background: none; }
 
 table thead tr th, table thead tr td {
-  color: #f0fff4;
+  color: #E0E0E0;
   font-size: 0.9rem;
   font-weight: normal;
   padding: 0.5rem 0.625rem 0.625rem;
@@ -162,10 +162,10 @@ table tr.odd {
   background-color: rgba(7, 81, 108, 0.45); }
 
 table tr th, table tr td {
-  color: #E4EA4C; }
+  color: #FFEB3B; }
 
-#label-customer a {
-  color: #0b62a4; }
+#label-customer {
+  cursor: pointer; }
 
 #ganti-customer {
   margin-top: 10px; }

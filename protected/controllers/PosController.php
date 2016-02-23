@@ -261,13 +261,23 @@ class PosController extends Controller
 
     public function renderHargaLinkEditable($data, $row)
     {
-        $ak = '';
-        if ($row == 0) {
-            $ak = 'accesskey="t"';
+        if (Yii::app()->user->getState('kasirOtorisasiAdmin')) {
+            /* Untuk user otorisasi admin, tampilkan harga editable */
+            $ak = '';
+            if ($row == 0) {
+                $ak = 'accesskey="t"';
+            }
+            return CHtml::link(rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ','), "", array(
+                        'class' => 'editable-harga',
+                        'data-type' => 'text',
+                        'data-pk' => $data->id,
+                        'data-url' => Yii::app()->controller->createUrl('updatehargamanual'),
+                        'accesskey' => $row == 0 ? 't' : ''
+            ));
+        } else {
+            /* Yang tidak, tampilkan text harga */
+            return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',');
         }
-        return '<a href="#" class="editable-harga" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
-                Yii::app()->controller->createUrl('updatehargamanual') . '">' .
-                rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',') . '</a>';
     }
 
     /**
@@ -478,8 +488,8 @@ class PosController extends Controller
                 $diskon .
                 ' x ' . $data->qty . ' ' . $data->barang->satuan->nama;
         $largeUpText = $data->barang->nama;
-        return '<span class="show-for-large-up">'.$largeUpText.'</span>'.
-            '<span class="hide-for-large-up">'.$smallMediumText.'</span>';
+        return '<span class="show-for-large-up">' . $largeUpText . '</span>' .
+                '<span class="hide-for-large-up">' . $smallMediumText . '</span>';
     }
 
 }

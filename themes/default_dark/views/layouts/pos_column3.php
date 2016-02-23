@@ -6,7 +6,7 @@
     <!--</div>-->
     <ul class="stack button-group">
         <li><a href="<?php echo $this->createUrl('tambah'); ?>" class="expand bigfont tiny button" accesskey="n"><span class="ak">N</span>ew</a></li>
-        <li><a href="<?php echo $this->createUrl('suspended'); ?>" class="success expand bigfont tiny button" accesskey="s"><span class="ak">S</span>uspended</a></li>
+        <li><a href="<?php echo $this->createUrl('suspended'); ?>" class="expand bigfont tiny info button" accesskey="s"><span class="ak">S</span>uspended</a></li>
     </ul>
     <?php if (!is_null($this->namaProfil)) {
         ?>
@@ -20,7 +20,7 @@
                 </div>
             </div>
         </form>
-        <span class="secondary label" id="label-customer"><a accesskey="c"><span class="ak">C</span>ustomer</span></a>
+        <span class="label" id="label-customer" accesskey="c"><span class="ak">C</span>ustomer</span>
     <div id="data-customer">
         <nomor>Nomor: <?php echo $this->profil->nomor; ?></nomor>
         <nama><?php echo $this->namaProfil; ?></nama>
@@ -46,7 +46,7 @@
         </div>
     </form>
     <ul class="stack button-group">
-        <li><a href="" class="expand bigfont tiny <?php echo Yii::app()->user->getState('kasirOtorisasiAdmin') ? 'warning' : 'secondary'; ?> button" id="tombol-admin-mode" accesskey="m">Mode Ad<span class="ak">m</span>in</a></li>
+        <li><a href="" class="expand bigfont tiny <?php echo Yii::app()->user->getState('kasirOtorisasiAdmin') ? 'warning' : ''; ?> button" id="tombol-admin-mode" accesskey="m">Mode Ad<span class="ak">m</span>in</a></li>
     </ul>
     <script>
 

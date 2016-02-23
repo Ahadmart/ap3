@@ -21,11 +21,8 @@ $this->widget('BGridView', array(
         ),
         array(
             'name' => 'namaBarang',
-            //'value' => '$data->barang->nama',
             'type' => 'raw',
             'value' => array($this, 'renderNamaBarang'),
-            'headerHtmlOptions' => array('class' => 'hide-for-large-up'),
-            'htmlOptions' => array('class' => 'hide-for-large-up'),
         ),
         /*
         array(

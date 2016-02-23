@@ -184,7 +184,7 @@ table, table thead{
 }
 
 table thead tr th, table thead tr td {
-    color: #f0fff4;
+    color: #E0E0E0;
     font-size: 0.9rem;
     font-weight: normal;
     padding: 0.5rem 0.625rem 0.625rem;
@@ -201,11 +201,11 @@ table tr.odd{
 }
 
 table tr th, table tr td {
-    color: #E4EA4C;
+    color: #FFEB3B;
 }
 
-#label-customer a{
-    color: $biru;
+#label-customer{
+    cursor: pointer;
 }
 
 #ganti-customer{
