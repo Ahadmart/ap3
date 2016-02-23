@@ -261,7 +261,7 @@ class PosController extends Controller
 
     public function renderHargaLinkEditable($data, $row)
     {
-        if (Yii::app()->user->getState('kasirOtorisasiAdmin')) {
+        if (Yii::app()->user->hasState('kasirOtorisasiAdmin')) {
             /* Untuk user otorisasi admin, tampilkan harga editable */
             $ak = '';
             if ($row == 0) {
@@ -423,7 +423,26 @@ class PosController extends Controller
         $this->renderJSON($return);
     }
 
-    public function actionAdminLogin($id)
+    public function actionAdminLogout()
+    {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Input Error!',
+            )
+        );
+        if (isset($_POST['confirm']) && $_POST['confirm'] == '1') {
+            Yii::app()->user->setState('kasirOtorisasiAdmin', null);
+            Yii::app()->user->setState('kasirOtorisasiUserId', null);
+            $return = array(
+                'sukses' => true,
+            );
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionAdminLogin()
     {
         $return = array(
             'sukses' => false,
