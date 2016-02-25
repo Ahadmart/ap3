@@ -6,10 +6,11 @@
 $biru: #0b62a4;
 $biru-muda: #7A92A3;
 $hijau: #4da74d;
-$toska: #afd8f8;
+$toska: #00BCD4;
 $oranye: #edc240;
-$merah: #cb4b4b;
+$merah: #b71c1c;
 $violet: #9440ed;
+$warna-text: #212121;
 
 @mixin animasi($param){
     -webkit-animation: $param;
@@ -50,7 +51,7 @@ h1, h2, h3, h4, h5, h6{
 
 // eo font override
 select{
-    color: rgba(0, 0, 0, 0.74902);
+    color: $warna-text;
     font-family: Ubuntu, "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;	
 }
 option{
@@ -378,6 +379,25 @@ label{
     .divider{
         //border-top: 0;
     }
+}
+
+input:not([type]), 
+input[type="text"], 
+input[type="password"], 
+input[type="date"], 
+input[type="datetime"], 
+input[type="datetime-local"], 
+input[type="month"], 
+input[type="week"], 
+input[type="email"], 
+input[type="number"], 
+input[type="search"], 
+input[type="tel"], 
+input[type="time"], 
+input[type="url"], 
+input[type="color"], 
+textarea {
+    color: $warna-text;
 }
 
 input[type="text"]:focus, 
