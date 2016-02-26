@@ -15,7 +15,7 @@ body {
   cursor: default; }
 
 .delete {
-  color: #cb4b4b; }
+  color: #b71c1c; }
 
 nav.top-bar {
   box-shadow: 0 1px #4e4e4e; }
@@ -28,7 +28,7 @@ h1, h2, h3, h4, h5, h6 {
   color: #fff; }
 
 select {
-  color: rgba(0, 0, 0, 0.74902);
+  color: #212121;
   font-family: Ubuntu, "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif; }
 
 option.option-head {
@@ -69,7 +69,7 @@ nav .title-area img {
   color: #eee; }
 
 span.required {
-  color: #cb4b4b; }
+  color: #b71c1c; }
 
 li.active > a {
   background-color: #0b62a4;
@@ -168,7 +168,7 @@ th.rata-kanan, td.rata-kanan, .rata-kanan {
 tr {
   transition: background-color 0.5s ease; }
   tr.pilih, tr.selected {
-    background-color: #afd8f8 !important; }
+    background-color: #00BCD4 !important; }
     tr.pilih a.delete, tr.selected a.delete {
       color: #9440ed; }
 
@@ -257,6 +257,24 @@ label {
 .top-bar-section .dropdown {
   border: 1px solid #3e4144; }
 
+input:not([type]),
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+input[type="color"],
+textarea {
+  color: #212121; }
+
 input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="date"]:focus,
@@ -272,13 +290,13 @@ input[type="time"]:focus,
 input[type="url"]:focus,
 input[type="color"]:focus,
 textarea:focus {
-  box-shadow: 0px 0px 15px #afd8f8;
-  border: 1px solid #afd8f8; }
+  box-shadow: 0px 0px 15px #00BCD4;
+  border: 1px solid #00BCD4; }
 
 tr {
   transition: background-color 0.5s ease; }
   tr.pilih {
-    background-color: #afd8f8 !important; }
+    background-color: #00BCD4 !important; }
 
 .alert-box.warning {
   background-color: #9440ed;
