@@ -188,6 +188,11 @@ class Penjualan extends CActiveRecord
         return parent::beforeSave();
     }
 
+    /**
+     * Mencari jumlah barang di tabel penjualan_detail
+     * @param int $barangId ID Barang
+     * @return int qty / jumlah barang, FALSE jika tidak ada
+     */
     public function barangAda($barangId)
     {
         $detail = Yii::app()->db->createCommand("

@@ -510,5 +510,14 @@ class PosController extends Controller
         return '<span class="show-for-large-up">' . $largeUpText . '</span>' .
                 '<span class="hide-for-large-up">' . $smallMediumText . '</span>';
     }
+    
+    public function actionUpdateHargaManual(){
+        if (isset($_POST['pk'])){
+            $pk = $_POST['pk'];
+            $hargaManual = $_POST['value'];
+            $penjualanDetail = PenjualanDetail::model()->findByPk($pk);
+            
+        }
+    }
 
 }

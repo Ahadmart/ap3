@@ -137,7 +137,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         });
     });
 
-    $("#scan").keyup(function (e) {
+    $("#scan").keydown(function (e) {
         if (e.keyCode === 13) {
             $("#tombol-tambah-barang").click();
         }

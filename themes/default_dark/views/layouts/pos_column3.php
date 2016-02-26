@@ -121,6 +121,12 @@
                 $("#form-admin-login").submit();
             });
 
+            $(".admin-input input").keydown(function (e) {
+                if (e.keyCode === 13) {
+                    $("#form-admin-login").submit();
+                }
+            });
+
             $("#form-nomor-customer").submit(function () {
                 dataUrl = '<?php echo $this->createUrl('ganticustomer', array('id' => $this->penjualanId)); ?>';
                 dataKirim = {nomor: $("#nomor-customer").val()};
