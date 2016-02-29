@@ -1,2 +1,2 @@
 #!/bin/bash
-sass --watch ./:../css
+sass --style compressed --watch ./:../css --sourcemap=none

@@ -26,83 +26,124 @@
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
-        <div class="off-canvas-wrap" data-offcanvas>
-            <div class="inner-wrap">
-                <nav class="tab-bar">
-                    <section class="left-small">
-                        <a class="left-off-canvas-toggle menu-icon" accesskey="l"><span></span></a>
-                    </section>
-
-                    <section class="middle tab-bar-section" style="text-align: left">
-                        <span class="title"><a href="<?php echo Yii::app()->baseUrl; ?>"><img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" /></a></span>
-                        <span class="right" style="font-size: 0.9em"><i class="fa fa-user fa-fw"></i> <?php echo Yii::app()->user->namaLengkap; ?>&nbsp;&nbsp;&nbsp;<i class="fa fa-clock-o fa-fw"></i> <span id="clock">00:00:00</span></span>
-                    </section>
-
-                    <section class="right-small">
-                        <a class="right-off-canvas-toggle menu-icon" accesskey="r"><span></span></a>
-                    </section>
-                </nav>
-
-                <aside class="left-off-canvas-menu">
-                    <ul class="off-canvas-list">
-                        <li><label>Menu</label></li>
-                        <li class="has-submenu"><a href="#">Menu1</a>
-                            <ul class="left-submenu">
-                                <li class="back"><a href="#">Back</a></li>
-                                <li><label>Level 1</label></li>
-                                <li><a href="#">Link 1</a></li>
-                                <li class="has-submenu"><a href="#">Link 2 w/ submenu</a>
+        <!--        <div class="off-canvas-wrap" data-offcanvas>
+                    <div class="inner-wrap">
+                        <nav class="tab-bar">
+                            <section class="left-small">
+                                <a class="left-off-canvas-toggle menu-icon" accesskey="l"><span></span></a>
+                            </section>
+        
+                            <section class="middle tab-bar-section" style="text-align: left">
+                                <span class="title"><a href="<?php echo Yii::app()->baseUrl; ?>"><img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" /></a></span>
+                                <span class="right" style="font-size: 0.9em"><i class="fa fa-user fa-fw"></i> <?php echo Yii::app()->user->namaLengkap; ?>&nbsp;&nbsp;&nbsp;<i class="fa fa-clock-o fa-fw"></i> <span id="clock">00:00:00</span></span>
+                            </section>
+        
+                            <section class="right-small">
+                                <a class="right-off-canvas-toggle menu-icon" accesskey="r"><span></span></a>
+                            </section>
+                        </nav>
+        
+                        <aside class="left-off-canvas-menu">
+                            <ul class="off-canvas-list">
+                                <li><label>Menu</label></li>
+                                <li class="has-submenu"><a href="#">Menu1</a>
                                     <ul class="left-submenu">
                                         <li class="back"><a href="#">Back</a></li>
-                                        <li><label>Level 2</label></li>
+                                        <li><label>Level 1</label></li>
+                                        <li><a href="#">Link 1</a></li>
+                                        <li class="has-submenu"><a href="#">Link 2 w/ submenu</a>
+                                            <ul class="left-submenu">
+                                                <li class="back"><a href="#">Back</a></li>
+                                                <li><label>Level 2</label></li>
+                                                <li><a href="#">...</a></li>
+                                            </ul>
+                                        </li>
                                         <li><a href="#">...</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="#">...</a></li>
+                                <li><a href="<?php echo Yii::app()->baseUrl; ?>">Home</a></li>
+                                <form>
+                                    <div class="small-12 columns">
+                                        <input type="text" accesskey="z"/>
+                                    </div>
+                                    <div class="small-12 columns">
+                                        <input type="submit" class="bigfont tiny button" />
+                                    </div>
+                                </form>
                             </ul>
-                        </li>
-                        <li><a href="<?php echo Yii::app()->baseUrl; ?>">Home</a></li>
-                        <form>
-                            <div class="small-12 columns">
-                                <input type="text" accesskey="z"/>
-                            </div>
-                            <div class="small-12 columns">
-                                <input type="submit" class="bigfont tiny button" />
-                            </div>
-                        </form>
-                    </ul>
-                </aside>
-
-                <aside class="right-off-canvas-menu">
-                    <ul class="off-canvas-list">
-                        <li><label>Users</label></li>
-                        <li><a href="#">Menu1</a></li>
-                        <li class="has-submenu"><a href="#">Menu2</a>
-                            <ul class="right-submenu">
-                                <li class="back"><a href="#">Back</a></li>
-                                <li><label>Level 1</label></li>
-                                <li><a href="#">Link 1</a></li>
-                                <li class="has-submenu"><a href="#">Link 2 w/ submenu</a>
+                        </aside>
+        
+                        <aside class="right-off-canvas-menu">
+                            <ul class="off-canvas-list">
+                                <li><label>Users</label></li>
+                                <li><a href="#">Menu1</a></li>
+                                <li class="has-submenu"><a href="#">Menu2</a>
                                     <ul class="right-submenu">
                                         <li class="back"><a href="#">Back</a></li>
-                                        <li><label>Level 2</label></li>
+                                        <li><label>Level 1</label></li>
+                                        <li><a href="#">Link 1</a></li>
+                                        <li class="has-submenu"><a href="#">Link 2 w/ submenu</a>
+                                            <ul class="right-submenu">
+                                                <li class="back"><a href="#">Back</a></li>
+                                                <li><label>Level 2</label></li>
+                                                <li><a href="#">...</a></li>
+                                            </ul>
+                                        </li>
                                         <li><a href="#">...</a></li>
                                     </ul>
                                 </li>
                                 <li><a href="#">...</a></li>
                             </ul>
-                        </li>
-                        <li><a href="#">...</a></li>
-                    </ul>
-                </aside>
+                        </aside>
+        
+                        <section class="main-section">
+        <?php // echo $content; ?>
+                        </section>
+        
+                        <a class="exit-off-canvas"></a>
+        
+                    </div>
+                </div>-->
+        <div class="fixed">
+            <nav class="top-bar" data-options="is_hover: true" data-topbar>
+                <ul class="title-area">
+                    <li class="name">
+                        <h1>
+                            <a href="<?php echo Yii::app()->baseUrl; ?>">
+                                <?php //echo CHtml::encode(Yii::app()->name); ?>
+                                <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
+                            </a>
+                        </h1>
+                    </li>
+                    <li class="toggle-topbar menu-icon"><a href="#"><span></span></a></li>
+                </ul>
 
-                <section class="main-section">
-                    <?php echo $content; ?>
+                <section class="top-bar-section">
+                    <?php
+                    $this->widget('zii.widgets.CMenu', array(
+                        'encodeLabel' => false,
+                        'htmlOptions' => array('class' => 'right'),
+                        'id' => '',
+                        'items' => array(
+                            //array('itemOptions' => array('class' => 'divider'), 'label' => ''),
+                            //array('label' => '<i class="fa fa-envelope-o fa-fw getar"></i>' . ' <span class="alert label">27</span>', 'url' => array('#'),),
+                            array('itemOptions' => array('class' => 'divider'), 'label' => ''),
+                            array('label' => '<i class="fa fa-at fa-lg fa-fw"></i> ' . Yii::app()->user->namaLengkap, 'url' => '',
+                                'items' => array(
+                                    array('label' => '<i class="fa fa-user fa-fw"></i>' . ' Profile', 'url' => array('user/ubah/' . Yii::app()->user->id)),
+                                    array('label' => '<i class="fa fa-power-off fa-fw"></i>' . ' Logout', 'url' => array('/app/logout')),
+                                ),
+                                'itemOptions' => array('class' => 'has-dropdown'),
+                                'submenuOptions' => array('class' => 'dropdown'),
+                            ),
+                        ),
+                    ));
+                    ?>
                 </section>
-
-                <a class="exit-off-canvas"></a>
-
-            </div>
+            </nav>
+        </div>
+        <div id="content">
+            <?php echo $content; ?>
         </div>
         <?php
         /*

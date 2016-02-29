@@ -259,6 +259,27 @@ class PosController extends Controller
                 $data->qty . '</a>';
     }
 
+    public function renderHargaLinkEditable($data, $row)
+    {
+        if (Yii::app()->user->hasState('kasirOtorisasiAdmin')) {
+            /* Untuk user otorisasi admin, tampilkan harga editable */
+            $ak = '';
+            if ($row == 0) {
+                $ak = 'accesskey="t"';
+            }
+            return CHtml::link(rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ','), "", array(
+                        'class' => 'editable-harga',
+                        'data-type' => 'text',
+                        'data-pk' => $data->id,
+                        'data-url' => Yii::app()->controller->createUrl('updatehargamanual'),
+                        'accesskey' => $row == 0 ? 't' : ''
+            ));
+        } else {
+            /* Yang tidak, tampilkan text harga */
+            return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',');
+        }
+    }
+
     /**
      * Update qty detail pembelian via ajax
      */
@@ -398,6 +419,113 @@ class PosController extends Controller
                     )
                 );
             }
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionAdminLogout()
+    {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Input Error!',
+            )
+        );
+        if (isset($_POST['confirm']) && $_POST['confirm'] == '1') {
+            Yii::app()->user->setState('kasirOtorisasiAdmin', null);
+            Yii::app()->user->setState('kasirOtorisasiUserId', null);
+            $return = array(
+                'sukses' => true,
+            );
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionAdminLogin()
+    {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        );
+        if (isset($_POST['usr'])) {
+            $return = $this->authenticateAdmin($_POST['usr'], $_POST['pwd']);
+        }
+        $this->renderJSON($return);
+    }
+
+    /**
+     * Mengecek user dan password, apakah punya hak admin
+     * @param text $usr Nama user yang akan dicek
+     * @param text $pwd Password
+     * @return array status berhasil atau tidak
+     */
+    public function authenticateAdmin($usr, $pwd)
+    {
+        require_once __DIR__ . '/../vendors/password_compat/password.php';
+        $user = User::model()->find('LOWER(nama)=?', array($usr));
+        if ($user === null) {
+            $return = array(
+                'sukses' => false,
+                'error' => array(
+                    'code' => '500',
+                    'msg' => 'Invalid User Name',
+                )
+            );
+        } else if (!$user->validatePassword($pwd)) {
+            $return = array(
+                'sukses' => false,
+                'error' => array(
+                    'code' => '500',
+                    'msg' => 'Invalid Password',
+                )
+            );
+        } else if ($this->isAdmin($user)) {
+            $return = array(
+                'sukses' => true,
+            );
+            Yii::app()->user->setState('kasirOtorisasiAdmin', 1);
+            Yii::app()->user->setState('kasirOtorisasiUserId', $user->id);
+        }
+        return $return;
+    }
+
+    public function isAdmin($user)
+    {
+        return Yii::app()->authManager->getAuthAssignment(Yii::app()->params['useradmin'], $user->id) === null ? FALSE : TRUE;
+    }
+
+    public function renderNamaBarang($data, $row)
+    {
+        $diskon = $data->diskon > 0 ? ' (' . rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',') . ')' : '';
+        $smallMediumText = $data->barang->nama .
+                '<br />' .
+                rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
+                $diskon .
+                ' x ' . $data->qty . ' ' . $data->barang->satuan->nama;
+        $largeUpText = $data->barang->nama;
+        return '<span class="show-for-large-up">' . $largeUpText . '</span>' .
+                '<span class="hide-for-large-up">' . $smallMediumText . '</span>';
+    }
+
+    public function actionUpdateHargaManual()
+    {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        );
+        if (isset($_POST['pk'])) {
+            $pk = $_POST['pk'];
+            $hargaManual = $_POST['value'];
+            $penjualanDetail = PenjualanDetail::model()->findByPk($pk);
+            $penjualan = Penjualan::model()->findByPk($penjualanDetail->penjualan_id);
+            $return = $penjualan->updateHargaManual($penjualanDetail, $hargaManual);
         }
         $this->renderJSON($return);
     }

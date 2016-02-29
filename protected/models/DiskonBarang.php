@@ -29,6 +29,7 @@ class DiskonBarang extends CActiveRecord
     const TIPE_PROMO = 0;
     const TIPE_GROSIR = 1;
     const TIPE_BANDED = 2;
+    const TIPE_MANUAL = 3;
     /* ========= */
     const STATUS_TIDAK_AKTIF = 0;
     const STATUS_AKTIF = 1;

@@ -124,6 +124,9 @@ a{
 /* Custom editable untuk POS */
 .editable-input{
     width: 50px;
+    &.input-editable-harga-p{
+        width: 75px;
+    }
 }
 
 .editable-buttons {
@@ -157,6 +160,10 @@ a{
     font-size: 0.875rem;
     font-weight: 700;
     text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
+    &.barcode{
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
 }
 
 tr.pilih, tr.selected {
@@ -177,7 +184,7 @@ table, table thead{
 }
 
 table thead tr th, table thead tr td {
-    color: #f0fff4;
+    color: #E0E0E0;
     font-size: 0.9rem;
     font-weight: normal;
     padding: 0.5rem 0.625rem 0.625rem;
@@ -194,11 +201,11 @@ table tr.odd{
 }
 
 table tr th, table tr td {
-    color: #E4EA4C;
+    color: #FFEB3B;
 }
 
-#label-customer a{
-    color: $biru;
+#label-customer{
+    cursor: pointer;
 }
 
 #ganti-customer{

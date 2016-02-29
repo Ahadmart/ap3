@@ -188,6 +188,11 @@ class Penjualan extends CActiveRecord
         return parent::beforeSave();
     }
 
+    /**
+     * Mencari jumlah barang di tabel penjualan_detail
+     * @param int $barangId ID Barang
+     * @return int qty / jumlah barang, FALSE jika tidak ada
+     */
     public function barangAda($barangId)
     {
         $detail = Yii::app()->db->createCommand("
@@ -1187,6 +1192,37 @@ class Penjualan extends CActiveRecord
             return $configMember['nilai'] > 0 ? floor($penjualan['jumlah'] / $configMember['nilai']) : 0;
         } else {
             return 0;
+        }
+    }
+
+    /**
+     * Update Harga Jual secara manual, dan mencatat diskonnya
+     * @param ActiveRecord $penjualanDetail
+     * @param int $hargaManual harga yang diinput
+     */
+    public function updateHargaManual($penjualanDetail, $hargaManual)
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+            $barangId = $penjualanDetail->barang_id;
+            $qty = $penjualanDetail->qty;
+            $hargaJual = $hargaManual;
+            $diskon = $penjualanDetail->harga_jual - $hargaManual;
+
+            $this->insertBarang($barangId, $qty, $hargaJual, $diskon, DiskonBarang::TIPE_MANUAL);
+            $penjualanDetail->delete();
+            $transaction->commit();
+            return array(
+                'sukses' => true
+            );
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return array(
+                'sukses' => false,
+                'error' => array(
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ));
         }
     }
 

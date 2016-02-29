@@ -18,7 +18,7 @@
 table td, table th { padding: 9px 10px; text-align: left; }*/
 
 /* Mobile */
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 960px) {
 	
 	table.responsive { margin-bottom: 0; }
 	
