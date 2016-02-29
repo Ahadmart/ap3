@@ -188,6 +188,11 @@ class Penjualan extends CActiveRecord
         return parent::beforeSave();
     }
 
+    /**
+     * Mencari jumlah barang di tabel penjualan_detail
+     * @param int $barangId ID Barang
+     * @return int qty / jumlah barang, FALSE jika tidak ada
+     */
     public function barangAda($barangId)
     {
         $detail = Yii::app()->db->createCommand("
@@ -251,10 +256,19 @@ class Penjualan extends CActiveRecord
         }
     }
 
+    /**
+     * Tambah barang ke tabel detail, sekaligus cek/apply diskon
+     * @param ActiveRecord $barang Object Barang
+     * @param int $qty Qty barang total yang akan ditambah
+     */
     public function tambahBarangDetail($barang, $qty)
     {
         $sisa = $qty;
         $hargaJualNormal = HargaJual::model()->terkini($barang->id);
+        /*
+         * Cek Diskon, dengan prioritas PROMO, GROSIR, BANDED
+         * Hanya bisa salah satu
+         */
         if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO))) {
             //terapkan diskon promo
             //ambil sisanya (yang tidak didiskon)
@@ -297,7 +311,7 @@ class Penjualan extends CActiveRecord
             $sisa = 0;
         }
         $hargaJualSatuan = $hargaJualNormal - $diskonPromo->nominal;
-        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonPromo->nominal);
+        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonPromo->nominal, DiskonBarang::TIPE_PROMO);
         return $sisa;
     }
 
@@ -319,7 +333,7 @@ class Penjualan extends CActiveRecord
                 $qtyBanded = floor($sisa / $banded->qty);
                 $qtyTotal = $qtyBanded * $banded->qty;
                 /* -------------- */
-                $this->insertBarang($barangId, $qtyTotal, $hargaJualSatuan, $banded->nominal);
+                $this->insertBarang($barangId, $qtyTotal, $hargaJualSatuan, $banded->nominal, DiskonBarang::TIPE_BANDED);
                 /* -------------- */
                 $sisa = $sisa % $banded->qty;
             }
@@ -334,7 +348,7 @@ class Penjualan extends CActiveRecord
      * @param decimal $hargaJual
      * @throws Exception
      */
-    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0)
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null)
     {
         $detail = new PenjualanDetail;
         $detail->penjualan_id = $this->id;
@@ -349,7 +363,7 @@ class Penjualan extends CActiveRecord
             throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$barangId}, qty:{$qty}", 500);
         }
         if ($diskon > 0) {
-            $this->insertDiskon($detail, DiskonBarang::TIPE_BANDED);
+            $this->insertDiskon($detail, $tipeDiskonId);
         }
     }
 
@@ -1178,6 +1192,37 @@ class Penjualan extends CActiveRecord
             return $configMember['nilai'] > 0 ? floor($penjualan['jumlah'] / $configMember['nilai']) : 0;
         } else {
             return 0;
+        }
+    }
+
+    /**
+     * Update Harga Jual secara manual, dan mencatat diskonnya
+     * @param ActiveRecord $penjualanDetail
+     * @param int $hargaManual harga yang diinput
+     */
+    public function updateHargaManual($penjualanDetail, $hargaManual)
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+            $barangId = $penjualanDetail->barang_id;
+            $qty = $penjualanDetail->qty;
+            $hargaJual = $hargaManual;
+            $diskon = $penjualanDetail->harga_jual - $hargaManual;
+
+            $this->insertBarang($barangId, $qty, $hargaJual, $diskon, DiskonBarang::TIPE_MANUAL);
+            $penjualanDetail->delete();
+            $transaction->commit();
+            return array(
+                'sukses' => true
+            );
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return array(
+                'sukses' => false,
+                'error' => array(
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ));
         }
     }
 

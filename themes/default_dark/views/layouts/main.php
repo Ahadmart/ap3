@@ -12,8 +12,8 @@
 
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                           ?>/css/animate.min.css">-->
-        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                        ?>/css/app.css">-->
+        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                            ?>/css/animate.min.css">-->
+        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                         ?>/css/app.css">-->
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
         <?php
         Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/app.css');
@@ -226,8 +226,8 @@
             ?>
             <footer>
                 <span class="left">Sponsored by Ahad Mart</span>
-                <span class="left" id="clock"></span>
-                <span class="right" id="arabictime"></span>
+                <span class="left" id="clock" style="font-size: 0.75rem"></span>
+                <span class="right" id="arabictime" style="font-size: 0.9rem"></span>
             </footer>
             <?php
         endif;
@@ -240,7 +240,8 @@
             {
                 var currentTime = new Date();
                 var currentDate = currentTime.getDate();
-                var currentMonth = currentTime.getMonth() + 1;
+                var month = currentTime.getMonth() + 1;
+                currentMonth = month < 10 ? '0' + month : '' + month;
                 var currentYear = currentTime.getFullYear();
                 var currentHours = currentTime.getHours();
                 var currentMinutes = currentTime.getMinutes();
