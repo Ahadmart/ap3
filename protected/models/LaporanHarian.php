@@ -185,7 +185,7 @@ class LaporanHarian extends CActiveRecord {
     */
    public function pembelianTunai() {
       $command = Yii::app()->db->createCommand("
-         select nomor, sum(jumlah) jumlah, profil.nama
+         select pembelian.nomor, sum(jumlah) jumlah, profil.nama
          FROM
          (
             select pembelian.id, d.jumlah
@@ -394,7 +394,7 @@ class LaporanHarian extends CActiveRecord {
     */
    public function penjualanTunai() {
       $command = Yii::app()->db->createCommand("
-         select nomor, sum(jumlah) jumlah, profil.nama
+         select penjualan.nomor, sum(jumlah) jumlah, profil.nama
          FROM
          (
             select penjualan.id, d.jumlah
@@ -853,7 +853,7 @@ class LaporanHarian extends CActiveRecord {
 
    public function returBeliTunai() {
       $command = Yii::app()->db->createCommand("
-         select nomor, sum(jumlah) jumlah, profil.nama
+         select retur_pembelian.nomor, sum(jumlah) jumlah, profil.nama
          FROM
          (
             select retur_pembelian.id, d.jumlah
@@ -1045,7 +1045,7 @@ class LaporanHarian extends CActiveRecord {
 
    public function returJualTunai() {
       $command = Yii::app()->db->createCommand("
-         select nomor, sum(jumlah) jumlah, profil.nama
+         select retur_penjualan.nomor, sum(jumlah) jumlah, profil.nama
          FROM
          (
             select retur_penjualan.id, d.jumlah
