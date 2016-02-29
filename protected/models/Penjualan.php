@@ -1195,4 +1195,35 @@ class Penjualan extends CActiveRecord
         }
     }
 
+    /**
+     * Update Harga Jual secara manual, dan mencatat diskonnya
+     * @param ActiveRecord $penjualanDetail
+     * @param int $hargaManual harga yang diinput
+     */
+    public function updateHargaManual($penjualanDetail, $hargaManual)
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+            $barangId = $penjualanDetail->barang_id;
+            $qty = $penjualanDetail->qty;
+            $hargaJual = $hargaManual;
+            $diskon = $penjualanDetail->harga_jual - $hargaManual;
+
+            $this->insertBarang($barangId, $qty, $hargaJual, $diskon, DiskonBarang::TIPE_MANUAL);
+            $penjualanDetail->delete();
+            $transaction->commit();
+            return array(
+                'sukses' => true
+            );
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return array(
+                'sukses' => false,
+                'error' => array(
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ));
+        }
+    }
+
 }

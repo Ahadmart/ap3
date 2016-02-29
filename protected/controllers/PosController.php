@@ -510,14 +510,24 @@ class PosController extends Controller
         return '<span class="show-for-large-up">' . $largeUpText . '</span>' .
                 '<span class="hide-for-large-up">' . $smallMediumText . '</span>';
     }
-    
-    public function actionUpdateHargaManual(){
-        if (isset($_POST['pk'])){
+
+    public function actionUpdateHargaManual()
+    {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        );
+        if (isset($_POST['pk'])) {
             $pk = $_POST['pk'];
             $hargaManual = $_POST['value'];
             $penjualanDetail = PenjualanDetail::model()->findByPk($pk);
-            
+            $penjualan = Penjualan::model()->findByPk($penjualanDetail->penjualan_id);
+            $return = $penjualan->updateHargaManual($penjualanDetail, $hargaManual);
         }
+        $this->renderJSON($return);
     }
 
 }
