@@ -12,8 +12,8 @@
 
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                            ?>/css/animate.min.css">-->
-        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                         ?>/css/app.css">-->
+        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                               ?>/css/animate.min.css">-->
+        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                            ?>/css/app.css">-->
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
         <?php
         Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/app.css');
@@ -121,7 +121,7 @@
                                                 'itemOptions' => array('class' => 'has-dropdown'),
                                                 'submenuOptions' => array('class' => 'dropdown'),
                                             ),
-                                            array('label' => '<i class="fa fa-cog fa-fw"></i>' . ' Aplikasi', 'url' => array('/config/index')),
+                                            array('label' => '<i class="fa fa-sliders fa-fw"></i>' . ' Aplikasi', 'url' => array('/config/index')),
                                             array('label' => '<i class="fa fa-cog fa-fw"></i>' . ' Devices', 'url' => array('/device/index')),
                                             array('label' => '<i class="fa fa-user fa-fw"></i>' . ' Profil', 'url' => array('/profil/index'),
                                             /*
@@ -136,7 +136,7 @@
                                              * 
                                              */
                                             ),
-                                            array('label' => '<i class="fa fa-user-plus fa-fw"></i>' . ' Member', 'url' => array('/member/index')),
+                                            array('label' => '<i class="fa fa-ticket fa-fw"></i>' . ' Member', 'url' => array('/member/index')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
@@ -168,6 +168,14 @@
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Penjualan', 'url' => array('/report/penjualan')),
                                             array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Detail', 'url' => array('/report/hariandetail')),
                                             array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
+                                        ),
+                                        'itemOptions' => array('class' => 'has-dropdown'),
+                                        'submenuOptions' => array('class' => 'dropdown'),
+                                    ),
+                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
+                                    array('label' => '<i class="fa fa-wrench fa-fw fa-lg"></i>' . ' Tools', 'url' => '',
+                                        'items' => array(
+                                            array('label' => '<i class="fa fa-list-alt fa-fw"></i>' . ' Cetak Label Rak', 'url' => array('/cetaklabelrak/index')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),

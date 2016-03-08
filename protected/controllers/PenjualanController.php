@@ -455,12 +455,12 @@ class PenjualanController extends Controller
     public function actionImport()
     {
         if (isset($_POST['nomor'])) {
-            $dbGudang = 'gudang';
+            $dbAhadPos2 = $_POST['database'];
             $nomor = $_POST['nomor'];
             $penjualanPos2 = Yii::app()->db->createCommand("
                      SELECT t.tglTransaksiJual, c.namaCustomer
-                     FROM {$dbGudang}.transaksijual t
-                     JOIN {$dbGudang}.customer c on t.idCustomer=c.idCustomer
+                     FROM {$dbAhadPos2}.transaksijual t
+                     JOIN {$dbAhadPos2}.customer c on t.idCustomer=c.idCustomer
                      WHERE idTransaksiJual = :nomor")
                     ->bindValue(':nomor', $nomor)
                     ->queryRow();
@@ -473,7 +473,7 @@ class PenjualanController extends Controller
                     $penjualanDetailPos2 = Yii::app()->db
                             ->createCommand("
                            select d.barcode, d.jumBarang, d.hargaBeli, d.hargaJual, d.RRP, barang.id
-                           from gudang.detail_jual d
+                           from {$dbAhadPos2}.detail_jual d
                            join barang on d.barcode=barang.barcode
                            where d.nomorStruk = :nomor
                                ")

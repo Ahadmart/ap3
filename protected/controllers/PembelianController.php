@@ -375,13 +375,13 @@ class PembelianController extends Controller {
 
    public function actionImport() {
       if (isset($_POST['nomor'])) {
-         $dbGudang = 'gudang';
+         $dbAhadPos2 = $_POST['database'];
          $nomor = $_POST['nomor'];
          $pembelianPos2 = Yii::app()->db
                  ->createCommand("
                      SELECT tb.tglTransaksiBeli, s.namaSupplier
-                     FROM {$dbGudang}.transaksibeli tb 
-                     JOIN {$dbGudang}.supplier s on tb.idSupplier = s.idSupplier
+                     FROM {$dbAhadPos2}.transaksibeli tb 
+                     JOIN {$dbAhadPos2}.supplier s on tb.idSupplier = s.idSupplier
                      WHERE idTransaksiBeli = :nomor")
                  ->bindValue(':nomor', $nomor)
                  ->queryRow();
@@ -398,8 +398,8 @@ class PembelianController extends Controller {
                $pembelianDetailPos2 = Yii::app()->db
                        ->createCommand("
                            select db.barcode, hargaBeli, gb.hargaJual, RRP, jumBarangAsli, tglExpire, barang.id
-                           from gudang.detail_beli db
-                           join gudang.barang gb on db.barcode = gb.barcode
+                           from {$dbAhadPos2}.detail_beli db
+                           join {$dbAhadPos2}.barang gb on db.barcode = gb.barcode
                            left join barang on db.barcode = barang.barcode
                            where idTransaksiBeli = :nomor
                                ")
@@ -412,10 +412,10 @@ class PembelianController extends Controller {
                   if (is_null($detailPos2['id'])) {
                      $barangBaru = Yii::app()->db->createCommand("
                         select b.barcode, b.namaBarang, k.namaKategoriBarang, s.namaSatuanBarang, r.namaRak
-                        from gudang.barang b
-                        left join gudang.kategori_barang k on b.idKategoriBarang=k.idKategoriBarang
-                        left join gudang.satuan_barang s on b.idSatuanBarang=s.idSatuanBarang
-                        left join gudang.rak r on b.idRak = r.idRak
+                        from {$dbAhadPos2}.barang b
+                        left join {$dbAhadPos2}.kategori_barang k on b.idKategoriBarang=k.idKategoriBarang
+                        left join {$dbAhadPos2}.satuan_barang s on b.idSatuanBarang=s.idSatuanBarang
+                        left join {$dbAhadPos2}.rak r on b.idRak = r.idRak
                         where barcode = :barcode
                              ")
                              ->bindValue(':barcode', $detailPos2['barcode'])
