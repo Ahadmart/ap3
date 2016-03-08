@@ -1,13 +1,30 @@
 <?php
 /* @var $this CetaklabelrakController */
 
-$this->breadcrumbs=array(
-	'Cetaklabelrak',
+$this->breadcrumbs = array(
+    'Cetak Label Rak' => array('index'),
+    'Index',
 );
-?>
-<h1><?php echo $this->id . '/' . $this->action->id; ?></h1>
 
-<p>
-	You may change the content of this page by modifying
-	the file <tt><?php echo __FILE__; ?></tt>.
-</p>
+$this->boxHeader['small'] = 'Cetak Label';
+$this->boxHeader['normal'] = 'Cetak Label Rak';
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
+?>
+<div class="row">
+    <div class="small-12 medium-6 column">
+        <div class="panel">
+            <h4>Cari Barang</h4>
+            <hr />
+            <?php //$this->renderPartial('_config', array('modelConfig' => $modelConfig)); ?>
+        </div>
+    </div>
+    <div class="small-12 medium-6 column">
+        <div class="panel">
+            <h4>Label yang akan dicetak</h4>
+            <hr />
+
+        </div>
+    </div>
+</div>
