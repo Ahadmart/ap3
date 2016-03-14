@@ -69,42 +69,72 @@ class ReportPenjualanForm extends CFormModel
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
 
         $command = Yii::app()->db->createCommand();
-        $command->select('pj.id, pj.tanggal,pj.nomor, sum(pd.harga_jual * pd.qty) total,sum(pd.harga_jual * pd.qty)-sum(hpp.harga_beli * pd.qty) margin');
-        $command->from(PenjualanDetail::model()->tableName() . ' pd');
-        $command->join(Penjualan::model()->tableName() . ' pj', 'pd.penjualan_id=pj.id');
-        $command->join(HargaPokokPenjualan::model()->tableName() . ' hpp', 'pd.id=hpp.penjualan_detail_id');
-        $command->where("date_format(pj.tanggal,'%Y-%m-%d') between :dari and :sampai", array(
-            ':dari' => $dari,
-            ':sampai' => $sampai));
-        $command->group('pj.id');
-        $command->order('pj.tanggal');
+        $command->select('*, (t_penjualan.total - t_modal.totalModal) margin');
+        $command->from("(SELECT 
+                            pd.penjualan_id,
+                                pj.nomor,
+                                pj.tanggal,
+                                pj.profil_id,
+                                pj.updated_by,
+                                SUM(pd.harga_jual * pd.qty) total
+                        FROM
+                            penjualan_detail pd
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id
+                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                        GROUP BY pd.penjualan_id) t_penjualan");
+        $command->join("(SELECT 
+                            pj.id, SUM(hpp.qty * hpp.harga_beli) totalmodal
+                        FROM
+                            harga_pokok_penjualan hpp
+                        JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id
+                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                        GROUP BY pj.id) t_modal", "t_penjualan.penjualan_id = t_modal.id");
+        $command->order("t_penjualan.nomor");
+        $command->where("t_penjualan.profil_id is not null");
 
-        $commandRekap = Yii::app()->db->createCommand();
-        $commandRekap->select('sum(pd.harga_jual * pd.qty) total,sum(pd.harga_jual * pd.qty)-sum(hpp.harga_beli * pd.qty) margin');
-        $commandRekap->from(PenjualanDetail::model()->tableName() . ' pd');
-        $commandRekap->join(Penjualan::model()->tableName() . ' pj', 'pd.penjualan_id=pj.id');
-        $commandRekap->join(HargaPokokPenjualan::model()->tableName() . ' hpp', 'pd.id=hpp.penjualan_detail_id');
-        $commandRekap->where("date_format(pj.tanggal,'%Y-%m-%d') between :dari and :sampai", array(
-            ':dari' => $dari,
-            ':sampai' => $sampai));
-
+        $whereSub = ''; // Variabel untuk menambah kondisi pj, untuk rekap
         if (!empty($this->profilId)) {
-            $command->andWhere("pj.profil_id=:profilId", array(
-                ':profilId' => $this->profilId
-            ));
-            $commandRekap->andWhere("pj.profil_id=:profilId", array(
-                ':profilId' => $this->profilId
-            ));
+            $command->andWhere("t_penjualan.profil_id=:profilId");
+            $command->bindValue(":profilId", $this->profilId);
+            $whereSub.=" AND pj.profil_id = :profilId";
         }
 
         if (!empty($this->userId)) {
-            $command->andWhere("pj.updated_by=:userId", array(
-                ':userId' => $this->userId
-            ));
-            $commandRekap->andWhere("pj.updated_by=:userId", array(
-                ':userId' => $this->userId
-            ));
+            $command->andWhere("t_penjualan.updated_by=:userId");
+            $command->bindValue(":userId", $this->userId);
+            $whereSub.=" AND pj.updated_by = :userId";
         }
+
+        $command->bindValue(":dari", $dari);
+        $command->bindValue(":sampai", $sampai);
+
+        $commandRekap = Yii::app()->db->createCommand();
+        $commandRekap->select('*, (t_penjualan.total - t_modal.totalModal) margin');
+        $commandRekap->from("(SELECT SUM(pd.harga_jual * pd.qty) total
+                        FROM
+                            penjualan_detail pd
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id
+                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai 
+                            {$whereSub}
+                        ) t_penjualan, 
+                        (SELECT SUM(hpp.qty * hpp.harga_beli) totalmodal
+                        FROM
+                            harga_pokok_penjualan hpp
+                        JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id
+                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                            {$whereSub}
+                        ) t_modal");
+        $commandRekap->where("1=1");
+        if (!empty($this->profilId)) {
+            $commandRekap->bindValue(":profilId", $this->profilId);
+        }
+        if (!empty($this->userId)) {
+            $commandRekap->bindValue(":userId", $this->userId);
+        }
+        $commandRekap->bindValue(":dari", $dari);
+        $commandRekap->bindValue(":sampai", $sampai);
 
         $penjualan = $command->queryAll();
         $rekap = $commandRekap->queryRow();
