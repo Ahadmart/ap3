@@ -96,14 +96,14 @@ class ReportPenjualanForm extends CFormModel
         $whereSub = ''; // Variabel untuk menambah kondisi pj, untuk rekap
         if (!empty($this->profilId)) {
             $command->andWhere("t_penjualan.profil_id=:profilId");
-            $command->bindValue("profilId", $this->profilId);
-            $whereSub.=" AND pj.profil_id = {$this->profilId}";
+            $command->bindValue(":profilId", $this->profilId);
+            $whereSub.=" AND pj.profil_id = :profilId";
         }
 
         if (!empty($this->userId)) {
             $command->andWhere("t_penjualan.updated_by=:userId");
-            $command->bindValue("userId", $this->userId);
-            $whereSub.=" AND pj.updated_by = {$this->userId}";
+            $command->bindValue(":userId", $this->userId);
+            $whereSub.=" AND pj.updated_by = :userId";
         }
 
         $command->bindValue(":dari", $dari);
@@ -127,6 +127,12 @@ class ReportPenjualanForm extends CFormModel
                             {$whereSub}
                         ) t_modal");
         $commandRekap->where("1=1");
+        if (!empty($this->profilId)) {
+            $commandRekap->bindValue(":profilId", $this->profilId);
+        }
+        if (!empty($this->userId)) {
+            $commandRekap->bindValue(":userId", $this->userId);
+        }
         $commandRekap->bindValue(":dari", $dari);
         $commandRekap->bindValue(":sampai", $sampai);
 
