@@ -18,28 +18,39 @@ $form = $this->beginWidget('CActiveForm', array(
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
 
 <div class="row">
-   <div class="small-12 columns">
-      <?php echo $form->labelEx($model, 'tanggal'); ?>
-      <?php echo $form->textField($model, 'tanggal', array('class' => 'tanggalan rata-kanan', 'value' => empty($model->tanggal) ? date('d-m-Y') : $model->tanggal)); ?>
-      <?php echo $form->error($model, 'tanggal', array('class' => 'error')); ?>
-   </div>
+    <div class="small-12 columns">
+        <?php echo $form->labelEx($model, 'tanggal'); ?>
+        <?php echo $form->textField($model, 'tanggal', array('class' => 'tanggalan rata-kanan', 'value' => empty($model->tanggal) ? date('d-m-Y') : $model->tanggal)); ?>
+        <?php echo $form->error($model, 'tanggal', array('class' => 'error')); ?>
+    </div>
+    <div class="small-12 columns">
+<!--        <input id="checkbox_g_profil" name="groupby_profil" type="checkbox">
+        <label for="checkbox_g_profil">Grup per nama profil</label>-->
+        <?php echo $form->labelEx($model, 'groupByProfil'); ?>
+        <?php echo $form->checkBox($model, 'groupByProfil'); ?>
+        <?php echo $form->error($model, 'groupByProfil', array('class' => 'error')); ?>
+
+    </div>
+
+
+
 </div>
 <div class="row">
-   <div class="small-12 columns">
-      <?php echo CHtml::submitButton('Submit', array('name' => 'submit', 'class' => 'tiny bigfont button right')); ?>
-   </div>
+    <div class="small-12 columns">
+        <?php echo CHtml::submitButton('Submit', array('name' => 'submit', 'class' => 'tiny bigfont button right')); ?>
+    </div>
 </div>
 
 <?php
 $this->endWidget();
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/foundation-datepicker.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/foundation-datepicker.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/foundation-datepicker.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
 ?>
 <script>
-   $(function () {
-      $('.tanggalan').fdatepicker({
-         format: 'dd-mm-yyyy'
-      });
-   });
+    $(function () {
+        $('.tanggalan').fdatepicker({
+            format: 'dd-mm-yyyy'
+        });
+    });
 </script>
