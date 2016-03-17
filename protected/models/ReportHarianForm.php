@@ -11,6 +11,7 @@
 class ReportHarianForm extends CFormModel {
 
    public $tanggal;
+   public $groupByProfil = false;
 
    /**
     * Declares the validation rules.
@@ -18,6 +19,7 @@ class ReportHarianForm extends CFormModel {
    public function rules() {
       return array(
           array('tanggal', 'required', 'message' => '{attribute} tidak boleh kosong'),
+          array('groupByProfil', 'safe'),
       );
    }
 
@@ -26,7 +28,8 @@ class ReportHarianForm extends CFormModel {
     */
    public function attributeLabels() {
       return array(
-          'tanggal' => 'Tanggal'
+          'tanggal' => 'Tanggal',
+          'groupByProfil' => 'Grup per nama profil'
       );
    }
 
@@ -45,6 +48,8 @@ class ReportHarianForm extends CFormModel {
          /* fixme: ganti afterFind() */
          $laporanHarian->tanggal = date_format(date_create_from_format('d-m-Y', $laporanHarian->tanggal), 'Y-m-d');
       }
+      /* laporannya bisa digrup per nama profil */
+      $laporanHarian->groupByProfil = $this->groupByProfil;
       return array(
           'saldoAwal' => $laporanHarian->saldoAwal(),
           'saldoAkhir' => $laporanHarian->saldoAkhir(),
