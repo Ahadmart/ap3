@@ -14,6 +14,11 @@
 //               'accesskey' => 'j',
            ),
            array(
+               'class' => 'BDataColumn',
+               'header' => 'Profil',
+               'value' => '$data->penjualan->profil->nama',
+           ),
+           array(
                'name' => 'qty',
                'headerHtmlOptions' => array('class' => 'rata-kanan'),
                'htmlOptions' => array('class' => 'rata-kanan'),
