@@ -5,7 +5,10 @@ class CetaklabelrakController extends Controller
 
     public function actionIndex()
     {
-        $this->render('index');
+        $modelForm = new CetakLabelRakForm;
+        $this->render('index', array(
+            'modelForm' => $modelForm
+        ));
     }
 
 }
