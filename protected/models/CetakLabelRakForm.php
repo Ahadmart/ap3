@@ -21,7 +21,7 @@ class CetakLabelRakForm extends CFormModel
     public function rules()
     {
         return array(
-            array('profilId, userId, dari', 'safe')
+            array('profilId, rakId, dari', 'safe')
         );
     }
 
@@ -31,9 +31,9 @@ class CetakLabelRakForm extends CFormModel
     public function attributeLabels()
     {
         return array(
-            'profilId' => 'Profil',
-            'userId' => 'User',
-            'dari' => 'Berubah dari',
+            'profilId' => 'Profil Supplier',
+            'rakId' => 'User',
+            'dari' => 'Harga jual berubah dari',
         );
     }
 

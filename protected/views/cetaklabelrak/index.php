@@ -18,25 +18,26 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             <h4>Cari Barang</h4>
             <hr />
             <?php $this->renderPartial('_form_input', array('model' => $modelForm)); ?>
-        </div>
-
-        <div class="row">
-            <div class="small-12 columns">
-                <table class="tabel-index responsive">
-                    <thead>
-                        <tr>
-                            <th>Barcode</th>
-                            <th>Nama</th>
-                            <th>Kategori</th>
-                            <th>Satuan</th>
-                            <th class="rata-kanan">Harga Jual</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                       
-                    </tbody>
-                </table>
+            <div id="tabel-profil" style="display: none">
+                <?php $this->renderPartial('_profil', array('profil' => $profil)); ?>
             </div>
+            <div id="tabel-rak" style="display: none">
+                <?php $this->renderPartial('_rak', array('rak' => $rak)); ?>
+            </div>
+            <table class="tabel-index responsive">
+                <thead>
+                    <tr>
+                        <th>Barcode</th>
+                        <th>Nama</th>
+                        <th>Kategori</th>
+                        <th>Satuan</th>
+                        <th class="rata-kanan">Harga Jual</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
         </div>
 
     </div>
@@ -62,7 +63,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
 
     $("#tombol-browse-rak").click(function () {
         $("#tabel-rak").slideToggle(500);
-        $("input[name='Rak[nama]']").focus();
+        $("input[name='RakBarang[nama]']").focus();
     });
 
     $("body").on("click", "a.pilih.profil", function () {
@@ -78,7 +79,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
-            success: isiUser
+            success: isiRak
         });
         return false;
     });
@@ -90,10 +91,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
         $("#CetakLabelRakForm_profilId").val(data.id);
     }
 
-    function isiUser(data) {
+    function isiRak(data) {
         console.log(data);
-        $("#user").val(data.namaLengkap + ' (' + data.nama + ')');
-        $("#tabel-user").slideUp(500);
+        $("#rak").val(data.nama);
+        $("#tabel-rak").slideUp(500);
         $("#CetakLabelRakForm_rakId").val(data.id);
     }
 
