@@ -217,7 +217,8 @@ class LaporanHarian extends CActiveRecord
          ) t 
          join pembelian on t.id = pembelian.id
          join profil on pembelian.profil_id = profil.id
-         group by t.id";
+         group by t.id
+         order by pembelian.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -298,7 +299,8 @@ class LaporanHarian extends CActiveRecord
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3
          join pembelian on t3.id=pembelian.id
-         join profil on pembelian.profil_id=profil.id";
+         join profil on pembelian.profil_id=profil.id
+         order by pembelian.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -386,7 +388,8 @@ class LaporanHarian extends CActiveRecord
             group by id
          ) t2
          join pembelian on t2.id=pembelian.id
-         join profil on pembelian.profil_id = profil.id";
+         join profil on pembelian.profil_id = profil.id
+         order by pembelian.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -465,7 +468,8 @@ class LaporanHarian extends CActiveRecord
          ) t 
          join penjualan on t.id = penjualan.id
          join profil on penjualan.profil_id = profil.id
-         group by t.id";
+         group by t.id
+         order by penjualan.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -632,7 +636,8 @@ class LaporanHarian extends CActiveRecord
             group by penjualan.id
          ) t
          join penjualan on t.id=penjualan.id
-         join profil on penjualan.profil_id=profil.id";
+         join profil on penjualan.profil_id=profil.id
+         group by penjualan.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -977,7 +982,8 @@ class LaporanHarian extends CActiveRecord
          ) t 
          join retur_pembelian on t.id = retur_pembelian.id
          join profil on retur_pembelian.profil_id = profil.id
-         group by t.id";
+         group by t.id
+         order by retur_pembelian.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -1054,7 +1060,8 @@ class LaporanHarian extends CActiveRecord
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3
          join retur_pembelian rb on t3.id=rb.id
-         join profil on rb.profil_id=profil.id";
+         join profil on rb.profil_id=profil.id
+         order by rb.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -1133,7 +1140,8 @@ class LaporanHarian extends CActiveRecord
             group by retur_pembelian.id
          ) t
          join retur_pembelian on t.id=retur_pembelian.id
-         join profil on retur_pembelian.profil_id=profil.id";
+         join profil on retur_pembelian.profil_id=profil.id
+         order by retur_pembelian.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -1208,7 +1216,8 @@ class LaporanHarian extends CActiveRecord
          ) t 
          join retur_penjualan on t.id = retur_penjualan.id
          join profil on retur_penjualan.profil_id = profil.id
-         group by t.id";
+         group by t.id
+         order by retur_penjualan.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -1285,7 +1294,8 @@ class LaporanHarian extends CActiveRecord
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3
          join retur_penjualan rb on t3.id=rb.id
-         join profil on rb.profil_id=profil.id";
+         join profil on rb.profil_id=profil.id
+         order by rb.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
@@ -1362,7 +1372,8 @@ class LaporanHarian extends CActiveRecord
             group by retur_penjualan.id
          ) t
          join retur_penjualan on t.id=retur_penjualan.id
-         join profil on retur_penjualan.profil_id=profil.id";
+         join profil on retur_penjualan.profil_id=profil.id
+         order by retur_penjualan.nomor";
 
         if ($this->groupByProfil) {
             $sql = "
