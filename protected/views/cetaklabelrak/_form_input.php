@@ -40,29 +40,64 @@ $form = $this->beginWidget('CActiveForm', array(
             </div>
         </div>
     </div>
-    <div class="small-12 large-6 end columns">
+    <div class="small-12 large-6 columns">
         <?php echo $form->labelEx($model, 'dari'); ?>
-        <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan', 'value' => empty($model->dari) ? '' : $model->dari)); ?>
+        <?php echo $form->textField($model, 'dari', array('class' => 'tanggal-waktu', 'value' => empty($model->dari) ? '' : $model->dari)); ?>
         <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
     </div>
 </div>
 
 <div class="row">
     <div class="small-12 columns">
-        <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
+        <?php echo CHtml::submitButton('Tambahkan', array('id' => 'tombol-submit', 'class' => 'tiny bigfont button right')); ?>
     </div>
 </div>
 
 <?php
 $this->endWidget();
+?>
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/foundation-datepicker.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
+<?php
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-ui-ac.min.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/jquery-ui.min-ac.js', CClientScript::POS_HEAD);
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/dt/foundation-datepicker.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/dt/foundation-datepicker.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/dt/locales/foundation-datepicker.id.js', CClientScript::POS_HEAD);
 ?>
 <script>
     $(function () {
-        $('.tanggalan').fdatepicker({
-            format: 'dd-mm-yyyy'
+        $('.tanggal-waktu').fdatepicker({
+            format: 'dd-mm-yyyy  hh:ii',
+            disableDblClickSelection: true,
+            language: 'id',
+            pickTime: true
+        });
+        
+        $("#cetak-label-rak-form").submit(function(event){
+            event.preventDefault();
+            dataUrl = '<?php echo $this->createUrl('tambahkanbarang'); ?>';
+            dataKirim = $(this).serializeArray();
+            console.log(dataKirim);  $.ajax({
+                type: 'POST',
+                url: dataUrl,
+                data: dataKirim,
+                success: function (data) {
+                    if (data.sukses) {
+                    } else {
+                        $.gritter.add({
+                            title: 'Error ' + data.error.code,
+                            text: data.error.msg,
+                            time: 3000,
+                            //class_name: 'gritter-center'
+                        });
+                    }
+
+                }
+            });          
         });
     });
 </script>

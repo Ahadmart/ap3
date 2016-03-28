@@ -59,5 +59,9 @@ class CetakLabelRakForm extends CFormModel
         $rak = RakBarang::model()->findByPk($this->rakId);
         return $rak->nama;
     }
+    
+    public function inputBarangKeCetak(){
+        
+    }
 
 }

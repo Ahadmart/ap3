@@ -12,10 +12,10 @@ class CetaklabelrakController extends Controller
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
-        
+
         $rak = new RakBarang('search');
         $rak->unsetAttributes();
-        if (isset($_GET['RakBarang'])){
+        if (isset($_GET['RakBarang'])) {
             $rak->attributes = $_GET['RakBarang'];
         }
 
@@ -44,6 +44,18 @@ class CetaklabelrakController extends Controller
             'id' => $id,
             'nama' => $rak->nama,
         );
+        $this->renderJSON($return);
+    }
+
+    public function actionTambahkanBarang()
+    {
+        $return = array(
+            'sukses' => false
+        );
+        if (isset($_POST['CetakLabelRakForm'])) {
+            $cetakLabelRakForm = new CetakLabelRakForm;
+            $cetakLabelRakForm->attributes = $_POST['CetakLabelRakForm'];
+        }
         $this->renderJSON($return);
     }
 

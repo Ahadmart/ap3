@@ -15,7 +15,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
 <div class="row">
     <div class="small-12 medium-6 column">
         <div class="panel">
-            <h4>Cari Barang</h4>
+            <h4>Filter Barang</h4>
             <hr />
             <?php $this->renderPartial('_form_input', array('model' => $modelForm)); ?>
             <div id="tabel-profil" style="display: none">
@@ -24,6 +24,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             <div id="tabel-rak" style="display: none">
                 <?php $this->renderPartial('_rak', array('rak' => $rak)); ?>
             </div>
+        </div>
+
+    </div>
+    <div class="small-12 medium-6 column">
+        <div class="panel">
+            <h4>Label yang akan dicetak</h4>
+            <hr />
             <table class="tabel-index responsive">
                 <thead>
                     <tr>
@@ -38,13 +45,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
 
                 </tbody>
             </table>
-        </div>
-
-    </div>
-    <div class="small-12 medium-6 column">
-        <div class="panel">
-            <h4>Label yang akan dicetak</h4>
-            <hr />
 
         </div>
     </div>
