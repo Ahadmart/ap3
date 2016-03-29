@@ -87,12 +87,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                 data: dataKirim,
                 success: function (data) {
                     if (data.sukses) {
+                        $.gritter.add({
+                            title: 'Sukses',
+                            text: data.rowAffected + ' barang ditambahkan',
+                            time: 3000
+                        });
                     } else {
                         $.gritter.add({
                             title: 'Error ' + data.error.code,
                             text: data.error.msg,
-                            time: 3000,
-                            //class_name: 'gritter-center'
+                            time: 3000
                         });
                     }
 
