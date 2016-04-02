@@ -71,7 +71,7 @@ class LoginForm extends CFormModel {
 	public function saveAuditData($userId) {
 		$userModel = User::model()->findByPk($userId);
 		$userModel->last_logon = date('Y-m-d H:i:s');
-		$userModel->last_ipaddress = ip2long(CHttpRequest::getUserHostAddress());
+		$userModel->last_ipaddress = ip2long(Yii::app()->getRequest()->getUserHostAddress());
 		$userModel->save();
 	}
 
