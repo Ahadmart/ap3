@@ -15,7 +15,7 @@ class OperationsaddController extends Controller
             $hasil .= 'log: <br />';
             foreach ($operations as $operation) {
                 if (!empty($operation) && trim($operation) != '') {
-                    $auth->createOperation($operation, '');
+                    $auth->createOperation(trim($operation));
                     $hasil .= $operation . ' ditambahkan<br />';
                 }
             }
