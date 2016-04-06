@@ -103,7 +103,7 @@ class StockopnameController extends Controller
             $barangBelumSO = new Barang('search');
             $barangBelumSO->unsetAttributes();
             $barangBelumSO->belumSO($model->id, $model->rak_id);
-            
+
             if (isset($_GET['Barang'])) {
                 $barangBelumSO->attributes = $_GET['Barang'];
             }
@@ -237,19 +237,35 @@ class StockopnameController extends Controller
             $barcode = $_POST['barcode'];
             $qty = $_POST['qty'];
             $barang = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
-
-            $detail = new StockOpnameDetail;
-            $detail->stock_opname_id = $id;
-            $detail->barang_id = $barang->id;
-            $detail->qty_tercatat = is_null($barang->getStok()) ? 0 : $barang->getStok();
-            $detail->qty_sebenarnya = $qty;
-            if ($detail->save()) {
-                $return = array(
-                    'sukses' => true,
-                );
-            }
+            $return = $this->tambahDetail($id, $barang->id, $barang->getStok(), $qty);
         }
         $this->renderJSON($return);
+    }
+
+    /**
+     * Tambah detail SO
+     * @param int $soId
+     * @param int $barangId
+     * @param int $qtyTercatat
+     * @param int $qtySebenarnya
+     * @return array true jika berhasil
+     */
+    public function tambahDetail($soId, $barangId, $qtyTercatat, $qtySebenarnya)
+    {
+        $return = array(
+            'sukses' => false
+        );
+        $detail = new StockOpnameDetail;
+        $detail->stock_opname_id = $soId;
+        $detail->barang_id = $barangId;
+        $detail->qty_tercatat = is_null($qtyTercatat) ? 0 : $qtyTercatat;
+        $detail->qty_sebenarnya = $qtySebenarnya;
+        if ($detail->save()) {
+            $return = array(
+                'sukses' => true,
+            );
+        }
+        return $return;
     }
 
     public function actionHapusDetail($id)
@@ -273,6 +289,41 @@ class StockopnameController extends Controller
             $return = $so->simpanSo();
         }
         echo $this->renderJSON($return);
+    }
+
+    public function renderQtyLinkEditable($data, $row)
+    {
+        $ak = '';
+        if ($row == 0) {
+            $ak = 'accesskey="q"';
+        }
+        return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
+                Yii::app()->controller->createUrl('inputqtymanual') . '">' .
+                '' . '</a>';
+    }
+
+    /**
+     * Input qty manual via ajax
+     */
+    public function actionInputQtyManual()
+    {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        );
+        if (isset($_POST['pk'])) {
+            $pk = $_POST['pk'];
+            $qtyInput = $_POST['value'];
+            $id = $_POST['soId'];
+            $barang = Barang::model()->findByPk($pk);
+
+            $return = $this->tambahDetail($id, $barang->id, $barang->getStok(), $qtyInput);
+        }
+
+        $this->renderJSON($return);
     }
 
 }
