@@ -50,6 +50,9 @@ class Barang extends CActiveRecord
     {
         return array(
             'belumSO',
+            'aktif' => array(
+                'condition'=> 'status = '.self::STATUS_AKTIF
+            )
         );
     }
 

@@ -102,7 +102,7 @@ class StockopnameController extends Controller
         if ($manualMode) {
             $barangBelumSO = new Barang('search');
             $barangBelumSO->unsetAttributes();
-            $barangBelumSO->belumSO($model->id, $model->rak_id);
+            $barangBelumSO->aktif()->belumSO($model->id, $model->rak_id);
 
             if (isset($_GET['Barang'])) {
                 $barangBelumSO->attributes = $_GET['Barang'];
@@ -299,7 +299,7 @@ class StockopnameController extends Controller
         }
         return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
                 Yii::app()->controller->createUrl('inputqtymanual') . '">' .
-                '' . '</a>';
+                'Input..' . '</a>';
     }
 
     /**
@@ -323,6 +323,76 @@ class StockopnameController extends Controller
             $return = $this->tambahDetail($id, $barang->id, $barang->getStok(), $qtyInput);
         }
 
+        $this->renderJSON($return);
+    }
+
+    public function renderGantiRakLinkEditable($data, $row)
+    {
+        return CHtml::link('Pilih..', '', array(
+                    'class' => 'editable-rak',
+                    'data-type' => 'select',
+                    'data-pk' => $data->id,
+                    'data-url' => Yii::app()->controller->createUrl('gantirak'),
+                    'data-title' => 'Select Rak'
+        ));
+    }
+
+    public function actionGantiRak()
+    {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        );
+        if (isset($_POST['pk'])) {
+            $pk = $_POST['pk'];
+            $rakId = $_POST['value'];
+            $barang = Barang::model()->findByPk($pk);
+            Barang::model()->updateByPk($pk, array('rak_id' => $rakId));
+            $return = array('sukses' => true);
+        }
+
+        $this->renderJSON($return);
+    }
+
+    public function renderTombolSetNol($data, $row)
+    {
+        return CHtml::link('<i class="fa fa-square-o"><i>', Yii::app()->controller->createUrl('setnol'), array(
+                    'data-barangid' => $data->id,
+                    'class' => 'tombol-setnol'
+        ));
+    }
+
+    public function actionSetNol($id)
+    {
+        $return = array('sukses' => false);
+        if (isset($_POST['barangid'])) {
+            $pk = $_POST['barangid'];
+            $barang = Barang::model()->findByPk($pk);
+            $return = $this->tambahDetail($id, $barang->id, $barang->getStok(), 0);
+        }
+        $this->renderJSON($return);
+    }
+
+    public function renderTombolSetInAktif($data, $row)
+    {
+        return CHtml::link('<i class="fa fa-square-o"><i>', Yii::app()->controller->createUrl('setinaktif'), array(
+                    'data-barangid' => $data->id,
+                    'class' => 'tombol-setinaktif'
+        ));
+    }
+
+    public function actionSetInAktif($id)
+    {
+        $return = array('sukses' => false);
+        if (isset($_POST['barangid'])) {
+            $pk = $_POST['barangid'];
+            $barang = Barang::model()->findByPk($pk);
+            Barang::model()->updateByPk($pk, array('status' => Barang::STATUS_TIDAK_AKTIF));
+            $return = array('sukses' => true);
+        }
         $this->renderJSON($return);
     }
 

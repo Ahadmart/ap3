@@ -164,6 +164,15 @@ li.active>a{
     }
 }
 
+.button.tiny.bigfont{
+    font-size: 0.875rem;
+}
+a.button.micro.bigfont {
+    font-size: 0.875rem;
+    padding: 0.3rem;
+    margin-bottom: 0;
+}
+
 .block-content	{
     padding: 15px 0 1px;   
     //background: #373b3e;
@@ -206,9 +215,6 @@ li.active>a{
     }
 }
 
-.button.tiny.bigfont{
-    font-size: 0.875rem;
-}
 
 // tombol disebelah kanan input
 .postfix.button{
@@ -241,6 +247,9 @@ div.error{
 
 th.rata-kanan, td.rata-kanan, .rata-kanan{
     text-align: right;
+}
+th.rata-tengah, td.rata-tengah, .rata-tengah{
+    text-align: center;
 }
 
 /* Style untuk accesskey */

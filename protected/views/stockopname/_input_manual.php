@@ -13,6 +13,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             'id' => 'barang-grid',
             'dataProvider' => $barangBelumSO->search(),
             'filter' => $barangBelumSO,
+            'parentModelId' => $model->id,
             'itemsCssClass' => 'tabel-index responsive',
             'columns' => array(
                 array(
@@ -29,51 +30,132 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                     'type' => 'raw',
                 ),
                 array(
-                    'name' => 'Qty Tercatat',
+                    'name' => 'Stok',
+                    'header' => 'Qty Tercatat',
                     'value' => '$data->stok',
                     'htmlOptions' => array('class' => 'rata-kanan'),
-                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
                     'filter' => false
                 ),
                 array(
                     'header' => '<span class="ak">Q</span>ty Asli',
                     'type' => 'raw',
                     'value' => array($this, 'renderQtyLinkEditable'),
-                    'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
                     'htmlOptions' => array('class' => 'rata-kanan'),
                 ),
-            /*
-              array(
-              'class' => 'BButtonColumn',
-              ),
-             * 
-             */
-            ),
-        ));
+                array(
+                    'header' => 'Set 0 (nol)',
+                    'type' => 'raw',
+                    'value' => array($this, 'renderTombolSetNol'),
+                    'headerHtmlOptions' => array('class' => 'rata-tengah'),
+                    'htmlOptions' => array('class' => 'rata-tengah'),
+                ),
+                array(
+                    'header' => 'Set inaktif',
+                    'type' => 'raw',
+                    'value' => array($this, 'renderTombolSetInAktif'),
+                    'headerHtmlOptions' => array('class' => 'rata-tengah'),
+                    'htmlOptions' => array('class' => 'rata-tengah'),
+                ),
+                array(
+                    'header' => 'Pindah Rak',
+                    'type' => 'raw',
+                    'value' => array($this, 'renderGantiRakLinkEditable'),
+                    'headerHtmlOptions' => array('class' => 'rata-tengah'),
+                    'htmlOptions' => array('class' => 'rata-tengah'),
+                ),
+        )));
         ?>
     </div>
 </div>
 <hr />
 <script>
+
+    $(function () {
+        $(document).on('click', ".tombol-setnol", function () {
+            dataUrl = '<?php echo $this->createUrl('setnol', array('id' => $model->id)); ?>';
+            dataKirim = {barangid: $(this).data('barangid')};
+            console.log(dataUrl);
+
+            $.ajax({
+                type: 'POST',
+                url: dataUrl,
+                data: dataKirim,
+                success: function (data) {
+                    if (data.sukses) {
+                        $.fn.yiiGridView.update("barang-grid");
+                        $.fn.yiiGridView.update("so-detail-grid");
+                    }
+                }
+            });
+            return false;
+        });
+        $(document).on('click', ".tombol-setinaktif", function () {
+            dataUrl = '<?php echo $this->createUrl('setinaktif', array('id' => $model->id)); ?>';
+            dataKirim = {barangid: $(this).data('barangid')};
+            console.log(dataUrl);
+
+            $.ajax({
+                type: 'POST',
+                url: dataUrl,
+                data: dataKirim,
+                success: function (data) {
+                    if (data.sukses) {
+                        $.fn.yiiGridView.update("barang-grid");
+                    }
+                }
+            });
+            return false;
+        });
+    });
+
+
     function enableEditable() {
         $(".editable-qty").editable({
             mode: "inline",
             inputclass: "input-editable-qty",
-            params: {'soId': '<?php echo $model->id; ?>'},
+            params: {
+                'soId': '<?php echo $model->id; ?>'
+            },
             success: function (response, newValue) {
                 if (response.sukses) {
                     $.fn.yiiGridView.update("barang-grid");
                     $.fn.yiiGridView.update("so-detail-grid");
-                    //updateTotal();
                 }
             }
+        });
+        $('.editable-rak').editable({
+        mode: "inline",
+                success: function (response, newValue) {
+                    if (response.sukses) {
+                        $.fn.yiiGridView.update("barang-grid");
+                        $.fn.yiiGridView.update("so-detail-grid");
+                    }
+                },
+                source: [
+<?php
+$listRak = CHtml::listData(RakBarang::model()->findAll(array('select' => 'id,nama', 'order' => 'nama')), 'id', 'nama');
+$firstRow = TRUE;
+foreach ($listRak as $key => $value):
+    ?>
+    <?php
+    if (!$firstRow) {
+        echo ',';
+    }
+    $firstRow = false;
+    ?>
+                    {value : <?php echo $key; ?>, text : "<?php echo $value; ?>"}
+    <?php
+endforeach;
+?>
+                ]
         });
     }
 
     $(function () {
         enableEditable();
     });
-
     $(document).ajaxComplete(function () {
         enableEditable();
     });
