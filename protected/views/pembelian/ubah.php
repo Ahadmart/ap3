@@ -28,6 +28,12 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
                 )
         );
         ?>
+        <?php
+        echo CHtml::link('<i class="fa fa-times"></i> Bata<span class="ak">l</a>', $this->createUrl('hapus', array('id' => $model->id)), array(
+            'class' => 'alert tiny bigfont button',
+            'accesskey' => 'l'
+        ));
+        ?>
     </div>
     <div class="large-7 columns header" style="text-align: right">
         <span class="secondary label">Supplier</span><span class="label"><?php echo $model->profil->nama; ?></span>
