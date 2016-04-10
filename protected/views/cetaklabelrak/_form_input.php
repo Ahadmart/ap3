@@ -20,7 +20,7 @@ $form = $this->beginWidget('CActiveForm', array(
 <div class="row">
     <div class="small-12 large-6 columns">
         <div class="row collapse">
-            <label>Profil</label>
+            <label>Profil (Supplier)</label>
             <div class="small-9 columns">
                 <?php echo CHtml::textField('profil', empty($model->profilId) ? '' : $model->namaProfil, array('size' => 60, 'maxlength' => 500, 'disabled' => 'disabled')); ?>
             </div>
@@ -76,12 +76,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
             language: 'id',
             pickTime: true
         });
-        
-        $("#cetak-label-rak-form").submit(function(event){
+
+        $("#cetak-label-rak-form").submit(function (event) {
             event.preventDefault();
             dataUrl = '<?php echo $this->createUrl('tambahkanbarang'); ?>';
             dataKirim = $(this).serializeArray();
-            console.log(dataKirim);  $.ajax({
+            console.log(dataKirim);
+            $.ajax({
                 type: 'POST',
                 url: dataUrl,
                 data: dataKirim,
@@ -92,6 +93,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                             text: data.rowAffected + ' barang ditambahkan',
                             time: 3000
                         });
+                        $.fn.yiiGridView.update('label-rak-cetak-grid');
                     } else {
                         $.gritter.add({
                             title: 'Error ' + data.error.code,
@@ -101,7 +103,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                     }
 
                 }
-            });          
+            });
         });
     });
 </script>
