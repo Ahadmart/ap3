@@ -21,6 +21,9 @@ class CetaklabelrakController extends Controller
 
         $labelCetak = new LabelRakCetak('search');
         $labelCetak->unsetAttributes();
+        if (isset($_GET['LabelRakCetak'])) {
+            $labelCetak->attributes = $_GET['LabelRakCetak'];
+        }
 
         $this->render('index', array(
             'modelForm' => $modelForm,
@@ -72,6 +75,11 @@ class CetaklabelrakController extends Controller
             }
         }
         $this->renderJSON($return);
+    }
+
+    public function actionHapus($id)
+    {
+        LabelRakCetak::model()->deleteByPk($id);
     }
 
 }

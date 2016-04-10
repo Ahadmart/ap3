@@ -3,20 +3,22 @@
 $this->widget('BGridView', array(
     'id' => 'label-rak-cetak-grid',
     'dataProvider' => $model->search(),
-    'filter' => null,
+    'filter' => $model,
     'columns' => array(
-        //'barang_id',
         array(
-            'header' => 'Barcode',
-            'value' => '$data->barang->barcode'
+            'name' => 'barcode',
+            'value' => '$data->barang->barcode',
+            'filter' => false,
         ),
         array(
-            'header' => 'Nama',
-            'value' => '$data->barang->nama'
+            'name' => 'namaBarang',
+            'value' => '$data->barang->nama',
+            'filter' => false,
         ),
         array(
-            'header' => 'Kategori',
-            'value' => '$data->barang->kategori->nama'
+            'name' => 'kategoriId',
+            'value' => '$data->barang->kategori->nama',
+            'filter' => Barang::model()->filterKategori()
         ),
         array(
             'header' => 'Satuan',
@@ -26,9 +28,6 @@ $this->widget('BGridView', array(
             'header' => 'Harga Jual',
             'value' => '$data->barang->hargajual'
         ),
-        //'updated_at',
-        //'updated_by',
-        //'created_at',
         array(
             'class' => 'BButtonColumn',
         ),
