@@ -16,6 +16,12 @@
 class LabelRakCetak extends CActiveRecord
 {
 
+    public $barcode;
+    public $namaBarang;
+    public $kategoriId;
+    public $namaKategori;
+    public $namaSatuan;
+
     /**
      * @return string the associated database table name
      */
@@ -37,7 +43,7 @@ class LabelRakCetak extends CActiveRecord
             array('created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('barang_id, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
+            array('barang_id, updated_at, updated_by, created_at, kategoriId', 'safe', 'on' => 'search'),
         );
     }
 
@@ -64,6 +70,10 @@ class LabelRakCetak extends CActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
+            'namaBarang' => 'Nama',
+            'kategoriId' => 'Kategori',
+            'namaKategori' => 'Kategori',
+            'namaSatuan' => 'Satuan'
         );
     }
 
@@ -90,8 +100,33 @@ class LabelRakCetak extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $criteria->with = array('barang');
+        $criteria->compare('barang.barcode', $this->barcode);
+        $criteria->compare('barang.nama', $this->namaBarang);
+        $criteria->compare('barang.kategori_id', $this->kategoriId, true);
+        //$criteria->compare('kategori.nama', $this->namaKategori);
+
+        $sort = array(
+            'attributes' => array(
+                '*',
+                'barcode' => array(
+                    'asc' => 'barang.barcode',
+                    'desc' => 'barang.barcode desc'
+                ),
+                'namaBarang' => array(
+                    'asc' => 'barang.nama',
+                    'desc' => 'barang.nama desc'
+                ),
+//                'namaKategori' => array(
+//                    'asc' => 'kategori.nama',
+//                    'desc' => 'kategori.nama desc'
+//                )
+            )
+        );
+
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
+            'sort' => $sort
         ));
     }
 

@@ -28,7 +28,7 @@
                'class' => 'BButtonColumn',
                'template' => '{delete}',
                'deleteButtonUrl' => 'Yii::app()->controller->createUrl("stockopname/hapusdetail", array("id"=>$data->primaryKey))',
-               'afterDelete' => 'function(link,success,data){ if(success) updateTotal();}',
+               'afterDelete' => 'function(link,success,data){ if(success) $.fn.yiiGridView.update("barang-grid");}',
            ),
        ),
    ));

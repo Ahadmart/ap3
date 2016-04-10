@@ -36,12 +36,33 @@ class Barang extends CActiveRecord
     const STATUS_TIDAK_AKTIF = 0;
     const STATUS_AKTIF = 1;
 
+    public $soId;
+
     /**
      * @return string the associated database table name
      */
     public function tableName()
     {
         return 'barang';
+    }
+
+    public function scopes()
+    {
+        return array(
+            'belumSO',
+            'aktif' => array(
+                'condition'=> 'status = '.self::STATUS_AKTIF
+            )
+        );
+    }
+
+    public function belumSO($soId, $rakId)
+    {
+        $this->getDbCriteria()->mergeWith(array(
+            'join' => "left join stock_opname_detail sod on t.id = sod.barang_id and sod.stock_opname_id = {$soId}",
+            'condition' => "t.rak_id={$rakId} and sod.barang_id is null"
+        ));
+        return $this;
     }
 
     /**
@@ -126,7 +147,7 @@ class Barang extends CActiveRecord
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('id', $this->id, true);
+        $criteria->compare('t.id', $this->id, true);
         $criteria->compare('barcode', $this->barcode, true);
         $criteria->compare('t.nama', $this->nama, true);
         $criteria->compare('kategori_id', $this->kategori_id);
@@ -137,7 +158,7 @@ class Barang extends CActiveRecord
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
-        $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('t.created_at', $this->created_at, true);
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
