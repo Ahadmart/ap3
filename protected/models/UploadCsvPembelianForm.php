@@ -47,7 +47,7 @@ class UploadCsvPembelianForm extends CFormModel
         $refNo = $namaFile[0];
         $refTgl = "{$namaFile[4]}-{$namaFile[3]}-{$namaFile[2]}";
         $profilId = $this->profilId;
-        
+
         $transaction = Yii::app()->db->beginTransaction();
 
         $pembelian = new Pembelian;
@@ -122,6 +122,7 @@ class UploadCsvPembelianForm extends CFormModel
                     } while (($line = fgetcsv($fp, 2000)) != FALSE);
                 }
 
+                $transaction->commit();
                 return array(
                     'sukses' => true,
                     'pembelianId' => $pembelian->id
