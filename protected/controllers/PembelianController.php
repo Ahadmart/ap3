@@ -68,11 +68,9 @@ class PembelianController extends Controller
                 $this->redirect(array('ubah', 'id' => $model->id));
         }
 
-        $supplierList = Profil::model()->findAll(array(
-            'select' => 'id, nama',
-            'condition' => 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_SUPPLIER,
-            'order' => 'nama'));
-
+        $supplierList = Profil::model()->profilTrx()->tipeSupplier()->findAll(array(
+            'select' => 'id, nama'
+        ));
 
         $this->render('tambah', array(
             'model' => $model,
@@ -85,11 +83,16 @@ class PembelianController extends Controller
         /*
          * Tampilkan daftar sesuai pilihan tipe
          */
-        $condition = $tipe == Profil::TIPE_SUPPLIER ? 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_SUPPLIER : 'id>' . Profil::AWAL_ID;
-        $profilList = Profil::model()->findAll(array(
-            'select' => 'id, nama',
-            'condition' => $condition,
-            'order' => 'nama'));
+        if ($tipe == Profil::TIPE_SUPPLIER) {
+            $profilList = Profil::model()->profilTrx()->tipeSupplier()->findAll(array(
+                'select' => 'id, nama'
+            ));
+        } else {
+            $profilList = Profil::model()->profilTrx()->findAll(array(
+                'select' => 'id, nama'
+            ));
+        }
+
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
         foreach ($profilList as $profil) {
@@ -496,7 +499,25 @@ class PembelianController extends Controller
                 }
             }
         }
-        $this->render('import');
+
+        $modelCsvForm = new UploadCsvPembelianForm;
+        $supplierList = Profil::model()->profilTrx()->tipeSupplier()->findAll(array(
+            'select' => 'id, nama'
+        ));
+        if (isset($_POST['UploadCsvPembelianForm'])) {
+            $modelCsvForm->attributes = $_POST['UploadCsvPembelianForm'];
+            if (!empty($_FILES['UploadCsvPembelianForm']['tmp_name']['csvFile'])) {
+                $modelCsvForm->csvFile = CUploadedFile::getInstance($modelCsvForm, 'csvFile');
+                $return = $modelCsvForm->simpanCsvKePembelian();
+                if ($return['sukses']) {
+                    $this->redirect($this->createUrl('ubah', array('id' => $return['pembelianId'])));
+                }
+            }
+        }
+        $this->render('import', array(
+            'modelCsvForm' => $modelCsvForm,
+            'supplierList' => $supplierList
+        ));
     }
 
 }
