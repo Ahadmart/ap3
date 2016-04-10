@@ -79,6 +79,25 @@ class Profil extends CActiveRecord
         );
     }
 
+    public function defaultScope()
+    {
+        return array(
+            'order' => 'nama',
+        );
+    }
+
+    public function scopes()
+    {
+        return array(
+            'profilTrx' => array(
+                'condition' => 'id>' . self::AWAL_ID
+            ),
+            'tipeSupplier' => array(
+                'condition' => 'tipe_id=' . self::TIPE_SUPPLIER
+            )
+        );
+    }
+
     /**
      * @return array relational rules.
      */

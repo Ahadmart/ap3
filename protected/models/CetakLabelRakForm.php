@@ -59,9 +59,51 @@ class CetakLabelRakForm extends CFormModel
         $rak = RakBarang::model()->findByPk($this->rakId);
         return $rak->nama;
     }
-    
-    public function inputBarangKeCetak(){
-        
+
+    public function inputBarangKeCetak()
+    {
+        if (!empty($this->profilId || !empty($this->rakId) || !empty($this->dari))) {
+            $sqlProfil = '';
+            $sqlRak = '';
+            $sqlDari = '';
+
+            if (!empty($this->profilId)) {
+                $sqlProfil = "JOIN supplier_barang sp ON barang.id = sp.barang_id AND sp.supplier_id = :supplierId";
+            }
+            if (!empty($this->rakId)) {
+                $sqlRak = "WHERE rak_id = :rakId";
+            }
+            if (!empty($this->dari)) {
+                $sqlDari = "JOIN
+                        barang_harga_jual bhj ON barang.id = bhj.barang_id
+                            AND DATE_FORMAT(bhj.updated_at, '%Y-%m-%d %H:%i') >= :dari";
+            }
+
+            /* Menambahkan barang yang belum ada di tabel label_rak_cetak */
+            $tabelCetak = LabelRakCetak::model()->tableName();
+            $sql = "INSERT IGNORE INTO {$tabelCetak} (barang_id)
+                SELECT 
+                    barang.id
+                FROM
+                    barang
+                    {$sqlDari}
+                    {$sqlProfil}
+                {$sqlRak}";
+            $command = Yii::app()->db->createCommand($sql);
+
+
+            if (!empty($this->profilId)) {
+                $command->bindValue(':supplierId', $this->profilId);
+            }
+            if (!empty($this->rakId)) {
+                $command->bindValue(':rakId', $this->rakId);
+            }
+            if (!empty($this->dari)) {
+                $command->bindValue(':dari', $this->dari);
+            }
+
+            return $command->execute();
+        }
     }
 
 }

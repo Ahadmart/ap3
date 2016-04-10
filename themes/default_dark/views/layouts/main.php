@@ -12,8 +12,8 @@
 
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                               ?>/css/animate.min.css">-->
-        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                            ?>/css/app.css">-->
+        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                                 ?>/css/animate.min.css">-->
+        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                              ?>/css/app.css">-->
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
         <?php
         Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/app.css');
@@ -175,7 +175,8 @@
                                     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                                     array('label' => '<i class="fa fa-wrench fa-fw fa-lg"></i>' . ' Tools', 'url' => '',
                                         'items' => array(
-                                            array('label' => '<i class="fa fa-list-alt fa-fw"></i>' . ' Cetak Label Rak', 'url' => array('/cetaklabelrak/index')),
+                                            array('label' => '<i class="fa fa-code fa-fw"></i>' . ' Cetak Label Rak', 'url' => array('')),
+                                            array('label' => '<i class="fa fa-code fa-fw"></i>' . ' Penerimaan PO', 'url' => array('')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
