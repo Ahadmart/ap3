@@ -9,7 +9,7 @@ body{
 
 
 #header1{
-    //float:left;
+    /*float:left;*/
     text-align: center;
     font-size: 1.25em;
     width: 100%;
@@ -21,7 +21,8 @@ body{
 }
 
 #header1 div{
-    margin-left: -2px; // Hack biar rata kiri karena font-size
+    /*Hack biar rata kiri karena font-size*/
+    margin-left: -2px; 
 }
 
 #tanggal{
