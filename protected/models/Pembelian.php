@@ -271,10 +271,12 @@ class Pembelian extends CActiveRecord
         $this->scenario = 'simpanPembelian';
         $transaction = $this->dbConnection->beginTransaction();
 
-        /* Uncomment untuk jumlah pembelian yang sangat banyak, misal: init data */
-        // ini_set('memory_limit', '-1');
-        // set_time_limit(0);
-
+        /* Untuk jumlah pembelian yang sangat banyak, misal: init data */
+        if ($this->profil_id == 1) {
+            ini_set('memory_limit', '-1');
+            set_time_limit(0);
+        }
+        
         try {
             if ($this->save()) {
                 /*
