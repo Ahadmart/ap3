@@ -81,9 +81,10 @@ class CetakLabelRakForm extends CFormModel
 
             /* Menambahkan barang yang belum ada di tabel label_rak_cetak */
             $tabelCetak = LabelRakCetak::model()->tableName();
-            $sql = "INSERT IGNORE INTO {$tabelCetak} (barang_id)
+            $userId = Yii::app()->user->id;
+            $sql = "INSERT IGNORE INTO {$tabelCetak} (barang_id, updated_by)
                 SELECT 
-                    barang.id
+                    barang.id, {$userId}
                 FROM
                     barang
                     {$sqlDari}

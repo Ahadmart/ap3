@@ -17,6 +17,13 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
         echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Pembelian', $this->createUrl('simpanpembelian', array('id' => $model->id)), array(
             'data' => "simpan=true",
             'type' => 'POST',
+            'beforeSend' => 'function() {           
+                                $("#tombol-simpan").addClass("warning");
+                                $("#tombol-simpan").html("<i class=\"fa fa-floppy-o fa-spin\"></i> <span class=\"ak\">S</span>impan Pembelian");
+                            }',
+            'complete' => 'function() {
+                                $("#tombol-simpan").removeClass("warning");
+                            }',
             'success' => 'function(data) {
                             if (data.sukses) {
                                 location.reload();;
@@ -24,7 +31,8 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
                         }'
                 ), array(
             'class' => 'tiny bigfont button',
-            'accesskey' => 's'
+            'accesskey' => 's',
+            'id' => 'tombol-simpan'
                 )
         );
         ?>

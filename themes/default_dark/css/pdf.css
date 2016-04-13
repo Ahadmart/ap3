@@ -21,7 +21,8 @@ body{
 }
 
 #header1 div{
-    margin-left: -2px; // Hack biar rata kiri karena font-size
+    /* Hack biar rata kiri karena font-size */
+    margin-left: -2px; 
 }
 
 #dari{
