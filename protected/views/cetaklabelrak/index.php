@@ -31,23 +31,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
         <div class="panel">
             <h4>Label yang akan dicetak</h4>
             <hr />
+            <?php $this->renderPartial('_form_layout', array('model' => $layoutForm)); ?>
 
             <?php $this->renderPartial('_barang', array('model' => $labelCetak)); ?>
-<!--            <table class="tabel-index responsive">
-    <thead>
-        <tr>
-            <th>Barcode</th>
-            <th>Nama</th>
-            <th>Kategori</th>
-            <th>Satuan</th>
-            <th class="rata-kanan">Harga Jual</th>
-        </tr>
-    </thead>
-    <tbody>
-
-    </tbody>
-</table>-->
-
         </div>
     </div>
 </div>

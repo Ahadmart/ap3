@@ -25,12 +25,40 @@ class CetaklabelrakController extends Controller
             $labelCetak->attributes = $_GET['LabelRakCetak'];
         }
 
+        $layoutForm = new CetakLabelRakLayoutForm;
+        if (isset($_GET['CetakLabelRakLayoutForm'])) {
+            $layoutForm->attributes = $_GET['CetakLabelRakLayoutForm'];
+            $this->labelRakPdf($layoutForm);
+        }
+
         $this->render('index', array(
             'modelForm' => $modelForm,
             'profil' => $profil,
             'rak' => $rak,
-            'labelCetak' => $labelCetak
+            'labelCetak' => $labelCetak,
+            'layoutForm' => $layoutForm
         ));
+    }
+
+    public function labelRakPdf($layout)
+    {
+
+        /*
+         * Persiapan render PDF
+         */
+        $barang = LabelRakCetak::model()->findAll();        
+        
+        $mPDF1 = Yii::app()->ePdf->mpdf('utf-8', 'A4');        
+        $mPDF1->WriteHTML($this->renderPartial('_label_rak_pdf', array(
+                    'barang' => $barang,
+                        ), true
+        ));
+
+        $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->pagenumPrefix = 'Hal ';
+        $mPDF1->pagenumSuffix = ' / ';
+        // Render PDF
+        $mPDF1->Output("Label_rak.pdf", 'I');
     }
 
     public function actionPilihProfil($id)
