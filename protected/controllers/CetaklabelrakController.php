@@ -40,21 +40,32 @@ class CetaklabelrakController extends Controller
         ));
     }
 
+    public function namaToko()
+    {
+        $config = Config::model()->find('nama=:nama', array(':nama' => 'toko.nama'));
+        return $config->nilai;
+    }
+
     public function labelRakPdf($layout)
     {
 
         /*
          * Persiapan render PDF
          */
-        $barang = LabelRakCetak::model()->findAll();        
-        
-        $mPDF1 = Yii::app()->ePdf->mpdf('utf-8', 'A4');        
+        $tanggalCetak = date('dmY His');
+        $barang = LabelRakCetak::model()->findAll();
+        $listNamaKertas = CetakLabelRakLayoutForm::listNamaKertas();
+
+        $mPDF1 = Yii::app()->ePdf->mpdf('utf-8', $listNamaKertas[$layout['kertasId']], 0, '', 7, 7, 7, 7, 9, 9);
         $mPDF1->WriteHTML($this->renderPartial('_label_rak_pdf', array(
                     'barang' => $barang,
+                    'namaToko' => $this->namaToko(),
+                    'tanggalCetak' => $tanggalCetak
                         ), true
         ));
 
         $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->margin_top = 5;
         $mPDF1->pagenumPrefix = 'Hal ';
         $mPDF1->pagenumSuffix = ' / ';
         // Render PDF
