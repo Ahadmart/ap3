@@ -54,6 +54,7 @@ class CetaklabelrakController extends Controller
         /*
          * Persiapan render PDF
          */
+        set_time_limit(0);
         $tanggalCetak = date('dmY His');
         $filterKategori = null;
         if (Yii::app()->user->hasState('labelKategoriId')) {
@@ -136,6 +137,11 @@ class CetaklabelrakController extends Controller
     public function actionHapus($id)
     {
         LabelRakCetak::model()->deleteByPk($id);
+    }
+
+    public function actionHapusSemua()
+    {
+        LabelRakCetak::model()->deleteAll();
     }
 
 }

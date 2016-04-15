@@ -29,6 +29,19 @@ $this->widget('BGridView', array(
         ),
         array(
             'class' => 'BButtonColumn',
+            'header' => '<a id="tombol-hapus-semua" href="'.$this->createUrl('hapussemua').'"><i class="fa fa-times"></i></a>'
         ),
     ),
 ));
+?>
+<script>
+
+    $("body").on("click", "#tombol-hapus-semua", function () {
+        var dataurl = $(this).attr('href');
+        $.ajax({
+            url: dataurl,
+            success: function(){$.fn.yiiGridView.update('label-rak-cetak-grid')}
+        });
+        return false;
+    });
+</script>

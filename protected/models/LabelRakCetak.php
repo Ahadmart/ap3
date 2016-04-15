@@ -77,6 +77,14 @@ class LabelRakCetak extends CActiveRecord
         );
     }
 
+    public function defaultScope()
+    {
+        return array(
+            'with' => 'barang',
+            'order' => 'barang.nama'
+        );
+    }
+
     /**
      * Retrieves a list of models based on the current search/filter conditions.
      *
@@ -162,7 +170,7 @@ class LabelRakCetak extends CActiveRecord
                 join('barang_kategori kategori', 'barang.kategori_id = kategori.id')->
                 order('kategori.nama')->
                 queryAll();
-        
+
         return CHtml::listData($kategori, 'id', 'nama');
     }
 
