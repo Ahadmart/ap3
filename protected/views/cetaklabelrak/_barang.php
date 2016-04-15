@@ -1,5 +1,4 @@
 <?php
-
 $this->widget('BGridView', array(
     'id' => 'label-rak-cetak-grid',
     'dataProvider' => $model->search(),
@@ -18,7 +17,7 @@ $this->widget('BGridView', array(
         array(
             'name' => 'kategoriId',
             'value' => '$data->barang->kategori->nama',
-            'filter' => Barang::model()->filterKategori()
+            'filter' => LabelRakCetak::model()->filterKategori()
         ),
         array(
             'header' => 'Satuan',
@@ -30,7 +29,19 @@ $this->widget('BGridView', array(
         ),
         array(
             'class' => 'BButtonColumn',
+            'header' => '<a id="tombol-hapus-semua" href="'.$this->createUrl('hapussemua').'"><i class="fa fa-times"></i></a>'
         ),
     ),
 ));
+?>
+<script>
 
+    $("body").on("click", "#tombol-hapus-semua", function () {
+        var dataurl = $(this).attr('href');
+        $.ajax({
+            url: dataurl,
+            success: function(){$.fn.yiiGridView.update('label-rak-cetak-grid')}
+        });
+        return false;
+    });
+</script>
