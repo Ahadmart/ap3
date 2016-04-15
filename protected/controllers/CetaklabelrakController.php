@@ -23,6 +23,8 @@ class CetaklabelrakController extends Controller
         $labelCetak->unsetAttributes();
         if (isset($_GET['LabelRakCetak'])) {
             $labelCetak->attributes = $_GET['LabelRakCetak'];
+            /* simpan ke sesi untuk digunakan cetak label */
+            Yii::app()->user->setState('labelKategoriId', $_GET['LabelRakCetak']['kategoriId']);
         }
 
         $layoutForm = new CetakLabelRakLayoutForm;
@@ -36,7 +38,7 @@ class CetaklabelrakController extends Controller
             'profil' => $profil,
             'rak' => $rak,
             'labelCetak' => $labelCetak,
-            'layoutForm' => $layoutForm
+            'layoutForm' => $layoutForm,
         ));
     }
 
@@ -53,7 +55,13 @@ class CetaklabelrakController extends Controller
          * Persiapan render PDF
          */
         $tanggalCetak = date('dmY His');
-        $barang = LabelRakCetak::model()->findAll();
+        $filterKategori = null;
+        if (Yii::app()->user->hasState('labelKategoriId')) {
+            $filterKategori = Yii::app()->user->getState('labelKategoriId');
+        }
+        $barang = is_null($filterKategori) ? LabelRakCetak::model()->findAll() : LabelRakCetak::model()->with('barang', 'barang.kategori')->findAll('barang.kategori_id=' . $filterKategori);
+
+
         $listNamaKertas = CetakLabelRakLayoutForm::listNamaKertas();
 
         $mPDF1 = Yii::app()->ePdf->mpdf('utf-8', $listNamaKertas[$layout['kertasId']], 0, '', 7, 7, 7, 7, 9, 9);
@@ -106,10 +114,19 @@ class CetaklabelrakController extends Controller
             $cetakLabelRakForm = new CetakLabelRakForm;
             $cetakLabelRakForm->attributes = $_POST['CetakLabelRakForm'];
             $rowAffected = $cetakLabelRakForm->inputBarangKeCetak();
-            if (!is_null($rowAffected)) {
+            if (!is_null($rowAffected) && $rowAffected > 0) {
                 $return = array(
                     'sukses' => true,
                     'rowAffected' => $rowAffected
+                );
+            }
+            if ($rowAffected == 0) {
+                $return = array(
+                    'sukses' => false,
+                    'error' => [
+                        'code' => 501,
+                        'msg' => 'Barang ' . $_POST['CetakLabelRakForm']['barcode'] . ' sudah ada!'
+                    ]
                 );
             }
         }

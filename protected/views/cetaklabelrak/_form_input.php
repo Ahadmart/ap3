@@ -45,6 +45,11 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->textField($model, 'dari', array('class' => 'tanggal-waktu', 'value' => empty($model->dari) ? '' : $model->dari)); ?>
         <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
     </div>
+    <div class="small-12 large-6 columns">
+        <?php echo $form->labelEx($model, 'barcode'); ?>
+        <?php echo $form->textField($model, 'barcode', array('autofocus' => 'autofocus')); ?>
+        <?php echo $form->error($model, 'barcode', array('class' => 'error')); ?>
+    </div> 
 </div>
 
 <div class="row">
@@ -77,8 +82,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
             pickTime: true
         });
 
-        $("#cetak-label-rak-form").submit(function (event) {
-            event.preventDefault();
+        $("#cetak-label-rak-form").submit(function (e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
             dataUrl = '<?php echo $this->createUrl('tambahkanbarang'); ?>';
             dataKirim = $(this).serializeArray();
             console.log(dataKirim);
@@ -102,8 +108,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                         });
                     }
 
+                    $("#CetakLabelRakForm_barcode").val("");
+                    $("#CetakLabelRakForm_barcode").focus();
                 }
             });
+            return false;
         });
     });
 </script>

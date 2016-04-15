@@ -1,5 +1,4 @@
 <?php
-
 $this->widget('BGridView', array(
     'id' => 'label-rak-cetak-grid',
     'dataProvider' => $model->search(),
@@ -18,7 +17,7 @@ $this->widget('BGridView', array(
         array(
             'name' => 'kategoriId',
             'value' => '$data->barang->kategori->nama',
-            'filter' => Barang::model()->filterKategori()
+            'filter' => LabelRakCetak::model()->filterKategori()
         ),
         array(
             'header' => 'Satuan',
@@ -33,4 +32,3 @@ $this->widget('BGridView', array(
         ),
     ),
 ));
-
