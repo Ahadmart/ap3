@@ -78,7 +78,7 @@ class CetaklabelrakController extends Controller
         $mPDF1->pagenumPrefix = 'Hal ';
         $mPDF1->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Label_rak.pdf", 'I');
+        $mPDF1->Output("label rak {$tanggalCetak}.pdf", 'I');
     }
 
     public function actionPilihProfil($id)
