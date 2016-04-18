@@ -193,7 +193,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             'pos[jenistr]': $("#jenisbayar").val(),
             'pos[uang]': $("#uang-dibayar").val()
         };
-        console.log(dataUrl);
+        console.log(dataUrl);  
+        printWindow = window.open('about:blank', '', 'left=20,top=20,width=400,height=600,toolbar=0,resizable=1');
+       
 
         $.ajax({
             type: 'POST',
@@ -202,7 +204,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             success: function (data) {
                 if (data.sukses) {
                     //cetak();
-                    window.open('<?php echo $this->createUrl('out', array('id' => $model->id)); ?>');
+                    printWindow.location.replace('<?php echo $this->createUrl('out', array('id' => $model->id)); ?>');
                     window.location.href = "<?php echo $this->createUrl('index'); ?>";
                 } else {
                     $.gritter.add({
