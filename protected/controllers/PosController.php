@@ -200,6 +200,7 @@ class PosController extends Controller
 
         $q = new CDbCriteria();
         $q->addCondition("{$wBarcode} OR {$wNama}");
+        $q->order = 'nama';
         $q->params = $param;
         $barangs = Barang::model()->findAll($q);
 
