@@ -11,6 +11,7 @@
 class CetakLabelRakForm extends CFormModel
 {
 
+    public $barcode;
     public $profilId;
     public $rakId;
     public $dari;
@@ -21,7 +22,7 @@ class CetakLabelRakForm extends CFormModel
     public function rules()
     {
         return array(
-            array('profilId, rakId, dari', 'safe')
+            array('barcode, profilId, rakId, dari', 'safe')
         );
     }
 
@@ -31,6 +32,7 @@ class CetakLabelRakForm extends CFormModel
     public function attributeLabels()
     {
         return array(
+            'barcode' => 'Barcode',
             'profilId' => 'Profil Supplier',
             'rakId' => 'User',
             'dari' => 'Harga jual berubah dari',
@@ -62,6 +64,19 @@ class CetakLabelRakForm extends CFormModel
 
     public function inputBarangKeCetak()
     {
+        if (!empty($this->barcode)) {
+            $barang = Barang::model()->find('barcode=:barcode', array(':barcode' => $this->barcode));
+            if (!is_null($barang)) {
+                $label = new LabelRakCetak();
+                $label->barang_id = $barang->id;
+                try {
+                    $label->save();
+                    return 1;
+                } catch (Exception $exc) {
+                    return 0;
+                }
+            }
+        }
         if (!empty($this->profilId || !empty($this->rakId) || !empty($this->dari))) {
             $sqlProfil = '';
             $sqlRak = '';
@@ -76,7 +91,7 @@ class CetakLabelRakForm extends CFormModel
             if (!empty($this->dari)) {
                 $sqlDari = "JOIN
                         barang_harga_jual bhj ON barang.id = bhj.barang_id
-                            AND DATE_FORMAT(bhj.updated_at, '%Y-%m-%d %H:%i') >= :dari";
+                            AND DATE_FORMAT(bhj.updated_at, '%d-%m-%Y %H:%i') >= :dari";
             }
 
             /* Menambahkan barang yang belum ada di tabel label_rak_cetak */

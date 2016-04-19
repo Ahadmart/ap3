@@ -77,6 +77,14 @@ class LabelRakCetak extends CActiveRecord
         );
     }
 
+    public function defaultScope()
+    {
+        return array(
+            'with' => 'barang',
+            'order' => 'barang.nama'
+        );
+    }
+
     /**
      * Retrieves a list of models based on the current search/filter conditions.
      *
@@ -107,6 +115,7 @@ class LabelRakCetak extends CActiveRecord
         //$criteria->compare('kategori.nama', $this->namaKategori);
 
         $sort = array(
+            'defaultOrder' => 'barang.nama',
             'attributes' => array(
                 '*',
                 'barcode' => array(
@@ -150,6 +159,19 @@ class LabelRakCetak extends CActiveRecord
         $this->updated_at = null; // Trigger current timestamp
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
+    }
+
+    public function filterKategori()
+    {
+        $kategori = Yii::app()->db->createCommand()->
+                selectDistinct('kategori.id, kategori.nama')->
+                from('label_rak_cetak label')->
+                join('barang', 'label.barang_id = barang.id')->
+                join('barang_kategori kategori', 'barang.kategori_id = kategori.id')->
+                order('kategori.nama')->
+                queryAll();
+
+        return CHtml::listData($kategori, 'id', 'nama');
     }
 
 }

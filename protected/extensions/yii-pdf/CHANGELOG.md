@@ -1,6 +1,10 @@
 Yii-PDF Change Log
 ==================
 
+### Version 0.3 (2012-07-07)
+
+* Fixed default constructor params [thanks to zitter]
+
 ### Version 0.2a (2012-02-05)
 
 * Fixed method name (mpdf) for some case-sensitive *nix OS filesystems (it may cause for some errors) [thanks to Hylke]

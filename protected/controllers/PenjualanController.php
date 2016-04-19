@@ -211,7 +211,7 @@ class PenjualanController extends Controller
             $penjualan = $this->loadModel($id);
             $qty = $_POST['qty'];
             $barcode = $_POST['barcode'];
-            $return = $penjualan->tambahBarang($barcode, $qty);
+            $return = $penjualan->transfer_mode ? $penjualan->transferBarang($barcode, $qty) : $penjualan->tambahBarang($barcode, $qty);
         }
         $this->renderJSON($return);
     }
@@ -428,7 +428,9 @@ class PenjualanController extends Controller
         $model = $this->loadModel($id);
         $text = $this->getText($model, $print);
         $device->printLpr($text);
-        $this->renderPartial('_print_autoclose');
+        $this->renderPartial('_print_autoclose', array(
+            'text' => $text
+        ));
     }
 
     public function actionPrintInvoice($id)

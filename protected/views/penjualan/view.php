@@ -65,6 +65,13 @@ $model->scenario = 'tampil';
         </ul>
     </div>
     <div class="small-12 columns header">
+        <?php
+        if ($model->transfer_mode) {
+            ?>
+            <span class="warning label">Transfer Barang</span>
+            <?php
+        }
+        ?>
         <span class="secondary label">Customer</span><span class="label"><?php echo $model->profil->nama; ?></span>
         <span class="secondary label">Tanggal</span><span class="label"><?php echo $model->tanggal; ?></span>
         <span class="secondary label">Total</span><span class="alert label"><?php echo $model->total; ?></span>
