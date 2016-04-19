@@ -14,7 +14,7 @@
             <sethtmlpagefooter name="footer" value="on" />
           mpdf-->
         <?php
-        $jumlahKarakterNamaBarang = 23;
+        $jumlahKarakterNamaBarang = 20;
 
         foreach ($barang as $labelBarang) {
             $namaBarang1 = $labelBarang->barang->nama;

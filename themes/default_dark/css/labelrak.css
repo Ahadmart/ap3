@@ -12,9 +12,7 @@ body{
     font-size: 10pt;
 }
 .label{
-    border: 1px solid #000000;  
-    /*margin-left:10px;*/ 
-    /*margin-bottom:10px;*/ 
+    border: 1px solid #000;  
     height:112px; 
     padding: 0 5px;
     text-align: center; 
@@ -30,11 +28,11 @@ body{
 .nama-barang{
     margin-top: 5px;
     text-transform: uppercase;
+    font-family: Ubuntu;
 }
 
 .harga-jual{
     font-size: 25pt;
-    /*margin-bottom: 7px;*/
 }
 
 .barcode, .tgl-cetak{
