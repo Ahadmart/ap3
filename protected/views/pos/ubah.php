@@ -193,9 +193,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             'pos[jenistr]': $("#jenisbayar").val(),
             'pos[uang]': $("#uang-dibayar").val()
         };
-        console.log(dataUrl);  
+        console.log(dataUrl);
         printWindow = window.open('about:blank', '', 'left=20,top=20,width=400,height=600,toolbar=0,resizable=1');
-       
+
 
         $.ajax({
             type: 'POST',

@@ -9,6 +9,7 @@
  * @property string $tanggal
  * @property string $profil_id
  * @property string $hutang_piutang_id
+ * @property integer $transfer_mode
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
@@ -19,6 +20,8 @@
  * @property Profil $profil
  * @property User $updatedBy
  * @property PenjualanDetail[] $penjualanDetails
+ * @property PenjualanDiskon[] $penjualanDiskons
+ * @property PenjualanMember[] $penjualanMembers
  */
 class Penjualan extends CActiveRecord
 {
@@ -46,17 +49,17 @@ class Penjualan extends CActiveRecord
      */
     public function rules()
     {
-        // NOTE: you should only define rules for those attributes that
-        // will receive user inputs.
+// NOTE: you should only define rules for those attributes that
+// will receive user inputs.
         return array(
             array('profil_id', 'required'),
-            array('status', 'numerical', 'integerOnly' => true),
+            array('transfer_mode, status', 'numerical', 'integerOnly' => true),
             array('nomor', 'length', 'max' => 45),
             array('profil_id, hutang_piutang_id, updated_by', 'length', 'max' => 10),
             array('created_at, updated_at, updated_by, tanggal', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, tanggal, profil_id, hutang_piutang_id, status, updated_at, updated_by, created_at, namaProfil, nomorHutangPiutang', 'safe', 'on' => 'search'),
+            array('id, nomor, tanggal, profil_id, hutang_piutang_id, transfer_mode, status, updated_at, updated_by, created_at, namaProfil, nomorHutangPiutang', 'safe', 'on' => 'search'),
         );
     }
 
@@ -65,8 +68,8 @@ class Penjualan extends CActiveRecord
      */
     public function relations()
     {
-        // NOTE: you may need to adjust the relation name and the related
-        // class name for the relations automatically generated below.
+// NOTE: you may need to adjust the relation name and the related
+// class name for the relations automatically generated below.
         return array(
             'hutangPiutang' => array(self::BELONGS_TO, 'HutangPiutang', 'hutang_piutang_id'),
             'profil' => array(self::BELONGS_TO, 'Profil', 'profil_id'),
@@ -86,6 +89,7 @@ class Penjualan extends CActiveRecord
             'tanggal' => 'Tanggal',
             'profil_id' => 'Profil',
             'hutang_piutang_id' => 'Hutang Piutang',
+            'transfer_mode' => 'Transfer Mode',
             'status' => 'Status',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
@@ -109,7 +113,7 @@ class Penjualan extends CActiveRecord
      */
     public function search()
     {
-        // @todo Please modify the following code to remove attributes that should not be searched.
+// @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
 
@@ -118,6 +122,7 @@ class Penjualan extends CActiveRecord
         $criteria->compare('tanggal', $this->tanggal, true);
         $criteria->compare('profil_id', $this->profil_id, true);
         $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
+        $criteria->compare('transfer_mode', $this->transfer_mode);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('t.updated_by', $this->updated_by, true);
@@ -177,11 +182,11 @@ class Penjualan extends CActiveRecord
         }
         $this->updated_at = null; // Trigger current timestamp
         $this->updated_by = Yii::app()->user->id;
-        // Jika disimpan melalui proses simpan penjualan
+// Jika disimpan melalui proses simpan penjualan
         if ($this->scenario === 'simpanPenjualan') {
-            // Status diubah jadi penjualan belum bayar (piutang)
+// Status diubah jadi penjualan belum bayar (piutang)
             $this->status = Penjualan::STATUS_PIUTANG;
-            // Dapat nomor dan tanggal baru
+// Dapat nomor dan tanggal baru
             $this->tanggal = date('Y-m-d H:i:s');
             $this->nomor = $this->generateNomor();
         }
@@ -202,6 +207,97 @@ class Penjualan extends CActiveRecord
                 ->queryRow();
 
         return $detail['qty'];
+    }
+
+    public function transferBarang($barcode, $qty)
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+            $barang = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
+
+            /* Jika barang tidak ada */
+            if (is_null($barang)) {
+                throw new Exception('Barang tidak ditemukan', 500);
+            }
+
+            $barangAda = $this->barangAda($barang->id);
+            if ($barangAda) {
+                $qty+=$barangAda;
+                PenjualanDetail::model()->deleteAll('barang_id=:barangId AND penjualan_id=:penjualanId', array(
+                    ':barangId' => $barang->id,
+                    ':penjualanId' => $this->id
+                ));
+            }
+            $this->tambahBarangTransferDetail($barang, $qty);
+
+            $transaction->commit();
+            return array(
+                'sukses' => true
+            );
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return array(
+                'sukses' => false,
+                'error' => array(
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ));
+        }
+    }
+
+    /**
+     * Tambah barang transfer ke tabel detail.
+     * @param ActiveRecord $barang Object Barang
+     * @param int $qty Qty barang transfer total yang akan ditambah
+     */
+    public function tambahBarangTransferDetail($barang, $qty)
+    {
+        $sisa = $qty;
+        $hargaBeliAwal = InventoryBalance::model()->getHargaBeliAwal($barang->id);
+        $hargaJualTerakhir = HargaJual::model()->terkini($barang->id);
+
+        $detail = new PenjualanDetail;
+        $detail->penjualan_id = $this->id;
+        $detail->barang_id = $barang->id;
+        $detail->qty = $qty;
+        $detail->harga_jual = $hargaBeliAwal;
+        $detail->harga_jual_rekomendasi = $hargaJualTerakhir;
+
+        if (!$detail->save()) {
+            throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$barang->id}, qty:{$qty}", 500);
+        }
+    }
+
+    /**
+     * Menambah detail penjualan untuk transfer mode, jika ternyata harga beli berbeda
+     * Menyesuaikan qty detail penjualan sebelumnya
+     * @param ActiveRecord $detail PenjualanDetail
+     * @param ActiveRecord $hpp HargaPokokPenjualan
+     */
+    public function tambahDetailTransferBarang($detail, $hpp)
+    {
+        if ($detail->harga_jual != $hpp->harga_beli) {
+            $detailBaru = new PenjualanDetail;
+            $detailBaru->penjualan_id = $this->id;
+            $detailBaru->barang_id = $detail->barang_id;
+            $detailBaru->qty = $hpp->qty;
+            $detailBaru->harga_jual = $hpp->harga_beli;
+            $detailBaru->harga_jual_rekomendasi = $detail->harga_jual_rekomendasi;
+
+            if (!$detailBaru->save()) {
+                throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$detail->barang_id}, qty:{$qty}", 500);
+            }
+
+            if (!HargaPokokPenjualan::model()->updateByPk($hpp->id, array('penjualan_detail_id' => $detailBaru->id)) > 1) {
+                throw new Exception("Gagal update hpp", 500);
+            }
+
+            /* update qty detail sebelumnya */
+            $qtySebelum = $detail->qty;
+            if (!PenjualanDetail::model()->updateByPk($detail->id, array('qty' => $qtySebelum - $detailBaru->qty)) > 1) {
+                throw new Exception("Gagal update detail", 500);
+            }
+        }
     }
 
     public function tambahBarang($barcode, $qty)
@@ -342,10 +438,12 @@ class Penjualan extends CActiveRecord
     }
 
     /**
-     * Insert penjualan detail
+     * Insert Penjualan Detail
      * @param int $barangId
      * @param int $qty
      * @param decimal $hargaJual
+     * @param decimal $diskon
+     * @param int $tipeDiskonId
      * @throws Exception
      */
     public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null)
@@ -387,57 +485,6 @@ class Penjualan extends CActiveRecord
                     'order' => 'id desc',
                     'params' => array('barangId' => $barangId, 'status' => DiskonBarang::STATUS_AKTIF, 'tipeDiskon' => $tipeDiskonId)
         ));
-    }
-
-    public function tambahBarangBak($barcode, $qty)
-    {
-        $transaction = $this->dbConnection->beginTransaction();
-        try {
-            $barang = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
-
-            /* Jika barang tidak ada */
-            if (is_null($barang)) {
-                throw new Exception('Barang tidak ditemukan', 500);
-            }
-
-            /* Siapkan data untuk diinput */
-            $detail = new PenjualanDetail;
-            $detail->penjualan_id = $this->id;
-            $detail->barang_id = $barang->id;
-            $detail->qty = $qty;
-            $detail->harga_jual = HargaJual::model()->terkini($barang->id);
-            $detail->harga_jual_rekomendasi = HargaJualRekomendasi::model()->terkini($barang->id);
-
-            /* Jika apakah barang sudah ada di detail? */
-            $sudahAda = PenjualanDetail::model()->findAll('barang_id=:barangId AND penjualan_id=:penjualanId', array(
-                ':barangId' => $barang->id,
-                ':penjualanId' => $this->id
-            ));
-
-            /* Jika sudah ada, tambahkan $detail->qty, dan delete $sudahAda */
-            if (!empty($sudahAda)) {
-                $detail->qty += $sudahAda->qty;
-                $sudahAda->delete();
-            }
-
-            /* Coba simpan, jika gagal throw exception */
-            if (!$detail->save()) {
-                throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$barang->id}, qty:{$qty}", 500);
-            }
-
-            $transaction->commit();
-            return array(
-                'sukses' => true
-            );
-        } catch (Exception $ex) {
-            $transaction->rollback();
-            return array(
-                'sukses' => false,
-                'error' => array(
-                    'msg' => $ex->getMessage(),
-                    'code' => $ex->getCode(),
-            ));
-        }
     }
 
     /**
@@ -561,6 +608,15 @@ class Penjualan extends CActiveRecord
                 }
                 if (!$hpp->save()) {
                     throw new Exception("Gagal simpan HPP", 500);
+                }
+                /* Tambahan untuk transfer mode, 
+                 * cek apakah harga jual masih sama dengan inventory
+                 * jika beda, maka tambahkan juga detail penjualannya
+                 * ctt: transfer mode, harga jual = harga beli, jadi
+                 * hpp = penjualan_detail
+                 */
+                if ($this->transfer_mode && $count > 1) {
+                    $this->tambahDetailTransferBarang($detail, HargaPokokPenjualan::model()->findByPk($hpp->id));
                 }
                 $count++;
             }
@@ -703,7 +759,7 @@ class Penjualan extends CActiveRecord
           ) as harga_beli,
          */
 
-        // Cari nama toko ini
+// Cari nama toko ini
         $config = Config::model()->find("nama='toko.nama'");
         foreach ($details as $detail):
             $csv.= "\"{$detail['barcode']}\","
@@ -1150,7 +1206,7 @@ class Penjualan extends CActiveRecord
             $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
             $rowCount = 1; // Reset row counter
         }
-        //$struk .= 'Barang yang sudah dibeli tidak bisa ditukar atau dikembalikan' . PHP_EOL . PHP_EOL;
+//$struk .= 'Barang yang sudah dibeli tidak bisa ditukar atau dikembalikan' . PHP_EOL . PHP_EOL;
         $signatureHead1 = '        Hormat Kami';
         $signatureHead2 = 'Pelanggan';
 
