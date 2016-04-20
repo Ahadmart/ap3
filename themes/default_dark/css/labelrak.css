@@ -13,14 +13,14 @@ body{
 }
 .label{
     border: 1px solid #000;  
-    height:112px; 
+    height:30mm; 
     padding: 0 5px;
     text-align: center; 
     overflow: hidden;
 }
 
 .label-container{
-    width:190px; 
+    width:50mm; 
     page-break-inside: avoid;
     float:left; 
 }
