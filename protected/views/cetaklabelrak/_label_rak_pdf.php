@@ -43,7 +43,7 @@
                     <div class="nama-barang"><?php echo $namaBarang1; ?><br /><?php echo $namaBarang2; ?></div> 
                     <div class="harga-jual"><?php echo $labelBarang->barang->hargaJual; ?></div>
                     <div class="barcode">
-                        <barcode style="margin-left: -6px;" code="<?php echo $labelBarang->barang->barcode; ?>" type="C128A" size="0.5" height="0.7" />
+                        <barcode style="margin-left: -6px;" code="<?php echo trim($labelBarang->barang->barcode); ?>" type="C128A" size="0.5" height="0.8" />
                         <?php echo $labelBarang->barang->barcode; ?>
                     </div>
                     <div class="tgl-cetak"><?php echo $tanggalCetak; ?></div>
