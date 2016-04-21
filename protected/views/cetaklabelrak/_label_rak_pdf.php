@@ -6,7 +6,6 @@
     </head>
     <body>
         <?php
-      
         ?>
         <!--mpdf
             <htmlpagefooter name="footer"><div style="width: 100%; text-align:right">{PAGENO}{nb}</div>
@@ -17,21 +16,33 @@
         $jumlahKarakterNamaBarang = 20;
 
         foreach ($barang as $labelBarang) {
-            $namaBarang1 = $labelBarang->barang->nama;
+            $namaBarang1 = '';
             $namaBarang2 = '&nbsp;';
 
             $namaBarangLengkap = $labelBarang->barang->nama;
-            // jika terlalu panjang nama barangnya
+            $namaBarangArr = explode(' ', $namaBarangLengkap);
+
+            // jika terlalu panjang nama barangnya, jadikan 2 baris
             if (strlen($namaBarangLengkap) > $jumlahKarakterNamaBarang) {
-                $namaBarangArr = explode(' ', $namaBarangLengkap);
                 $len = 0;
-                $namaBarang1 = '';
-                $namaBarang2 = '';
                 foreach ($namaBarangArr as $namBar) {
                     $len += strlen($namBar);
                     if ($len <= $jumlahKarakterNamaBarang) {
                         $namaBarang1 .= $namBar . ' ';
                         $len++;
+                    } else {
+                        $namaBarang2 .= $namBar . ' ';
+                    }
+                }
+            } else {
+                /* Jika tidak panjang, tetap jadikan 2 baris, agar tampilannya tidak kosong 
+                 * Tapi jika hanya tdd 1 kata, berarti tetap jadi 1 baris
+                 */
+                $kataPertama = true;
+                foreach ($namaBarangArr as $namBar) {
+                    if ($kataPertama) {
+                        $namaBarang1 = $namBar;
+                        $kataPertama = false;
                     } else {
                         $namaBarang2 .= $namBar . ' ';
                     }
