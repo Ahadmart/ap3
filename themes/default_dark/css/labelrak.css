@@ -9,7 +9,7 @@ and open the template in the editor.
 */
 body{
     font-family: OpenSans;
-    font-size: 10pt;
+    font-size: 11pt;
 }
 .label{
     border: 1px solid #000;  
@@ -20,13 +20,13 @@ body{
 }
 
 .label-container{
-    width:50mm; 
+    width:53mm; 
     page-break-inside: avoid;
     float:left; 
 }
 
 .nama-barang{
-    margin-top: 5px;
+    margin-top: 3px;
     text-transform: uppercase;
     font-family: Ubuntu;
 }
@@ -36,7 +36,7 @@ body{
 }
 
 .barcode, .tgl-cetak{
-    font-size: 5pt;
+    font-size: 6pt;
     margin: 0;
 }
 
@@ -44,9 +44,15 @@ body{
     width: 40%;
     float:left;
     text-align: left;
+    padding-left: 9px
 }
 .tgl-cetak{
-    width: 30%;
+    width: 40%;
     float:right;
     text-align: right;
+    font-size: 6pt;
+    padding-top: 12px;
+    padding-right: 9px;
+    /*display: none;*/
 }
+
