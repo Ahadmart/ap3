@@ -159,6 +159,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
             case '<?php echo DiskonBarang::TIPE_BANDED; ?>':
                 bandedFields();
                 break;
+            case '<?php echo DiskonBarang::TIPE_PROMO_MEMBER; ?>':
+                promoFields();
+                break;
         }
     }
 

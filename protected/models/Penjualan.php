@@ -362,10 +362,18 @@ class Penjualan extends CActiveRecord
         $sisa = $qty;
         $hargaJualNormal = HargaJual::model()->terkini($barang->id);
         /*
-         * Cek Diskon, dengan prioritas PROMO, GROSIR, BANDED
+         * Cek Diskon, dengan prioritas PROMO MEMBER, PROMO, GROSIR, BANDED
          * Hanya bisa salah satu
          */
-        if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO))) {
+
+        if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO_MEMBER))) {
+            //terapkan diskon promo member jika member
+            //ambil sisanya (yang tidak didiskon)
+            $customer = Profil::model()->findByPk($this->profil_id);
+            if ($customer->isMember()) {
+                $sisa = $this->aksiDiskonPromoMember($barang->id, $qty, $hargaJualNormal);
+            }
+        } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO))) {
             //terapkan diskon promo
             //ambil sisanya (yang tidak didiskon)
             $sisa = $this->aksiDiskonPromo($barang->id, $qty, $hargaJualNormal);
@@ -408,6 +416,31 @@ class Penjualan extends CActiveRecord
         }
         $hargaJualSatuan = $hargaJualNormal - $diskonPromo->nominal;
         $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonPromo->nominal, DiskonBarang::TIPE_PROMO);
+        return $sisa;
+    }
+
+    public function aksiDiskonPromoMember($barangId, $qty, $hargaJualNormal)
+    {
+
+        $diskonPromo = DiskonBarang::model()->find(array(
+            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
+            'order' => 'id desc',
+            'params' => array(
+                'barangId' => $barangId,
+                'status' => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon' => DiskonBarang::TIPE_PROMO_MEMBER
+            )
+        ));
+        $sisa = $qty;
+        if ($qty > $diskonPromo->qty_max) {
+            $qtyPromo = $diskonPromo->qty_max;
+            $sisa-= $diskonPromo->qty_max;
+        } else {
+            $qtyPromo = $qty;
+            $sisa = 0;
+        }
+        $hargaJualSatuan = $hargaJualNormal - $diskonPromo->nominal;
+        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonPromo->nominal, DiskonBarang::TIPE_PROMO_MEMBER);
         return $sisa;
     }
 
