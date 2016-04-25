@@ -140,6 +140,9 @@
                             $("#data-customer nomor").html('Nomor: ' + data.nomor);
                             $("#data-customer nama").html(data.nama);
                             $("#data-customer address").html(data.address);
+
+                            $.fn.yiiGridView.update('penjualan-detail-grid');
+                            updateTotal();
                         } else {
                             $.gritter.add({
                                 title: 'Error ' + data.error.code,

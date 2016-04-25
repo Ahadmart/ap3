@@ -287,6 +287,16 @@ class PenjualanController extends Controller
         $return['totalF'] = $totalF;
         $this->renderJSON($return);
     }
+    
+    /**
+     * Ambil poin penjualan saat ini
+     * @param int $penjualanId
+     * @return json
+     */
+    public function actionPoin($id){
+        $penjualan = $this->loadModel($id);
+        $curPoin = $penjualan->getCurPoin();        
+    }
 
     public function formatHargaJual($data)
     {

@@ -395,22 +395,13 @@ class PosController extends Controller
                 'msg' => 'Sempurnakan input!',
             )
         );
-        if (isset($_POST['nomor'])) {
+        if (isset($_POST['nomor']) && trim($_POST['nomor']) != '') {
             $customer = Profil::model()->find('nomor=:nomor', array(':nomor' => $_POST['nomor']));
             if (!is_null($customer)) {
-                /* Simpan profil ID ke penjualan */
                 $penjualan = $this->loadModel($id);
-                if ($penjualan->saveAttributes(array('profil_id' => $customer->id))) {
-                    $alamat1 = !empty($customer->alamat1) ? $customer->alamat1 : '';
-                    $alamat2 = !empty($customer->alamat2) ? '<br>' . $customer->alamat2 : '';
-                    $alamat3 = !empty($customer->alamat3) ? '<br>' . $customer->alamat3 : '';
-                    $return = array(
-                        'sukses' => true,
-                        'nama' => $customer->nama,
-                        'nomor' => $customer->nomor,
-                        'address' => $alamat1 . $alamat2 . $alamat3
-                    );
-                }
+
+                /* Simpan profil ID ke penjualan */
+                $return = $penjualan->gantiCustomer($customer);
             } else {
                 $return = array(
                     'sukses' => false,

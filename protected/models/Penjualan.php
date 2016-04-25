@@ -300,6 +300,49 @@ class Penjualan extends CActiveRecord
         }
     }
 
+    /**
+     * Hapus barang di penjualan_detail dan penjualan_diskon
+     * @param ActiveRecord $barang
+     */
+    public function cleanBarang($barang)
+    {
+        $tabelPenjualanDiskon = PenjualanDiskon::model()->tableName();
+        $tabelPenjualanDetail = PenjualanDetail::model()->tableName();
+
+        Yii::app()->db->createCommand("
+                    DELETE {$tabelPenjualanDiskon} 
+                    FROM {$tabelPenjualanDiskon} 
+                    INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanDiskon}.penjualan_detail_id = {$tabelPenjualanDetail}.id
+                    WHERE {$tabelPenjualanDetail}.barang_id=:barangId AND {$tabelPenjualanDetail}.penjualan_id=:penjualanId
+                        ")
+                ->bindValues(array(
+                    ':barangId' => $barang->id,
+                    ':penjualanId' => $this->id
+                ))
+                ->execute();
+
+        PenjualanDetail::model()->deleteAll('barang_id=:barangId AND penjualan_id=:penjualanId', array(
+            ':barangId' => $barang->id,
+            ':penjualanId' => $this->id
+        ));
+    }
+
+    /**
+     * Tambah barang method (without transaction)
+     * Agar bisa digunakan method lain
+     * @param ActiveRecord $barang
+     * @param int $qty
+     */
+    public function tambahBarangProc($barang, $qty)
+    {
+        $barangAda = $this->barangAda($barang->id);
+        if ($barangAda) {
+            $qty+=$barangAda;
+            $this->cleanBarang($barang);
+        }
+        $this->tambahBarangDetail($barang, $qty);
+    }
+
     public function tambahBarang($barcode, $qty)
     {
         $transaction = $this->dbConnection->beginTransaction();
@@ -310,33 +353,7 @@ class Penjualan extends CActiveRecord
             if (is_null($barang)) {
                 throw new Exception('Barang tidak ditemukan', 500);
             }
-
-            $barangAda = $this->barangAda($barang->id);
-            if ($barangAda) {
-
-                $tabelPenjualanDiskon = PenjualanDiskon::model()->tableName();
-                $tabelPenjualanDetail = PenjualanDetail::model()->tableName();
-
-                $qty+=$barangAda;
-                Yii::app()->db->createCommand("
-                    DELETE {$tabelPenjualanDiskon} 
-                    FROM {$tabelPenjualanDiskon} 
-                    INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanDiskon}.penjualan_detail_id = {$tabelPenjualanDetail}.id
-                    WHERE {$tabelPenjualanDetail}.barang_id=:barangId AND {$tabelPenjualanDetail}.penjualan_id=:penjualanId
-                        ")
-                        ->bindValues(array(
-                            ':barangId' => $barang->id,
-                            ':penjualanId' => $this->id
-                        ))
-                        ->execute();
-
-                PenjualanDetail::model()->deleteAll('barang_id=:barangId AND penjualan_id=:penjualanId', array(
-                    ':barangId' => $barang->id,
-                    ':penjualanId' => $this->id
-                ));
-            }
-            $this->tambahBarangDetail($barang, $qty);
-
+            $this->tambahBarangProc($barang, $qty);
             $transaction->commit();
             return array(
                 'sukses' => true
@@ -1285,6 +1302,39 @@ class Penjualan extends CActiveRecord
     }
 
     /**
+     * Ambil total poin yang sudah didapat
+     * @return int total Poin Periode Berjalan
+     */
+    public function getTotalPoinPeriodeBerjalan()
+    {
+
+        $profil = Profil::model()->findByPk($this->profil_id);
+        if ($profil->isMember()) {
+            $periodePoin = MemberPeriodePoin::model()->find('awal<=:bulanSekarang and :bulanSekarang<=akhir', array(
+                ':bulanSekarang' => 'month(now())'
+            ));
+            $poin = null;
+            if (!is_null($periodePoin)) {
+                $poin = Yii::app()->db->createCommand()
+                        ->select('sum(poin) total')
+                        ->from(PenjualanMember::model()->tableName() . ' tpm')
+                        ->where('year(updated_by)=year(now) and month(updated_by) between :awal and :akhir 
+                                and profil_id=:profilId')
+                        ->bindValues(array(
+                            //':tahun' => 'year(' . $this->tanggal . ')',
+                            ':awal' => $periodePoin->awal,
+                            ':akhir' => $periodePoin->akhir,
+                            ':profil_id' => $profil->id
+                        ))
+                        ->queryRow();
+            }
+            return !is_null($poin) && $poin ? $poin['total'] : 0;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
      * Update Harga Jual secara manual, dan mencatat diskonnya
      * @param ActiveRecord $penjualanDetail
      * @param int $hargaManual harga yang diinput
@@ -1303,6 +1353,65 @@ class Penjualan extends CActiveRecord
             $transaction->commit();
             return array(
                 'sukses' => true
+            );
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return array(
+                'sukses' => false,
+                'error' => array(
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ));
+        }
+    }
+
+    public function gantiCustomer($customer)
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+
+        try {
+            if (!$this->saveAttributes(array('profil_id' => $customer->id))) {
+                throw new Exception('Gagal ubah customer', 500);
+            }
+            $alamat1 = !empty($customer->alamat1) ? $customer->alamat1 : '';
+            $alamat2 = !empty($customer->alamat2) ? '<br>' . $customer->alamat2 : '';
+            $alamat3 = !empty($customer->alamat3) ? '<br>' . $customer->alamat3 : '';
+            /* Ambil data detail */
+            $penjualanDetails = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', array(
+                'penjualanId' => $this->id
+            ));
+
+            /* Hapus dan re-insert */
+
+            $tabelPenjualanDiskon = PenjualanDiskon::model()->tableName();
+            $tabelPenjualanDetail = PenjualanDetail::model()->tableName();
+            Yii::app()->db->createCommand("
+                    DELETE {$tabelPenjualanDiskon} 
+                    FROM {$tabelPenjualanDiskon} 
+                    INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanDiskon}.penjualan_detail_id = {$tabelPenjualanDetail}.id
+                    WHERE {$tabelPenjualanDetail}.penjualan_id=:penjualanId
+                        ")
+                    ->bindValues(array(
+                        ':penjualanId' => $this->id
+                    ))
+                    ->execute();
+
+            PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', array(
+                'penjualanId' => $this->id
+            ));
+
+            foreach ($penjualanDetails as $detail) {
+                $barang = Barang::model()->findByPk($detail->barang_id);
+                $this->tambahBarangProc($barang, $detail->qty);
+            }
+
+            $transaction->commit();
+
+            return array(
+                'sukses' => true,
+                'nama' => $customer->nama,
+                'nomor' => $customer->nomor,
+                'address' => $alamat1 . $alamat2 . $alamat3
             );
         } catch (Exception $ex) {
             $transaction->rollback();
