@@ -12,8 +12,6 @@
 
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
-        <!--<link rel="stylesheet" href="<?php // echo Yii::app()->theme->baseUrl;                                                 ?>/css/animate.min.css">-->
-        <!--<link rel="stylesheet" href="<?php //echo Yii::app()->theme->baseUrl;                                              ?>/css/app.css">-->
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
         <?php
         Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/app.css');
@@ -167,7 +165,8 @@
                                             //array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pembelian', 'url' => array('/report/pembelian')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Penjualan', 'url' => array('/report/penjualan')),
                                             array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Detail', 'url' => array('/report/hariandetail')),
-                                            array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
+                                            //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
+                                            //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
