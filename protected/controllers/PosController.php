@@ -173,35 +173,58 @@ class PosController extends Controller
         }
     }
 
+    /*
+      public function actionCariBarang($term)
+      {
+      $arrTerm = explode(' ', $term);
+      $wBarcode = '(';
+      $wNama = '(';
+      $pBarcode = array();
+      $param = array();
+      $firstRow = true;
+      $i = 1;
+      foreach ($arrTerm as $bTerm) {
+      if (!$firstRow) {
+      $wBarcode.=' AND ';
+      $wNama.=' AND ';
+      }
+      $wBarcode.="barcode like :term{$i}";
+      $wNama.="nama like :term{$i}";
+      $param[":term{$i}"] = "%{$bTerm}%";
+      $firstRow = FALSE;
+      $i++;
+      }
+      $wBarcode .= ')';
+      $wNama .= ')';
+      //      echo $wBarcode.' AND '.$wNama;
+      //      print_r($param);
+
+      $q = new CDbCriteria();
+      $q->addCondition("{$wBarcode} OR {$wNama}");
+      $q->order = 'nama';
+      $q->params = $param;
+      $barangs = Barang::model()->findAll($q);
+
+      $r = array();
+      foreach ($barangs as $barang) {
+      $r[] = array(
+      'label' => $barang->nama,
+      'value' => $barang->barcode,
+      'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
+      'harga' => $barang->hargaJual
+      );
+      }
+
+      $this->renderJSON($r);
+      }
+     */
+
     public function actionCariBarang($term)
     {
-        $arrTerm = explode(' ', $term);
-        $wBarcode = '(';
-        $wNama = '(';
-        $pBarcode = array();
-        $param = array();
-        $firstRow = true;
-        $i = 1;
-        foreach ($arrTerm as $bTerm) {
-            if (!$firstRow) {
-                $wBarcode.=' AND ';
-                $wNama.=' AND ';
-            }
-            $wBarcode.="barcode like :term{$i}";
-            $wNama.="nama like :term{$i}";
-            $param[":term{$i}"] = "%{$bTerm}%";
-            $firstRow = FALSE;
-            $i++;
-        }
-        $wBarcode .= ')';
-        $wNama .= ')';
-        //      echo $wBarcode.' AND '.$wNama;
-        //      print_r($param);
-
         $q = new CDbCriteria();
-        $q->addCondition("{$wBarcode} OR {$wNama}");
+        $q->addCondition("barcode like :term OR nama like :term");
         $q->order = 'nama';
-        $q->params = $param;
+        $q->params = [':term' => "%{$term}%"];
         $barangs = Barang::model()->findAll($q);
 
         $r = array();
@@ -395,7 +418,7 @@ class PosController extends Controller
                 'msg' => 'Sempurnakan input!',
             )
         );
-        
+
         if (isset($_POST['nomor'])) {
             if (trim($_POST['nomor']) == '') {
                 /* Jika tidak diinput nomornya, maka set ke customer Umum */
