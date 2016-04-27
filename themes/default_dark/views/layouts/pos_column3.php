@@ -20,7 +20,7 @@
                 </div>
             </div>
         </form>
-        <span class="label" id="label-customer" accesskey="c"><span class="ak">C</span>ustomer</span>
+        <span class="label" id="label-customer" accesskey="e">Custom<span class="ak">e</span>r</span>
         <div id="data-customer">
             <nomor>Nomor: <?php echo $this->profil->nomor; ?></nomor>
             <nama><?php echo $this->namaProfil; ?></nama>

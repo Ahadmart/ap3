@@ -14,14 +14,17 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 
 <div class="medium-7 large-7 columns" style="/*height: 100%; overflow: scroll*/">
     <div class="row collapse">
-        <div class="small-3 medium-1 columns">
+        <div class="small-2 medium-1 columns">
             <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
         </div>
-        <div class="small-6 medium-10 columns">
+        <div class="small-6 medium-9 columns">
             <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>
         </div>
-        <div class="small-3 medium-1 columns">
+        <div class="small-2 medium-1 columns">
             <a href="#" class="button postfix" id="tombol-tambah-barang"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
+        </div>
+        <div class="small-2 medium-1 columns">
+            <a href="#" class="success button postfix" id="tombol-cari-barang" accesskey="c"><i class="fa fa-search fa-2x"></i></a>
         </div>
     </div>
     <div id="transaksi">
@@ -104,6 +107,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     }
 
     $(function () {
+        $("#scan").autocomplete("disable");
         $(document).on('click', "#tombol-tambah-barang", function () {
             dataUrl = '<?php echo $this->createUrl('tambahbarang', array('id' => $model->id)); ?>';
             dataKirim = {barcode: $("#scan").val()};
@@ -131,9 +135,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                     }
                     $("#scan").val("");
                     $("#scan").focus();
+                    $("#scan").autocomplete("disable");
                 }
             });
             return false;
+        });
+        $(document).on('click', "#tombol-cari-barang", function () {
+            $("#scan").autocomplete("enable");
+            var nilai = $("#scan").val();
+            $("#scan").autocomplete("search", nilai);
+            $("#scan").focus();
         });
     });
 
@@ -146,6 +157,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     $("#scan").autocomplete({
         source: "<?php echo $this->createUrl('caribarang'); ?>",
         minLength: 3,
+        delay: 1000,
         search: function (event, ui) {
             $("#scan-icon").html('<img src="<?php echo Yii::app()->theme->baseUrl; ?>/css/3.gif" />');
         },
