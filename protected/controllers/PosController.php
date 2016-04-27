@@ -516,6 +516,11 @@ class PosController extends Controller
         return $return;
     }
 
+    /**
+     * Cek $user apakah punya hak admin
+     * @param ActiveRecord $user
+     * @return boolean
+     */
     public function isAdmin($user)
     {
         return Yii::app()->authManager->getAuthAssignment(Yii::app()->params['useradmin'], $user->id) === null ? FALSE : TRUE;

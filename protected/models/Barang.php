@@ -51,7 +51,7 @@ class Barang extends CActiveRecord
         return array(
             'belumSO',
             'aktif' => array(
-                'condition'=> 'status = '.self::STATUS_AKTIF
+                'condition' => 'status = ' . self::STATUS_AKTIF
             )
         );
     }
@@ -73,7 +73,7 @@ class Barang extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('barcode, nama, kategori_id, satuan_id, rak_id', 'required'),
+            array('barcode, nama, kategori_id, satuan_id', 'required'),
             array('barcode', 'unique'),
             array('status', 'numerical', 'integerOnly' => true),
             array('barcode', 'length', 'max' => 30),
@@ -152,7 +152,7 @@ class Barang extends CActiveRecord
         $criteria->compare('t.nama', $this->nama, true);
         $criteria->compare('kategori_id', $this->kategori_id);
         $criteria->compare('satuan_id', $this->satuan_id);
-        $criteria->compare('rak_id', $this->rak_id);
+        $criteria->compare('rak_id', ($this->rak_id == 'NULL') ? NULL : $this->rak_id, true);
         $criteria->compare('restock_point', $this->restock_point, true);
         $criteria->compare('restock_level', $this->restock_level, true);
         $criteria->compare('status', $this->status);
@@ -240,7 +240,7 @@ class Barang extends CActiveRecord
 
     public function filterRak()
     {
-        return CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return array_merge(['NULL' => 'NULL'], CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama'));
     }
 
 }

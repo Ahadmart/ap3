@@ -48,7 +48,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                 ),
                 array(
                     'name' => 'rak_id',
-                    'value' => '$data->rak->nama',
+                    'value' => '$data->rak == null ? "NULL":$data->rak->nama',
                     'filter' => $model->filterRak()
                 ),
                 array(

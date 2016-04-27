@@ -71,7 +71,7 @@ class UploadCsvPembelianForm extends CFormModel
                          *  0         1          2            3           4           5           6     7              8                9          
                          */
                         $barangAda = Barang::model()->find('barcode=:barcode', array(':barcode' => $line[0]));
-
+                        
                         if (is_null($barangAda)) {
                             /* Jika belum ada barcode nya, maka buat barang baru */
 
