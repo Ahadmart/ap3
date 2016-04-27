@@ -17,12 +17,14 @@ body{
     padding: 0 5px;
     text-align: center; 
     overflow: hidden;
+    margin-bottom: 2mm;
 }
 
 .label-container{
     width:53mm; 
     page-break-inside: avoid;
     float:left; 
+    margin-left: 2mm;
 }
 
 .nama-barang{
