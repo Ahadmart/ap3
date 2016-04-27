@@ -197,6 +197,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     $("#uang-dibayar").keyup(function () {
         tampilkanKembalian();
     });
+
+    $("#uang-dibayar").keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-simpan").click();
+        }
+    });
+    
     $("#tombol-simpan").click(function () {
         dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
         dataKirim = {
