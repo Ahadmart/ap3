@@ -57,6 +57,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                     'filter' => $model->filterStatus()
                 ),
                 array(
+                    'header' => 'Harga Jual',
+                    'value' => '$data->hargaJual',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
+                ),
+                array(
                     'name' => 'Stok',
                     'value' => '$data->stok',
                     'htmlOptions' => array('class' => 'rata-kanan'),
