@@ -87,7 +87,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 $kategoriId = $kategoriAda->id;
                             }
 
-                            $satuanAda = KategoriBarang::model()->find('nama=:nama', array(':nama' => $line[7]));
+                            $satuanAda = SatuanBarang::model()->find('nama=:nama', array(':nama' => $line[7]));
                             if (is_null($satuanAda)) {
                                 $satuanBaru = new SatuanBarang;
                                 $satuanBaru->nama = $line[7];
