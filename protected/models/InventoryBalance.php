@@ -640,11 +640,11 @@ class InventoryBalance extends CActiveRecord
         }
 
         if ($sisa > 0) {
-            $this->soInvSebelumnya($soModel, $inventory->id, $inventory->barang_id, $sisa, $inventory->harga_beli);
+            $this->soInvSebelumnya($soModel, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id, $inventory->harga_beli);
         }
     }
 
-    public function soInvSebelumnya($soModel, $invId, $barangId, $selisih, $hargaBeli = null)
+    public function soInvSebelumnya($soModel, $invId, $barangId, $selisih, $pembelianDetailIdTerakhir, $hargaBeli = null)
     {
         $sisa = $selisih;
         $inventory = InventoryBalance::model()->find(array(
@@ -666,6 +666,7 @@ class InventoryBalance extends CActiveRecord
             $i->qty = $selisih;
             $i->asal = self::ASAL_SO;
             $i->nomor_dokumen = $soModel->nomor;
+            $i->pembelian_detail_id = $pembelianDetailIdTerakhir; // Diisi dengan pembelian terakhir, untuk kompatibilitas dg proses lain
             if (!$i->save()) {
                 throw new Exception("Gagal membuat layer dari SO", 500);
             }
@@ -691,7 +692,7 @@ class InventoryBalance extends CActiveRecord
             }
         }
         if ($sisa > 0) {
-            $this->soInvSebelumnya($soModel, $inventory->id, $inventory->barang_id, $sisa);
+            $this->soInvSebelumnya($soModel, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id);
         }
     }
 
