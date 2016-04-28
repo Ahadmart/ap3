@@ -387,7 +387,9 @@ class PosController extends Controller
         );
         if (isset($_POST['pos'])) {
             $pos = Pos::model('Pos')->findByPk($id);
-            $return = $pos->simpanPOS($_POST['pos']);
+            if ($pos->status == Penjualan::STATUS_DRAFT) {
+                $return = $pos->simpanPOS($_POST['pos']);
+            }
             if ($return['sukses']) {
                 
             }

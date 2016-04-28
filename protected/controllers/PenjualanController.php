@@ -260,7 +260,9 @@ class PenjualanController extends Controller
         );
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $penjualan = $this->loadModel($id);
-            $return = $penjualan->simpan();
+            if ($penjualan->status == Penjualan::STATUS_DRAFT) {
+                $return = $penjualan->simpan();
+            }
         }
         $this->renderJSON($return);
     }
@@ -287,15 +289,16 @@ class PenjualanController extends Controller
         $return['totalF'] = $totalF;
         $this->renderJSON($return);
     }
-    
+
     /**
      * Ambil poin penjualan saat ini
      * @param int $penjualanId
      * @return json
      */
-    public function actionPoin($id){
+    public function actionPoin($id)
+    {
         $penjualan = $this->loadModel($id);
-        $curPoin = $penjualan->getCurPoin();        
+        $curPoin = $penjualan->getCurPoin();
     }
 
     public function formatHargaJual($data)
@@ -306,6 +309,21 @@ class PenjualanController extends Controller
     public function formatHargaJualRekomendasi($data)
     {
         return number_format($data->harga_jual_rekomendasi, 0, ',', '.');
+    }
+
+    public function tampilkanHargaBeli($data)
+    {
+        $hpp = HargaPokokPenjualan::model()->findAll('penjualan_detail_id=' . $data->id);
+        $barisPertama = true;
+        $text = '';
+        foreach ($hpp as $hargaBeli) {
+            if (!$barisPertama) {
+                $text .='<br />';
+            }
+            $text .= number_format($hargaBeli->harga_beli, 0, ',', '.') . ' x ' . $hargaBeli->qty;
+            $barisPertama = false;
+        }
+        return $text;
     }
 
     /**
