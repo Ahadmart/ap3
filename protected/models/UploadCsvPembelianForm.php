@@ -80,9 +80,10 @@ class UploadCsvPembelianForm extends CFormModel
                             if (is_null($kategoriAda)) {
                                 $kategoriBaru = new KategoriBarang;
                                 $kategoriBaru->nama = $line[8];
-                                if ($kategoriBaru->save()) {
-                                    $kategoriId = $kategoriBaru->id;
+                                if (!$kategoriBaru->save()) {
+                                    throw new Exception("Gagal simpan kategori baru", 500);
                                 }
+                                $kategoriId = $kategoriBaru->id;
                             } else {
                                 $kategoriId = $kategoriAda->id;
                             }
@@ -91,9 +92,10 @@ class UploadCsvPembelianForm extends CFormModel
                             if (is_null($satuanAda)) {
                                 $satuanBaru = new SatuanBarang;
                                 $satuanBaru->nama = $line[7];
-                                if ($satuanBaru->save()) {
-                                    $satuanId = $satuanBaru->id;
+                                if (!$satuanBaru->save()) {
+                                    throw new Exception("Gagal simpan satuan baru", 500);
                                 }
+                                $satuanId = $satuanBaru->id;
                             } else {
                                 $satuanId = $satuanAda->id;
                             }
@@ -103,13 +105,16 @@ class UploadCsvPembelianForm extends CFormModel
                             $barangBaru->nama = $line[2];
                             $barangBaru->kategori_id = $kategoriId;
                             $barangBaru->satuan_id = $satuanId;
-                            if ($barangBaru->save()) {
-                                $barangId = $barangBaru->id;
-                                /* Jadikan supplier default ke profil ini */
-                                $supplierBarang = new SupplierBarang;
-                                $supplierBarang->barang_id = $barangId;
-                                $supplierBarang->supplier_id = $profilId;
-                                $supplierBarang->save();
+                            if (!$barangBaru->save()) {
+                                throw new Exception("Gagal simpan barang baru", 500);
+                            }
+                            $barangId = $barangBaru->id;
+                            /* Jadikan supplier default ke profil ini */
+                            $supplierBarang = new SupplierBarang;
+                            $supplierBarang->barang_id = $barangId;
+                            $supplierBarang->supplier_id = $profilId;
+                            if (!$supplierBarang->save()) {
+                                throw new Exception("Gagal simpan Supplier Barang", 500);
                             }
                         } else {
                             $barangId = $barangAda->id;
@@ -122,7 +127,7 @@ class UploadCsvPembelianForm extends CFormModel
                         $detail->harga_beli = $line[5];
                         $detail->harga_jual = $line[6];
                         if (!$detail->save()) {
-                            throw new Exception('Gagal simpan detail pembelian');
+                            throw new Exception('Gagal simpan detail pembelian', 500);
                         }
                     } while (($line = fgetcsv($fp, 2000)) != FALSE);
                 }
