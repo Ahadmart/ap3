@@ -71,7 +71,7 @@ class UploadCsvPembelianForm extends CFormModel
                          *  0         1          2            3           4           5           6     7              8                9          
                          */
                         $barangAda = Barang::model()->find('barcode=:barcode', array(':barcode' => $line[0]));
-                        
+                        $barangId = null;
                         if (is_null($barangAda)) {
                             /* Jika belum ada barcode nya, maka buat barang baru */
 
@@ -105,6 +105,11 @@ class UploadCsvPembelianForm extends CFormModel
                             $barangBaru->satuan_id = $satuanId;
                             if ($barangBaru->save()) {
                                 $barangId = $barangBaru->id;
+                                /* Jadikan supplier default ke profil ini */
+                                $supplierBarang = new SupplierBarang;
+                                $supplierBarang->barang_id = $barangId;
+                                $supplierBarang->supplier_id = $profilId;
+                                $supplierBarang->save();
                             }
                         } else {
                             $barangId = $barangAda->id;
