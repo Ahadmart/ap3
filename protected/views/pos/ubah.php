@@ -205,6 +205,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     });
     
     $("#tombol-simpan").click(function () {
+        $("#tombol-simpan").disabled;
         dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
         dataKirim = {
             'pos[account]': $("#account").val(),
