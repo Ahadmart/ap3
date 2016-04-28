@@ -187,6 +187,14 @@ class Barang extends CActiveRecord
         return parent::beforeSave();
     }
 
+    public function beforeValidate()
+    {
+        if (empty($this->rak_id)) {
+            $this->rak_id = NULL;
+        }
+        return parent::beforeValidate();
+    }
+
     public function getNamaStatus()
     {
         $statusDef = array('Non Aktif', 'Aktif');
