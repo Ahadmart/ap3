@@ -499,7 +499,6 @@ class InventoryBalance extends CActiveRecord
                  * Jika layer terakhir nilainya <=0, 0 kan qty nya.
                  * Sesuaikan qty layer saat ini
                  */
-                /* fix me: Jika penjualan menyimpan harga beli di harga_beli_temp, update harga_beli dengan harga beli terbaru */
                 $inventoryBalance->qty += $layerTerakhir->qty;
                 $layerTerakhir->qty = 0;
                 if (!$layerTerakhir->save()) {
@@ -526,7 +525,7 @@ class InventoryBalance extends CActiveRecord
     {
         $selisih = $soDetail->qty_sebenarnya - $soDetail->qty_tercatat;
         if ($selisih > 0) {
-            $this->soPlus($soModel, $soDetail->barang_id, $selisih);
+            $this->soPlus($soModel, $soDetail->id, $soDetail->barang_id, $selisih);
         } else if ($selisih < 0) {
             $this->soMinus($soDetail->barang_id, $selisih);
         } else {
@@ -602,7 +601,7 @@ class InventoryBalance extends CActiveRecord
         }
     }
 
-    public function soPlus($soModel, $barangId, $selisih)
+    public function soPlus($soModel, $soDetailId, $barangId, $selisih)
     {
         $inventory = InventoryBalance::model()->find(array(
             'condition' => 'barang_id=:barangId and qty <>0',
@@ -640,18 +639,18 @@ class InventoryBalance extends CActiveRecord
         }
 
         if ($sisa > 0) {
-            $this->soInvSebelumnya($soModel, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id, $inventory->harga_beli);
+            $this->soInvSebelumnya($soModel, $soDetailId, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id, $inventory->harga_beli);
         }
     }
 
-    public function soInvSebelumnya($soModel, $invId, $barangId, $selisih, $pembelianDetailIdTerakhir, $hargaBeli = null)
+    public function soInvSebelumnya($soModel, $soDetailId, $invId, $barangId, $selisih, $pembelianDetailIdTerakhir, $hargaBeli = null)
     {
         $sisa = $selisih;
         $inventory = InventoryBalance::model()->find(array(
             'condition' => 'barang_id=:barangId and id < :invId',
             'order' => 'id',
             'params' => array(':barangId' => $barangId, ':invId' => $invId)));
-        
+
         if (is_null($inventory)) {
             //throw new Exception("Layer inventory tidak ditemukan lagi", 500);
 
@@ -667,6 +666,7 @@ class InventoryBalance extends CActiveRecord
             $i->asal = self::ASAL_SO;
             $i->nomor_dokumen = $soModel->nomor;
             $i->pembelian_detail_id = $pembelianDetailIdTerakhir; // Diisi dengan pembelian terakhir, untuk kompatibilitas dg proses lain
+            $i->stock_opname_detail_id = $soDetailId;
             if (!$i->save()) {
                 throw new Exception("Gagal membuat layer dari SO", 500);
             }
@@ -692,7 +692,7 @@ class InventoryBalance extends CActiveRecord
             }
         }
         if ($sisa > 0) {
-            $this->soInvSebelumnya($soModel, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id);
+            $this->soInvSebelumnya($soModel, $soDetailId, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id);
         }
     }
 
