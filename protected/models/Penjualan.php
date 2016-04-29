@@ -1310,25 +1310,23 @@ class Penjualan extends CActiveRecord
 
         $profil = Profil::model()->findByPk($this->profil_id);
         if ($profil->isMember()) {
-            $periodePoin = MemberPeriodePoin::model()->find('awal<=:bulanSekarang and :bulanSekarang<=akhir', array(
-                ':bulanSekarang' => 'month(now())'
-            ));
-            $poin = null;
+            $periodePoin = MemberPeriodePoin::model()->find('awal<=month(now()) and month(now())<=akhir');
+            $poin = false;
             if (!is_null($periodePoin)) {
                 $poin = Yii::app()->db->createCommand()
                         ->select('sum(poin) total')
                         ->from(PenjualanMember::model()->tableName() . ' tpm')
-                        ->where('year(updated_by)=year(now) and month(updated_by) between :awal and :akhir 
-                                and profil_id=:profilId')
+                        ->where('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND :akhir 
+                                AND profil_id=:profilId')
                         ->bindValues(array(
                             //':tahun' => 'year(' . $this->tanggal . ')',
                             ':awal' => $periodePoin->awal,
                             ':akhir' => $periodePoin->akhir,
-                            ':profil_id' => $profil->id
+                            ':profilId' => $profil->id
                         ))
                         ->queryRow();
             }
-            return !is_null($poin) && $poin ? $poin['total'] : 0;
+            return $poin ? $poin['total'] : 0;
         } else {
             return 0;
         }
