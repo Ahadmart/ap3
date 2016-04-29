@@ -147,19 +147,22 @@ class Barang extends CActiveRecord
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('t.id', $this->id, true);
-        $criteria->compare('barcode', $this->barcode, false);
+        $criteria->compare('t.id', $this->id);
+        $criteria->compare('barcode', $this->barcode);
         $criteria->compare('t.nama', $this->nama, true);
         $criteria->compare('kategori_id', $this->kategori_id);
         $criteria->compare('satuan_id', $this->satuan_id);
-        $criteria->compare('rak_id', ($this->rak_id == 'NULL') ? NULL : $this->rak_id, true);
         $criteria->compare('restock_point', $this->restock_point, true);
         $criteria->compare('restock_level', $this->restock_level, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('t.created_at', $this->created_at, true);
-
+        if ($this->rak_id != 'NULL') {
+            $criteria->compare('rak_id', $this->rak_id);
+        } else {
+            $criteria->addCondition('rak_id IS NULL');
+        }
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
         ));
@@ -248,7 +251,7 @@ class Barang extends CActiveRecord
 
     public function filterRak()
     {
-        return array_merge(['NULL' => 'NULL'], CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama'));
+        return ['NULL' => 'NULL'] + CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
     }
 
 }
