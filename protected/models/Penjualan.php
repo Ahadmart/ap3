@@ -1001,6 +1001,7 @@ class Penjualan extends CActiveRecord
         }
 
         $user = User::model()->findByPk(Yii::app()->user->id);
+        $profil = Profil::model()->findByPk($this->profil_id);
 
         $details = Yii::app()->db->createCommand("
             select barang.barcode, barang.nama, satuan.nama namasatuan, pd.qty, pd.harga_jual, pd.diskon, pd.harga_jual_rekomendasi
@@ -1028,8 +1029,10 @@ class Penjualan extends CActiveRecord
         $struk .=!empty($branchConfig['struk.header2']) ? str_pad($branchConfig['struk.header2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
         $struk .= ' ' . $user->nama_lengkap . ': ' . $this->nomor . PHP_EOL;
 
-        $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
-        $struk .= ' ' . $this->profil->nama . ': ' . $this->profil->nomor . PHP_EOL;
+        if ($profil->isMember()) {
+            $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
+            $struk .= ' ' . $profil->nama . ': ' . $profil->nomor . PHP_EOL;
+        }
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
         $total = 0;
