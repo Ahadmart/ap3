@@ -71,6 +71,12 @@ $this->widget('BGridView', array(
             'htmlOptions' => array('class' => 'rata-kanan'),
         ),
         array(
+            'header' => 'Stok',
+            'value' => '$data->inventoryBalance->barang->stok',
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+            'htmlOptions' => array('class' => 'rata-kanan'),
+        ),
+        array(
             'name' => 'qty',
             'value' => function($data) {
                 return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updateqty') . '">' .
