@@ -1026,8 +1026,10 @@ class Penjualan extends CActiveRecord
         $struk .= str_pad($branchConfig['toko.nama'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
         $struk .=!empty($branchConfig['struk.header1']) ? str_pad($branchConfig['struk.header1'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
         $struk .=!empty($branchConfig['struk.header2']) ? str_pad($branchConfig['struk.header2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
-        $struk .= str_pad($user->nama_lengkap . ': #' . $this->nomor, $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
+        $struk .= ' ' . $user->nama_lengkap . ': ' . $this->nomor . PHP_EOL;
 
+        $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
+        $struk .= ' ' . $this->profil->nama . ': ' . $this->profil->nomor . PHP_EOL;
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
         $total = 0;
@@ -1082,6 +1084,11 @@ class Penjualan extends CActiveRecord
         if ($totalDiskon > 0) {
             $txtDiskon = 'Anda Hemat : ' . str_pad(number_format($totalDiskon, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
             $struk .= str_pad($txtDiskon, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+
+        if ($this->getCurPoin() > 0) {
+            $txtPoin = 'Poin       : ' . str_pad(number_format($this->getCurPoin(), 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $struk .= str_pad($txtPoin, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
 
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
