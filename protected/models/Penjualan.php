@@ -937,6 +937,7 @@ class Penjualan extends CActiveRecord
             $row = $row1 . str_pad($row2 . ' ', $jumlahKolom - strlen($row1), ' ', STR_PAD_LEFT) . PHP_EOL;
 
             /* Jika ini seharusnya halaman baru */
+            /*
             if ($rowCount > $rowPerPage) {
                 $halaman++;
                 $halamanStr = $this->nomor . ' ' . $halaman;
@@ -945,12 +946,13 @@ class Penjualan extends CActiveRecord
                 $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
                 $rowCount = 1; // Reset row counter
             }
-
+*/
             $struk .= $row;
             $no++;
             $rowCount++;
         }
         /* Jika ini seharusnya halaman baru */
+        /*
         if ($rowCount > $rowPerPage && $halaman > 0) {
             $halaman++;
             $halamanStr = $this->nomor . ' ' . $halaman;
@@ -959,8 +961,9 @@ class Penjualan extends CActiveRecord
             $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
             $rowCount = 1; // Reset row counter
         }
+         */
         $struk .= str_pad('', $jumlahKolom, "-") . PHP_EOL . PHP_EOL;
-
+        /*
         if ($rowCount > $rowPerPage - 6) {
             $halaman++;
             $halamanStr = $this->nomor . ' ' . $halaman;
@@ -969,21 +972,26 @@ class Penjualan extends CActiveRecord
             $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
             $rowCount = 1; // Reset row counter
         }
+         */
         $signatureHead1 = '          Diterima';
         $signatureHead2 = 'a.n. ' . $branchConfig['toko.nama'];
+        $signatureHead3 = 'Driver';
 
-        $struk .= $signatureHead1 . str_pad($signatureHead2, 28 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) . PHP_EOL;
+        $struk .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) . 
+                 str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT). PHP_EOL;
         $struk .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
-        $struk .= '     (                )              (                )' . PHP_EOL;
+        $struk .= '     (                )         (                )         (                )' . PHP_EOL;
+        /*
         $rowCount+=7;
         for ($index = 0; $index < $rowPerPage - $rowCount; $index++) {
             $struk .= PHP_EOL;
         }
-        $halaman++;
-        $halamanStr = $this->nomor . ' ' . $halaman;
+         */
+        //$halaman++;
+        //$halamanStr = $this->nomor . ' ' . $halaman;
 
         $struk .= PHP_EOL;
-        $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+        //$struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
         return $struk;
     }
 
