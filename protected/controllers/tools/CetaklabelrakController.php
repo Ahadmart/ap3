@@ -126,7 +126,7 @@ class CetaklabelrakController extends Controller
                     'sukses' => false,
                     'error' => [
                         'code' => 501,
-                        'msg' => 'Barang ' . $_POST['CetakLabelRakForm']['barcode'] . ' sudah ada!'
+                        'msg' => 'Tidak ada barang yang ditambahkan'
                     ]
                 );
             }

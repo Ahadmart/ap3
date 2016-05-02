@@ -91,7 +91,7 @@ class CetakLabelRakForm extends CFormModel
             if (!empty($this->dari)) {
                 $sqlDari = "JOIN
                         barang_harga_jual bhj ON barang.id = bhj.barang_id
-                            AND DATE_FORMAT(bhj.updated_at, '%d-%m-%Y %H:%i') >= :dari";
+                            AND bhj.updated_at >= :dari";
             }
 
             /* Menambahkan barang yang belum ada di tabel label_rak_cetak */
@@ -115,7 +115,7 @@ class CetakLabelRakForm extends CFormModel
                 $command->bindValue(':rakId', $this->rakId);
             }
             if (!empty($this->dari)) {
-                $command->bindValue(':dari', $this->dari);
+                $command->bindValue(':dari', date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s'));
             }
 
             return $command->execute();
