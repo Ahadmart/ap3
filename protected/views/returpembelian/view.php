@@ -8,78 +8,78 @@ $this->breadcrumbs = array(
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Retur Pembelian: '.$model->nomor;
+$this->boxHeader['normal'] = 'Retur Pembelian: ' . $model->nomor;
 ?>
 <div class="row">
-   <div class="small-12 columns header">
-      <span class="secondary label">Supplier</span><span class="label"><?php echo $model->profil->nama; ?></span>
-      <span class="secondary label">Tanggal</span><span class="label"><?php echo $model->tanggal; ?></span>
-      <span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span>
-      <span class="secondary label">Total</span><span class="alert label"><?php echo $model->total; ?></span>
-      <span class="secondary label">Status</span><span class="warning label"><?php echo $model->getNamaStatus(); ?></span>
-   </div>
+    <div class="small-12 columns header">
+        <span class="secondary label">Supplier</span><span class="label"><?php echo $model->profil->nama; ?></span>
+        <span class="secondary label">Tanggal</span><span class="label"><?php echo $model->tanggal; ?></span>
+        <span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span>
+        <span class="secondary label">Total</span><span class="alert label"><?php echo $model->total; ?></span>
+        <span class="secondary label">Status</span><span class="warning label"><?php echo $model->getNamaStatus(); ?></span>
+    </div>
 </div>
 <div class="row">
-   <div class="small-12 columns">
-      <?php
-      $this->widget('BGridView', array(
-          'id' => 'retur-pembelian-detail-grid',
-          'dataProvider' => $returPembelianDetail->search(),
-          // 'filter' => $returPembelianDetail,
-          'enableSorting' => false,
-          'columns' => array(
-              array(
-                  'name' => 'barcode',
-                  'value' => '$data->inventoryBalance->pembelianDetail->barang->barcode'
-              ),
-              array(
-                  'name' => 'namaBarang',
-                  'value' => '$data->inventoryBalance->pembelianDetail->barang->nama'
-              ),
-              array(
-                  'name' => 'pembelian',
-                  'value' => '$data->inventoryBalance->pembelianDetail->pembelian->nomor'
-              ),
-              array(
-                  'name' => 'tglPembelian',
-                  'value' => '$data->inventoryBalance->pembelianDetail->pembelian->tanggal'
-              ),
-              array(
-                  'name' => 'faktur',
-                  'value' => '$data->inventoryBalance->pembelianDetail->pembelian->referensi'
-              ),
-              array(
-                  'name' => 'tglFaktur',
-                  'value' => '$data->inventoryBalance->pembelianDetail->pembelian->tanggal_referensi'
-              ),
-              array(
-                  'name' => 'hargaBeli',
-                  'value' => 'number_format($data->inventoryBalance->pembelianDetail->harga_beli,0,",",".")',
-                  'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                  'htmlOptions' => array('class' => 'rata-kanan'),
-              ),
-              array(
-                  'name' => 'qty',
-                  /*
-                    'value' => function($data) {
-                    return '<a href="#" class="editable-qty" data-type="text" data-pk="'.$data->id.'" data-url="'.Yii::app()->controller->createUrl('updateqty').'">'.
-                    $data->qty.'</a>';
-                    },
-                   */
-                  'type' => 'raw',
-                  'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                  'htmlOptions' => array('class' => 'rata-kanan'),
-              ),
-              array(
-                  'header' => 'Sub Total',
-                  'value' => '$data->subTotal',
-                  'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                  'htmlOptions' => array('class' => 'rata-kanan'),
-              ),
-          ),
-      ));
-      ?>      
-   </div>
+    <div class="small-12 columns">
+        <?php
+        $this->widget('BGridView', array(
+            'id' => 'retur-pembelian-detail-grid',
+            'dataProvider' => $returPembelianDetail->search(),
+            // 'filter' => $returPembelianDetail,
+            'enableSorting' => false,
+            'columns' => array(
+                array(
+                    'name' => 'barcode',
+                    'value' => '$data->inventoryBalance->barang->barcode'
+                ),
+                array(
+                    'name' => 'namaBarang',
+                    'value' => '$data->inventoryBalance->barang->nama'
+                ),
+                array(
+                    'name' => 'pembelian',
+                    'value' => '$data->inventoryBalance->pembelianDetail == null ? "":$data->inventoryBalance->pembelianDetail->pembelian->nomor'
+                ),
+                array(
+                    'name' => 'tglPembelian',
+                    'value' => '$data->inventoryBalance->pembelianDetail == null ? "":$data->inventoryBalance->pembelianDetail->pembelian->tanggal'
+                ),
+                array(
+                    'name' => 'faktur',
+                    'value' => '$data->inventoryBalance->pembelianDetail == null ? "":$data->inventoryBalance->pembelianDetail->pembelian->referensi'
+                ),
+                array(
+                    'name' => 'tglFaktur',
+                    'value' => '$data->inventoryBalance->pembelianDetail == null ? "":$data->inventoryBalance->pembelianDetail->pembelian->tanggal_referensi'
+                ),
+                array(
+                    'name' => 'hargaBeli',
+                    'value' => 'number_format($data->inventoryBalance->harga_beli,0,",",".")',
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                ),
+                array(
+                    'name' => 'qty',
+                    /*
+                      'value' => function($data) {
+                      return '<a href="#" class="editable-qty" data-type="text" data-pk="'.$data->id.'" data-url="'.Yii::app()->controller->createUrl('updateqty').'">'.
+                      $data->qty.'</a>';
+                      },
+                     */
+                    'type' => 'raw',
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                ),
+                array(
+                    'header' => 'Sub Total',
+                    'value' => '$data->subTotal',
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                ),
+            ),
+        ));
+        ?>      
+    </div>
 </div>
 
 <?php

@@ -95,6 +95,15 @@ $model->scenario = 'tampil';
                     'value' => '$data->barang->nama',
                 ),
                 array(
+                    //'name' => 'harga_jual',
+                    'header' => 'HPP',
+                    'type'=>'raw',
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'filter' => false,
+                    'value' => array($this, 'tampilkanHargaBeli')
+                ),
+                array(
                     'name' => 'qty',
                     'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
                     'htmlOptions' => array('class' => 'rata-kanan'),

@@ -51,7 +51,7 @@ class Barang extends CActiveRecord
         return array(
             'belumSO',
             'aktif' => array(
-                'condition'=> 'status = '.self::STATUS_AKTIF
+                'condition' => 'status = ' . self::STATUS_AKTIF
             )
         );
     }
@@ -73,7 +73,7 @@ class Barang extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('barcode, nama, kategori_id, satuan_id, rak_id', 'required'),
+            array('barcode, nama, kategori_id, satuan_id', 'required'),
             array('barcode', 'unique'),
             array('status', 'numerical', 'integerOnly' => true),
             array('barcode', 'length', 'max' => 30),
@@ -147,19 +147,22 @@ class Barang extends CActiveRecord
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('t.id', $this->id, true);
-        $criteria->compare('barcode', $this->barcode, false);
+        $criteria->compare('t.id', $this->id);
+        $criteria->compare('barcode', $this->barcode);
         $criteria->compare('t.nama', $this->nama, true);
         $criteria->compare('kategori_id', $this->kategori_id);
         $criteria->compare('satuan_id', $this->satuan_id);
-        $criteria->compare('rak_id', $this->rak_id);
         $criteria->compare('restock_point', $this->restock_point, true);
         $criteria->compare('restock_level', $this->restock_level, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('t.created_at', $this->created_at, true);
-
+        if ($this->rak_id != 'NULL') {
+            $criteria->compare('rak_id', $this->rak_id);
+        } else {
+            $criteria->addCondition('rak_id IS NULL');
+        }
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
         ));
@@ -185,6 +188,14 @@ class Barang extends CActiveRecord
         $this->updated_at = null; // Trigger current timestamp
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
+    }
+
+    public function beforeValidate()
+    {
+        if (empty($this->rak_id)) {
+            $this->rak_id = NULL;
+        }
+        return parent::beforeValidate();
     }
 
     public function getNamaStatus()
@@ -240,7 +251,7 @@ class Barang extends CActiveRecord
 
     public function filterRak()
     {
-        return CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return ['NULL' => 'NULL'] + CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
     }
 
 }

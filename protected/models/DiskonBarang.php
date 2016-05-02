@@ -30,6 +30,7 @@ class DiskonBarang extends CActiveRecord
     const TIPE_GROSIR = 1;
     const TIPE_BANDED = 2;
     const TIPE_MANUAL = 3;
+    const TIPE_PROMO_MEMBER = 4;
     /* ========= */
     const STATUS_TIDAK_AKTIF = 0;
     const STATUS_AKTIF = 1;
@@ -179,8 +180,9 @@ class DiskonBarang extends CActiveRecord
     public function listTipe()
     {
         return array(
-            self::TIPE_PROMO => 'Promo (pengurangan harga per waktu tertentu)',
-            self::TIPE_GROSIR => 'Grosir (beli banyak harga turun)',
+            self::TIPE_PROMO => 'Promo (diskon per waktu tertentu)',
+            self::TIPE_PROMO_MEMBER => 'Promo Member',
+            //self::TIPE_GROSIR => 'Grosir (beli banyak harga turun)',
             self::TIPE_BANDED => 'Banded (beli qty tertentu harga turun)'
         );
     }
@@ -189,7 +191,8 @@ class DiskonBarang extends CActiveRecord
     {
         return array(
             self::TIPE_PROMO => 'Promo',
-            self::TIPE_GROSIR => 'Grosir',
+            self::TIPE_PROMO_MEMBER => 'Promo Member',
+            //self::TIPE_GROSIR => 'Grosir',
             self::TIPE_BANDED => 'Banded'
         );
     }
@@ -238,6 +241,11 @@ class DiskonBarang extends CActiveRecord
                 if (empty($this->qty)) {
                     return false;
                 }
+            case self::TIPE_PROMO_MEMBER:
+                if (empty($this->qty_max)) {
+                    return false;
+                }
+                break;
         }
         return parent::beforeValidate();
     }
@@ -248,4 +256,5 @@ class DiskonBarang extends CActiveRecord
         $this->sampai = !is_null($this->sampai) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->sampai), 'd-m-Y H:i') : '';
         return parent::afterFind();
     }
+
 }

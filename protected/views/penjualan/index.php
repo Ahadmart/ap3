@@ -69,6 +69,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/res
                   'headerHtmlOptions' => array('class' => 'rata-kanan')
               ),
               array(
+                  'name' => 'updated_by',
+                  'value' => '$data->updatedBy->nama_lengkap',
+              ),
+              array(
                   'class' => 'BButtonColumn',
               ),
           ),

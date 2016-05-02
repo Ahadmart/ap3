@@ -9,7 +9,7 @@ $this->widget('BGridView', array(
     'id' => 'penjualan-detail-grid',
     'dataProvider' => $penjualanDetail->search(),
     //'filter' => $penjualanDetail,
-    'summaryText' => 'Poin: ' . $penjualan->getCurPoin() . ' | {start}-{end} dari {count}',
+    'summaryText' => 'Poin struk ini = ' . $penjualan->getCurPoin() . ' | Poin sebelumnya = ' . $penjualan->getTotalPoinPeriodeBerjalan() . ' | {start}-{end} dari {count}',
     'itemsCssClass' => 'tabel-index responsive',
     'template' => '{items}{summary}{pager}',
     'enableSorting' => false,
@@ -25,12 +25,12 @@ $this->widget('BGridView', array(
             'value' => array($this, 'renderNamaBarang'),
         ),
         /*
-        array(
-            'name' => 'namaBarang',
-            'value' => '$data->barang->nama',
-            'headerHtmlOptions' => array('class' => 'show-for-large-up'),
-            'htmlOptions' => array('class' => 'show-for-large-up'),
-        ),
+          array(
+          'name' => 'namaBarang',
+          'value' => '$data->barang->nama',
+          'headerHtmlOptions' => array('class' => 'show-for-large-up'),
+          'htmlOptions' => array('class' => 'show-for-large-up'),
+          ),
          * 
          */
         array(

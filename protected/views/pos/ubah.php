@@ -13,6 +13,20 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 ?>
 
 <div class="medium-7 large-7 columns" style="/*height: 100%; overflow: scroll*/">
+    <div class="row collapse">
+        <div class="small-2 medium-1 columns">
+            <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+        </div>
+        <div class="small-6 medium-9 columns">
+            <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>
+        </div>
+        <div class="small-2 medium-1 columns">
+            <a href="#" class="button postfix" id="tombol-tambah-barang"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
+        </div>
+        <div class="small-2 medium-1 columns">
+            <a href="#" class="success button postfix" id="tombol-cari-barang" accesskey="c"><i class="fa fa-search fa-2x"></i></a>
+        </div>
+    </div>
     <div id="transaksi">
         <?php
         $this->renderPartial('_detail', array(
@@ -28,17 +42,6 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     </div>
     <div id="kembali">
         0
-    </div>
-    <div class="row collapse">
-        <div class="small-3 large-2 columns">
-            <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
-        </div>
-        <div class="small-6 large-8 columns">
-            <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>
-        </div>
-        <div class="small-3 large-2 columns">
-            <a href="#" class="button postfix" id="tombol-tambah-barang"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
-        </div>
     </div>
     <div class="row collapse">
         <?php /* Company account */ ?>
@@ -104,6 +107,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     }
 
     $(function () {
+        $("#scan").autocomplete("disable");
         $(document).on('click', "#tombol-tambah-barang", function () {
             dataUrl = '<?php echo $this->createUrl('tambahbarang', array('id' => $model->id)); ?>';
             dataKirim = {barcode: $("#scan").val()};
@@ -131,9 +135,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                     }
                     $("#scan").val("");
                     $("#scan").focus();
+                    $("#scan").autocomplete("disable");
                 }
             });
             return false;
+        });
+        $(document).on('click', "#tombol-cari-barang", function () {
+            $("#scan").autocomplete("enable");
+            var nilai = $("#scan").val();
+            $("#scan").autocomplete("search", nilai);
+            $("#scan").focus();
         });
     });
 
@@ -146,6 +157,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     $("#scan").autocomplete({
         source: "<?php echo $this->createUrl('caribarang'); ?>",
         minLength: 3,
+        delay: 1000,
         search: function (event, ui) {
             $("#scan-icon").html('<img src="<?php echo Yii::app()->theme->baseUrl; ?>/css/3.gif" />');
         },
@@ -162,7 +174,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         }
     }).autocomplete("instance")._renderItem = function (ul, item) {
         return $("<li>")
-                .append("<a>" + item.label + "<br /><small>" + item.value + " [" + item.stok + "][" + item.harga + "]</small></a>")
+                .append("<a>" + item.label + " <span class='harga'>" + item.harga + "</span> <i>" + item.value + "</i> <span class='stok'>" + item.stok + "</stok></a>")
                 .appendTo(ul);
     };
 
@@ -186,7 +198,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         tampilkanKembalian();
     });
 
+    $("#uang-dibayar").keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-simpan").click();
+        }
+    });
+    
     $("#tombol-simpan").click(function () {
+        $("#tombol-simpan").disabled;
         dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
         dataKirim = {
             'pos[account]': $("#account").val(),
@@ -195,8 +214,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         };
         console.log(dataUrl);
         printWindow = window.open('about:blank', '', 'left=20,top=20,width=400,height=600,toolbar=0,resizable=1');
-
-
         $.ajax({
             type: 'POST',
             url: dataUrl,
