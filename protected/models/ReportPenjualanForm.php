@@ -87,7 +87,7 @@ class ReportPenjualanForm extends CFormModel
                         FROM
                             harga_pokok_penjualan hpp
                         JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
-                        JOIN penjualan pj ON pd.penjualan_id = pj.id
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                         GROUP BY pj.id) t_modal", "t_penjualan.penjualan_id = t_modal.id");
         $command->order("t_penjualan.nomor");
