@@ -133,7 +133,7 @@ class ReportPenjualanForm extends CFormModel
         if (!empty($this->userId)) {
             $commandRekap->bindValue(":userId", $this->userId);
         }
-        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
+        $commandRekap->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $commandRekap->bindValue(":dari", $dari);
         $commandRekap->bindValue(":sampai", $sampai);
 
