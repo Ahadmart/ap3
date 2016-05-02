@@ -17,8 +17,7 @@ class m160328_025255_create_tabel_label_rak_cetak extends CDbMigration
     // Use safeUp/safeDown to do migration with transaction
     public function safeUp()
     {
-        $dbEngine = 'MyISAM';
-        // $dbEngine = 'InnoDB';
+        $dbEngine = 'InnoDB';
 
         $this->createTable('label_rak_cetak', array(
             "`barang_id` int(10) unsigned NOT NULL,

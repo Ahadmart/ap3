@@ -173,34 +173,58 @@ class PosController extends Controller
         }
     }
 
+    /*
+      public function actionCariBarang($term)
+      {
+      $arrTerm = explode(' ', $term);
+      $wBarcode = '(';
+      $wNama = '(';
+      $pBarcode = array();
+      $param = array();
+      $firstRow = true;
+      $i = 1;
+      foreach ($arrTerm as $bTerm) {
+      if (!$firstRow) {
+      $wBarcode.=' AND ';
+      $wNama.=' AND ';
+      }
+      $wBarcode.="barcode like :term{$i}";
+      $wNama.="nama like :term{$i}";
+      $param[":term{$i}"] = "%{$bTerm}%";
+      $firstRow = FALSE;
+      $i++;
+      }
+      $wBarcode .= ')';
+      $wNama .= ')';
+      //      echo $wBarcode.' AND '.$wNama;
+      //      print_r($param);
+
+      $q = new CDbCriteria();
+      $q->addCondition("{$wBarcode} OR {$wNama}");
+      $q->order = 'nama';
+      $q->params = $param;
+      $barangs = Barang::model()->findAll($q);
+
+      $r = array();
+      foreach ($barangs as $barang) {
+      $r[] = array(
+      'label' => $barang->nama,
+      'value' => $barang->barcode,
+      'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
+      'harga' => $barang->hargaJual
+      );
+      }
+
+      $this->renderJSON($r);
+      }
+     */
+
     public function actionCariBarang($term)
     {
-        $arrTerm = explode(' ', $term);
-        $wBarcode = '(';
-        $wNama = '(';
-        $pBarcode = array();
-        $param = array();
-        $firstRow = true;
-        $i = 1;
-        foreach ($arrTerm as $bTerm) {
-            if (!$firstRow) {
-                $wBarcode.=' AND ';
-                $wNama.=' AND ';
-            }
-            $wBarcode.="barcode like :term{$i}";
-            $wNama.="nama like :term{$i}";
-            $param[":term{$i}"] = "%{$bTerm}%";
-            $firstRow = FALSE;
-            $i++;
-        }
-        $wBarcode .= ')';
-        $wNama .= ')';
-        //      echo $wBarcode.' AND '.$wNama;
-        //      print_r($param);
-
         $q = new CDbCriteria();
-        $q->addCondition("{$wBarcode} OR {$wNama}");
-        $q->params = $param;
+        $q->addCondition("barcode like :term OR nama like :term");
+        $q->order = 'nama';
+        $q->params = [':term' => "%{$term}%"];
         $barangs = Barang::model()->findAll($q);
 
         $r = array();
@@ -363,7 +387,9 @@ class PosController extends Controller
         );
         if (isset($_POST['pos'])) {
             $pos = Pos::model('Pos')->findByPk($id);
-            $return = $pos->simpanPOS($_POST['pos']);
+            if ($pos->status == Penjualan::STATUS_DRAFT) {
+                $return = $pos->simpanPOS($_POST['pos']);
+            }
             if ($return['sukses']) {
                 
             }
@@ -394,22 +420,21 @@ class PosController extends Controller
                 'msg' => 'Sempurnakan input!',
             )
         );
+
         if (isset($_POST['nomor'])) {
-            $customer = Profil::model()->find('nomor=:nomor', array(':nomor' => $_POST['nomor']));
+            if (trim($_POST['nomor']) == '') {
+                /* Jika tidak diinput nomornya, maka set ke customer Umum */
+                $customer = Profil::model()->findByPk(Profil::PROFIL_UMUM);
+            } else {
+                $customer = Profil::model()->find('nomor=:nomor', array(':nomor' => $_POST['nomor']));
+            }
             if (!is_null($customer)) {
-                /* Simpan profil ID ke penjualan */
                 $penjualan = $this->loadModel($id);
-                if ($penjualan->saveAttributes(array('profil_id' => $customer->id))) {
-                    $alamat1 = !empty($customer->alamat1) ? $customer->alamat1 : '';
-                    $alamat2 = !empty($customer->alamat2) ? '<br>' . $customer->alamat2 : '';
-                    $alamat3 = !empty($customer->alamat3) ? '<br>' . $customer->alamat3 : '';
-                    $return = array(
-                        'sukses' => true,
-                        'nama' => $customer->nama,
-                        'nomor' => $customer->nomor,
-                        'address' => $alamat1 . $alamat2 . $alamat3
-                    );
-                }
+
+                /* Simpan profil ID ke penjualan 
+                 * dan sesuaikan diskon
+                 */
+                $return = $penjualan->gantiCustomer($customer);
             } else {
                 $return = array(
                     'sukses' => false,
@@ -493,6 +518,11 @@ class PosController extends Controller
         return $return;
     }
 
+    /**
+     * Cek $user apakah punya hak admin
+     * @param ActiveRecord $user
+     * @return boolean
+     */
     public function isAdmin($user)
     {
         return Yii::app()->authManager->getAuthAssignment(Yii::app()->params['useradmin'], $user->id) === null ? FALSE : TRUE;

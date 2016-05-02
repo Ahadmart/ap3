@@ -132,7 +132,7 @@ class ReturPembelianDetail extends CActiveRecord {
    }
 
    public function getSubTotal() {
-      return number_format($this->qty * $this->inventoryBalance->pembelianDetail->harga_beli, 0, ',', '.');
+      return number_format($this->qty * $this->inventoryBalance->harga_beli, 0, ',', '.');
    }
 
 }

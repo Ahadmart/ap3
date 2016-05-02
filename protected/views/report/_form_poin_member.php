@@ -1,0 +1,46 @@
+<?php
+/* @var $this ReportController */
+/* @var $model ReporPoinMemberForm */
+/* @var $form CActiveForm */
+?>
+<?php
+$form = $this->beginWidget('CActiveForm', array(
+    'id' => 'report-poin-member-form',
+    // Please note: When you enable ajax validation, make sure the corresponding
+    // controller action is handling ajax validation correctly.
+    // See class documentation of CActiveForm for details on this,
+    // you need to use the performAjaxValidation()-method described there.
+    'enableAjaxValidation' => false,
+    'htmlOptions' => array('target' => '_blank'),
+    'method' => 'GET'
+        ));
+?>
+<?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
+
+<div class="row">
+    <div class="small-12 columns">
+        <?php echo $form->labelEx($model, 'tahun'); ?>
+        <?php echo $form->textField($model, 'tahun', array('class' => 'rata-kanan', 'value' => empty($model->tahun) ? date('Y') : $model->tahun)); ?>
+        <?php echo $form->error($model, 'tanggal', array('class' => 'error')); ?>
+    </div>
+
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <?php echo CHtml::submitButton('Submit', array('name' => 'submit', 'class' => 'tiny bigfont button right')); ?>
+    </div>
+</div>
+
+<?php
+$this->endWidget();
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/foundation-datepicker.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
+?>
+<script>
+    $(function () {
+        $('.tanggalan').fdatepicker({
+            format: 'dd-mm-yyyy'
+        });
+    });
+</script>

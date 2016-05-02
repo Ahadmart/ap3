@@ -9,36 +9,36 @@ and open the template in the editor.
 */
 body{
     font-family: OpenSans;
-    font-size: 10pt;
+    font-size: 11pt;
 }
 .label{
-    border: 1px solid #000000;  
-    /*margin-left:10px;*/ 
-    /*margin-bottom:10px;*/ 
-    height:112px; 
+    border: 1px solid #000;  
+    height:30mm; 
     padding: 0 5px;
     text-align: center; 
     overflow: hidden;
+    margin-bottom: 2mm;
 }
 
 .label-container{
-    width:190px; 
+    width:53mm; 
     page-break-inside: avoid;
     float:left; 
+    margin-left: 2mm;
 }
 
 .nama-barang{
-    margin-top: 5px;
+    margin-top: 3px;
     text-transform: uppercase;
+    font-family: Ubuntu;
 }
 
 .harga-jual{
     font-size: 25pt;
-    /*margin-bottom: 7px;*/
 }
 
 .barcode, .tgl-cetak{
-    font-size: 5pt;
+    font-size: 6pt;
     margin: 0;
 }
 
@@ -46,9 +46,15 @@ body{
     width: 40%;
     float:left;
     text-align: left;
+    padding-left: 9px
 }
 .tgl-cetak{
-    width: 30%;
+    width: 40%;
     float:right;
     text-align: right;
+    font-size: 6pt;
+    padding-top: 12px;
+    padding-right: 9px;
+    /*display: none;*/
 }
+

@@ -152,12 +152,18 @@ class PembelianController extends Controller
         /* Model untuk membuat barang baru */
         $barang = new Barang;
 
+        $pilihBarang = TRUE;
+        if (isset($_GET['pilihb']) && $_GET['pilihb'] == FALSE) {
+            $pilihBarang = FALSE;
+        }
+
         $this->render('ubah', array(
             'model' => $model,
             'barangBarcode' => $barangBarcode,
             'barangNama' => $barangNama,
             'pembelianDetail' => $pembelianDetail,
-            'barang' => $barang
+            'barang' => $barang,
+            'pilihBarang' => $pilihBarang
                 //'totalPembelian' => $model->ambilTotal()
         ));
     }
@@ -510,7 +516,7 @@ class PembelianController extends Controller
                 $modelCsvForm->csvFile = CUploadedFile::getInstance($modelCsvForm, 'csvFile');
                 $return = $modelCsvForm->simpanCsvKePembelian();
                 if ($return['sukses']) {
-                    $this->redirect($this->createUrl('ubah', array('id' => $return['pembelianId'])));
+                    $this->redirect($this->createUrl('ubah', array('id' => $return['pembelianId'], 'pilihb' => FALSE)));
                 }
             }
         }

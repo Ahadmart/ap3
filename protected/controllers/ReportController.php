@@ -205,4 +205,16 @@ class ReportController extends Controller
         $mPDF1->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
     }
 
+    public function actionPoinMember()
+    {
+        $model = new ReportPoinMemberForm;
+        if (isset($_POST['ReportPoinMemberForm'])) {
+            
+        }
+        $this->render('poinmember', array(
+            'model' => $model,
+            'judul' => 'Poin Member'
+        ));
+    }
+
 }

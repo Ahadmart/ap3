@@ -50,6 +50,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/res
                   'filter' => $model->listStatus()
               ),
               array(
+                  'name' => 'updated_by',
+                  'value' => '$data->updatedBy->nama_lengkap',
+              ),
+              array(
                   'class' => 'BButtonColumn',
               ),
           ),

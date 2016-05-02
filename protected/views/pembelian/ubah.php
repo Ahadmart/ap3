@@ -51,12 +51,14 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
 </div>
 <div class="row">
     <?php
-    $this->renderPartial('_pilih_barang', array(
-        'pembelianModel' => $model,
-        'barangBarcode' => $barangBarcode,
-        'barangNama' => $barangNama,
-        'barang' => $barang,
-    ));
+    if ($pilihBarang) {
+        $this->renderPartial('_pilih_barang', array(
+            'pembelianModel' => $model,
+            'barangBarcode' => $barangBarcode,
+            'barangNama' => $barangNama,
+            'barang' => $barang,
+        ));
+    }
     ?>
 </div>
 

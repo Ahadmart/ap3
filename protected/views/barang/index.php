@@ -48,13 +48,19 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                 ),
                 array(
                     'name' => 'rak_id',
-                    'value' => '$data->rak->nama',
+                    'value' => '$data->rak == null ? "NULL":$data->rak->nama',
                     'filter' => $model->filterRak()
                 ),
                 array(
                     'name' => 'status',
                     'value' => '$data->namaStatus',
                     'filter' => $model->filterStatus()
+                ),
+                array(
+                    'header' => 'Harga Jual',
+                    'value' => '$data->hargaJual',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
                 ),
                 array(
                     'name' => 'Stok',

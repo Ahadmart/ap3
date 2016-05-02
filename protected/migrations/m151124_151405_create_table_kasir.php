@@ -17,8 +17,7 @@ class m151124_151405_create_table_kasir extends CDbMigration
     // Use safeUp/safeDown to do migration with transaction
     public function safeUp()
     {
-        $dbEngine = 'MyISAM';
-        // $dbEngine = 'InnoDB';
+        $dbEngine = 'InnoDB';
 
         $this->createTable('kasir', array(
             "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,

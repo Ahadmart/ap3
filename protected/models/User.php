@@ -48,7 +48,8 @@ class User extends CActiveRecord {
 			 array('nama', 'length', 'max' => 45),
 			 array('nama_lengkap', 'length', 'max' => 100),
 			 array('password, salt', 'length', 'max' => 512),
-			 array('last_ipaddress, theme_id, updated_by', 'length', 'max' => 10),
+			 array('theme_id, updated_by', 'length', 'max' => 10),
+			 array('last_ipaddress', 'length', 'max' => 15),
 			 array('last_logon, created_at, updated_at, updated_by, newPasswordRepeat', 'safe'),
 			 // The following rule is used by search().
 			 // @todo Please remove those attributes that should not be searched.
