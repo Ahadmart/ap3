@@ -79,7 +79,7 @@ class ReportPenjualanForm extends CFormModel
                                 SUM(pd.harga_jual * pd.qty) total
                         FROM
                             penjualan_detail pd
-                        JOIN penjualan pj ON pd.penjualan_id = pj.id
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                         GROUP BY pd.penjualan_id) t_penjualan");
         $command->join("(SELECT 
@@ -105,7 +105,7 @@ class ReportPenjualanForm extends CFormModel
             $command->bindValue(":userId", $this->userId);
             $whereSub.=" AND pj.updated_by = :userId";
         }
-
+        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $command->bindValue(":dari", $dari);
         $command->bindValue(":sampai", $sampai);
 
