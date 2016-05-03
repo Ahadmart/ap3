@@ -361,6 +361,10 @@ class PosController extends Controller
             'model' => $model,
         ));
     }
+    
+    public function actionCekHarga(){
+        $this->render('cekharga');
+    }
 
     /**
      * render link actionUbah

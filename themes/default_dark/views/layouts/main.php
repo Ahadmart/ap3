@@ -175,7 +175,8 @@
                                     array('label' => '<i class="fa fa-wrench fa-fw fa-lg"></i>' . ' Tools', 'url' => '',
                                         'items' => array(
                                             array('label' => '<i class="fa fa-code fa-fw"></i>' . ' Cetak Label Rak', 'url' => array('tools/cetaklabelrak/index')),
-                                            array('label' => '<i class="fa fa-code fa-fw"></i>' . ' Penerimaan PO', 'url' => array('')),
+                                            array('label' => '<i class="fa fa-code fa-fw"></i>' . ' Cek Harga', 'url' => array('tools/cekharga/index')),
+                                            //array('label' => '<i class="fa fa-code fa-fw"></i>' . ' Penerimaan PO', 'url' => array('')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
