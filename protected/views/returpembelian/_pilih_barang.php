@@ -109,6 +109,7 @@
 										  clearInfo();
                                 $.fn.yiiGridView.update('inventory-balance-grid');
                                 $.fn.yiiGridView.update('retur-pembelian-detail-grid');
+                                updateTotal();
                             }"), array(
                          'class' => 'button postfix',
                          'id' => 'tombol-tambah'));
