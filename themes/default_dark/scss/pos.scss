@@ -238,13 +238,28 @@ table tr th, table tr td {
         margin: 10px 0;
     }
 }
-.harga{
+.ac-nama{
+    float:left;
+    width: 45%;
+}
+.ac-harga{
     color: $violet;
     font-weight: bold;
+    float:left;
+    width: 15%;
+    text-align: right;
 }
-.stok{
+.ac-barcode{
+    float:left;
+    width: 30%;
+    padding-left: 5px;
+}
+.ac-stok{
     color: $oranye;
     font-weight: bold;
+    float:left;
+    width: 10%;
+    text-align: right;
 }
 
 .geleng {

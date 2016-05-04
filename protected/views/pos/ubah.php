@@ -123,6 +123,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 data: dataKirim,
                 success: function (data) {
                     if (data.sukses) {
+                        $("#tombol-admin-mode").removeClass('geleng');
+                        $("#tombol-admin-mode").removeClass('alert');
                         $.fn.yiiGridView.update('penjualan-detail-grid');
                         updateTotal();
                     } else {
@@ -173,8 +175,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             }
         }
     }).autocomplete("instance")._renderItem = function (ul, item) {
-        return $("<li>")
-                .append("<a>" + item.label + " <span class='harga'>" + item.harga + "</span> <i>" + item.value + "</i> <span class='stok'>" + item.stok + "</stok></a>")
+        return $("<li style='clear:both'>")
+                .append("<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-harga'>" + item.harga + "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item.stok + "</stok></a>")
                 .appendTo(ul);
     };
 
@@ -203,7 +205,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             $("#tombol-simpan").click();
         }
     });
-    
+
     $("#tombol-simpan").click(function () {
         $("#tombol-simpan").disabled;
         dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
