@@ -10,42 +10,44 @@ $this->breadcrumbs = array(
 $this->boxHeader['small'] = 'Suspended';
 $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Suspended';
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/responsive-tables.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/responsive-tables.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 ?>
 <div class="medium-10 columns" style="/*height: 100%; overflow: scroll*/">
-   <?php
-   $this->widget('BGridView', array(
-       'id' => 'penjualan-grid',
-       'dataProvider' => $model->search(),
-       'filter' => $model,
-       'itemsCssClass' => 'tabel-index responsive',
-       'template' => '{items}{summary}{pager}',
-       'columns' => array(
-           array(
-               'class' => 'BDataColumn',
-               'name' => 'tanggal',
-               'header' => 'Tang<span class="ak">g</span>al',
-               'accesskey' => 'g',
-               'type' => 'raw',
-               'value' => array($this, 'renderLinkToUbah')
-           ),
-           array(
-               'name' => 'namaProfil',
-               'value' => '$data->profil->nama'
-           ),
-           array(
-               'header' => 'Total',
-               'value' => '$data->total',
-               'htmlOptions' => array('class' => 'rata-kanan'),
-               'headerHtmlOptions' => array('class' => 'rata-kanan')
-           ),
-           array(
-               'class' => 'BButtonColumn',
-           ),
-       ),
-   ));
-   ?>
+    <?php
+    $this->widget('BGridView', array(
+        'id' => 'penjualan-grid',
+        'dataProvider' => $model->search(),
+        'filter' => $model,
+        'itemsCssClass' => 'tabel-index responsive',
+        'template' => '{items}{summary}{pager}',
+        'columns' => array(
+            array(
+                'class' => 'BDataColumn',
+                'name' => 'tanggal',
+                'header' => 'Tang<span class="ak">g</span>al',
+                'accesskey' => 'g',
+                'type' => 'raw',
+                'value' => array($this, 'renderLinkToUbah')
+            ),
+            array(
+                'name' => 'namaProfil',
+                'value' => '$data->profil->nama'
+            ),
+            array(
+                'header' => 'Total',
+                'value' => '$data->total',
+                'htmlOptions' => array('class' => 'rata-kanan'),
+                'headerHtmlOptions' => array('class' => 'rata-kanan')
+            ),
+        /*
+          array(
+          'class' => 'BButtonColumn',
+          ),
+         */
+        ),
+    ));
+    ?>
 </div>
 <?php
 $this->menu = array(

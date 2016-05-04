@@ -114,6 +114,11 @@ $this->widget('BGridView', array(
             },
             error: function (response, newValue) {
                 if (response.status === 500) {
+                    $.gritter.add({
+                        title: 'Error 500',
+                        text: 'Hapus detail harus dengan otorisasi Admin',
+                        time: 3000,
+                    });
                     $("#tombol-admin-mode").addClass('geleng');
                     $("#tombol-admin-mode").addClass('alert');
                 } 

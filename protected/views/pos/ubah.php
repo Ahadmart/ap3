@@ -89,7 +89,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         </div>
     </div>
     <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
-    <!--<a href="" class="alert bigfont tiny  button" id="tombol-batal">Batal</a>-->
+    <a href="" class="warning bigfont tiny button" id="tombol-batal">Batal</a>
 </div>
 <div style="display: none" id="total-belanja-h"><?php echo $model->ambilTotal(); ?></div>
 <?php
@@ -231,6 +231,30 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                         text: data.error.msg,
                         time: 3000,
                     });
+                }
+                $("#scan").val("");
+                $("#scan").focus();
+            }
+        });
+        return false;
+    });
+
+    $("#tombol-batal").click(function () {
+        dataUrl = '<?php echo $this->createUrl('hapus', array('id' => $model->id)); ?>';
+        $.ajax({
+            type: 'POST',
+            url: dataUrl,
+            success: function (data) {
+                if (data.sukses) {
+                    window.location.href = "<?php echo $this->createUrl('index'); ?>";
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 3000,
+                    });
+                    $("#tombol-admin-mode").addClass('geleng');
+                    $("#tombol-admin-mode").addClass('alert');
                 }
                 $("#scan").val("");
                 $("#scan").focus();

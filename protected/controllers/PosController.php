@@ -58,8 +58,8 @@ class PosController extends Controller
     {
         $model = new Penjualan;
 
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+// Uncomment the following line if AJAX validation is needed
+// $this->performAjaxValidation($model);
 
         $model->profil_id = Profil::PROFIL_UMUM;
 
@@ -79,7 +79,7 @@ class PosController extends Controller
     {
         $this->penjualanId = $id;
         $model = $this->loadModel($id);
-        // Penjualan tidak bisa diubah kecuali statusnya draft
+// Penjualan tidak bisa diubah kecuali statusnya draft
         if ($model->status != Penjualan::STATUS_DRAFT) {
             $this->redirect(array('index'));
         }
@@ -87,8 +87,8 @@ class PosController extends Controller
         $this->namaProfil = $model->profil->nama;
         $this->profil = Profil::model()->findByPk($model->profil_id);
 
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
+// Uncomment the following line if AJAX validation is needed
+// $this->performAjaxValidation($model);
 
         $penjualanDetail = new PenjualanDetail('search');
         $penjualanDetail->unsetAttributes();
@@ -107,16 +107,23 @@ class PosController extends Controller
      */
     public function actionHapus($id)
     {
-        $model = $this->loadModel($id);
-        if ($model->status == Penjualan::STATUS_DRAFT) {
-            PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
-            PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
-            $model->delete();
+        if ($this->isOtorisasiAdmin($id)) {
+            $model = $this->loadModel($id);
+            if ($model->status == Penjualan::STATUS_DRAFT) {
+                PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
+                PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', array('penjualanId' => $id));
+                $model->delete();
+            }
+            $this->renderJSON(['sukses' => true]);
+        } else {
+            $this->renderJSON([
+                'sukses' => false,
+                'error' => [
+                    'code' => '501',
+                    'msg' => 'Harus dengan Otorisasi Admin'
+                ]
+            ]);
         }
-
-        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
     }
 
     /**
@@ -256,7 +263,7 @@ class PosController extends Controller
         );
         if (isset($_POST['barcode'])) {
             $penjualan = $this->loadModel($id);
-            // Tambah barang hanya bisa jika status masih draft
+// Tambah barang hanya bisa jika status masih draft
             if ($penjualan->status == Penjualan::STATUS_DRAFT) {
                 $barcode = $_POST['barcode'];
                 $return = $penjualan->tambahBarang($barcode, 1);
