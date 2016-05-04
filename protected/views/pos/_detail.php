@@ -110,7 +110,7 @@ $this->widget('BGridView', array(
                     $("#tombol-admin-mode").removeClass('alert');
                     $.fn.yiiGridView.update("penjualan-detail-grid");
                     updateTotal();
-                } 
+                }
             },
             error: function (response, newValue) {
                 if (response.status === 500) {
@@ -121,7 +121,7 @@ $this->widget('BGridView', array(
                     });
                     $("#tombol-admin-mode").addClass('geleng');
                     $("#tombol-admin-mode").addClass('alert');
-                } 
+                }
             }
         });
         $('.editable-qty').on('shown', function (e, editable) {

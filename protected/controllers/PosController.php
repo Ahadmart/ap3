@@ -292,7 +292,7 @@ class PosController extends Controller
 
     public function renderHargaLinkEditable($data, $row)
     {
-        if (Yii::app()->user->hasState('kasirOtorisasiAdmin')) {
+        if ($this->isOtorisasiAdmin($data->penjualan_id)) {
             /* Untuk user otorisasi admin, tampilkan harga editable */
             $ak = '';
             if ($row == 0) {
