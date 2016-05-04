@@ -309,6 +309,13 @@ class PosController extends Controller
      */
     public function actionUpdateQty()
     {
+        $return = array(
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        );
         if (isset($_POST['pk'])) {
             $pk = $_POST['pk'];
             $qtyInput = $_POST['value'];
@@ -320,29 +327,15 @@ class PosController extends Controller
                 $penjualan = $this->loadModel($detail->penjualan_id);
                 $return = $penjualan->tambahBarang($detail->barang->barcode, $selisih);
             } else {
-                PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $pk);
-
-                $detail->delete();
+                /* qty=0 / hapus barang, hanya bisa jika ada otorisasi Admin */
+                if ($this->isOtorisasiAdmin($detail->penjualan_id)) {
+                    PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $pk);
+                    $detail->delete();
+                    $return = array('sukses' => true);
+                } else {
+                    throw new Exception('Tidak ada otorisasi Admin', 500);
+                }
             }
-            $return = array('sukses' => true);
-            $this->renderJSON($return);
-        }
-        $return = array(
-            'sukses' => false,
-            'error' => array(
-                'code' => '500',
-                'msg' => 'Sempurnakan input!',
-            )
-        );
-        if (isset($_POST['barcode'])) {
-            $penjualan = $this->loadModel($id);
-            // Tambah barang hanya bisa jika status masih draft
-            if ($penjualan->status == Penjualan::STATUS_DRAFT) {
-                $barcode = $_POST['barcode'];
-                $return = $penjualan->tambahBarang($barcode, 1);
-            }
-//            $barang = Barang::model()->find("barcode = '" . $barcode . "'");
-//            $return['error']['msg'] = $penjualan->cekDiskon($barang->id);
         }
         $this->renderJSON($return);
     }
@@ -361,8 +354,9 @@ class PosController extends Controller
             'model' => $model,
         ));
     }
-    
-    public function actionCekHarga(){
+
+    public function actionCekHarga()
+    {
         $this->render('cekharga');
     }
 
@@ -395,7 +389,9 @@ class PosController extends Controller
                 $return = $pos->simpanPOS($_POST['pos']);
             }
             if ($return['sukses']) {
-                
+                if ($this->isOtorisasiAdmin($id)) {
+                    $this->adminLogout();
+                }
             }
         }
         $this->renderJSON($return);
@@ -462,13 +458,18 @@ class PosController extends Controller
             )
         );
         if (isset($_POST['confirm']) && $_POST['confirm'] == '1') {
-            Yii::app()->user->setState('kasirOtorisasiAdmin', null);
-            Yii::app()->user->setState('kasirOtorisasiUserId', null);
+            $this->adminLogout();
             $return = array(
                 'sukses' => true,
             );
         }
         $this->renderJSON($return);
+    }
+
+    public function adminLogout()
+    {
+        Yii::app()->user->setState('kasirOtorisasiAdmin', null);
+        Yii::app()->user->setState('kasirOtorisasiUserId', null);
     }
 
     public function actionAdminLogin()
@@ -481,7 +482,7 @@ class PosController extends Controller
             )
         );
         if (isset($_POST['usr'])) {
-            $return = $this->authenticateAdmin($_POST['usr'], $_POST['pwd']);
+            $return = $this->authenticateAdmin($_POST['usr'], $_POST['pwd'], $_POST['id']);
         }
         $this->renderJSON($return);
     }
@@ -490,14 +491,15 @@ class PosController extends Controller
      * Mengecek user dan password, apakah punya hak admin
      * @param text $usr Nama user yang akan dicek
      * @param text $pwd Password
+     * @param int $penjualanId ID Penjualan
      * @return array status berhasil atau tidak
      */
-    public function authenticateAdmin($usr, $pwd)
+    public function authenticateAdmin($usr, $pwd, $penjualanId)
     {
         require_once __DIR__ . '/../vendors/password_compat/password.php';
         $user = User::model()->find('LOWER(nama)=?', array($usr));
         if ($user === null) {
-            $return = array(
+            return array(
                 'sukses' => false,
                 'error' => array(
                     'code' => '500',
@@ -505,7 +507,7 @@ class PosController extends Controller
                 )
             );
         } else if (!$user->validatePassword($pwd)) {
-            $return = array(
+            return array(
                 'sukses' => false,
                 'error' => array(
                     'code' => '500',
@@ -513,13 +515,12 @@ class PosController extends Controller
                 )
             );
         } else if ($this->isAdmin($user)) {
-            $return = array(
+            Yii::app()->user->setState('kasirOtorisasiAdmin', $penjualanId);
+            Yii::app()->user->setState('kasirOtorisasiUserId', $user->id);
+            return array(
                 'sukses' => true,
             );
-            Yii::app()->user->setState('kasirOtorisasiAdmin', 1);
-            Yii::app()->user->setState('kasirOtorisasiUserId', $user->id);
         }
-        return $return;
     }
 
     /**
@@ -530,6 +531,11 @@ class PosController extends Controller
     public function isAdmin($user)
     {
         return Yii::app()->authManager->getAuthAssignment(Yii::app()->params['useradmin'], $user->id) === null ? FALSE : TRUE;
+    }
+
+    public function isOtorisasiAdmin($penjualanId)
+    {
+        return Yii::app()->user->getState('kasirOtorisasiAdmin') == $penjualanId;
     }
 
     public function renderNamaBarang($data, $row)

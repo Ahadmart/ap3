@@ -246,3 +246,20 @@ table tr th, table tr td {
     color: $oranye;
     font-weight: bold;
 }
+
+.geleng {
+    -webkit-animation: shake 1s infinite;
+    -moz-animation: shake 1s infinite;
+    -ms-animation: shake 1s infinite;
+    animation: tada 1s infinite;
+}
+
+#scan{
+    background-color: rgba(0, 0, 0, 0.5);
+    color: rgb(255, 255, 0);
+}
+#scan-icon{
+    background-color: rgba(0, 0, 0, 0.5);
+    color: $toska;
+    border-color: transparent;
+}

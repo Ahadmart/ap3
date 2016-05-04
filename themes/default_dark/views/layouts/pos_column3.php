@@ -47,7 +47,7 @@
             </div>
         </form>
         <ul class="stack button-group">
-            <li><a href="" class="expand bigfont tiny <?php echo Yii::app()->user->getState('kasirOtorisasiAdmin') ? 'warning' : ''; ?> button" id="tombol-admin-mode" accesskey="m">Mode Ad<span class="ak">m</span>in</a></li>
+            <li><a href="" class="expand bigfont tiny <?php echo Yii::app()->user->getState('kasirOtorisasiAdmin') == $this->penjualanId ? 'warning' : ''; ?> button" id="tombol-admin-mode" accesskey="m">Mode Ad<span class="ak">m</span>in</a></li>
         </ul>
         <script>
 
@@ -64,7 +64,7 @@
                     });
                 });
     <?php
-    if (Yii::app()->user->getState('kasirOtorisasiAdmin')) {
+    if (Yii::app()->user->getState('kasirOtorisasiAdmin') == $this->penjualanId) {
         ?>
                     $(document).on('click', "#tombol-admin-mode", function () {
                         dataUrl = '<?php echo $this->createUrl('adminlogout'); ?>';
@@ -163,7 +163,8 @@
                 dataUrl = '<?php echo $this->createUrl('adminlogin'); ?>';
                 dataKirim = {
                     usr: $("#admin-user").val(),
-                    pwd: $("#admin-password").val()
+                    pwd: $("#admin-password").val(),
+                    id: <?php echo $this->penjualanId; ?>
                 };
 
                 $.ajax({
