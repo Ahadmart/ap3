@@ -87,7 +87,7 @@ class ReportPenjualanForm extends CFormModel
                         FROM
                             harga_pokok_penjualan hpp
                         JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
-                        JOIN penjualan pj ON pd.penjualan_id = pj.id
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                         GROUP BY pj.id) t_modal", "t_penjualan.penjualan_id = t_modal.id");
         $command->order("t_penjualan.nomor");
@@ -114,7 +114,7 @@ class ReportPenjualanForm extends CFormModel
         $commandRekap->from("(SELECT SUM(pd.harga_jual * pd.qty) total
                         FROM
                             penjualan_detail pd
-                        JOIN penjualan pj ON pd.penjualan_id = pj.id
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai 
                             {$whereSub}
                         ) t_penjualan, 
@@ -122,7 +122,7 @@ class ReportPenjualanForm extends CFormModel
                         FROM
                             harga_pokok_penjualan hpp
                         JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
-                        JOIN penjualan pj ON pd.penjualan_id = pj.id
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                             {$whereSub}
                         ) t_modal");
@@ -133,6 +133,7 @@ class ReportPenjualanForm extends CFormModel
         if (!empty($this->userId)) {
             $commandRekap->bindValue(":userId", $this->userId);
         }
+        $commandRekap->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $commandRekap->bindValue(":dari", $dari);
         $commandRekap->bindValue(":sampai", $sampai);
 

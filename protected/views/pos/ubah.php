@@ -46,7 +46,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     <div class="row collapse">
         <?php /* Company account */ ?>
         <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-square"></i></span>
+            <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
         </div>
         <div class="small-6 large-7 columns">
   <!--         <select accesskey="a">
@@ -60,13 +60,13 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             ?>
         </div>
         <div class="small-3 large-3 columns">
-            <span class="postfix"><kbd>Alt</kbd> <kbd>a</kbd></span>
+            <span class="postfix">[A]</span>
         </div>
     </div>
     <div class="row collapse">
         <?php /* Jenis Pembayaran */ ?>
         <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-circle"></i></span>
+            <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
         </div>
         <div class="small-6 large-7 columns">
             <?php
@@ -77,7 +77,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             ?>
         </div>
         <div class="small-3 large-3 columns">
-            <span class="postfix"><kbd>Alt</kbd> <kbd>d</kbd></span>
+            <span class="postfix">[D]</span>
         </div>
     </div>	
     <div class="row collapse">
@@ -89,7 +89,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         </div>
     </div>
     <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
-    <!--<a href="" class="alert bigfont tiny  button" id="tombol-batal">Batal</a>-->
+    <a href="" class="warning bigfont tiny button" id="tombol-batal">Batal</a>
 </div>
 <div style="display: none" id="total-belanja-h"><?php echo $model->ambilTotal(); ?></div>
 <?php
@@ -123,6 +123,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 data: dataKirim,
                 success: function (data) {
                     if (data.sukses) {
+                        $("#tombol-admin-mode").removeClass('geleng');
+                        $("#tombol-admin-mode").removeClass('alert');
                         $.fn.yiiGridView.update('penjualan-detail-grid');
                         updateTotal();
                     } else {
@@ -173,8 +175,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             }
         }
     }).autocomplete("instance")._renderItem = function (ul, item) {
-        return $("<li>")
-                .append("<a>" + item.label + " <span class='harga'>" + item.harga + "</span> <i>" + item.value + "</i> <span class='stok'>" + item.stok + "</stok></a>")
+        return $("<li style='clear:both'>")
+                .append("<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-harga'>" + item.harga + "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item.stok + "</stok></a>")
                 .appendTo(ul);
     };
 
@@ -203,7 +205,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             $("#tombol-simpan").click();
         }
     });
-    
+
     $("#tombol-simpan").click(function () {
         $("#tombol-simpan").disabled;
         dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
@@ -229,6 +231,30 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                         text: data.error.msg,
                         time: 3000,
                     });
+                }
+                $("#scan").val("");
+                $("#scan").focus();
+            }
+        });
+        return false;
+    });
+
+    $("#tombol-batal").click(function () {
+        dataUrl = '<?php echo $this->createUrl('hapus', array('id' => $model->id)); ?>';
+        $.ajax({
+            type: 'POST',
+            url: dataUrl,
+            success: function (data) {
+                if (data.sukses) {
+                    window.location.href = "<?php echo $this->createUrl('index'); ?>";
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 3000,
+                    });
+                    $("#tombol-admin-mode").addClass('geleng');
+                    $("#tombol-admin-mode").addClass('alert');
                 }
                 $("#scan").val("");
                 $("#scan").focus();

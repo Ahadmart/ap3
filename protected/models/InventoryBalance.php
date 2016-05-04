@@ -134,14 +134,14 @@ class InventoryBalance extends CActiveRecord
         $criteria->compare('created_at', $this->created_at, true);
 
         $orderBy = is_null($defaultOrder) ? 't.id desc' : $defaultOrder;
-
         $sort = array(
             'defaultOrder' => $orderBy
         );
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
-            'sort' => $sort
+            'sort' => $sort,
+            'pagination' => array('pageSize' => 5),
         ));
     }
 

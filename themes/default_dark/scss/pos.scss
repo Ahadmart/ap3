@@ -238,11 +238,51 @@ table tr th, table tr td {
         margin: 10px 0;
     }
 }
-.harga{
+.ac-nama{
+    float:left;
+    width: 45%;
+}
+.ac-harga{
     color: $violet;
     font-weight: bold;
+    float:left;
+    width: 15%;
+    text-align: right;
 }
-.stok{
+.ac-barcode{
+    float:left;
+    width: 30%;
+    padding-left: 5px;
+}
+.ac-stok{
     color: $oranye;
     font-weight: bold;
+    float:left;
+    width: 10%;
+    text-align: right;
+}
+
+.geleng {
+    -webkit-animation: shake 1s infinite;
+    -moz-animation: shake 1s infinite;
+    -ms-animation: shake 1s infinite;
+    animation: flash 2s infinite;
+}
+
+#scan, #uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password{
+    background-color: rgba(0, 0, 0, 0.5);
+    color: rgb(255, 255, 0);
+    border-color: transparent;
+}
+
+#scan:focus, #uang-dibayar:focus, #account:focus,
+#jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus{
+    border-color: #00BCD4;
+    box-shadow: 0px 0px 15px #00BCD4;
+}
+
+#scan-icon, span.prefix, span.postfix{
+    background-color: rgba(0, 0, 0, 0.5);
+    color: $toska;
+    border-color: transparent;
 }

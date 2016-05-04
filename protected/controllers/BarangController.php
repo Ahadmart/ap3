@@ -17,7 +17,7 @@ class BarangController extends Controller {
       $inventoryBalance = new InventoryBalance('search');
       $inventoryBalance->unsetAttributes();
       $inventoryBalance->setAttribute('barang_id', '='.$id);
-      $inventoryBalance->setAttribute('qty', '<>0');
+      //$inventoryBalance->setAttribute('qty', '<>0');
       $inventoryBalance->scenario = 'tampil';
 
       $hargaJual = new HargaJual('search');

@@ -4,12 +4,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-editable.css');
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/animate.css');
 
 $this->widget('BGridView', array(
     'id' => 'penjualan-detail-grid',
     'dataProvider' => $penjualanDetail->search(),
     //'filter' => $penjualanDetail,
-    'summaryText' => 'Poin struk ini = ' . $penjualan->getCurPoin() . ' | Poin sebelumnya = ' . $penjualan->getTotalPoinPeriodeBerjalan() . ' | {start}-{end} dari {count}',
+    'summaryText' => 'Poin struk ini: ' . $penjualan->getCurPoin() . ' | Poin sebelumnya: ' . $penjualan->getTotalPoinPeriodeBerjalan() . ' | {start}-{end} dari {count}',
     'itemsCssClass' => 'tabel-index responsive',
     'template' => '{items}{summary}{pager}',
     'enableSorting' => false,
@@ -105,8 +106,21 @@ $this->widget('BGridView', array(
             inputclass: "input-editable-qty",
             success: function (response, newValue) {
                 if (response.sukses) {
+                    $("#tombol-admin-mode").removeClass('geleng');
+                    $("#tombol-admin-mode").removeClass('alert');
                     $.fn.yiiGridView.update("penjualan-detail-grid");
                     updateTotal();
+                }
+            },
+            error: function (response, newValue) {
+                if (response.status === 500) {
+                    $.gritter.add({
+                        title: 'Error 500',
+                        text: 'Hapus detail harus dengan otorisasi Admin',
+                        time: 3000,
+                    });
+                    $("#tombol-admin-mode").addClass('geleng');
+                    $("#tombol-admin-mode").addClass('alert');
                 }
             }
         });
