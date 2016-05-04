@@ -46,7 +46,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     <div class="row collapse">
         <?php /* Company account */ ?>
         <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-square"></i></span>
+            <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
         </div>
         <div class="small-6 large-7 columns">
   <!--         <select accesskey="a">
@@ -60,13 +60,13 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             ?>
         </div>
         <div class="small-3 large-3 columns">
-            <span class="postfix"><kbd>Alt</kbd> <kbd>a</kbd></span>
+            <span class="postfix">[A]</span>
         </div>
     </div>
     <div class="row collapse">
         <?php /* Jenis Pembayaran */ ?>
         <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-circle"></i></span>
+            <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
         </div>
         <div class="small-6 large-7 columns">
             <?php
@@ -77,7 +77,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             ?>
         </div>
         <div class="small-3 large-3 columns">
-            <span class="postfix"><kbd>Alt</kbd> <kbd>d</kbd></span>
+            <span class="postfix">[D]</span>
         </div>
     </div>	
     <div class="row collapse">
