@@ -34,16 +34,20 @@ $this->boxHeader['normal'] = $this->pageTitle;
                 $first = true;
                 foreach ($roles as $role) :
                     ?><span class="alert label">
-                        <?php
+                    <?php
 //            if (!$first) {
 //               echo ', ';
 //            }
-                        $first = false;
-                        echo $role['itemname'];
-                        ?>
+                    $first = false;
+                    echo $role['itemname'];
+                    ?>
                     </span><?php
                 endforeach;
                 ?>
+            </p>
+            <p>                
+                <span class="secondary label">Powered by</span><span class="success label">Yii Framework</span>
+                <span class="secondary label">Sponsored by</span><span class="warning label">Ahadmart</span>
             </p>
         <?php
         endif;
