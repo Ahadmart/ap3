@@ -172,7 +172,7 @@ class PenerimaanDetail extends CActiveRecord {
 		// $this->item_id = empty($this->item_id) ? null : $this->item_id;
 		$this->hutang_piutang_id = empty($this->hutang_piutang_id) ? null : $this->hutang_piutang_id;
 		$this->posisi = $this->cariPosisi();
-		$this->jumlah = str_replace('.', '', $this->jumlah);
+		//$this->jumlah = str_replace('.', '', $this->jumlah);
 		return parent::beforeValidate();
 	}
 
