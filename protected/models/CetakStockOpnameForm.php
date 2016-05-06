@@ -53,4 +53,16 @@ class CetakStockOpnameForm extends CFormModel
         return $rak->nama;
     }
 
+    public function getKategoriRak($id)
+    {
+        return Yii::app()->db->createCommand()
+                        ->selectDistinct('kategori_id, kat.nama')
+                        ->from(Barang::model()->tableName() . ' bar')
+                        ->join(KategoriBarang::model()->tableName() . ' kat', 'bar.kategori_id = kat.id')
+                        ->where('rak_id =:rakId')
+                        ->order('kat.nama')
+                        ->bindValue(':rakId', $id)
+                        ->queryAll();
+    }
+
 }

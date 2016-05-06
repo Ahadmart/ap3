@@ -30,4 +30,15 @@ class CetakformsoController extends Controller
         $this->renderJSON($return);
     }
 
+    public function actionGetKategoriOpt()
+    {
+        $rakId = $_POST['rak-id'];
+        $kategori = CetakStockOpnameForm::getKategoriRak($rakId);
+        /* fixme: pindahkan ke view */
+        echo '<option>[Semua Kategori]</option>';
+        foreach ($kategori as $kat) {
+            echo '<option value="' . $kat['kategori_id'] . '">' . $kat['nama'] . '</option>';
+        }
+    }
+
 }

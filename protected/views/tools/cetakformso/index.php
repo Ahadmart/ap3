@@ -26,7 +26,10 @@ $this->boxHeader['normal'] = 'Cetak Form SO';
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
-            success: isiRak
+            success: function(data){
+                isiRak(data);
+                isiKategori(data);
+            }
         });
         return false;
     });
@@ -36,5 +39,9 @@ $this->boxHeader['normal'] = 'Cetak Form SO';
         $("#rak").val(data.nama);
         $("#tabel-rak").slideUp(500);
         $("#CetakStockOpnameForm_rakId").val(data.id);
+    }
+
+    function isiKategori(data) {
+        $("#CetakStockOpnameForm_kategoriId").load("<?php echo $this->createUrl("getkategoriopt"); ?>",{'rak-id':data.id});
     }
 </script>
