@@ -211,7 +211,7 @@ class Barang extends CActiveRecord
 				  from inventory_balance
 				  where barang_id = {$this->id}
 				  ")->queryRow();
-        return $stok['stok'] ? $stok['stok'] : null;
+        return $stok['stok'] ? $stok['stok'] : 0;
     }
 
     public function getHargaJualRaw()

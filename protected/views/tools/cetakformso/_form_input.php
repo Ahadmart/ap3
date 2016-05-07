@@ -11,6 +11,7 @@ $form = $this->beginWidget('CActiveForm', array(
     // See class documentation of CActiveForm for details on this,
     // you need to use the performAjaxValidation()-method described there.
     'enableAjaxValidation' => false,
+    'htmlOptions' => [ 'target' => 'blank']
         ));
 ?>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
@@ -27,23 +28,29 @@ $form = $this->beginWidget('CActiveForm', array(
             <div class="small-3 columns">
                 <a class="tiny bigfont button postfix" id="tombol-browse-rak" accesskey="h">Pili<span class="ak">h</span>..</a>
             </div>
-        </div>
+        </div>   
+        <?php echo $form->error($model, 'rakId', array('class' => 'error')); ?>     
     </div>
     <div class="small-12 large-6 columns">
         <?php echo $form->labelEx($model, 'kategoriId'); ?>
-        <?php echo $form->dropDownList($model, 'kategoriId', []); ?>
-        <?php echo $form->error($model, 'kategoriId', array('class' => 'error')); ?>
+        <?php echo $form->dropDownList($model, 'kategoriId', empty($model->rakId) ? [] : CetakStockOpnameForm::getKategoriRak($model->rakId)); ?>
+        <?php echo $form->error($model, 'kategoriId', ['class' => 'error']); ?>
     </div>
     <div class="small-12 large-6 columns">
         <?php echo $form->labelEx($model, 'sortBy'); ?>
-        <?php echo $form->dropDownList($model, 'sortBy', []); ?>
-        <?php echo $form->error($model, 'sortBy', array('class' => 'error')); ?>
+        <?php echo $form->dropDownList($model, 'sortBy', CetakStockOpnameForm::listOfSortBy()); ?>
+        <?php echo $form->error($model, 'sortBy', ['class' => 'error']); ?>
+    </div>
+    <div class="small-12 large-6 columns">
+        <?php echo $form->labelEx($model, 'kertas'); ?>
+        <?php echo $form->dropDownList($model, 'kertas', CetakStockOpnameForm::listKertas()); ?>
+        <?php echo $form->error($model, 'kertas', ['class' => 'error']); ?>
     </div>
 </div>
 
 <div class="row">
     <div class="small-12 columns">
-        <?php echo CHtml::submitButton('Cetak', array('id' => 'tombol-submit', 'class' => 'tiny bigfont button right')); ?>
+        <?php echo CHtml::submitButton('Cetak', array('id' => 'tombol-submit', 'name' => 'cetak', 'class' => 'tiny bigfont button right')); ?>
     </div>
 </div>
 
