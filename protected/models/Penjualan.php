@@ -938,54 +938,54 @@ class Penjualan extends CActiveRecord
 
             /* Jika ini seharusnya halaman baru */
             /*
-            if ($rowCount > $rowPerPage) {
-                $halaman++;
-                $halamanStr = $this->nomor . ' ' . $halaman;
+              if ($rowCount > $rowPerPage) {
+              $halaman++;
+              $halamanStr = $this->nomor . ' ' . $halaman;
 
-                $struk .= PHP_EOL;
-                $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
-                $rowCount = 1; // Reset row counter
-            }
-*/
+              $struk .= PHP_EOL;
+              $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+              $rowCount = 1; // Reset row counter
+              }
+             */
             $struk .= $row;
             $no++;
             $rowCount++;
         }
         /* Jika ini seharusnya halaman baru */
         /*
-        if ($rowCount > $rowPerPage && $halaman > 0) {
-            $halaman++;
-            $halamanStr = $this->nomor . ' ' . $halaman;
+          if ($rowCount > $rowPerPage && $halaman > 0) {
+          $halaman++;
+          $halamanStr = $this->nomor . ' ' . $halaman;
 
-            $struk .= PHP_EOL;
-            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
-            $rowCount = 1; // Reset row counter
-        }
+          $struk .= PHP_EOL;
+          $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+          $rowCount = 1; // Reset row counter
+          }
          */
         $struk .= str_pad('', $jumlahKolom, "-") . PHP_EOL . PHP_EOL;
         /*
-        if ($rowCount > $rowPerPage - 6) {
-            $halaman++;
-            $halamanStr = $this->nomor . ' ' . $halaman;
+          if ($rowCount > $rowPerPage - 6) {
+          $halaman++;
+          $halamanStr = $this->nomor . ' ' . $halaman;
 
-            $struk .= PHP_EOL;
-            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
-            $rowCount = 1; // Reset row counter
-        }
+          $struk .= PHP_EOL;
+          $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+          $rowCount = 1; // Reset row counter
+          }
          */
         $signatureHead1 = '          Diterima';
         $signatureHead2 = 'a.n. ' . $branchConfig['toko.nama'];
         $signatureHead3 = 'Driver';
 
-        $struk .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) . 
-                 str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT). PHP_EOL;
+        $struk .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) .
+                str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
         $struk .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
         $struk .= '     (                )         (                )         (                )' . PHP_EOL;
         /*
-        $rowCount+=7;
-        for ($index = 0; $index < $rowPerPage - $rowCount; $index++) {
-            $struk .= PHP_EOL;
-        }
+          $rowCount+=7;
+          for ($index = 0; $index < $rowPerPage - $rowCount; $index++) {
+          $struk .= PHP_EOL;
+          }
          */
         //$halaman++;
         //$halamanStr = $this->nomor . ' ' . $halaman;
@@ -1008,7 +1008,7 @@ class Penjualan extends CActiveRecord
             $branchConfig[$config->nama] = $config->nilai;
         }
 
-        $user = User::model()->findByPk(Yii::app()->user->id);
+        $user = User::model()->findByPk($this->updated_by);
         $profil = Profil::model()->findByPk($this->profil_id);
 
         $details = Yii::app()->db->createCommand("
@@ -1035,12 +1035,8 @@ class Penjualan extends CActiveRecord
         $struk .= str_pad($branchConfig['toko.nama'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
         $struk .=!empty($branchConfig['struk.header1']) ? str_pad($branchConfig['struk.header1'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
         $struk .=!empty($branchConfig['struk.header2']) ? str_pad($branchConfig['struk.header2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
-        $struk .= ' ' . $user->nama_lengkap . ': ' . $this->nomor . PHP_EOL;
+        $struk .= str_pad($this->nomor . ' ' . date_format(date_create_from_format('d-m-Y H:i:s', $this->tanggal), 'dmy H:i') . ' ' . substr($user->nama_lengkap, 0, 13), $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
 
-        if ($profil->isMember()) {
-            $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
-            $struk .= ' ' . $profil->nama . ': ' . $profil->nomor . PHP_EOL;
-        }
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
         $total = 0;
@@ -1100,6 +1096,13 @@ class Penjualan extends CActiveRecord
         if ($this->getCurPoin() > 0) {
             $txtPoin = 'Poin       : ' . str_pad(number_format($this->getCurPoin(), 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
             $struk .= str_pad($txtPoin, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+
+        if ($profil->isMember()) {
+            $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
+            $nomorNama = $profil->nomor . ' ' . $profil->nama;
+            $struk .= ' ' . substr($nomorNama, 0, 38) . PHP_EOL;
+            $struk .= ' Total Poin: ' . $this->getTotalPoinPeriodeBerjalan() . PHP_EOL;
         }
 
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
