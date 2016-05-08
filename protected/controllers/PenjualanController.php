@@ -9,6 +9,7 @@ class PenjualanController extends Controller
     const PRINT_INVOICE = 0;
     const PRINT_STRUK = 1;
     const PRINT_NOTA = 2;
+    const PRINT_INVOICE_DRAFT = 3;
 
     /**
      * @return array action filters
@@ -129,10 +130,14 @@ class PenjualanController extends Controller
             $barang->setAttribute('nama', $_GET['namaBarang']);
         }
 
+        $tipePrinterInvoiceRrp = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
+        $printerInvoiceRrp = Device::model()->listDevices($tipePrinterInvoiceRrp);
+
         $this->render('ubah', array(
             'model' => $model,
             'penjualanDetail' => $penjualanDetail,
-            'barang' => $barang
+            'barang' => $barang,
+            'printerInvoiceRrp' => $printerInvoiceRrp,
         ));
     }
 
@@ -330,7 +335,7 @@ class PenjualanController extends Controller
      * Render Faktur/Invoice dalam format PDF
      * @param int $id penjualan ID
      */
-    public function exportPdf($id)
+    public function exportPdf($id, $draft = false)
     {
 
         $modelHeader = $this->loadModel($id);
@@ -360,7 +365,11 @@ class PenjualanController extends Controller
          * Persiapan render PDF
          */
         $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
-        $mPDF1->WriteHTML($this->renderPartial('_invoice', array(
+        $viewInvoice = '_invoice';
+        if ($draft){
+            $viewInvoice = '_invoice_draft';
+        }
+        $mPDF1->WriteHTML($this->renderPartial($viewInvoice, array(
                     'modelHeader' => $modelHeader,
                     'branchConfig' => $branchConfig,
                     'customer' => $customer,
@@ -436,6 +445,8 @@ class PenjualanController extends Controller
                 return "struk-{$nomor}";
             case self::PRINT_NOTA:
                 return "nota-{$nomor}";
+            case self::PRINT_INVOICE_DRAFT:
+                return "invoice-draft";
         }
     }
 
@@ -448,6 +459,9 @@ class PenjualanController extends Controller
                 return $model->strukText();
             case self::PRINT_NOTA:
                 return $model->notaText();
+            case self::PRINT_INVOICE_DRAFT:
+                $draft = true;
+                return $model->invoiceText($draft);
         }
     }
 
@@ -477,6 +491,24 @@ class PenjualanController extends Controller
                     break;
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device);
+                    break;
+            }
+        }
+    }
+
+    public function actionPrintDraftInvoice($id)
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_LPR:
+                    $this->printLpr($id, $device, self::PRINT_INVOICE_DRAFT);
+                    break;
+                case Device::TIPE_PDF_PRINTER:
+                    $this->exportPdf($id, self::PRINT_INVOICE_DRAFT);
+                    break;
+                case Device::TIPE_TEXT_PRINTER:
+                    $this->exportText($id, $device, self::PRINT_INVOICE_DRAFT);
                     break;
             }
         }
