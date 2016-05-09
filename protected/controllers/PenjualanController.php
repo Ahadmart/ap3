@@ -254,6 +254,23 @@ class PenjualanController extends Controller
         return $return;
     }
 
+    public function renderLinkToExportCsv($data)
+    {
+        $return = '';
+        if ($data->status != Penjualan::STATUS_DRAFT) {
+            $csvSudah = null;
+            if (is_null($csvSudah) || !$csvSudah) {
+                $return = ' <a href="' .
+                        $this->createUrl('exportcsv', array('id' => $data->id)) . '"><i class="fa fa-file-text"></i></a>';
+                $return = CHtml::link('<i class="fa fa-file-text"></i>', $this->createUrl('exportcsv', ['id' => $data->id]), ['title'=> 'Export Csv']);
+            } else {
+                $return = ' <a href="' .
+                        $this->createUrl('exportcsv', array('id' => $data->id)) . '"><i class="fa fa-file-text-o"></i></a>';
+            }
+        }
+        return $return;
+    }
+
     public function actionSimpanPenjualan($id)
     {
         $return = array(
@@ -366,7 +383,7 @@ class PenjualanController extends Controller
          */
         $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
         $viewInvoice = '_invoice';
-        if ($draft){
+        if ($draft) {
             $viewInvoice = '_invoice_draft';
         }
         $mPDF1->WriteHTML($this->renderPartial($viewInvoice, array(
