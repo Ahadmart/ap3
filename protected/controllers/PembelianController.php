@@ -5,6 +5,8 @@ class PembelianController extends Controller
 
     const PROFIL_ALL = 0;
     const PROFIL_SUPPLIER = Profil::TIPE_SUPPLIER;
+    /* ============== */
+    const PRINT_PEMBELIAN = 0;
 
     /**
      * @return array action filters
@@ -44,9 +46,15 @@ class PembelianController extends Controller
             $pembelianDetail->attributes = $_GET['PembelianDetail'];
         }
 
+        //$tipePrinterAvailable = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
+        $tipePrinterAvailable = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER);
+
+        $printerPembelian = Device::model()->listDevices($tipePrinterAvailable);
+
         $this->render('view', array(
             'model' => $this->loadModel($id),
-            'pembelianDetail' => $pembelianDetail
+            'pembelianDetail' => $pembelianDetail,
+            'printerPembelian' => $printerPembelian
         ));
     }
 
@@ -415,7 +423,7 @@ class PembelianController extends Controller
             $pembelianPos2 = Yii::app()->db
                     ->createCommand("
                      SELECT tb.tglTransaksiBeli, s.namaSupplier
-                     FROM {$dbAhadPos2}.transaksibeli tb 
+                     FROM {$dbAhadPos2}.transaksibeli tb
                      JOIN {$dbAhadPos2}.supplier s on tb.idSupplier = s.idSupplier
                      WHERE idTransaksiBeli = :nomor")
                     ->bindValue(':nomor', $nomor)
@@ -524,6 +532,114 @@ class PembelianController extends Controller
             'modelCsvForm' => $modelCsvForm,
             'supplierList' => $supplierList
         ));
+    }
+
+    public function getNamaFile($nomor, $print)
+    {
+        switch ($print) {
+            case self::PRINT_PEMBELIAN:
+                return "pembelian-{$nomor}";
+        }
+    }
+
+    public function getText($model, $print)
+    {
+        switch ($print) {
+            case self::PRINT_PEMBELIAN:
+                return $model->pembelianText();
+        }
+    }
+
+    public function printLpr($id, $device, $print = 0)
+    {
+        $model = $this->loadModel($id);
+        $text = $this->getText($model, $print);
+        $device->printLpr($text);
+        $this->renderPartial('_print_autoclose', array(
+            'text' => $text
+        ));
+    }
+
+    public function exportPdf($id, $draft = false)
+    {
+
+        $modelHeader = $this->loadModel($id);
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        /*
+         * Data Customer
+         */
+        $customer = Profil::model()->findByPk($modelHeader->profil_id);
+
+        /*
+         * Penjualan Detail
+         */
+        $penjualanDetail = PenjualanDetail::model()->with('barang')->findAll(array(
+            'condition' => "penjualan_id={$id}",
+            'order' => 'barang.nama'
+        ));
+
+        /*
+         * Persiapan render PDF
+         */
+        $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
+        $viewInvoice = '_invoice';
+        if ($draft) {
+            $viewInvoice = '_invoice_draft';
+        }
+        $mPDF1->WriteHTML($this->renderPartial($viewInvoice, array(
+                    'modelHeader' => $modelHeader,
+                    'branchConfig' => $branchConfig,
+                    'customer' => $customer,
+                    'penjualanDetail' => $penjualanDetail
+                        ), true
+        ));
+
+        $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->pagenumSuffix = ' dari ';
+        $mPDF1->pagenumPrefix = 'Halaman ';
+        // Render PDF
+        $mPDF1->Output("{$modelHeader->nomor}.pdf", 'I');
+    }
+
+    public function exportText($id, $device, $print = 0)
+    {
+        $model = $this->loadModel($id);
+        $namaFile = $this->getNamaFile($model->nomor, $print);
+        header("Content-type: text/plain");
+        header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
+        header("Pragma: no-cache");
+        header("Expire: 0");
+        $text = $this->getText($model, $print);
+
+        echo $device->revisiText($text);
+
+        Yii::app()->end();
+    }
+
+    public function actionPrintPembelian($id)
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_LPR:
+                    $this->printLpr($id, $device);
+                    break;
+                case Device::TIPE_PDF_PRINTER:
+                    $this->exportPdf($id);
+                    break;
+                case Device::TIPE_TEXT_PRINTER:
+                    $this->exportText($id, $device);
+                    break;
+            }
+        }
     }
 
 }
