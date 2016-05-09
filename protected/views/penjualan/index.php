@@ -16,17 +16,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
 <div class="row">
     <div class="small-12 columns">
         <?php
-        $this->widget('BGridView', array(
-            'id' => 'penjualan-grid',
+        $this->widget('BGridView', ['id' => 'penjualan-grid',
             'dataProvider' => $model->search(),
             'filter' => $model,
             'itemsCssClass' => 'tabel-index responsive',
             'columns' => array(
-                array(
-                    'class' => 'BDataColumn',
-                    'type' => 'raw',
-                    'value' => array($this, 'renderLinkToExportCsv')
-                ),
                 array(
                     'class' => 'BDataColumn',
                     'name' => 'nomor',
@@ -77,11 +71,35 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                     'name' => 'updated_by',
                     'value' => '$data->updatedBy->nama_lengkap',
                 ),
-                array(
-                    'class' => 'BButtonColumn'
-                ),
+                /* Tombol yang muncul sesuai keadaan
+                 * 1. Jika masih draft: maka ada tombol hapus/delete
+                 * fixme: di bawah ini belum, insyaAllah menyusul
+                 * 2. Jika sudah tidak draft dan belum export csv, maka ada tombol csv
+                 * 3. Jika sudah tidak draft dan sudah export csv, maka ada tombol csvsudah
+                 */
+                [
+                    'class' => 'BButtonColumn',
+                    'template' => '{csv}{delete}',
+                    'buttons' => [
+                        'csv' => ['title' => 'Export CSV',
+                            'label' => '<i class="fa fa-file-text"></i>',
+                            'imageUrl' => false,
+                            'url' => 'Yii::app()->controller->createUrl("exportcsv", array("id"=>$data->primaryKey))',
+                            'visible' => '$data->status != ' . Penjualan::STATUS_DRAFT,
+                        ],
+                        'csvsudah' => [
+                            'title' => 'Export CSV',
+                            'label' => '<i class="fa fa-file-text-o"></i>',
+                            'imageUrl' => false,
+                            'url' => 'Yii::app()->controller->createUrl("exportcsv", array("id"=>$data->primaryKey))',
+                        ],
+                        'delete' => [
+                            'visible' => '$data->status == ' . Penjualan::STATUS_DRAFT,
+                        ]
+                    ]
+                ],
             ),
-        ));
+        ]);
         ?>
     </div>
 </div>

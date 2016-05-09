@@ -254,23 +254,6 @@ class PenjualanController extends Controller
         return $return;
     }
 
-    public function renderLinkToExportCsv($data)
-    {
-        $return = '';
-        if ($data->status != Penjualan::STATUS_DRAFT) {
-            $csvSudah = null;
-            if (is_null($csvSudah) || !$csvSudah) {
-                $return = ' <a href="' .
-                        $this->createUrl('exportcsv', array('id' => $data->id)) . '"><i class="fa fa-file-text"></i></a>';
-                $return = CHtml::link('<i class="fa fa-file-text"></i>', $this->createUrl('exportcsv', ['id' => $data->id]), ['title'=> 'Export Csv']);
-            } else {
-                $return = ' <a href="' .
-                        $this->createUrl('exportcsv', array('id' => $data->id)) . '"><i class="fa fa-file-text-o"></i></a>';
-            }
-        }
-        return $return;
-    }
-
     public function actionSimpanPenjualan($id)
     {
         $return = array(
