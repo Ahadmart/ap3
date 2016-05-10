@@ -84,15 +84,15 @@ function namaBulan($i)
                 <?php
                 if (isset($modelHeader->referensi) && !empty($modelHeader->referensi)):
                     ?>
-                <tr>
-                    <td>Ref</td>
-                    <td><b><?php echo $modelHeader->referensi; ?></b></td>
-                </tr>
-                <tr>
-                    <td>Tgl Ref</td>
-                    <td><b><?php echo toIndoDate($modelHeader->tanggal_referensi); ?></b></td>
-                </tr>
-                <?php
+                    <tr>
+                        <td>Ref</td>
+                        <td><b><?php echo $modelHeader->referensi; ?></b></td>
+                    </tr>
+                    <tr>
+                        <td>Tgl Ref</td>
+                        <td><b><?php echo toIndoDate($modelHeader->tanggal_referensi); ?></b></td>
+                    </tr>
+                    <?php
                 endif;
                 ?>
                 <tr>
