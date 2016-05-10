@@ -46,8 +46,7 @@ class PembelianController extends Controller
             $pembelianDetail->attributes = $_GET['PembelianDetail'];
         }
 
-        //$tipePrinterAvailable = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
-        $tipePrinterAvailable = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER);
+        $tipePrinterAvailable = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
 
         $printerPembelian = Device::model()->listDevices($tipePrinterAvailable);
 
@@ -574,15 +573,15 @@ class PembelianController extends Controller
         }
 
         /*
-         * Data Customer
+         * Data Supplier
          */
-        $customer = Profil::model()->findByPk($modelHeader->profil_id);
+        $profil = Profil::model()->findByPk($modelHeader->profil_id);
 
         /*
-         * Penjualan Detail
+         * Pembelian Detail
          */
-        $penjualanDetail = PenjualanDetail::model()->with('barang')->findAll(array(
-            'condition' => "penjualan_id={$id}",
+        $pembelianDetail = PembelianDetail::model()->with('barang')->findAll(array(
+            'condition' => "pembelian_id={$id}",
             'order' => 'barang.nama'
         ));
 
@@ -590,15 +589,15 @@ class PembelianController extends Controller
          * Persiapan render PDF
          */
         $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
-        $viewInvoice = '_invoice';
+        $viewCetak = '_pdf';
         if ($draft) {
-            $viewInvoice = '_invoice_draft';
+            $viewCetak = '_pdf_draft';
         }
-        $mPDF1->WriteHTML($this->renderPartial($viewInvoice, array(
+        $mPDF1->WriteHTML($this->renderPartial($viewCetak, array(
                     'modelHeader' => $modelHeader,
                     'branchConfig' => $branchConfig,
-                    'customer' => $customer,
-                    'penjualanDetail' => $penjualanDetail
+                    'profil' => $profil,
+                    'pembelianDetail' => $pembelianDetail
                         ), true
         ));
 
