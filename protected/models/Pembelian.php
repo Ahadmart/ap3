@@ -469,7 +469,7 @@ class Pembelian extends CActiveRecord
 
         $kananMaxLength = strlen($strNomor) > strlen($strTgl) ? strlen($strNomor) : strlen($strTgl);
         /* Jika Nama User terlalu panjang, akan di truncate */
-        $strKasir = strlen($strUser) > $kananMaxLength ? substr($strUser, 0, $kananMaxLength - 2) . '..' : $strUser;
+        $strUser = strlen($strUser) > $kananMaxLength ? substr($strUser, 0, $kananMaxLength - 2) . '..' : $strUser;
 
         $strInvoice = 'PEMBELIAN '; //Jumlah karakter harus genap!
 
@@ -487,7 +487,7 @@ class Pembelian extends CActiveRecord
                 . PHP_EOL . PHP_EOL;
 
         $nota .= 'Dari: ' . $this->profil->nama . PHP_EOL;
-        $nota .= '      ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 8) . PHP_EOL;
+        $nota .= '      ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 10) . PHP_EOL;
         if (isset($this->referensi) && !empty($this->referensi)) {
             $nota .= 'Ref : ' . $this->referensi . ' ';
             $nota .= isset($this->tanggal_referensi) ? $this->tanggal_referensi : '';
