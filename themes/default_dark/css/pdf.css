@@ -25,6 +25,10 @@ body{
     margin-left: -2px; 
 }
 
+#header1 div.smaller{
+    font-size: 0.9em; 
+}
+
 #dari{
     float: right;
     text-align: right;
