@@ -175,7 +175,7 @@ function namaBulan($i)
                         <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->qty * $row->harga_beli, 0, ",", "."); ?></td>
                     </tr>
                     <?php
-                    $total = $total + ($row->qty * $row->harga_jual);
+                    $total = $total + ($row->qty * $row->harga_beli);
                     $i++;
                 }
                 ?>
