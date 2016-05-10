@@ -81,14 +81,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                     'class' => 'BButtonColumn',
                     'template' => '{csv}{delete}',
                     'buttons' => [
-                        'csv' => ['title' => 'Export CSV',
+                        'csv' => [
+                            'options' => ['title' => 'Export CSV'],
                             'label' => '<i class="fa fa-file-text"></i>',
                             'imageUrl' => false,
                             'url' => 'Yii::app()->controller->createUrl("exportcsv", array("id"=>$data->primaryKey))',
                             'visible' => '$data->status != ' . Penjualan::STATUS_DRAFT,
                         ],
                         'csvsudah' => [
-                            'title' => 'Export CSV',
+                            'options' => ['title' => 'Export CSV'],
                             'label' => '<i class="fa fa-file-text-o"></i>',
                             'imageUrl' => false,
                             'url' => 'Yii::app()->controller->createUrl("exportcsv", array("id"=>$data->primaryKey))',
