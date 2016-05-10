@@ -591,7 +591,7 @@ class PembelianController extends Controller
         /*
          * Persiapan render PDF
          */
-        $listNamaKertas = CetakStockOpnameForm::listNamaKertas();
+        $listNamaKertas = Pembelian::listNamaKertas();
         $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
         $viewCetak = '_pdf';
         if ($draft) {
