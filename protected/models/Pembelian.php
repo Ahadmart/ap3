@@ -476,10 +476,15 @@ class Pembelian extends CActiveRecord
                 . PHP_EOL;
         $nota .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
                 . str_pad($strTotal, $kananMaxLength, ' ')
-                . PHP_EOL;
+                . PHP_EOL . PHP_EOL;
 
         $nota .= 'Dari: ' . $this->profil->nama . PHP_EOL;
-        $nota .= '        ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 8) . PHP_EOL;
+        $nota .= '      ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 8) . PHP_EOL;
+        if (isset($this->referensi) && !empty($this->referensi)) {
+            $nota .= 'Ref : ' . $this->referensi . ' ';
+            $nota .= isset($this->tanggal_referensi) ? $this->tanggal_referensi : '';
+        }
+        $nota .= PHP_EOL;
 
         $nota .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
         $textHeader1 = ' Barang';
