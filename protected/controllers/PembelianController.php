@@ -50,10 +50,13 @@ class PembelianController extends Controller
 
         $printerPembelian = Device::model()->listDevices($tipePrinterAvailable);
 
+        $kertasUntukPdf = Pembelian::model()->listNamaKertas();
+
         $this->render('view', array(
             'model' => $this->loadModel($id),
             'pembelianDetail' => $pembelianDetail,
-            'printerPembelian' => $printerPembelian
+            'printerPembelian' => $printerPembelian,
+            'kertasUntukPdf' => $kertasUntukPdf
         ));
     }
 
@@ -559,7 +562,7 @@ class PembelianController extends Controller
         ));
     }
 
-    public function exportPdf($id, $draft = false)
+    public function exportPdf($id, $kertas = Pembelian::KERTAS_A4, $draft = false)
     {
 
         $modelHeader = $this->loadModel($id);
@@ -588,7 +591,8 @@ class PembelianController extends Controller
         /*
          * Persiapan render PDF
          */
-        $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
+        $listNamaKertas = CetakStockOpnameForm::listNamaKertas();
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
         $viewCetak = '_pdf';
         if ($draft) {
             $viewCetak = '_pdf_draft';
@@ -632,7 +636,8 @@ class PembelianController extends Controller
                     $this->printLpr($id, $device);
                     break;
                 case Device::TIPE_PDF_PRINTER:
-                    $this->exportPdf($id);
+                    /* Ada tambahan parameter kertas untuk tipe pdf */
+                    $this->exportPdf($id, $_GET['kertas']);
                     break;
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device);

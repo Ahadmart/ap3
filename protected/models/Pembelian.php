@@ -28,6 +28,14 @@ class Pembelian extends CActiveRecord
     const STATUS_DRAFT = 0;
     const STATUS_HUTANG = 1;
     const STATUS_LUNAS = 2;
+    /* ===================== */
+    const KERTAS_LETTER = 10;
+    const KERTAS_A4 = 20;
+    const KERTAS_FOLIO = 30;
+    /* ===================== */
+    const KERTAS_LETTER_NAMA = 'Letter';
+    const KERTAS_A4_NAMA = 'A4';
+    const KERTAS_FOLIO_NAMA = 'Folio';
 
     public $totalPembelian;
     public $namaSupplier;
@@ -525,6 +533,15 @@ class Pembelian extends CActiveRecord
          */
         $nota .= PHP_EOL;
         return $nota;
+    }
+
+    public function listNamaKertas()
+    {
+        return array(
+            self::KERTAS_A4 => self::KERTAS_A4_NAMA,
+            self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA,
+            self::KERTAS_FOLIO => self::KERTAS_FOLIO_NAMA,
+        );
     }
 
 }
