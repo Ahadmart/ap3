@@ -28,6 +28,14 @@ class Pembelian extends CActiveRecord
     const STATUS_DRAFT = 0;
     const STATUS_HUTANG = 1;
     const STATUS_LUNAS = 2;
+    /* ===================== */
+    const KERTAS_LETTER = 10;
+    const KERTAS_A4 = 20;
+    const KERTAS_FOLIO = 30;
+    /* ===================== */
+    const KERTAS_LETTER_NAMA = 'Letter';
+    const KERTAS_A4_NAMA = 'A4';
+    const KERTAS_FOLIO_NAMA = 'Folio';
 
     public $totalPembelian;
     public $namaSupplier;
@@ -276,7 +284,7 @@ class Pembelian extends CActiveRecord
             ini_set('memory_limit', '-1');
             set_time_limit(0);
         }
-        
+
         try {
             if ($this->save()) {
                 /*
@@ -396,6 +404,144 @@ class Pembelian extends CActiveRecord
             Pembelian::STATUS_LUNAS => 'Lunas'
         );
         return $status[$this->status];
+    }
+
+    public function toIndoDate($timeStamp)
+    {
+        $tanggal = date_format(date_create($timeStamp), 'j');
+        $bulan = date_format(date_create($timeStamp), 'n');
+        $namabulan = $this->namaBulan($bulan);
+        $tahun = date_format(date_create($timeStamp), 'Y');
+        return $tanggal . ' ' . $namabulan . ' ' . $tahun;
+    }
+
+    public function namaBulan($i)
+    {
+        static $bulan = array(
+            "Januari",
+            "Februari",
+            "Maret",
+            "April",
+            "Mei",
+            "Juni",
+            "Juli",
+            "Agustus",
+            "September",
+            "Oktober",
+            "November",
+            "Desember"
+        );
+        return $bulan[$i - 1];
+    }
+
+    public function pembelianText($draft = false, $cpi = 10)
+    {
+        $lebarKertas = 8; //inchi
+        $jumlahKolom = $cpi * $lebarKertas;
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        $pembelianDetail = Yii::app()->db->createCommand("
+         select barang.barcode, barang.nama, pd.qty, pd.harga_beli, pd.harga_jual
+         from pembelian_detail pd
+         join barang on pd.barang_id = barang.id
+         where pd.pembelian_id = :pembelianId
+              ")
+                ->bindValue(':pembelianId', $this->id)
+                ->queryAll();
+
+        $nota = '';
+
+        $strNomor = 'Nomor       : ' . $this->nomor;
+        if ($draft) {
+            $strNomor = 'Nomor       : DRAFT';
+        }
+        $strTgl = 'Tanggal     : ' . $this->toIndoDate($this->tanggal);
+        $strUser = 'User        : ' . ucwords($this->updatedBy->nama_lengkap);
+        $strTotal = 'Total       : ' . $this->getTotal();
+
+        $kananMaxLength = strlen($strNomor) > strlen($strTgl) ? strlen($strNomor) : strlen($strTgl);
+        /* Jika Nama User terlalu panjang, akan di truncate */
+        $strKasir = strlen($strUser) > $kananMaxLength ? substr($strUser, 0, $kananMaxLength - 2) . '..' : $strUser;
+
+        $strInvoice = 'PEMBELIAN '; //Jumlah karakter harus genap!
+
+        $nota = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
+                . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+                . PHP_EOL;
+        $nota .= str_pad($branchConfig['toko.alamat1'], $jumlahKolom - $kananMaxLength, ' ')
+                . str_pad($strTgl, $kananMaxLength, ' ')
+                . PHP_EOL;
+        $nota .= str_pad($branchConfig['toko.alamat2'], $jumlahKolom - $kananMaxLength, ' ')
+                . str_pad($strUser, $kananMaxLength, ' ')
+                . PHP_EOL;
+        $nota .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
+                . str_pad($strTotal, $kananMaxLength, ' ')
+                . PHP_EOL . PHP_EOL;
+
+        $nota .= 'Dari: ' . $this->profil->nama . PHP_EOL;
+        $nota .= '      ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 8) . PHP_EOL;
+        if (isset($this->referensi) && !empty($this->referensi)) {
+            $nota .= 'Ref : ' . $this->referensi . ' ';
+            $nota .= isset($this->tanggal_referensi) ? $this->tanggal_referensi : '';
+        }
+        $nota .= PHP_EOL;
+
+        $nota .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
+        $textHeader1 = ' Barang';
+        $textHeader2 = 'H Beli    H Jual    Qty Sub Total ';
+        $textHeader = $textHeader1 . str_pad($textHeader2, $jumlahKolom - strlen($textHeader1), ' ', STR_PAD_LEFT) . PHP_EOL;
+        $nota .= $textHeader;
+        $nota .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
+
+        $no = 1;
+        foreach ($pembelianDetail as $detail) {
+            $strBarcode = str_pad(substr($detail['barcode'], 0, 13), 13, ' '); // Barcode hanya diambil 13 char pertama
+            $strBarang = str_pad(trim(substr($detail['nama'], 0, 28)), 28, ' '); //Nama Barang hanya diambil 28 char pertama
+            $strQty = str_pad($detail['qty'], 5, ' ', STR_PAD_LEFT);
+            $strHarga = str_pad(number_format($detail['harga_jual'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
+            $strHargaBeli = str_pad(number_format($detail['harga_beli'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
+            $strSubTotal = str_pad(number_format($detail['harga_beli'] * $detail['qty'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
+            $row1 = ' ' . $strBarcode . ' ' . $strBarang . ' ';
+            $row2 = $strHargaBeli . '  ' . $strHarga . '  ' . $strQty . '  ' . $strSubTotal;
+            $row = $row1 . str_pad($row2 . ' ', $jumlahKolom - strlen($row1), ' ', STR_PAD_LEFT) . PHP_EOL;
+
+            $nota .= $row;
+            $no++;
+        }
+
+        $nota .= str_pad('', $jumlahKolom, "-") . PHP_EOL . PHP_EOL;
+        /*
+          if (!$draft) {
+          $signatureHead1 = '          Diterima';
+          $signatureHead2 = 'a.n. ' . $branchConfig['toko.nama'];
+          $signatureHead3 = 'Driver';
+
+          $nota .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) .
+          str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
+          $nota .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
+          $nota .= '     (                )         (                )         (                )' . PHP_EOL;
+          }
+         *
+         */
+        $nota .= PHP_EOL;
+        return $nota;
+    }
+
+    public function listNamaKertas()
+    {
+        return array(
+            self::KERTAS_A4 => self::KERTAS_A4_NAMA,
+            self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA,
+            self::KERTAS_FOLIO => self::KERTAS_FOLIO_NAMA,
+        );
     }
 
 }

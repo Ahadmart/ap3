@@ -165,8 +165,8 @@
                                             //array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pembelian', 'url' => array('/report/pembelian')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Penjualan', 'url' => array('/report/penjualan')),
                                             array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Detail', 'url' => array('/report/hariandetail')),
-                                            //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
-                                            //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
+                                        //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
+                                        //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
@@ -175,9 +175,10 @@
                                     array('label' => '<i class="fa fa-wrench fa-fw fa-lg"></i>' . ' Tools', 'url' => '',
                                         'items' => array(
                                             array('label' => '<i class="fa fa-barcode fa-fw"></i>' . ' Cetak Label Rak', 'url' => array('tools/cetaklabelrak/index')),
+                                            array('label' => '<i class="fa fa-check-square-o fa-fw"></i>' . ' Cetak Form SO', 'url' => array('tools/cetakformso/index')),
                                             array('label' => '<i class="fa fa-search fa-fw"></i>' . ' Cek Harga', 'url' => array('tools/cekharga/index')),
                                             array('label' => '<i class="fa fa-tablet fa-fw"></i>' . ' Customer Display', 'url' => array('tools/customerdisplay/index')),
-                                            //array('label' => '<i class="fa fa-code fa-fw"></i>' . ' Penerimaan PO', 'url' => array('')),
+                                        //array('label' => '<i class="fa fa-code fa-fw"></i>' . ' Penerimaan PO', 'url' => array('')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),
@@ -235,7 +236,6 @@
         if (Yii::app()->controller->action->id != 'login'):
             ?>
             <footer>
-                <span class="left">Sponsored by Ahad Mart</span>
                 <span class="left" id="clock" style="font-size: 0.75rem"></span>
                 <span class="right" id="arabictime" style="font-size: 0.9rem"></span>
             </footer>

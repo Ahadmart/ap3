@@ -71,7 +71,7 @@ function namaBulan($i)
             <div id="tanggal"><?php echo namaHari($report['tanggal']) . ', ' . toIndoDate($report['tanggal']); ?></div>
         </div>
         <br />
-        <br />		
+        <br />
         <table width="90%" style="margin:0 auto" class="table-bordered">
             <tr>
                 <td class="tebal">SALDO AWAL</td>
@@ -91,7 +91,10 @@ function namaBulan($i)
                 foreach ($report['pembelianBayar'] as $pembayaran):
                     ?>
                     <tr>
-                        <td class="level-1"><?php echo "{$pembayaran['nomor']} {$pembayaran['nama']} " . date('d-m-Y', strtotime($pembayaran['tanggal'])); ?></td>
+                        <td class="level-1">
+                            <?php echo "{$pembayaran['nomor']} {$pembayaran['nama']} "; ?>
+                            <?php echo isset($pembayaran['tanggal']) ? date('d-m-Y', strtotime($pembayaran['tanggal'])) : ''; ?>
+                        </td>
                         <td class="kanan"><?php echo number_format($pembayaran['total_bayar'], 0, ',', '.'); ?></td>
                     </tr>
                     <?php
@@ -171,7 +174,7 @@ function namaBulan($i)
             <tr>
                 <td class="tebal">SALDO AKHIR ASLI</td>
                 <td class="kanan tebal"><?php echo number_format($report['saldoAkhirAsli'], 0, ',', '.'); ?></td>
-            </tr>         
+            </tr>
             <?php
             if ($report['totalPenjualanTunai']) {
                 ?>
@@ -195,7 +198,7 @@ function namaBulan($i)
                 ?>
                 <?php
             endif;
-            ?>  
+            ?>
             <?php
             if ($report['totalMargin']) {
                 ?>
@@ -219,7 +222,7 @@ function namaBulan($i)
                 ?>
                 <?php
             endif;
-            ?> 
+            ?>
             <?php
             if ($report['totalPenjualanBayar']) {
                 ?>
