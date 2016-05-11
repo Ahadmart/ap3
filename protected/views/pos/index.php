@@ -9,3 +9,9 @@ $this->breadcrumbs = array(
 
 $this->boxHeader['small'] = 'Penjualan';
 $this->boxHeader['normal'] = 'Penjualan';
+?>
+<script>
+    $(function () {
+        $("#tombol-new").focus();
+    });
+</script>
