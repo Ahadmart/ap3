@@ -56,7 +56,7 @@ $this->widget('BGridView', array(
                 ),
                 array(
                     'class' => 'BButtonColumn',
-                    'deleteButtonUrl' => 'Yii::app()->createUrl(\''.$this->id.'/remove\', array(\'id\'=>\''.$id.'\',\'child\'=>$data->child0->name))',
+                    'deleteButtonUrl' => 'Yii::app()->createUrl(\''.$this->id.'/remove\', array(\'id\'=>\''.$id.'\')).\'?child=\'.$data->child0->name',
                     'afterDelete' => 'function(link,success,data){ if(success) updateChildOpt(); }',
                 ),
             ),

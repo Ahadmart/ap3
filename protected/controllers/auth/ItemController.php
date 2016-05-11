@@ -188,7 +188,7 @@ class ItemController extends Controller {
 
    public function renderLinkToUbah($data) {
       return '<a href="'.
-              $this->createUrl('ubah', array('id' => $data->name)).'">'.
+              $this->createUrl($this->id.'/ubah?id='. $data->name).'">'.
               $data->name.'</a>';
    }
 
