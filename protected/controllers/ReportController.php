@@ -208,12 +208,18 @@ class ReportController extends Controller
     public function actionPoinMember()
     {
         $model = new ReportPoinMemberForm;
+        $report = null;
         if (isset($_POST['ReportPoinMemberForm'])) {
-            
+            $model->attributes = $_POST['ReportPoinMemberForm'];
+            $report = $model->ambilDataPoinMember();
         }
+
         $this->render('poinmember', array(
             'model' => $model,
-            'judul' => 'Poin Member'
+            'judul' => 'Poin Member',
+            'listPeriode' => $model->listPeriode(),
+            'listSortBy' => $model->listSortBy(),
+            'report' => $report
         ));
     }
 
