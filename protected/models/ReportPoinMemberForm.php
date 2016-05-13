@@ -12,12 +12,21 @@ class ReportPoinMemberForm extends CFormModel
     const SORT_BY_POIN_DSC = 2;
     const SORT_BY_NAMA_ASC = 3;
     const SORT_BY_NAMA_DSC = 4;
+    /* ===================== */
+    const KERTAS_LETTER_LANDSCAPE = 11;
+    const KERTAS_A4_LANDSCAPE = 21;
+    const KERTAS_FOLIO_LANDSCAPE = 31;
+    /* ===================== */
+    const KERTAS_LETTER_LANDSCAPE_NAMA = 'Letter-L';
+    const KERTAS_A4_LANDSCAPE_NAMA = 'A4-L';
+    const KERTAS_FOLIO_LANDSCAPE_NAMA = 'Folio-L';
 
     public $tahun;
     public $periodeId;
     public $jumlahDari;
     public $jumlahSampai;
     public $sortBy;
+    public $kertas;
 
     /**
      * Declares the validation rules.
@@ -27,7 +36,7 @@ class ReportPoinMemberForm extends CFormModel
         return array(
             array('tahun, periodeId, sortBy', 'required', 'message' => '{attribute} tidak boleh kosong'),
             array('tahun, periodeId, sortBy, jumlahDari, jumlahSampai', 'numerical', 'integerOnly' => true),
-            array('jumlahDari, jumlahSampai', 'safe')
+            array('jumlahDari, jumlahSampai, kertas', 'safe')
         );
     }
 
@@ -107,6 +116,24 @@ class ReportPoinMemberForm extends CFormModel
 
         $command->bindValues([':tahun' => $this->tahun, ':awal' => $periode->awal, ':akhir' => $periode->akhir]);
         return $command->queryAll();
+    }
+
+    public function listNamaKertas()
+    {
+        return array(
+            self::KERTAS_A4_LANDSCAPE => self::KERTAS_A4_LANDSCAPE_NAMA,
+            self::KERTAS_LETTER_LANDSCAPE => self::KERTAS_LETTER_LANDSCAPE_NAMA,
+            self::KERTAS_FOLIO_LANDSCAPE => self::KERTAS_FOLIO_LANDSCAPE_NAMA
+        );
+    }
+
+    public function listKertas()
+    {
+        return array(
+            self::KERTAS_A4_LANDSCAPE => 'A4 Landscape',
+            self::KERTAS_LETTER_LANDSCAPE => 'Letter Landscape',
+            self::KERTAS_FOLIO_LANDSCAPE => 'Folio Landscape'
+        );
     }
 
 }

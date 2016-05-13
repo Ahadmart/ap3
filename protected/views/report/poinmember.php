@@ -18,9 +18,14 @@ $this->renderPartial('_form_poin_member', array(
 if (!is_null($report)):
     ?>
 
+    <?php
+    $this->renderPartial('_form_poin_member_cetak', array(
+        'model' => $model,
+        'kertasPdf' => $kertasPdf
+    ));
+    ?>
     <div class="row">
         <div class="small-12 columns">
-            <a class="tiny bigfont button" disabled>Cetak</a>
             <table class="tabel-index responsive">
                 <thead>
                     <tr>
@@ -44,7 +49,7 @@ if (!is_null($report)):
                         <tr>
                             <td class="rata-kanan"><?php echo $i; ?></td>
                             <td><?php echo $barisReport['nomor']; ?></td>
-                            <td><a href="<?php echo Yii::app()->controller->createUrl('/profil/view', array('id'=>$barisReport['profil_id'])); ?>"><?php echo $barisReport['nama']; ?></td></td>
+                            <td><a href="<?php echo Yii::app()->controller->createUrl('/profil/view', array('id' => $barisReport['profil_id'])); ?>"><?php echo $barisReport['nama']; ?></td></td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['poin'], 0, ',', '.'); ?></td>
                             <td>
                                 <?php echo $barisReport['alamat1']; ?>
@@ -66,6 +71,8 @@ if (!is_null($report)):
         </div>
     </div>
     <?php
+
+
 
 
 endif;
