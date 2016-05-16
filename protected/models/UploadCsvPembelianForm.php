@@ -4,7 +4,7 @@
  * UploadCsvPembelianForm class.
  * UploadCsvPembelianForm is the data structure for keeping
  * upload csv file form data. It is used by the 'import' action of 'PembelianController'.
- * 
+ *
  */
 class UploadCsvPembelianForm extends CFormModel
 {
@@ -68,7 +68,7 @@ class UploadCsvPembelianForm extends CFormModel
                         }
                         /* field csv
                          * "barcode","idBarang","namaBarang","jumBarang","hargaBeli","hargaJual","RRP","SatuanBarang","KategoriBarang","Supplier","kasir"
-                         *  0         1          2            3           4           5           6     7              8                9          
+                         *  0         1          2            3           4           5           6     7              8                9
                          */
                         $barangAda = Barang::model()->find('barcode=:barcode', array(':barcode' => $line[0]));
                         $barangId = null;
@@ -113,6 +113,7 @@ class UploadCsvPembelianForm extends CFormModel
                             $supplierBarang = new SupplierBarang;
                             $supplierBarang->barang_id = $barangId;
                             $supplierBarang->supplier_id = $profilId;
+                            $supplierBarang->default = SupplierBarang::SUPPLIER_DEFAULT;
                             if (!$supplierBarang->save()) {
                                 throw new Exception("Gagal simpan Supplier Barang", 500);
                             }

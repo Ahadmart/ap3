@@ -17,21 +17,26 @@
  * @property Profil $supplier
  * @property User $updatedBy
  */
-class SupplierBarang extends CActiveRecord {
+class SupplierBarang extends CActiveRecord
+{
+
+    const SUPPLIER_DEFAULT = 1;
 
     public $namaSupplier;
 
     /**
      * @return string the associated database table name
      */
-    public function tableName() {
+    public function tableName()
+    {
         return 'supplier_barang';
     }
 
     /**
      * @return array validation rules for model attributes.
      */
-    public function rules() {
+    public function rules()
+    {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
@@ -48,7 +53,8 @@ class SupplierBarang extends CActiveRecord {
     /**
      * @return array relational rules.
      */
-    public function relations() {
+    public function relations()
+    {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
@@ -61,7 +67,8 @@ class SupplierBarang extends CActiveRecord {
     /**
      * @return array customized attribute labels (name=>label)
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return array(
             'id' => 'ID',
             'supplier_id' => 'Supplier',
@@ -86,7 +93,8 @@ class SupplierBarang extends CActiveRecord {
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search() {
+    public function search()
+    {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
@@ -125,11 +133,13 @@ class SupplierBarang extends CActiveRecord {
      * @param string $className active record class name.
      * @return SupplierBarang the static model class
      */
-    public static function model($className = __CLASS__) {
+    public static function model($className = __CLASS__)
+    {
         return parent::model($className);
     }
 
-    public function beforeSave() {
+    public function beforeSave()
+    {
 
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
@@ -139,8 +149,8 @@ class SupplierBarang extends CActiveRecord {
         return parent::beforeSave();
     }
 
-
-    public function assignDefaultSupplier($id, $barangId) {
+    public function assignDefaultSupplier($id, $barangId)
+    {
         $connection = Yii::app()->db;
         $transaction = $connection->beginTransaction();
         try {
@@ -155,32 +165,32 @@ class SupplierBarang extends CActiveRecord {
                 ':id' => $id
             ));
             $transaction->commit();
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollback();
             throw $e;
         }
     }
 
-	public function ambilBarangBarcodePerSupplier($supplierId) {
-		return Yii::app()->db->createCommand()
-							 ->select('b.id, b.barcode, b.nama')
-							 ->from($this->tableName() . ' sb')
-							 ->join(Barang::model()->tableName() . ' b', 'b.id=sb.barang_id')
-							 ->where('supplier_id=:supplierId and b.status=1', array(':supplierId' => $supplierId))
-							 ->order('b.barcode')
-							 ->queryAll();
-	}
+    public function ambilBarangBarcodePerSupplier($supplierId)
+    {
+        return Yii::app()->db->createCommand()
+                        ->select('b.id, b.barcode, b.nama')
+                        ->from($this->tableName() . ' sb')
+                        ->join(Barang::model()->tableName() . ' b', 'b.id=sb.barang_id')
+                        ->where('supplier_id=:supplierId and b.status=1', array(':supplierId' => $supplierId))
+                        ->order('b.barcode')
+                        ->queryAll();
+    }
 
-	public function ambilBarangNamaPerSupplier($supplierId) {
-		return Yii::app()->db->createCommand()
-							 ->select('b.id, b.nama, b.barcode')
-							 ->from($this->tableName() . ' sb')
-							 ->join(Barang::model()->tableName() . ' b', 'b.id=sb.barang_id')
-							 ->where('supplier_id=:supplierId and b.status=1', array(':supplierId' => $supplierId))
-							 ->order('b.nama')
-							 ->queryAll();
-	}
+    public function ambilBarangNamaPerSupplier($supplierId)
+    {
+        return Yii::app()->db->createCommand()
+                        ->select('b.id, b.nama, b.barcode')
+                        ->from($this->tableName() . ' sb')
+                        ->join(Barang::model()->tableName() . ' b', 'b.id=sb.barang_id')
+                        ->where('supplier_id=:supplierId and b.status=1', array(':supplierId' => $supplierId))
+                        ->order('b.nama')
+                        ->queryAll();
+    }
 
 }
-

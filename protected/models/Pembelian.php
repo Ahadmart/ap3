@@ -311,6 +311,17 @@ class Pembelian extends CActiveRecord
                     if (!HargaJualRekomendasi::model()->updateHarga($detail->barang_id, $detail->harga_jual_rekomendasi)) {
                         throw new Exception("Gagal Update RRP");
                     }
+
+                    /* Tambahkan supplier ke barang ini, jika belum ada */
+                    $supplierBarangAda = SupplierBarang::model()->find("supplier_id={$this->profil_id} and barang_id = {$detail->barang_id}");
+                    if (is_null($supplierBarangAda)) {
+                        $supplierBarang = new SupplierBarang;
+                        $supplierBarang->barang_id = $detail->barang_id;
+                        $supplierBarang->supplier_id = $this->profil_id;
+                        if (!$supplierBarang->save()) {
+                            throw new Exception("Gagal simpan supplier barang");
+                        }
+                    }
                 }
 
                 // Total dari pembelian barang
