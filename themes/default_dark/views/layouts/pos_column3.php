@@ -14,7 +14,7 @@
         <form id="form-nomor-customer">
             <div class="row collapse" id="ganti-customer" style="display: none">
                 <div class="small-9 large-10 columns">
-                    <input type="text"  name="nomor-customer" id="nomor-customer" placeholder="Input nomor" accesskey="r"/>
+                    <input type="text"  name="nomor-customer" id="nomor-customer" placeholder="Input nomor" accesskey="r" autocomplete="off"/>
                 </div>
                 <div class="small-3 large-2 columns">
                     <a href="#" class="button postfix" id="tombol-ganti-customer"><i class="fa fa-check"></i></a>
@@ -34,12 +34,12 @@
         <form id="form-admin-login">
             <div class="row admin-input" style="display: none">
                 <div class="small-12">
-                    <input type="text"  name="admin-user" id="admin-user" placeholder="Nama user"/>
+                    <input type="text"  name="admin-user" id="admin-user" placeholder="Nama user" autocomplete="off"/>
                 </div>
             </div>
             <div class="row collapse admin-input" style="display: none">
                 <div class="small-9 large-10 columns">
-                    <input type="password"  name="admin-password" id="admin-password" placeholder="Password"/>
+                    <input type="password"  name="admin-password" id="admin-password" placeholder="Password" autocomplete="off"/>
                 </div>
                 <div class="small-3 large-2 columns">
                     <a href="#" class="button postfix" id="tombol-admin-login"><i class="fa fa-check"></i></a>
