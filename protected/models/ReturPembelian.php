@@ -319,13 +319,19 @@ class ReturPembelian extends CActiveRecord
                 }
 
                 $transaction->commit();
-                return true;
+
+                return ['sukses' => true];
             } else {
                 throw new Exception("Gagal Simpan Retur Pembelian");
             }
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
             $transaction->rollback();
-            throw $e;
+            return [
+                'sukses' => false,
+                'error' => [
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
         }
     }
 

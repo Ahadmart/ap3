@@ -358,12 +358,10 @@ class ReturpembelianController extends Controller
                 /*
                  * simpan retur pembelian jika hanya dan hanya jika status masih draft
                  */
-                if ($returPembelian->simpanReturPembelian()) {
-                    $return = array('sukses' => true);
-                }
+                $return = $returPembelian->simpanReturPembelian();
             }
         }
-        echo $this->renderJSON($return);
+        $this->renderJSON($return);
     }
 
     public function actionAmbilProfil($tipe)
