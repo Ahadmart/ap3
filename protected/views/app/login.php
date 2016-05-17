@@ -36,7 +36,7 @@ $this->pageTitle = Yii::app()->name.' - Login';
                <div class="row">
                   <div class="small-12 columns">
                      <?php //echo $form->labelEx($model, 'password');  ?>
-                     <?php echo $form->passwordField($model, 'password', array('placeholder' => 'Password', 'accesskey' => 'p')); ?>
+                     <?php echo $form->passwordField($model, 'password', array('placeholder' => 'Password', 'accesskey' => 'p', 'autocomplete' => 'off')); ?>
                      <?php echo $form->error($model, 'password', array('class' => 'error')); ?>
                   </div>
                </div>

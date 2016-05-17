@@ -81,7 +81,7 @@
                                     /*
                                       array('label' => '<i class="fa fa-bar-chart-o fa-fw"></i>'.' Dashboard', 'url' => array('/dashboard/index'),),
                                       array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                     * 
+                                     *
                                      */
                                     array('label' => '<i class="fa fa-cogs fa-fw fa-lg"></i>' . ' Config', 'url' => '',
                                         'items' => array(
@@ -131,7 +131,7 @@
                                               ),
                                               'itemOptions' => array('class' => 'has-dropdown'),
                                               'submenuOptions' => array('class' => 'dropdown'),
-                                             * 
+                                             *
                                              */
                                             ),
                                             array('label' => '<i class="fa fa-ticket fa-fw"></i>' . ' Member', 'url' => array('/member/index')),
@@ -165,6 +165,7 @@
                                             //array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pembelian', 'url' => array('/report/pembelian')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Penjualan', 'url' => array('/report/penjualan')),
                                             array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Detail', 'url' => array('/report/hariandetail')),
+                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
                                         //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
                                         //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
                                         ),

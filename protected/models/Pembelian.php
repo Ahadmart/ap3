@@ -311,6 +311,17 @@ class Pembelian extends CActiveRecord
                     if (!HargaJualRekomendasi::model()->updateHarga($detail->barang_id, $detail->harga_jual_rekomendasi)) {
                         throw new Exception("Gagal Update RRP");
                     }
+
+                    /* Tambahkan supplier ke barang ini, jika belum ada */
+                    $supplierBarangAda = SupplierBarang::model()->find("supplier_id={$this->profil_id} and barang_id = {$detail->barang_id}");
+                    if (is_null($supplierBarangAda)) {
+                        $supplierBarang = new SupplierBarang;
+                        $supplierBarang->barang_id = $detail->barang_id;
+                        $supplierBarang->supplier_id = $this->profil_id;
+                        if (!$supplierBarang->save()) {
+                            throw new Exception("Gagal simpan supplier barang");
+                        }
+                    }
                 }
 
                 // Total dari pembelian barang
@@ -469,7 +480,7 @@ class Pembelian extends CActiveRecord
 
         $kananMaxLength = strlen($strNomor) > strlen($strTgl) ? strlen($strNomor) : strlen($strTgl);
         /* Jika Nama User terlalu panjang, akan di truncate */
-        $strKasir = strlen($strUser) > $kananMaxLength ? substr($strUser, 0, $kananMaxLength - 2) . '..' : $strUser;
+        $strUser = strlen($strUser) > $kananMaxLength ? substr($strUser, 0, $kananMaxLength - 2) . '..' : $strUser;
 
         $strInvoice = 'PEMBELIAN '; //Jumlah karakter harus genap!
 
@@ -487,7 +498,7 @@ class Pembelian extends CActiveRecord
                 . PHP_EOL . PHP_EOL;
 
         $nota .= 'Dari: ' . $this->profil->nama . PHP_EOL;
-        $nota .= '      ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 8) . PHP_EOL;
+        $nota .= '      ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 10) . PHP_EOL;
         if (isset($this->referensi) && !empty($this->referensi)) {
             $nota .= 'Ref : ' . $this->referensi . ' ';
             $nota .= isset($this->tanggal_referensi) ? $this->tanggal_referensi : '';

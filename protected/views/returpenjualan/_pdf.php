@@ -30,7 +30,7 @@ function namaBulan($i)
 ?>
 <html>
     <head>
-        <title>Pembelian : <?php echo $modelHeader->nomor; ?></title>
+        <title>Retur Penjualan : <?php echo $modelHeader->nomor; ?></title>
         <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf.css" />
         <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" />
     </head>
@@ -39,7 +39,7 @@ function namaBulan($i)
             <htmlpagefooter name="footer">
                 <table style="border-top:thin solid black">
                     <tr>
-                        <td style="text-align:left">Pembelian No. <?php
+                        <td style="text-align:left">Retur Penjualan No. <?php
         echo $modelHeader->nomor == '' ? '..................' : $modelHeader->nomor;
         ?>
                         </td>
@@ -53,7 +53,7 @@ function namaBulan($i)
             <sethtmlpagefooter name="footer" value="on" />
           mpdf-->
         <div id="header1">
-            <div>PEMBELIAN</div>
+            <div class="smaller">RETUR PENJUALAN</div>
             <barcode style="margin-left: -13px;" code="<?php echo $modelHeader->nomor; ?>" type="C128A" class="barcode" size="0.9" height="1" />
         </div>
         <div id="dari">
@@ -74,7 +74,7 @@ function namaBulan($i)
         <div id="faktur-info">
             <table>
                 <tr>
-                    <td>No. Pembelian</td>
+                    <td>Nomor</td>
                     <td><b><?php echo $modelHeader->nomor; ?></b></td>
                 </tr>
                 <tr>
@@ -118,10 +118,10 @@ function namaBulan($i)
                             Nama Barang
                         </th>
                         <th>
-                            Harga Beli
+                            Penjualan
                         </th>
                         <th>
-                            Harga Jual
+                            Harga
                         </th>
                         <th>
                             Qty
@@ -131,26 +131,6 @@ function namaBulan($i)
                         </th>
                     </tr>
                 </thead>
-                <?php
-                /*
-                  <tr>
-                  <?php
-                  for ($i = 1; $i <= 7; $i++) {
-                  echo '<th style="border: thin solid black">' . $i . '</th>';
-                  }
-                  ?>
-                  </tr>
-                  <tr>
-                  <?php
-                  for ($i = 1; $i <= 7; $i++) {
-                  echo '<td style="padding:3px 0px"></td>';
-                  }
-                  ?>
-                  </tr>
-                 *
-                 */
-                ?>
-
                 <tr>
                     <?php
                     for ($i = 1; $i <= 7; $i++) {
@@ -163,19 +143,19 @@ function namaBulan($i)
                 <?php
                 $i = 1;
                 $total = 0;
-                foreach ($pembelianDetail as $row) {
+                foreach ($returPenjualanDetail as $row) {
                     ?>
                     <tr>
                         <td><?php echo $i; ?></td>
-                        <td style="text-align:left;padding-left:5px"><?php echo $row->barang->barcode; ?></td>
-                        <td style="text-align:left;padding-left:5px"><?php echo $row->barang->nama; ?></td>
-                        <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->harga_beli, 0, ",", "."); ?></td>
+                        <td style="text-align:left;padding-left:5px"><?php echo $row->penjualanDetail->barang->barcode; ?></td>
+                        <td style="text-align:left;padding-left:5px"><?php echo $row->penjualanDetail->barang->nama; ?></td>
+                        <td style="text-align:left;padding-left:5px"><?php echo $row->penjualanDetail->penjualan->nomor.'<br />'.$row->penjualanDetail->penjualan->tanggal; ?></td>
                         <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->harga_jual, 0, ",", "."); ?></td>
                         <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->qty, 0, ",", "."); ?></td>
-                        <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->qty * $row->harga_beli, 0, ",", "."); ?></td>
+                        <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->qty * $row->harga_jual, 0, ",", "."); ?></td>
                     </tr>
                     <?php
-                    $total = $total + ($row->qty * $row->harga_beli);
+                    $total = $total + ($row->qty * $row->harga_jual);
                     $i++;
                 }
                 ?>

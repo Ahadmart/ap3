@@ -219,6 +219,9 @@ a.button.micro.bigfont {
 // tombol disebelah kanan input
 .postfix.button{
     margin-bottom: 0;
+    .fa-2x {
+        padding-top: 4px;
+    }
 }
 
 div.error{

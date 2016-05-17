@@ -208,13 +208,62 @@ class ReportController extends Controller
     public function actionPoinMember()
     {
         $model = new ReportPoinMemberForm;
+        $report = null;
         if (isset($_POST['ReportPoinMemberForm'])) {
-            
+            $model->attributes = $_POST['ReportPoinMemberForm'];
+            $report = $model->ambilDataPoinMember();
         }
+
+        $kertasUntukPdf = ReportPoinMemberForm::listKertas();
         $this->render('poinmember', array(
             'model' => $model,
-            'judul' => 'Poin Member'
+            'judul' => 'Poin Member',
+            'listPeriode' => $model->listPeriode(),
+            'listSortBy' => $model->listSortBy(),
+            'report' => $report,
+            'kertasPdf' => $kertasUntukPdf
         ));
+    }
+
+    public function actionPoinMemberPdf()
+    {
+        $model = new ReportPoinMemberForm;
+        $report = null;
+
+        if (isset($_POST['ReportPoinMemberForm'])) {
+            $model->attributes = $_POST['ReportPoinMemberForm'];
+            $report = $model->ambilDataPoinMember();
+        } else {
+            throw new Exception("Tidak ada data, klik lagi dari tombol cetak", 500);
+        }
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        /*
+         * Persiapan render PDF
+         */
+        $waktuCetak = date('dmY His');
+        $listNamaKertas = ReportPoinMemberForm::listNamaKertas();
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_poin_member_pdf', array(
+                    'report' => $report,
+                    'config' => $branchConfig,
+                    'waktuCetak' => $waktuCetak
+                        ), true
+        ));
+
+        $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->pagenumPrefix = 'Hal ';
+        $mPDF1->pagenumSuffix = ' / ';
+        // Render PDF
+        $mPDF1->Output("Poin Member {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
 }

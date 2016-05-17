@@ -255,7 +255,7 @@ table tr th, table tr td {
     padding-left: 5px;
 }
 .ac-stok{
-    color: $oranye;
+    color: $violet;
     font-weight: bold;
     float:left;
     width: 10%;
@@ -285,4 +285,21 @@ table tr th, table tr td {
     background-color: rgba(0, 0, 0, 0.5);
     color: $toska;
     border-color: transparent;
+}
+
+.ui-autocomplete{
+    background-color: rgba(0, 0, 0, 0.95);
+    border-color: transparent;
+}
+
+.ui-menu-item a {
+    color: #FFF;
+}
+
+.ui-menu .ui-menu-item {
+    border-bottom: 1px solid;
+}
+
+.ui-menu-item.ui-state-focus{
+    background-color: #263238;
 }

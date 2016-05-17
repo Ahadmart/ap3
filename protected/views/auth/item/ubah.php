@@ -12,22 +12,22 @@ $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "Item Otorisasi: {$model->name}";
 ?>
 <div class="row">
-   <div class="large-6 columns">
-      <div class="panel">
-         <?php $this->renderPartial('_form', array('model' => $model)); ?>
-      </div>
-   </div>
-   <div class="large-6 columns">
-      <div class="panel">
-         <?php
-         $this->renderPartial('_child', array(
-             'model' => $child,
-             'id' => $model->name,
-             'authItem' => $authItem,
-         ));
-         ?>
-      </div>
-   </div>
+    <div class="large-6 columns">
+        <div class="panel">
+            <?php $this->renderPartial('_form', array('model' => $model)); ?>
+        </div>
+    </div>
+    <div class="large-6 columns">
+        <div class="panel">
+            <?php
+            $this->renderPartial('_child', array(
+                'model' => $child,
+                'id' => $model->name,
+                'authItem' => $authItem,
+            ));
+            ?>
+        </div>
+    </div>
 </div>
 <?php
 $this->menu = array(

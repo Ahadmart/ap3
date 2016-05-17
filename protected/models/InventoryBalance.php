@@ -175,9 +175,9 @@ class InventoryBalance extends CActiveRecord
     public function layerTerakhir($barangId)
     {
         return InventoryBalance::model()->findBySql("
-         select * 
-         from inventory_balance 
-         where id = (select max(id) 
+         select *
+         from inventory_balance
+         where id = (select max(id)
                      from inventory_balance
                      where barang_id = {$barangId})");
     }
@@ -246,8 +246,8 @@ class InventoryBalance extends CActiveRecord
             }
 
             /*
-             * Jika inventory > 0. Stok ADA 
-             * sisa selalu > 0 
+             * Jika inventory > 0. Stok ADA
+             * sisa selalu > 0
              */
             if ($inventory->qty > $sisa) {
 
@@ -280,7 +280,7 @@ class InventoryBalance extends CActiveRecord
             /*
              * Jika inventory layer terakhir dan
              * Jika inventory <= 0. Stok MINUS/HABIS
-             * 0 kan sisa, sesuaikan inventory 
+             * 0 kan sisa, sesuaikan inventory
              */
             if (0 === $curLayer && $inventory->qty <= 0 && $sisa > 0) {
                 /* Kurangi inventory. 0 (nol) kan sisa */
@@ -366,7 +366,7 @@ class InventoryBalance extends CActiveRecord
 //            throw new Exception('Inventory barang tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
 //         }
 //         /* Variabel $inventories diisi hanya dengan layer terakhir */
-//         /* Seharusnya tidak ke sini !!, jika ini terjadi berarti 
+//         /* Seharusnya tidak ke sini !!, jika ini terjadi berarti
 //          * STOK MINUS: Retur beli untuk barang yang tidak ada stok nya !! */
 //         $inventories = array($layerTerakhir);
 //      }
@@ -419,7 +419,7 @@ class InventoryBalance extends CActiveRecord
 //            /* Ini seharusnya TIDAK terjadi
 //             * Jika inventory layer terakhir dan
 //             * Jika inventory <= 0. Stok MINUS/HABIS
-//             * 0 kan sisa, sesuaikan inventory 
+//             * 0 kan sisa, sesuaikan inventory
 //             */
 //            /*
 //              if (0 === $curLayer && $inventory->qty <= 0) {
@@ -443,7 +443,7 @@ class InventoryBalance extends CActiveRecord
 //            }
 //         }
 //      }
-        /* Jika ternyata masih ada sisa 
+        /* Jika ternyata masih ada sisa
          * Ulangi lagi cari inventory dari awal
          * Karena sebelumnya (di atas) mengurangi inventory dimulai dari layer yang cocok
          * dengan pembelian yang dipilih
@@ -457,7 +457,7 @@ class InventoryBalance extends CActiveRecord
     }
 
     /**
-     * Menambah layer inventory baru untuk proses retur penjualan, 
+     * Menambah layer inventory baru untuk proses retur penjualan,
      * sesuai HPP (Harga Pokok Penjualan) dari penjualan yang dipilih.
      * Tapi jika current layer minus, penambahan qty dimasukkan ke layer yang minus terlebih dahulu
      * @param object $returPenjualanDetail Objek Model ReturPenjualanDetail
@@ -513,11 +513,11 @@ class InventoryBalance extends CActiveRecord
             }
         }
 
-        /* FIX ME: Jika masih ada sisa, 
+        /* FIX ME: Jika masih ada sisa,
          * berarti qty barang yang diretur lebih banyak dari qty barang yang di jual ??
          * cari di penjualan berikutnya */
         if ($sisa > 0) {
-            throw new Exception("Retur jual lebih banyak dari penjualan");
+            throw new Exception("Retur jual lebih banyak dari penjualan: barang=".$returPenjualanDetail->penjualanDetail->barang->nama);
         }
     }
 
@@ -562,8 +562,8 @@ class InventoryBalance extends CActiveRecord
             }
 
             /*
-             * Jika inventory > 0. Stok ADA 
-             * sisa selalu > 0 
+             * Jika inventory > 0. Stok ADA
+             * sisa selalu > 0
              */
             if ($inventory->qty > $sisa) {
 
@@ -583,7 +583,7 @@ class InventoryBalance extends CActiveRecord
              * Mission Imposible: SO stok minus
              * Jika inventory layer terakhir dan
              * Jika inventory <= 0. Stok MINUS/HABIS
-             * 0 kan sisa, sesuaikan inventory 
+             * 0 kan sisa, sesuaikan inventory
              */
             if (0 === $curLayer && $inventory->qty <= 0) {
                 /* Kurangi inventory. 0 (nol) kan sisa */
