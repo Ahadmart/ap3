@@ -38,8 +38,8 @@ $this->boxHeader['normal'] = "Retur Pembelian: {$model->nomor}";
    <?php
    $this->renderPartial('_pilih_barang', array(
        'pembelianModel' => $model,
-       'barangBarcode' => $barangBarcode,
-       'barangNama' => $barangNama,
+       //'barangBarcode' => $barangBarcode,
+       //'barangNama' => $barangNama,
        'inventoryBalance' => $inventoryBalance,
        'model' => $model
    ));

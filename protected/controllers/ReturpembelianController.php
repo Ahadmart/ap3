@@ -111,26 +111,28 @@ class ReturpembelianController extends Controller
         /*
          * Untuk menampilkan dropdown barang sort by barcode;
          */
-        $barcode = SupplierBarang::model()->ambilBarangBarcodePerSupplier($model->profil_id);
-        $barangBarcode = array();
-        foreach ($barcode as $barang) {
-            $barangBarcode[$barang['id']] = "{$barang['barcode']} ({$barang['nama']})";
-        }
-
+        /*
+          $barcode = SupplierBarang::model()->ambilBarangBarcodePerSupplier($model->profil_id);
+          $barangBarcode = array();
+          foreach ($barcode as $barang) {
+          $barangBarcode[$barang['id']] = "{$barang['barcode']} ({$barang['nama']})";
+          }
+         */
         /*
          * Untuk menampilkan dropdown barang sort by nama;
          */
-        $nama = SupplierBarang::model()->ambilBarangNamaPerSupplier($model->profil_id);
-        $barangNama = array();
-        foreach ($nama as $barang) {
-            $barangNama[$barang['id']] = "{$barang['nama']} ({$barang['barcode']})";
-        }
-
+        /*
+          $nama = SupplierBarang::model()->ambilBarangNamaPerSupplier($model->profil_id);
+          $barangNama = array();
+          foreach ($nama as $barang) {
+          $barangNama[$barang['id']] = "{$barang['nama']} ({$barang['barcode']})";
+          }
+         */
         $inventoryBalance = new InventoryBalance('search');
         $inventoryBalance->unsetAttributes();
-        if (isset($_GET['ajax']) && $_GET['ajax'] === 'inventory-balance-grid' && isset($_POST['barangId'])) {
-            $barangId = $_POST['barangId'];
-            $inventoryBalance->setAttribute('barang_id', '=' . $barangId);
+        if (isset($_GET['ajax']) && $_GET['ajax'] === 'inventory-balance-grid' && isset($_POST['barcode'])) {
+            $barang = Barang::model()->find('barcode=:barcode', [':barcode' => $_POST['barcode']]);
+            $inventoryBalance->setAttribute('barang_id', '=' . $barang->id);
             $inventoryBalance->setAttribute('qty', '<>0');
         } else {
             $inventoryBalance->setAttribute('barang_id', '=0');
@@ -142,8 +144,8 @@ class ReturpembelianController extends Controller
 
         $this->render('ubah', array(
             'model' => $model,
-            'barangBarcode' => $barangBarcode,
-            'barangNama' => $barangNama,
+            //'barangBarcode' => $barangBarcode,
+            //'barangNama' => $barangNama,
             'inventoryBalance' => $inventoryBalance,
             'returPembelianDetail' => $returPembelianDetail
         ));
@@ -244,34 +246,39 @@ class ReturpembelianController extends Controller
      * Mengembalikan barcode, nama, beserta stok barang
      */
 
-    public function actionGetBarangInfo($id)
+    public function actionGetBarangInfo($barcode)
     {
-        if (isset($id)) {
-            $barang = Barang::model()->findByPk($id);
-            $stock = InventoryBalance::model()->find(array('select' => 'sum(qty) jumlah', 'condition' => 'barang_id=:barangId', 'params' => array(':barangId' => $id)));
+        if (isset($barcode)) {
+            $barang = Barang::model()->find('barcode=:barcode', [':barcode' => $barcode]);
+            $stock = InventoryBalance::model()->find(array('select' => 'sum(qty) jumlah', 'condition' => 'barang_id=:barangId', 'params' => array(':barangId' => $barang->id)));
             echo "<small>$barang->barcode</small> $barang->nama  <small>Stok</small> $stock->jumlah";
         }
     }
 
     /**
      * Cari Barang untuk autocomplete.
-     * Fixme: tambahkan profil_id,
+     * @param int $profilId Profil ID
      * @param text $term Text yang akan di cari
      */
     public function actionCariBarang($profilId, $term)
     {
-        $barangs = Barang::model()->findAll("status=1 and concat(barcode, nama) like :term", array(':term' => "%{$term}%"));
+        $q = new CDbCriteria();
+        $q->join = 'JOIN supplier_barang sp ON sp.barang_id = t.id';
+        $q->addCondition("concat(barcode, nama) like :term");
+        $q->addCondition("sp.supplier_id=:profilId");
+        $q->order = 'nama';
+        $q->params = [':term' => "%{$term}%", ':profilId' => $profilId];
+        $barangs = Barang::model()->aktif()->findAll($q);
 
-        $hasilBarang = array();
+        $r = array();
         foreach ($barangs as $barang) {
-            $hasilBarang[] = array(
-                'id' => $barang->id,
-                'label' => "{$barang->nama} ({$barang->barcode})",
-                'value' => $barang->nama,
+            $r[] = array(
+                'label' => $barang->nama,
+                'value' => $barang->barcode,
             );
         }
 
-        $this->renderJSON($hasilBarang);
+        $this->renderJSON($r);
     }
 
     public function actionPilihInv($id)
@@ -425,7 +432,7 @@ class ReturpembelianController extends Controller
         /*
          * Retur Pembelian Detail
          */
-        $returPembelianDetail = ReturPembelianDetail::model()->with('inventoryBalance','inventoryBalance.barang')->findAll(array(
+        $returPembelianDetail = ReturPembelianDetail::model()->with('inventoryBalance', 'inventoryBalance.barang')->findAll(array(
             'condition' => "retur_pembelian_id={$id}",
             'order' => 'barang.nama'
         ));
@@ -469,7 +476,6 @@ class ReturpembelianController extends Controller
         Yii::app()->end();
     }
 
-
     public function actionPrintReturPembelian($id)
     {
         if (isset($_GET['printId'])) {
@@ -488,4 +494,5 @@ class ReturpembelianController extends Controller
             }
         }
     }
+
 }

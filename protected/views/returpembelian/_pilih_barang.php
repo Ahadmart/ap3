@@ -1,124 +1,163 @@
+<?php
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-ui-ac.min.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/jquery-ui.min-ac.js', CClientScript::POS_HEAD);
+?>
+
 <div id="pilih-barang" class="medium-6 large-5 columns">
-   <div class="panel">
-      <h5>Pilih Barang:</h5>
-      <?php echo CHtml::label('<span class="ak">1</span> Barcode', 'barcode'); ?>
-      <div class="row collapse">
-         <div class="medium-10 columns">
-            <?php echo CHtml::dropDownList('barcode', '', $barangBarcode, array('accesskey' => '1', 'id' => 'barcode-pilih')); ?>
-         </div>
-         <div class="medium-2 columns">
-            <a href="#" id="pilih-barcode" class="button postfix tombol-pilih" accesskey="2"><span class="ak">2</span> Pilih</a>
-         </div>
-      </div>
-      <?php echo CHtml::label('<span class="ak">3</span> Nama', 'nama'); ?>
-      <div class="row collapse">
-         <div class="medium-10 columns">
-            <?php echo CHtml::dropDownList('nama', '', $barangNama, array('accesskey' => '3', 'id' => 'nama-pilih')); ?>
-         </div>
-         <div class="medium-2 columns">
-            <a href="#" id="pilih-nama" class="button postfix tombol-pilih" accesskey="4" ><span class="ak">4</span> Pilih</a>
-         </div>
-      </div>
-      <!--<div class="row">-->
-      <?php
-//			$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-//				 'name' => 'barangSearch',
-//				 'sourceUrl' => $this->createUrl('caribarang', array('profilId' => $model->profil_id)),
-//				 // additional javascript options for the autocomplete plugin
-//				 'options' => array(
-//					  'minLength' => '2',
-//					  'select' => 'function (event, ui) {
-//										  console.log(ui.item ?
-//													 "Nama: " + ui.item.value + "; Barcode " + ui.item.id :
-//													 "Nothing selected, input was " + this.value);
-//										  if (ui.item) {
-//												$("#barcode").val(ui.item.id);
-//										  }
-//									 }'
-//				 ),
-//				 'htmlOptions' => array(
-//				 //'style' => 'height:20px;',
-//				 ),
-//			));
-      ?>
-      <!--</div>-->
-   </div>
+    <div class="panel">
+        <h5>Pilih Barang:</h5>
+
+        <div class="row collapse">
+            <div class="small-2 medium-1 columns">
+                <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+            </div>
+            <div class="small-6 medium-9 columns">
+                <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>
+            </div>
+            <div class="small-2 medium-1 columns">
+                <a href="#" class="success button postfix" id="tombol-cari-barang" accesskey="c"><i class="fa fa-search fa-2x"></i></a>
+            </div>
+            <div class="small-2 medium-1 columns">
+                <a href="#" class="button postfix" id="tombol-pilih"><i class="fa fa-arrow-right fa-2x"></i></a>
+            </div>
+        </div>
+
+        <?php
+        /*
+
+          <?php echo CHtml::label('<span class="ak">1</span> Barcode', 'barcode'); ?>
+          <div class="row collapse">
+          <div class="medium-10 columns">
+          <?php echo CHtml::dropDownList('barcode', '', $barangBarcode, array('accesskey' => '1', 'id' => 'barcode-pilih')); ?>
+          </div>
+          <div class="medium-2 columns">
+          <a href="#" id="pilih-barcode" class="button postfix tombol-pilih" accesskey="2"><span class="ak">2</span> Pilih</a>
+          </div>
+          </div>
+          <?php echo CHtml::label('<span class="ak">3</span> Nama', 'nama'); ?>
+          <div class="row collapse">
+          <div class="medium-10 columns">
+          <?php echo CHtml::dropDownList('nama', '', $barangNama, array('accesskey' => '3', 'id' => 'nama-pilih')); ?>
+          </div>
+          <div class="medium-2 columns">
+          <a href="#" id="pilih-nama" class="button postfix tombol-pilih" accesskey="4" ><span class="ak">4</span> Pilih</a>
+          </div>
+          </div>
+         *
+         */
+        ?>
+    </div>
 </div>
 <script>
-   $("#barcode-pilih").keyup(function (e) {
-      if (e.keyCode === 13) {
-         $("#pilih-barcode").click();
-      }
-   });
 
-   $("#nama-pilih").keyup(function (e) {
-      if (e.keyCode === 13) {
-         $("#pilih-nama").click();
-      }
-   });
+    $("#tombol-pilih").click(function () {
+        var barcode = $("#scan").val();
+        var datakirim = {
+            'barcode': barcode
+        };
+        $.fn.yiiGridView.update('inventory-balance-grid', {
+            type: 'POST',
+            data: datakirim,
+            success: updateInfo(barcode)
+        })
+        $("#scan").autocomplete("disable");
+        return false;
+    });
 
-   $(".tombol-pilih").click(function () {
-      var barangId = $(this).parent('div').parent('div').find('select').val();
-      var datakirim = {
-         'barangId': barangId
-      };
+    function updateInfo(barcode) {
+        $("#barang-info").load("<?php echo $this->createUrl('getbaranginfo', array('barcode' => '')) ?>" + barcode);
+        $("#retur-qty").focus();
+    }
 
-      $.fn.yiiGridView.update('inventory-balance-grid', {
-         type: 'POST',
-         data: datakirim,
-         success: updateInfo(barangId)
-      })
-   });
+    function clearInfo() {
+        $("#barang-info").html("");
+        $("#retur-qty").val("");
+    }
 
-   function updateInfo(barangId) {
-      $("#barang-info").load("<?php echo $this->createUrl('getbaranginfo', array('id' => '')) ?>" + barangId);
-      $("#retur-qty").focus();
-   }
+    $(function () {
+        $("#scan").autocomplete("disable");
 
-   function clearInfo() {
-      $("#barang-info").html("");
-      $("#retur-qty").val("");
-   }
+        $(document).on('click', "#tombol-cari-barang", function () {
+            $("#scan").autocomplete("enable");
+            var nilai = $("#scan").val();
+            $("#scan").autocomplete("search", nilai);
+            $("#scan").focus();
+        });
+    });
+
+    $("#scan").keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-pilih").click();
+        }
+    });
+
+    $("#scan").autocomplete({
+        source: "<?php echo $this->createUrl('caribarang', ['profilId' => $pembelianModel->profil_id]); ?>",
+        minLength: 3,
+        delay: 1000,
+        search: function (event, ui) {
+            $("#scan-icon").html('<img src="<?php echo Yii::app()->theme->baseUrl; ?>/css/3.gif" />');
+        },
+        response: function (event, ui) {
+            $("#scan-icon").html('<i class="fa fa-barcode fa-2x"></i>');
+        },
+        select: function (event, ui) {
+            console.log(ui.item ?
+                    "Nama: " + ui.item.label + "; Barcode " + ui.item.value :
+                    "Nothing selected, input was " + this.value);
+            if (ui.item) {
+                $("#scan").val(ui.item.value);
+            }
+        }
+    }).autocomplete("instance")._renderItem = function (ul, item) {
+        return $("<li style='clear:both'>")
+                .append("<a><span class='ac-nama'>" + item.label + "</span> [<span class='ac-barcode'>" + item.value + "</span>]</a>")
+                .appendTo(ul);
+    };
+
+
 </script>
 
 <form method="POST">
-   <div id="input-ret-inv-balance" class="medium-6 large-7 columns">
-      <div class="panel">
-         <div class="row small-collapse">
-            <div class="small-12 columns">
-               <h4 id="barang-info"></h4>
-               <?php
-               $this->renderPartial('_inventory_balance', array(
-                   'inventoryBalance' => $inventoryBalance,
-                   'model' => $model,
-               ))
-               ?>
+    <div id="input-ret-inv-balance" class="medium-6 large-7 columns">
+        <div class="panel">
+            <div class="row small-collapse">
+                <div class="small-12 columns">
+                    <h4 id="barang-info"></h4>
+                    <?php
+                    $this->renderPartial('_inventory_balance', array(
+                        'inventoryBalance' => $inventoryBalance,
+                        'model' => $model,
+                    ))
+                    ?>
+                </div>
             </div>
-         </div>
-         <div class="row small-collapse">
-            <div class="small-12 medium-6 large-4 columns">
-               <label for="retur-qty">Qty</label>
-               <div class="row collapse">
-                  <div class="medium-8 columns">
-                     <?php echo CHtml::textField('retur-qty', '', array('id' => 'retur-qty')); ?>
-                  </div>
-                  <div class="medium-4 columns">
-                     <?php
-                     echo CHtml::ajaxSubmitButton('Tambah', $this->createUrl('pilihinv', array('id' => $model->id)), array(
-                         'success' => "function () {
+            <div class="row small-collapse">
+                <div class="small-12 medium-6 large-4 columns">
+                    <label for="retur-qty">Qty</label>
+                    <div class="row collapse">
+                        <div class="medium-8 columns">
+                            <?php echo CHtml::textField('retur-qty', '', array('id' => 'retur-qty')); ?>
+                        </div>
+                        <div class="medium-4 columns">
+                            <?php
+                            echo CHtml::ajaxSubmitButton('Tambah', $this->createUrl('pilihinv', array('id' => $model->id)), array(
+                                'success' => "function () {
 										  clearInfo();
                                 $.fn.yiiGridView.update('inventory-balance-grid');
                                 $.fn.yiiGridView.update('retur-pembelian-detail-grid');
                                 updateTotal();
+                                $('#scan').val('');
+                                $('#scan').focus();
                             }"), array(
-                         'class' => 'button postfix',
-                         'id' => 'tombol-tambah'));
-                     ?>
-                  </div>
-               </div>
+                                'class' => 'button postfix',
+                                'id' => 'tombol-tambah'));
+                            ?>
+                        </div>
+                    </div>
+                </div>
             </div>
-         </div>
-      </div>
-   </div>
+        </div>
+    </div>
 </form>
 
