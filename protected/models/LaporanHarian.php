@@ -147,7 +147,7 @@ class LaporanHarian extends CActiveRecord
         $command = Yii::app()->db->createCommand("
          select harian.saldo_akhir
          from laporan_harian harian
-         where tanggal=(select tanggal from laporan_harian where tanggal < :tanggal and saldo_akhir is not null order by tanggal desc limit 1)         
+         where tanggal=(select tanggal from laporan_harian where tanggal < :tanggal and saldo_akhir is not null order by tanggal desc limit 1)
               ");
         $command->bindValue(':tanggal', $this->tanggal);
         $harian = $command->queryRow();
@@ -167,8 +167,8 @@ class LaporanHarian extends CActiveRecord
         foreach ($penerimaan as $kategoriPenerimaan) {
             $totalPenerimaan+=$kategoriPenerimaan['total'];
         }
-        return $this->saldoAwal() // 
-                - $this->totalPembelianBayar() // 
+        return $this->saldoAwal() //
+                - $this->totalPembelianBayar() //
                 - $this->totalPembelianTunai() //
                 - $this->totalReturJualBayar() //
                 - $this->totalReturJualTunai() //
@@ -214,7 +214,7 @@ class LaporanHarian extends CActiveRecord
             join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
             join pembelian on hp.id = pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')=:tanggal
-         ) t 
+         ) t
          join pembelian on t.id = pembelian.id
          join profil on pembelian.profil_id = profil.id
          group by t.id
@@ -224,7 +224,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -281,7 +281,7 @@ class LaporanHarian extends CActiveRecord
          select pembelian.nomor, profil.nama, t3.jumlah-t3.jml_bayar jumlah
          from
          (
-            select pb.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            select pb.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar
             from pembelian pb
             join hutang_piutang hp on pb.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
             left join
@@ -306,7 +306,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -329,7 +329,7 @@ class LaporanHarian extends CActiveRecord
          select sum(t3.jumlah-t3.jml_bayar) total
          from
          (
-            select pb.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            select pb.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar
             from pembelian pb
             join hutang_piutang hp on pb.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
             left join
@@ -395,7 +395,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(total_bayar) total_bayar
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -465,7 +465,7 @@ class LaporanHarian extends CActiveRecord
             join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
             join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
-         ) t 
+         ) t
          join penjualan on t.id = penjualan.id
          join profil on penjualan.profil_id = profil.id
          group by t.id
@@ -475,7 +475,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -537,7 +537,7 @@ class LaporanHarian extends CActiveRecord
          select penjualan.nomor, profil.nama, t3.jumlah, t3.jml_bayar
          from
          (
-            select pj.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            select pj.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar
             from penjualan pj
             join hutang_piutang hp on pj.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
             left join
@@ -562,7 +562,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah) jumlah, sum(jml_bayar)
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -583,7 +583,7 @@ class LaporanHarian extends CActiveRecord
          select sum(t3.jumlah-t3.jml_bayar) total
          from
          (
-            select pj.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            select pj.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar
             from penjualan pj
             join hutang_piutang hp on pj.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
             left join
@@ -643,7 +643,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah_bayar) jumlah_bayar
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -712,13 +712,13 @@ class LaporanHarian extends CActiveRecord
                join pengeluaran p on d.pengeluaran_id = p.id and p.status=1 and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
                join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
-            ) t1 
+            ) t1
             group by t1.id
          ) t_bayar
          join
-         (         
+         (
             select id, sum(harga_jual) harga_jual, sum(harga_beli) harga_beli
-            from( 
+            from(
                select penjualan.id, sum(jual_detail.harga_jual * hpp.qty) harga_jual,
                sum(hpp.harga_beli * hpp.qty) harga_beli
                from penerimaan_detail d
@@ -747,7 +747,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(margin) margin
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -783,13 +783,13 @@ class LaporanHarian extends CActiveRecord
                join pengeluaran p on d.pengeluaran_id = p.id and p.status=1 and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
                join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
-            ) t1 
+            ) t1
             group by t1.id
          ) t_bayar
          join
-         (         
+         (
             select id, sum(harga_jual) harga_jual, sum(harga_beli) harga_beli
-            from( 
+            from(
                select penjualan.id, sum(jual_detail.harga_jual * hpp.qty) harga_jual,
                sum(hpp.harga_beli * hpp.qty) harga_beli
                from penerimaan_detail d
@@ -820,6 +820,31 @@ class LaporanHarian extends CActiveRecord
         ));
         $margin = $command->queryRow();
         return $margin['total'];
+    }
+
+    public function totalMarginPenjualan()
+    {
+        $commandRekap = Yii::app()->db->createCommand();
+        $commandRekap->select('*, (t_penjualan.total - t_modal.totalModal) margin');
+        $commandRekap->from("(SELECT SUM(pd.harga_jual * pd.qty) total
+                        FROM
+                            penjualan_detail pd
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
+                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') = :tanggal
+                        ) t_penjualan,
+                        (SELECT SUM(hpp.qty * hpp.harga_beli) totalmodal
+                        FROM
+                            harga_pokok_penjualan hpp
+                        JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
+                        JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
+                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') = :tanggal
+                        ) t_modal");
+
+        $commandRekap->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
+        $commandRekap->bindValue(":tanggal", $this->tanggal);
+
+        $rekap = $commandRekap->queryRow();
+        return $rekap['margin'];
     }
 
     public function itemPengeluaran()
@@ -979,7 +1004,7 @@ class LaporanHarian extends CActiveRecord
             join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
             join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')=:tanggal
-         ) t 
+         ) t
          join retur_pembelian on t.id = retur_pembelian.id
          join profil on retur_pembelian.profil_id = profil.id
          group by t.id
@@ -989,7 +1014,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -1042,7 +1067,7 @@ class LaporanHarian extends CActiveRecord
          select rb.nomor, profil.nama, t3.jumlah-t3.jml_bayar jumlah
          from
          (
-            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar
             from retur_pembelian rp
             join hutang_piutang hp on rp.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
             left join
@@ -1067,7 +1092,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -1089,7 +1114,7 @@ class LaporanHarian extends CActiveRecord
          select sum(t3.jumlah-t3.jml_bayar) total
          from
          (
-            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar
             from retur_pembelian rp
             join hutang_piutang hp on rp.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
             left join
@@ -1147,7 +1172,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah_bayar) jumlah_bayar
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -1213,7 +1238,7 @@ class LaporanHarian extends CActiveRecord
             join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
             join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and date_format(retur_penjualan.tanggal,'%Y-%m-%d')=:tanggal
-         ) t 
+         ) t
          join retur_penjualan on t.id = retur_penjualan.id
          join profil on retur_penjualan.profil_id = profil.id
          group by t.id
@@ -1223,7 +1248,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -1276,7 +1301,7 @@ class LaporanHarian extends CActiveRecord
          select rb.nomor, profil.nama, t3.jumlah-t3.jml_bayar jumlah
          from
          (
-            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar
             from retur_penjualan rp
             join hutang_piutang hp on rp.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
             left join
@@ -1301,7 +1326,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }
@@ -1323,7 +1348,7 @@ class LaporanHarian extends CActiveRecord
          select sum(t3.jumlah-t3.jml_bayar) total
          from
          (
-            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar 
+            select rp.id, hp.jumlah, sum(ifnull(t1.jumlah,0)+ifnull(t2.jumlah,0)) jml_bayar
             from retur_penjualan rp
             join hutang_piutang hp on rp.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
             left join
@@ -1379,7 +1404,7 @@ class LaporanHarian extends CActiveRecord
             $sql = "
                     select distinct nama, sum(jumlah_bayar) jumlah_bayar
                     from ({$sql}) t
-                    group by nama 
+                    group by nama
                     order by nama
             ";
         }

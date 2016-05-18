@@ -131,6 +131,31 @@ class ReportController extends Controller
     }
 
     /**
+     * Report Harian Detail Form
+     */
+    public function actionHarianDetail2()
+    {
+        $this->layout = '//layouts/box_kecil';
+        $model = new ReportHarianForm;
+        if (isset($_REQUEST['ReportHarianForm'])) {
+            $model->attributes = $_REQUEST['ReportHarianForm'];
+            if ($model->validate()) {
+                $report = $model->reportHarianDetail();
+                $report['tanggal'] = $model->tanggal;
+                $report['namaToko'] = $this->namaToko();
+                $report['kodeToko'] = $this->kodeToko();
+                $this->harianDetailPdf2($report);
+                Yii::app()->end();
+            }
+        }
+
+        $this->render('harian', array(
+            'model' => $model,
+            'judul' => 'Harian Detail'
+        ));
+    }
+
+    /**
      * Report Harian Rekap Form
      */
     public function actionHarianRekap()
@@ -175,6 +200,25 @@ class ReportController extends Controller
          */
         $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
         $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf', array(
+                    'report' => $report,
+                        ), true
+        ));
+
+        $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->pagenumPrefix = 'Hal ';
+        $mPDF1->pagenumSuffix = ' / ';
+        // Render PDF
+        $mPDF1->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
+    }
+
+    public function harianDetailPdf2($report)
+    {
+
+        /*
+         * Persiapan render PDF
+         */
+        $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
+        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf_2', array(
                     'report' => $report,
                         ), true
         ));
