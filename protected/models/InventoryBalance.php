@@ -450,7 +450,7 @@ class InventoryBalance extends CActiveRecord
          * FIX ME
          */
         if ($sisa > 0) {
-            throw new Exception('Stok tidak cukup untuk diretur', 500);
+            throw new Exception("Stok {$returBeliDetail->inventoryBalance->barang->nama} tidak cukup untuk diretur", 500);
         }
 
         return $inventoryTerpakai;
