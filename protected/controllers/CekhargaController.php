@@ -9,6 +9,12 @@ class CekhargaController extends PublicController
     {
         $this->render('index');
     }
+    public function actionScreensaver()
+    {
+        $this->layout = '//layouts/screensaver';
+        $config = Config::model()->find("nama = 'toko.nama'");
+        $this->render('screensaver',['namaToko'=>$config->nilai]);
+    }
 
     public function actionCekBarcode()
     {

@@ -137,4 +137,21 @@
         }
         return false;
     });
+
+    var s_saver;
+
+    $('body').keydown(function () {
+        clearTimeout(s_saver);
+
+        s_saver = setTimeout(function () {
+            window.location.href = "<?php echo $this->createUrl('screensaver'); ?>";
+        }, 120000);
+
+    });
+
+    $(document).ready(function () {
+        s_saver = setTimeout(function () {
+            window.location.href = "<?php echo $this->createUrl('screensaver'); ?>";
+        }, 120000);
+    });
 </script>
