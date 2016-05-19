@@ -517,7 +517,7 @@ class InventoryBalance extends CActiveRecord
          * berarti qty barang yang diretur lebih banyak dari qty barang yang di jual ??
          * cari di penjualan berikutnya */
         if ($sisa > 0) {
-            throw new Exception("Retur jual lebih banyak dari penjualan: barang=".$returPenjualanDetail->penjualanDetail->barang->nama);
+            throw new Exception("Retur jual lebih banyak dari penjualan: barang=" . $returPenjualanDetail->penjualanDetail->barang->nama);
         }
     }
 
@@ -758,6 +758,16 @@ class InventoryBalance extends CActiveRecord
             case InventoryBalance::ASAL_SO;
                 return StockOpname::model()->find("nomor={$this->nomor_dokumen}");
         }
+    }
+
+    public function totalInventory()
+    {
+        $inventory = Yii::app()->db->createCommand()->
+                select('sum(harga_beli * qty) total')->
+                from('inventory_balance')->
+                where('qty > 0')->
+                queryRow();
+        return $inventory['total'];
     }
 
 }

@@ -310,4 +310,10 @@ class ReportController extends Controller
         $mPDF1->Output("Poin Member {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
+    public function actionTotalStok()
+    {
+        $this->layout = '//layouts/box_kecil';
+        $this->render('totalstok', ['totalStok' => InventoryBalance::model()->totalInventory()]);
+    }
+
 }
