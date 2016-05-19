@@ -1,9 +1,6 @@
 <?php
 /* @var $this ReportController */
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/foundation-datepicker.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
-
 $this->breadcrumbs = array(
     'Laporan' => array('index'),
     'Top Rank',
@@ -14,32 +11,40 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Top R
 
 $this->renderPartial('_form_toprank', array('model' => $model));
 
-if (!empty($report['detail'])):
+if (isset($report)):
     ?>
     <div class="row">
         <div class="small-12 columns">
             <table class="tabel-index responsive">
                 <thead>
                     <tr>
-                        <th>Tanggal</th>
-                        <th>Nomor</th>
-                        <th class="rata-kanan">Total</th>
+                        <th class="rata-kanan">No</th>
+                        <th>Barcode</th>
+                        <th>Nama</th>
+                        <th class="rata-kanan">Qty</th>
+                        <th class="rata-kanan">Nominal</th>
                         <th class="rata-kanan">Margin</th>
-                        <th class="rata-kanan">Profit Margin</th>
+                        <th class="rata-kanan">Avg / Day</th>
+                        <th class="rata-kanan">Stok</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    foreach ($report['detail'] as $barisReport):
+                    $i = 1;
+                    foreach ($report as $baris):
                         ?>
                         <tr>
-                            <td><?php echo $barisReport['tanggal']; ?></td>
-                            <td><a href="<?php echo Yii::app()->createUrl('penjualan/view', array('id' => $barisReport['id'])); ?>"><?php echo $barisReport['nomor']; ?></a></td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['margin'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['margin'] / $barisReport['total'] * 100, 2, ',', '.') . '%'; ?></td>
+                            <td class="rata-kanan"><?php echo $i; ?></td>
+                            <td><?php echo $baris['barcode']; ?></td>
+                            <td><?php echo $baris['nama']; ?></td>
+                            <td class="rata-kanan"><?php echo number_format($baris['totalqty'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?php echo number_format($baris['total'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?php echo number_format($baris['margin'], 2, ',', '.'); ?></td>
+                            <td class="rata-kanan"></td>
+                            <td class="rata-kanan"></td>
                         </tr>
                         <?php
+                        $i++;
                     endforeach;
                     ?>
                 </tbody>
@@ -47,12 +52,8 @@ if (!empty($report['detail'])):
         </div>
     </div>
     <?php
+
+
+
+
 endif;
-?>
-<script>
-    $(function () {
-        $('.tanggalan').fdatepicker({
-            format: 'dd-mm-yyyy'
-        });
-    });
-</script>

@@ -319,7 +319,18 @@ class ReportController extends Controller
     public function actionTopRank()
     {
         $model = new ReportTopRankForm();
-        $this->render('toprank', ['model' => $model]);
+        $report = null;
+        if (isset($_POST['ReportTopRankForm'])) {
+            $model->attributes = $_POST['ReportTopRankForm'];
+            if ($model->validate()) {
+                $report = $model->reportTopRank();
+            }
+        }
+
+        $this->render('toprank', [
+            'model' => $model,
+            'report' => $report
+        ]);
     }
 
 }
