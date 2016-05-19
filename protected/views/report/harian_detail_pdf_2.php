@@ -177,7 +177,7 @@ function namaBulan($i)
             </tr>
             <tr>
                 <td class="tebal">SELISIH</td>
-                <td class="kanan tebal"><?php echo number_format($report['saldoAkhir'] - $report['saldoAkhirAsli'], 0, ',', '.'); ?></td>
+                <td class="kanan tebal"><?php echo number_format($report['saldoAkhirAsli'] - $report['saldoAkhir'], 0, ',', '.'); ?></td>
             </tr>
             <tr>
                 <td class="trx-header tebal">OMZET</td>
