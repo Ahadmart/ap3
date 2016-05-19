@@ -316,4 +316,10 @@ class ReportController extends Controller
         $this->render('totalstok', ['totalStok' => InventoryBalance::model()->totalInventory()]);
     }
 
+    public function actionTopRank()
+    {
+        $model = new ReportTopRankForm();
+        $this->render('toprank', ['model' => $model]);
+    }
+
 }
