@@ -327,10 +327,53 @@ class ReportController extends Controller
             }
         }
 
+        $kertasUntukPdf = ReportTopRankForm::listKertas();
         $this->render('toprank', [
             'model' => $model,
-            'report' => $report
+            'report' => $report,
+            'kertasPdf' => $kertasUntukPdf
         ]);
+    }
+
+    public function actionTopRankPdf()
+    {
+        $model = new ReportTopRankForm;
+        $report = null;
+
+        if (isset($_POST['ReportTopRankForm'])) {
+            $model->attributes = $_POST['ReportTopRankForm'];
+            $report = $model->reportTopRank();
+        } else {
+            throw new Exception("Tidak ada data, klik lagi dari tombol cetak", 500);
+        }
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        /*
+         * Persiapan render PDF
+         */
+        $waktuCetak = date('dmY His');
+        $listNamaKertas = ReportTopRankForm::listKertas();
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_toprank_pdf', array(
+                    'model' => $model,
+                    'report' => $report,
+                    'config' => $branchConfig,
+                    'waktuCetak' => $waktuCetak
+                        ), true
+        ));
+        $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->pagenumPrefix = 'Hal ';
+        $mPDF1->pagenumSuffix = ' / ';
+        // Render PDF
+        $mPDF1->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
 }

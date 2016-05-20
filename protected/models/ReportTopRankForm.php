@@ -31,6 +31,7 @@ class ReportTopRankForm extends CFormModel
     public $rakId;
     public $limit = 200;
     public $sortBy;
+    public $kertas;
 
     /**
      * Declares the validation rules.
@@ -39,7 +40,7 @@ class ReportTopRankForm extends CFormModel
     {
         return array(
             array('dari, sampai, sortBy', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            array('kategoriId, rakId, limit', 'safe')
+            array('kategoriId, rakId, limit, kertas', 'safe')
         );
     }
 
@@ -94,9 +95,7 @@ class ReportTopRankForm extends CFormModel
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                         GROUP BY barang_id) t_modal", "t_penjualan.barang_id = t_modal.barang_id");
-        $command->join('barang','t_penjualan.barang_id=barang.id');
-        //$command->order("t_penjualan.nomor");
-        //$command->where("t_penjualan.profil_id is not null");
+        $command->join('barang', 't_penjualan.barang_id=barang.id');
 
         switch ($this->sortBy) {
             case self::SORT_BY_QTY_DSC:
@@ -110,7 +109,7 @@ class ReportTopRankForm extends CFormModel
                 break;
         }
 
-        if ($this->limit != ''){
+        if ($this->limit != '') {
             $command->limit($this->limit);
         }
 
