@@ -27,8 +27,8 @@ if (isset($report)):
                         <th>Barcode</th>
                         <th>Nama</th>
                         <th class="rata-kanan">Qty</th>
-                        <th class="rata-kanan">Nominal</th>
-                        <th class="rata-kanan">Margin</th>
+                        <th class="rata-kanan">Omset</th>
+                        <th class="rata-kanan">Profit</th>
                         <th class="rata-kanan">Avg / Day</th>
                         <th class="rata-kanan">Stok</th>
                     </tr>
@@ -44,9 +44,9 @@ if (isset($report)):
                             <td><?php echo $baris['nama']; ?></td>
                             <td class="rata-kanan"><?php echo number_format($baris['totalqty'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?php echo number_format($baris['total'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['margin'], 2, ',', '.'); ?></td>
-                            <td class="rata-kanan"></td>
-                            <td class="rata-kanan"></td>
+                            <td class="rata-kanan"><?php echo number_format($baris['margin'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?php echo number_format($baris['avgday'], 2, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?php echo number_format($baris['stok'], 0, ',', '.'); ?></td>
                         </tr>
                         <?php
                         $i++;
@@ -57,6 +57,7 @@ if (isset($report)):
         </div>
     </div>
     <?php
+
 
 
 

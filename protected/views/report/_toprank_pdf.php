@@ -33,8 +33,8 @@
                     <th>Barcode</th>
                     <th>Nama</th>
                     <th class="rata-kanan">Qty</th>
-                    <th class="rata-kanan">Nominal</th>
-                    <th class="rata-kanan">Margin</th>
+                    <th class="rata-kanan">Omset</th>
+                    <th class="rata-kanan">Profit</th>
                     <th class="rata-tengah">Avg/Day</th>
                     <th class="rata-kanan">Stok</th>
                 </tr>
@@ -50,8 +50,8 @@
                     <td class="rata-kanan"><?= $barang['totalqty']; ?></td>
                     <td class="rata-kanan"><?= number_format($barang['total'], 0, ',', '.'); ?></td>
                     <td class="rata-kanan"><?= number_format($barang['margin'], 0, ',', '.'); ?></td>
-                    <td></td>
-                    <td></td>
+                    <td class="rata-kanan"><?= number_format($barang['avgday'], 2, ',', '.'); ?></td>
+                    <td class="rata-kanan"><?= number_format($barang['stok'], 0, ',', '.'); ?></td>
                 </tr>
 
                 <?php

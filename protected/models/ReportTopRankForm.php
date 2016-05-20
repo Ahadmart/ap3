@@ -77,7 +77,7 @@ class ReportTopRankForm extends CFormModel
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
 
         $command = Yii::app()->db->createCommand();
-        $command->select('t_penjualan.barang_id, barang.barcode, barang.nama, t_penjualan.totalqty, t_penjualan.total, t_modal.totalmodal, (t_penjualan.total - t_modal.totalModal) margin');
+        $command->select('t_penjualan.barang_id, barang.barcode, barang.nama, t_penjualan.totalqty, t_penjualan.total, t_modal.totalmodal, (t_penjualan.total - t_modal.totalModal) margin, t_penjualan.totalqty/DATEDIFF(:sampai, :dari) avgday, t_stok.stok');
         $command->from("(SELECT
                                 barang_id,
                                 SUM(pd.harga_jual * pd.qty) total,
@@ -96,6 +96,20 @@ class ReportTopRankForm extends CFormModel
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                         GROUP BY barang_id) t_modal", "t_penjualan.barang_id = t_modal.barang_id");
         $command->join('barang', 't_penjualan.barang_id=barang.id');
+        $command->join('(SELECT
+                            barang_id, SUM(qty) stok
+                        FROM
+                            inventory_balance
+                        GROUP BY barang_id) t_stok', "barang.id = t_stok.barang_id");
+        $command->where("barang.id is not null");
+
+        if ($this->rakId > 0) {
+            $command->andWhere('barang.rak_id=:rakId');
+        }
+
+        if ($this->kategoriId > 0) {
+            $command->andWhere('barang.kategori_id=:kategoriId');
+        }
 
         switch ($this->sortBy) {
             case self::SORT_BY_QTY_DSC:
@@ -116,6 +130,12 @@ class ReportTopRankForm extends CFormModel
         $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $command->bindValue(":dari", $dari);
         $command->bindValue(":sampai", $sampai);
+        if ($this->rakId > 0) {
+            $command->bindValue(":rakId", $this->rakId);
+        }
+        if ($this->kategoriId > 0) {
+            $command->bindValue(":kategoriId", $this->kategoriId);
+        }
 
         return $command->queryAll();
     }
@@ -134,8 +154,8 @@ class ReportTopRankForm extends CFormModel
     {
         return [
             self::SORT_BY_QTY_DSC => 'Jumlah Barang [z-a]',
-            self::SORT_BY_OMZET_DSC => 'Nominal Penjualan [z-a]',
-            self::SORT_BY_MARGIN_DSC => 'Margin [z-a]',
+            self::SORT_BY_OMZET_DSC => 'Omset [z-a]',
+            self::SORT_BY_MARGIN_DSC => 'Profit [z-a]',
         ];
     }
 
