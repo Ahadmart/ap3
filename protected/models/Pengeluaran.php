@@ -122,14 +122,14 @@ class Pengeluaran extends CActiveRecord {
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('nomor', $this->nomor, true);
-        $criteria->compare('t.tanggal', $this->tanggal, true);
+        $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('t.keterangan', $this->keterangan, true);
         $criteria->compare('profil_id', $this->profil_id, true);
         $criteria->compare('kas_bank_id', $this->kas_bank_id, true);
         $criteria->compare('kategori_id', $this->kategori_id, true);
         $criteria->compare('jenis_transaksi_id', $this->jenis_transaksi_id, true);
         $criteria->compare('referensi', $this->referensi, true);
-        $criteria->compare('tanggal_referensi', $this->tanggal_referensi, true);
+        $criteria->compare("DATE_FORMAT(tanggal_referensi, '%d-%m-%Y')", $this->tanggal_referensi, true);
         $criteria->compare('uang_dibayar', $this->uang_dibayar, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
@@ -295,7 +295,7 @@ class Pengeluaran extends CActiveRecord {
      * @return int Jumlah yang sudah ada di pengeluaran_detail
      */
     public function totalSudahBayar($hutangPiutangId) {
-        $pengeluaran = Yii::app()->db->createCommand(' 
+        $pengeluaran = Yii::app()->db->createCommand('
 							   SELECT hutang_piutang_id,sum(jumlah) jumlah
 								FROM pengeluaran_detail
 								WHERE hutang_piutang_id = :hutangPiutangId

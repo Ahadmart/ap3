@@ -125,10 +125,11 @@ class Pembelian extends CActiveRecord
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('t.nomor', $this->nomor, true);
-        $criteria->compare('tanggal', $this->tanggal, true);
-        $criteria->compare('profil_id', $this->profil_id, true);
+        //$criteria->compare("DATE_FORMAT(tanggal, '%d-%m-%Y %H:%i:%s')", $this->tanggal, true);
+        $criteria->compare("DATE_FORMAT(tanggal, '%d-%m-%Y')", $this->tanggal, true);
+        $criteria->compare('profil_id', $this->profil_id);
         $criteria->compare('referensi', $this->referensi, true);
-        $criteria->compare('tanggal_referensi', $this->tanggal_referensi, true);
+        $criteria->compare("DATE_FORMAT(tanggal_referensi, '%d-%m-%Y')", $this->tanggal_referensi, true);
         $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
