@@ -26,11 +26,11 @@ class StockOpname extends CActiveRecord
     const STATUS_SO = 1;
 
     public $max; //untuk penomoran surat
+    public $namaUpdatedBy;
 
     /**
      * @return string the associated database table name
      */
-
     public function tableName()
     {
         return 'stock_opname';
@@ -51,7 +51,7 @@ class StockOpname extends CActiveRecord
             array('tanggal, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, tanggal, nomor, rak_id, keterangan, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
+            array('id, tanggal, nomor, rak_id, keterangan, status, updated_at, updated_by, created_at, namaUpdatedBy', 'safe', 'on' => 'search'),
         );
     }
 
@@ -84,6 +84,7 @@ class StockOpname extends CActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
+            'namaUpdatedBy' => 'User'
         );
     }
 
@@ -106,7 +107,6 @@ class StockOpname extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id, true);
-        ;
         $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('nomor', $this->nomor, true);
         $criteria->compare('keterangan', $this->keterangan, true);
@@ -121,14 +121,24 @@ class StockOpname extends CActiveRecord
             $criteria->compare('rak_id', $this->rak_id);
         }
 
-        $sort = array(
-            'defaultOrder' => 't.status, tanggal desc',
-        );
+        $criteria->with = ['updatedBy'];
+        $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
 
-        return new CActiveDataProvider($this, array(
+        $sort = [
+            'defaultOrder' => 't.status, tanggal desc',
+            'attributes' => [
+                '*',
+                'namaUpdatedBy' => [
+                    'asc' => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc'
+                ],
+            ]
+        ];
+
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
             'sort' => $sort
-        ));
+        ]);
     }
 
     /**

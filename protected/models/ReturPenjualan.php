@@ -38,6 +38,7 @@ class ReturPenjualan extends CActiveRecord
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;
     public $nomorHutangPiutang;
+    public $namaUpdatedBy;
 
     /**
      * @return string the associated database table name
@@ -62,7 +63,7 @@ class ReturPenjualan extends CActiveRecord
             array('tanggal, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, tanggal, profil_id, hutang_piutang_id, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
+            array('id, nomor, tanggal, profil_id, hutang_piutang_id, status, updated_at, updated_by, created_at, namaUpdatedBy', 'safe', 'on' => 'search'),
         );
     }
 
@@ -96,6 +97,7 @@ class ReturPenjualan extends CActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
+            'namaUpdatedBy' => 'User'
         );
     }
 
@@ -127,14 +129,24 @@ class ReturPenjualan extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        $sort = array(
-            'defaultOrder' => 't.status, t.tanggal desc'
-        );
+        $criteria->with = ['updatedBy'];
+        $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
 
-        return new CActiveDataProvider($this, array(
+        $sort = [
+            'defaultOrder' => 't.status, t.tanggal desc',
+            'attributes' => [
+                '*',
+                'namaUpdatedBy' => [
+                    'asc' => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc'
+                ],
+            ]
+        ];
+
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
             'sort' => $sort
-        ));
+        ]);
     }
 
     /**

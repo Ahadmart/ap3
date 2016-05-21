@@ -68,7 +68,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                     'headerHtmlOptions' => array('class' => 'rata-kanan')
                 ),
                 array(
-                    'name' => 'updated_by',
+                    'name' => 'namaUpdatedBy',
                     'value' => '$data->updatedBy->nama_lengkap',
                 ),
                 /* Tombol yang muncul sesuai keadaan
