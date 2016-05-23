@@ -286,7 +286,9 @@ class StockopnameController extends Controller
         // cek jika 'simpan' ada dan bernilai true
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $so = $this->loadModel($id);
-            $return = $so->simpanSo();
+            if ($so->status == StockOpname::STATUS_DRAFT) {
+                $return = $so->simpanSo();
+            }
         }
         echo $this->renderJSON($return);
     }

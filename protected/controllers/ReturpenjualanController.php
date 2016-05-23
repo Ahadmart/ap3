@@ -280,7 +280,7 @@ class ReturpenjualanController extends Controller
         // cek jika 'simpan' ada dan bernilai true
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $returPenjualan = $this->loadModel($id);
-            if ($returPenjualan->status == 0) {
+            if ($returPenjualan->status == ReturPenjualan::STATUS_DRAFT) {
                 /*
                  * simpan retur penjualan jika hanya dan hanya jika status masih draft
                  */
@@ -362,7 +362,7 @@ class ReturpenjualanController extends Controller
         /*
          * Retur Penjualan Detail
          */
-        $returPenjualanDetail = ReturPenjualanDetail::model()->with('penjualanDetail','penjualanDetail.barang')->findAll(array(
+        $returPenjualanDetail = ReturPenjualanDetail::model()->with('penjualanDetail', 'penjualanDetail.barang')->findAll(array(
             'condition' => "retur_penjualan_id={$id}",
             'order' => 'barang.nama'
         ));
@@ -405,7 +405,6 @@ class ReturpenjualanController extends Controller
 
         Yii::app()->end();
     }
-
 
     public function actionPrintReturPenjualan($id)
     {

@@ -354,7 +354,7 @@ class ReturpembelianController extends Controller
         // cek jika 'simpan' ada dan bernilai true
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $returPembelian = $this->loadModel($id);
-            if ($returPembelian->status == 0) {
+            if ($returPembelian->status == ReturPembelian::STATUS_DRAFT) {
                 /*
                  * simpan retur pembelian jika hanya dan hanya jika status masih draft
                  */

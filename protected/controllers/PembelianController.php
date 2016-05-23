@@ -345,7 +345,7 @@ class PembelianController extends Controller
         // cek jika 'simpan' ada dan bernilai true
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $pembelian = $this->loadModel($id);
-            if ($pembelian->status == 0) {
+            if ($pembelian->status == Pembelian::STATUS_DRAFT) {
                 /*
                  * simpan pembelian jika hanya dan hanya jika status masih draft
                  */
