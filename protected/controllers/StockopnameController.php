@@ -290,7 +290,7 @@ class StockopnameController extends Controller
                 $return = $so->simpanSo();
             }
         }
-        echo $this->renderJSON($return);
+        $this->renderJSON($return);
     }
 
     public function renderQtyLinkEditable($data, $row)
