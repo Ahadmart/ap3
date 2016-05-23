@@ -692,7 +692,7 @@ class InventoryBalance extends CActiveRecord
             }
         }
         if ($sisa > 0) {
-            $this->soInvSebelumnya($soModel, $soDetailId, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id);
+            $this->soInvSebelumnya($soModel, $soDetailId, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id, $inventory->harga_beli);
         }
     }
 
