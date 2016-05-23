@@ -182,7 +182,7 @@ class DiskonBarang extends CActiveRecord
         return array(
             self::TIPE_PROMO => 'Promo (diskon per waktu tertentu)',
             self::TIPE_PROMO_MEMBER => 'Promo Member',
-            //self::TIPE_GROSIR => 'Grosir (beli banyak harga turun)',
+            self::TIPE_GROSIR => 'Grosir (beli banyak harga turun)',
             self::TIPE_BANDED => 'Banded (beli qty tertentu harga turun)'
         );
     }
@@ -192,7 +192,7 @@ class DiskonBarang extends CActiveRecord
         return array(
             self::TIPE_PROMO => 'Promo',
             self::TIPE_PROMO_MEMBER => 'Promo Member',
-            //self::TIPE_GROSIR => 'Grosir',
+            self::TIPE_GROSIR => 'Grosir',
             self::TIPE_BANDED => 'Banded'
         );
     }
