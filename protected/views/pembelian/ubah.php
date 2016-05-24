@@ -50,10 +50,6 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
     </div>
 </div>
 <div class="row">
-    <div class="small-12 columns">
-        <span class="warning label" style="font-weight: bold">BARANG BARU</span>
-        <span class="success label" style="font-weight: bold">HARGA JUAL BERUBAH</span>
-    </div>
     <?php
     if ($pilihBarang) {
         $this->renderPartial('_pilih_barang', array(
@@ -64,6 +60,10 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
         ));
     }
     ?>
+    <div class="small-12 columns">
+        <span class="warning label" style="font-weight: bold">BARANG BARU</span>
+        <span class="success label" style="font-weight: bold">HARGA JUAL BERUBAH</span>
+    </div>
 </div>
 
 <div class="row">
