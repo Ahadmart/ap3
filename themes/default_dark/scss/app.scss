@@ -86,10 +86,26 @@ option{
         font-size: 0.825em;
     }
     tr.baru{
-        background-color: #DCE775;
+        background-color: #F57C00;
+        font-weight: bold;
+        td{
+            color: #fff;
+            a.editable{
+                color: #fff;     
+                border-bottom-color: #fff;
+            }
+        }
     }
     tr.hj-berubah{
-        background-color: #FFB74D;
+        background-color: #388E3C;
+        font-weight: bold;
+        td{
+            color: #fff;
+            a.editable{
+                color: #fff;     
+                border-bottom-color: #fff;           
+            }
+        }
     }
 }
 input, select {

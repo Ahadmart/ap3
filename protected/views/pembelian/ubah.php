@@ -51,8 +51,8 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
 </div>
 <div class="row">
     <div class="small-12 columns">
-        <span class="label" style="color:#333;background-color:#DCE775">BARANG BARU</span>
-        <span class="label" style="color:#333;background-color:#FFB74D">HARGA JUAL BERUBAH</span>
+        <span class="warning label" style="font-weight: bold">BARANG BARU</span>
+        <span class="success label" style="font-weight: bold">HARGA JUAL BERUBAH</span>
     </div>
     <?php
     if ($pilihBarang) {
