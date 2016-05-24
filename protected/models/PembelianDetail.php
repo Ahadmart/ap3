@@ -212,14 +212,14 @@ class PembelianDetail extends CActiveRecord
                 from('pembelian_detail detail')->
                 join('pembelian', 'detail.pembelian_id = pembelian.id')->
                 join('(SELECT
-                        barang_id, harga
+                            barang_id, harga
                         FROM
-                        barang_harga_jual hj
+                            barang_harga_jual hj
                         WHERE
-                        hj.barang_id = :barangId
+                            hj.barang_id = :barangId
                         ORDER BY id DESC
                         LIMIT 1) thj', 'thj.barang_id = detail.barang_id')->
-                where('pembelian.id = :pembelianId AND detail.barang_id = :barangId', [
+                where('pembelian.id = :pembelianId AND detail.barang_id = :barangId AND detail.harga_jual != thj.harga', [
                     ':pembelianId' => $this->pembelian_id,
                     ':barangId' => $this->barang_id
                 ])->
