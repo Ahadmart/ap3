@@ -12,12 +12,12 @@ $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
 ?>
 <div class="row">
-    <div class="large-5 columns">
+    <div class="medium-5 large-5 columns">
         <?php
         echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Pembelian', $this->createUrl('simpanpembelian', array('id' => $model->id)), array(
             'data' => "simpan=true",
             'type' => 'POST',
-            'beforeSend' => 'function() {           
+            'beforeSend' => 'function() {
                                 $("#tombol-simpan").addClass("warning");
                                 $("#tombol-simpan").html("<i class=\"fa fa-floppy-o fa-spin\"></i> <span class=\"ak\">S</span>impan Pembelian");
                             }',
@@ -43,13 +43,17 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
         ));
         ?>
     </div>
-    <div class="large-7 columns header" style="text-align: right">
+    <div class="medium-7 large-7 columns header" style="text-align: right">
         <span class="secondary label">Supplier</span><span class="label"><?php echo $model->profil->nama; ?></span>
         <span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span>
         <span class="secondary label">Total</span><span class="label" id="total-pembelian"><?php echo $model->total; ?></span>
     </div>
 </div>
 <div class="row">
+    <div class="small-12 columns">
+        <span class="label" style="color:#333;background-color:#DCE775">BARANG BARU</span>
+        <span class="label" style="color:#333;background-color:#FFB74D">HARGA JUAL BERUBAH</span>
+    </div>
     <?php
     if ($pilihBarang) {
         $this->renderPartial('_pilih_barang', array(
