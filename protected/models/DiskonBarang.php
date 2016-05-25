@@ -62,7 +62,7 @@ class DiskonBarang extends CActiveRecord
             array('sampai, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, status, namaBarang', 'safe', 'on' => 'search'),
+            array('id, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, status, barcode, namaBarang', 'safe', 'on' => 'search'),
         );
     }
 
@@ -93,8 +93,8 @@ class DiskonBarang extends CActiveRecord
             'dari' => 'Dari',
             'sampai' => 'Sampai',
             'qty' => 'Qty',
-            'qty_min' => 'Qty Minimum',
-            'qty_max' => 'Qty Maximum',
+            'qty_min' => 'Qty Min',
+            'qty_max' => 'Qty Max',
             'status' => 'Status',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
@@ -137,6 +137,7 @@ class DiskonBarang extends CActiveRecord
 
         $criteria->with = array('barang');
         $criteria->compare('barang.nama', $this->namaBarang, true);
+        $criteria->compare('barang.barcode', $this->barcode, true);
 
         $sort = array(
             'defaultOrder' => 't.status desc, t.id desc',
@@ -145,6 +146,10 @@ class DiskonBarang extends CActiveRecord
                 'namaBarang' => array(
                     'asc' => 'barang.nama',
                     'desc' => 'barang.nama desc'
+                ),
+                'barcode' => array(
+                    'asc' => 'barang.barcode',
+                    'desc' => 'barang.barcode desc'
                 )
             )
         );

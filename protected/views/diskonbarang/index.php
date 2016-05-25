@@ -24,6 +24,14 @@ $this->boxHeader['normal'] = 'Diskon Barang';
             'columns' => array(
                 array(
                     'class' => 'BDataColumn',
+                    'name' => 'barcode',
+                    'header' => '<span class="ak">B</span>arcode',
+                    'accesskey' => 'b',
+                    'type' => 'raw',
+                    'value' => '$data->barang->barcode',
+                ),
+                array(
+                    'class' => 'BDataColumn',
                     'name' => 'namaBarang',
                     'header' => '<span class="ak">N</span>ama',
                     'accesskey' => 'n',
@@ -35,23 +43,44 @@ $this->boxHeader['normal'] = 'Diskon Barang';
                     'filter' => $model->listTipeSort(),
                     'value' => '$data->namaTipeSort'
                 ),
-                'nominal',
-                'persen',
+                array(
+                    'header' => 'Harga Asli',
+                    'value' => '$data->barang->hargaJual',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                ),
+                array(
+                    'name' => 'nominal',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                ),
+                array(
+                    'name' => 'persen',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                ),
                 'dari',
                 'sampai',
-                'qty',
-                'qty_min',
-                'qty_max',
+                array(
+                    'name' => 'qty',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                ),
+                array(
+                    'name' => 'qty_min',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                ),
+                array(
+                    'name' => 'qty_max',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                ),
                 array(
                     'name' => 'status',
                     'filter' => $model->listStatus(),
                     'value' => '$data->namaStatus'
                 ),
-                /*
-                  'updated_at',
-                  'updated_by',
-                  'created_at',
-                 */
                 array(
                     'class' => 'BButtonColumn',
                 ),

@@ -29,6 +29,10 @@ $this->boxHeader['normal'] = 'Diskon Barang: ' . $model->barang->nama;
                     'value' => $model->getNamaTipe()
                 ),
                 array(
+                    'name' => 'barang.hargaJual',
+                    'label' => 'Harga Jual Asli'
+                ),
+                array(
                     'name' => 'nominal',
                     'value' => number_format($model->nominal, 0, ',', '.')
                 ),
