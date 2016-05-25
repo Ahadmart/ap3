@@ -17,8 +17,7 @@ class m160111_014156_fitur_diskon extends CDbMigration
     // Use safeUp/safeDown to do migration with transaction
     public function safeUp()
     {
-        $dbEngine = 'MyISAM';
-        // $dbEngine = 'InnoDB';
+        $dbEngine = 'InnoDB';
 
         $this->createTable('barang_diskon', array(
             "`id` int(10) unsigned NOT NULL AUTO_INCREMENT,

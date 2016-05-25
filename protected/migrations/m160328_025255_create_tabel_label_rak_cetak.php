@@ -17,8 +17,7 @@ class m160328_025255_create_tabel_label_rak_cetak extends CDbMigration
     // Use safeUp/safeDown to do migration with transaction
     public function safeUp()
     {
-        $dbEngine = 'MyISAM';
-        // $dbEngine = 'InnoDB';
+        $dbEngine = 'InnoDB';
 
         $this->createTable('label_rak_cetak', array(
             "`barang_id` int(10) unsigned NOT NULL,
@@ -30,14 +29,14 @@ class m160328_025255_create_tabel_label_rak_cetak extends CDbMigration
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
 
         /* Foreign Key Tabel label_rak_cetak */
-        
+
         $this->addForeignKey('fk_label_rak_cetak_barang', 'label_rak_cetak', 'barang_id', 'barang', 'id', 'NO ACTION', 'NO ACTION');
         $this->addForeignKey('fk_label_rak_cetak_updatedby', 'label_rak_cetak', 'updated_by', 'user', 'id', 'NO ACTION', 'NO ACTION');
     }
 
     public function safeDown()
     {
-        
+
     }
 
 }
