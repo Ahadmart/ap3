@@ -167,13 +167,17 @@ class PembelianController extends Controller
             $pilihBarang = FALSE;
         }
 
+        /* Mengambil nilai pembulatan ke atas untuk harga jual */
+        $config = Config::model()->find('nama=:nama', [':nama' => 'pembelian.pembulatankeatashj']);
+
         $this->render('ubah', array(
             'model' => $model,
             'barangBarcode' => $barangBarcode,
             'barangNama' => $barangNama,
             'pembelianDetail' => $pembelianDetail,
             'barang' => $barang,
-            'pilihBarang' => $pilihBarang
+            'pilihBarang' => $pilihBarang,
+            'pembulatan' => $config->nilai
                 //'totalPembelian' => $model->ambilTotal()
         ));
     }
