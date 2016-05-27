@@ -10,24 +10,39 @@ $this->breadcrumbs = array(
 
 $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "Stock Opname: {$model->nomor}";
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 ?>
 
 <div class="row">
     <div class="small-12 medium-5 right columns">
         <?php
-        echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan SO', $this->createUrl('simpanso', array('id' => $model->id)), array(
-            'data' => "simpan=true",
-            'type' => 'POST',
-            'success' => 'function(data) {
-                            if (data.sukses) {
-                                location.reload();;
-                            }
-                        }'
-                ), array(
+        echo CHtml::link('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan SO', '#', [
             'class' => 'tiny bigfont button right',
-            'accesskey' => 's'
-                )
-        );
+            'accesskey' => 's',
+            'id' => 'tombol-simpan'
+        ]);
+        /*
+          echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan SO', $this->createUrl('simpanso', array('id' => $model->id)), array(
+          'data' => "simpan=true",
+          'type' => 'POST',
+          'beforeSend' => 'function() {
+          $("#tombol-simpan").off("click").html("<i class=\"fa fa-floppy-o fa-spin\"></i> <span class=\"ak\">S</span>impan SO").addClass("warning");
+          }',
+          'success' => 'function(data) {
+          if (data.sukses) {
+          location.reload();;
+          }
+          }'
+          ), array(
+          'class' => 'tiny bigfont button right',
+          'accesskey' => 's',
+          'id' => 'tombol-simpan'
+          )
+          );
+         *
+         */
         ?>
         <?php
         if ($manualMode) {
@@ -83,6 +98,38 @@ $this->boxHeader['normal'] = "Stock Opname: {$model->nomor}";
     <?php
 endif;
 ?>
+
+<script>
+    $(document).ready(function () {
+        $("#tombol-simpan").on("click");
+
+        $("#tombol-simpan").click(function () {
+            $("#tombol-simpan").off("click").html("<i class=\"fa fa-floppy-o fa-spin\"></i> <span class=\"ak\">S</span>impan SO").addClass("warning");
+
+            dataUrl = '<?php echo $this->createUrl('simpanso', array('id' => $model->id)); ?>';
+            dataKirim = {
+                simpan: true
+            };
+            $.ajax({
+                type: 'POST',
+                url: dataUrl,
+                data: dataKirim,
+                success: function (data) {
+                    if (data.sukses) {
+                        location.reload();
+                    } else {
+                        $.gritter.add({
+                            title: 'Error ' + data.error.code,
+                            text: data.error.msg,
+                            time: 3000,
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),

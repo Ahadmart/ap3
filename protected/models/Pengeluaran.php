@@ -28,25 +28,29 @@
  * @property User $updatedBy
  * @property PengeluaranDetail[] $pengeluaranDetails
  */
-class Pengeluaran extends CActiveRecord {
+class Pengeluaran extends CActiveRecord
+{
 
     const STATUS_DRAFT = 0;
     const STATUS_BAYAR = 1;
 
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;
+    public $namaUpdatedBy;
 
     /**
      * @return string the associated database table name
      */
-    public function tableName() {
+    public function tableName()
+    {
         return 'pengeluaran';
     }
 
     /**
      * @return array validation rules for model attributes.
      */
-    public function rules() {
+    public function rules()
+    {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
@@ -59,14 +63,15 @@ class Pengeluaran extends CActiveRecord {
             array('tanggal_referensi, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, tanggal, keterangan, kas_bank_id, kategori_id, jenis_transaksi_id, referensi, tanggal_referensi, status, updated_at, updated_by, created_at, namaProfil', 'safe', 'on' => 'search'),
+            array('id, nomor, tanggal, keterangan, kas_bank_id, kategori_id, jenis_transaksi_id, referensi, tanggal_referensi, status, updated_at, updated_by, created_at, namaProfil, namaUpdatedBy', 'safe', 'on' => 'search'),
         );
     }
 
     /**
      * @return array relational rules.
      */
-    public function relations() {
+    public function relations()
+    {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
@@ -82,7 +87,8 @@ class Pengeluaran extends CActiveRecord {
     /**
      * @return array customized attribute labels (name=>label)
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return array(
             'id' => 'ID',
             'nomor' => 'Nomor',
@@ -99,7 +105,8 @@ class Pengeluaran extends CActiveRecord {
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
-            'namaProfil' => 'Profil'
+            'namaProfil' => 'Profil',
+            'namaUpdatedBy' => 'User'
         );
     }
 
@@ -115,60 +122,66 @@ class Pengeluaran extends CActiveRecord {
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search() {
+    public function search()
+    {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('nomor', $this->nomor, true);
-        $criteria->compare('t.tanggal', $this->tanggal, true);
+        $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('t.keterangan', $this->keterangan, true);
         $criteria->compare('profil_id', $this->profil_id, true);
         $criteria->compare('kas_bank_id', $this->kas_bank_id, true);
         $criteria->compare('kategori_id', $this->kategori_id, true);
         $criteria->compare('jenis_transaksi_id', $this->jenis_transaksi_id, true);
         $criteria->compare('referensi', $this->referensi, true);
-        $criteria->compare('tanggal_referensi', $this->tanggal_referensi, true);
+        $criteria->compare("DATE_FORMAT(tanggal_referensi, '%d-%m-%Y')", $this->tanggal_referensi, true);
         $criteria->compare('uang_dibayar', $this->uang_dibayar, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        $criteria->with = array('profil');
+        $criteria->with = ['profil', 'updatedBy'];
         //$criteria->compare('jenisTransaksi.nama', $this->namaJenisTr, true);
         //$criteria->compare('kasBank.nama', $this->namaKasBank, true);
         //$criteria->compare('kategori.nama', $this->namaKategori, true);
         $criteria->compare('profil.nama', $this->namaProfil, true);
+        $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
 
-        $sort = array(
+        $sort = [
             'defaultOrder' => 't.status, t.tanggal desc, t.nomor desc',
-            'attributes' => array(
+            'attributes' => [
                 '*',
-                'namaJenisTr' => array(
+                'namaJenisTr' => [
                     'asc' => 'jenisTransaksi.nama',
                     'desc' => 'jenisTransaksi.nama desc'
-                ),
-                'namaKasBank' => array(
+                ],
+                'namaKasBank' => [
                     'asc' => 'kasBank.nama',
                     'desc' => 'kasBank.nama desc'
-                ),
-                'namaKategori' => array(
+                ],
+                'namaKategori' => [
                     'asc' => 'kategori.nama',
                     'desc' => 'kategori.nama desc'
-                ),
-                'namaProfil' => array(
+                ],
+                'namaProfil' => [
                     'asc' => 'profil.nama',
                     'desc' => 'profil.nama desc'
-                )
-            )
-        );
+                ],
+                'namaUpdatedBy' => [
+                    'asc' => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc'
+                ],
+            ]
+        ];
 
-        return new CActiveDataProvider($this, array(
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
             'sort' => $sort
-        ));
+        ]);
     }
 
     /**
@@ -177,11 +190,13 @@ class Pengeluaran extends CActiveRecord {
      * @param string $className active record class name.
      * @return Pengeluaran the static model class
      */
-    public static function model($className = __CLASS__) {
+    public static function model($className = __CLASS__)
+    {
         return parent::model($className);
     }
 
-    public function beforeSave() {
+    public function beforeSave()
+    {
 
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
@@ -199,13 +214,15 @@ class Pengeluaran extends CActiveRecord {
         return parent::beforeSave();
     }
 
-    public function beforeValidate() {
+    public function beforeValidate()
+    {
         $this->tanggal = !empty($this->tanggal) ? date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d') : NULL;
         $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : NULL;
         return parent::beforeValidate();
     }
 
-    public function afterFind() {
+    public function afterFind()
+    {
         $this->tanggal = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d', $this->tanggal), 'd-m-Y') : '0';
         $this->tanggal_referensi = !is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
         return parent::afterFind();
@@ -215,7 +232,8 @@ class Pengeluaran extends CActiveRecord {
      * Total Pengeluaran
      * @return int Nilai Total
      */
-    public function ambilTotal() {
+    public function ambilTotal()
+    {
         $pengeluaran = Yii::app()->db->createCommand()
                 ->select('SUM(
                         CASE
@@ -232,11 +250,13 @@ class Pengeluaran extends CActiveRecord {
      * Nilai total pengeluaran
      * @return text Total Pengeluaran dalam format ribuan
      */
-    public function getTotal() {
+    public function getTotal()
+    {
         return number_format($this->ambilTotal(), 0, ',', '.');
     }
 
-    public function proses() {
+    public function proses()
+    {
         $this->scenario = 'proses';
         $transaction = $this->dbConnection->beginTransaction();
         try {
@@ -265,7 +285,8 @@ class Pengeluaran extends CActiveRecord {
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
      */
-    public function cariNomor() {
+    public function cariNomor()
+    {
         $tahun = date('y');
         $data = $this->find(array(
             'select' => 'max(substring(nomor,9)*1) as max',
@@ -280,7 +301,8 @@ class Pengeluaran extends CActiveRecord {
      * Membuat nomor surat
      * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
      */
-    public function generateNomor() {
+    public function generateNomor()
+    {
         $config = Config::model()->find("nama='toko.kode'");
         $kodeCabang = $config->nilai;
         $kodeDokumen = KodeDokumen::PENGELUARAN;
@@ -294,8 +316,9 @@ class Pengeluaran extends CActiveRecord {
      * @param int $hutangPiutangId
      * @return int Jumlah yang sudah ada di pengeluaran_detail
      */
-    public function totalSudahBayar($hutangPiutangId) {
-        $pengeluaran = Yii::app()->db->createCommand(' 
+    public function totalSudahBayar($hutangPiutangId)
+    {
+        $pengeluaran = Yii::app()->db->createCommand('
 							   SELECT hutang_piutang_id,sum(jumlah) jumlah
 								FROM pengeluaran_detail
 								WHERE hutang_piutang_id = :hutangPiutangId
@@ -305,27 +328,32 @@ class Pengeluaran extends CActiveRecord {
         return $pengeluaran['jumlah'];
     }
 
-    public function getNamaStatus() {
+    public function getNamaStatus()
+    {
         $namaStatus = array('Draft', 'Paid');
         return $namaStatus[$this->status];
     }
 
-    public function listFilterStatus() {
+    public function listFilterStatus()
+    {
         return array(
             Pengeluaran::STATUS_DRAFT => 'Draft',
             Pengeluaran::STATUS_BAYAR => 'Paid'
         );
     }
 
-    public function listFilterKasBank() {
+    public function listFilterKasBank()
+    {
         return CHtml::listData(KasBank::model()->findAll(array('order' => 'nama')), 'id', 'nama');
     }
 
-    public function listFilterKategori() {
+    public function listFilterKategori()
+    {
         return CHtml::listData(KategoriPengeluaran::model()->findAll(array('order' => 'nama')), 'id', 'nama');
     }
 
-    public function listFilterJenisTransaksi() {
+    public function listFilterJenisTransaksi()
+    {
         return CHtml::listData(JenisTransaksi::model()->findAll(array('order' => 'nama')), 'id', 'nama');
     }
 

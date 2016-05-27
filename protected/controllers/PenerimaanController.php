@@ -286,17 +286,19 @@ class PenerimaanController extends Controller
     }
 
     /**
-     * 
+     *
      * @param int $id ID Penerimaan
-     * @return json 
+     * @return json
      */
     public function actionProses($id)
     {
         $return = array('sukses' => false);
         if ($_POST['proses']) {
             $penerimaan = $this->loadModel($id);
-            if ($penerimaan->proses()) {
-                $return = array('sukses' => true);
+            if ($penerimaan->status == Penerimaan::STATUS_DRAFT) {
+                if ($penerimaan->proses()) {
+                    $return = array('sukses' => true);
+                }
             }
         }
         $this->renderJSON($return);

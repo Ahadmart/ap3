@@ -175,9 +175,9 @@ class InventoryBalance extends CActiveRecord
     public function layerTerakhir($barangId)
     {
         return InventoryBalance::model()->findBySql("
-         select * 
-         from inventory_balance 
-         where id = (select max(id) 
+         select *
+         from inventory_balance
+         where id = (select max(id)
                      from inventory_balance
                      where barang_id = {$barangId})");
     }
@@ -246,8 +246,8 @@ class InventoryBalance extends CActiveRecord
             }
 
             /*
-             * Jika inventory > 0. Stok ADA 
-             * sisa selalu > 0 
+             * Jika inventory > 0. Stok ADA
+             * sisa selalu > 0
              */
             if ($inventory->qty > $sisa) {
 
@@ -280,7 +280,7 @@ class InventoryBalance extends CActiveRecord
             /*
              * Jika inventory layer terakhir dan
              * Jika inventory <= 0. Stok MINUS/HABIS
-             * 0 kan sisa, sesuaikan inventory 
+             * 0 kan sisa, sesuaikan inventory
              */
             if (0 === $curLayer && $inventory->qty <= 0 && $sisa > 0) {
                 /* Kurangi inventory. 0 (nol) kan sisa */
@@ -366,7 +366,7 @@ class InventoryBalance extends CActiveRecord
 //            throw new Exception('Inventory barang tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
 //         }
 //         /* Variabel $inventories diisi hanya dengan layer terakhir */
-//         /* Seharusnya tidak ke sini !!, jika ini terjadi berarti 
+//         /* Seharusnya tidak ke sini !!, jika ini terjadi berarti
 //          * STOK MINUS: Retur beli untuk barang yang tidak ada stok nya !! */
 //         $inventories = array($layerTerakhir);
 //      }
@@ -419,7 +419,7 @@ class InventoryBalance extends CActiveRecord
 //            /* Ini seharusnya TIDAK terjadi
 //             * Jika inventory layer terakhir dan
 //             * Jika inventory <= 0. Stok MINUS/HABIS
-//             * 0 kan sisa, sesuaikan inventory 
+//             * 0 kan sisa, sesuaikan inventory
 //             */
 //            /*
 //              if (0 === $curLayer && $inventory->qty <= 0) {
@@ -443,21 +443,21 @@ class InventoryBalance extends CActiveRecord
 //            }
 //         }
 //      }
-        /* Jika ternyata masih ada sisa 
+        /* Jika ternyata masih ada sisa
          * Ulangi lagi cari inventory dari awal
          * Karena sebelumnya (di atas) mengurangi inventory dimulai dari layer yang cocok
          * dengan pembelian yang dipilih
          * FIX ME
          */
         if ($sisa > 0) {
-            throw new Exception('Stok tidak cukup untuk diretur', 500);
+            throw new Exception("Stok {$returBeliDetail->inventoryBalance->barang->nama} tidak cukup untuk diretur", 500);
         }
 
         return $inventoryTerpakai;
     }
 
     /**
-     * Menambah layer inventory baru untuk proses retur penjualan, 
+     * Menambah layer inventory baru untuk proses retur penjualan,
      * sesuai HPP (Harga Pokok Penjualan) dari penjualan yang dipilih.
      * Tapi jika current layer minus, penambahan qty dimasukkan ke layer yang minus terlebih dahulu
      * @param object $returPenjualanDetail Objek Model ReturPenjualanDetail
@@ -513,11 +513,11 @@ class InventoryBalance extends CActiveRecord
             }
         }
 
-        /* FIX ME: Jika masih ada sisa, 
+        /* FIX ME: Jika masih ada sisa,
          * berarti qty barang yang diretur lebih banyak dari qty barang yang di jual ??
          * cari di penjualan berikutnya */
         if ($sisa > 0) {
-            throw new Exception("Retur jual lebih banyak dari penjualan");
+            throw new Exception("Retur jual lebih banyak dari penjualan: barang=" . $returPenjualanDetail->penjualanDetail->barang->nama);
         }
     }
 
@@ -562,8 +562,8 @@ class InventoryBalance extends CActiveRecord
             }
 
             /*
-             * Jika inventory > 0. Stok ADA 
-             * sisa selalu > 0 
+             * Jika inventory > 0. Stok ADA
+             * sisa selalu > 0
              */
             if ($inventory->qty > $sisa) {
 
@@ -583,7 +583,7 @@ class InventoryBalance extends CActiveRecord
              * Mission Imposible: SO stok minus
              * Jika inventory layer terakhir dan
              * Jika inventory <= 0. Stok MINUS/HABIS
-             * 0 kan sisa, sesuaikan inventory 
+             * 0 kan sisa, sesuaikan inventory
              */
             if (0 === $curLayer && $inventory->qty <= 0) {
                 /* Kurangi inventory. 0 (nol) kan sisa */
@@ -692,7 +692,7 @@ class InventoryBalance extends CActiveRecord
             }
         }
         if ($sisa > 0) {
-            $this->soInvSebelumnya($soModel, $soDetailId, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id);
+            $this->soInvSebelumnya($soModel, $soDetailId, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id, $inventory->harga_beli);
         }
     }
 
@@ -758,6 +758,16 @@ class InventoryBalance extends CActiveRecord
             case InventoryBalance::ASAL_SO;
                 return StockOpname::model()->find("nomor={$this->nomor_dokumen}");
         }
+    }
+
+    public function totalInventory()
+    {
+        $inventory = Yii::app()->db->createCommand()->
+                select('sum(harga_beli * qty) total')->
+                from('inventory_balance')->
+                where('qty > 0')->
+                queryRow();
+        return $inventory['total'];
     }
 
 }

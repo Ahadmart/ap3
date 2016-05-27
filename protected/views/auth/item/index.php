@@ -9,35 +9,35 @@ $this->boxHeader['small'] = 'Item';
 $this->boxHeader['normal'] = 'Item Otorisasi';
 ?>
 <div class="row">
-   <div class="small-12 columns">
-      <?php
-      $this->widget('BGridView', array(
-          'id' => 'auth-item-grid',
-          'dataProvider' => $model->search(),
-          'filter' => $model,
-          'columns' => array(
-              array(
-                  'class' => 'BDataColumn',
-                  'name' => 'name',
-                  'header' => '<span class="ak">N</span>ama',
-                  'accesskey' => 'n',
-                  'type' => 'raw',
-                  'value' => array($this, 'renderLinkToUbah'),
-              ),
-              array(
-                  'name' => 'type',
-                  'value' => '$data->authTypeName',
-                  'filter' => array('0' => 'Operation', '1' => 'Task', '2' => 'Role')
-              ),
-              'description',
-              'bizrule',
-              array(
-                  'class' => 'BButtonColumn',
-              ),
-          ),
-      ));
-      ?>
-   </div>
+    <div class="small-12 columns">
+        <?php
+        $this->widget('BGridView', array(
+            'id' => 'auth-item-grid',
+            'dataProvider' => $model->search(),
+            'filter' => $model,
+            'columns' => array(
+                array(
+                    'class' => 'BDataColumn',
+                    'name' => 'name',
+                    'header' => '<span class="ak">N</span>ama',
+                    'accesskey' => 'n',
+                    'type' => 'raw',
+                    'value' => array($this, 'renderLinkToUbah'),
+                ),
+                array(
+                    'name' => 'type',
+                    'value' => '$data->authTypeName',
+                    'filter' => array('0' => 'Operation', '1' => 'Task', '2' => 'Role')
+                ),
+                'description',
+                'bizrule',
+                array(
+                    'class' => 'BButtonColumn',
+                ),
+            ),
+        ));
+        ?>
+    </div>
 </div>
 <?php
 $this->menu = array(

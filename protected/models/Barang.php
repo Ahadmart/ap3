@@ -148,7 +148,7 @@ class Barang extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('t.id', $this->id);
-        $criteria->compare('barcode', $this->barcode);
+        $criteria->compare('barcode', $this->barcode, true);
         $criteria->compare('t.nama', $this->nama, true);
         $criteria->compare('kategori_id', $this->kategori_id);
         $criteria->compare('satuan_id', $this->satuan_id);
@@ -211,7 +211,7 @@ class Barang extends CActiveRecord
 				  from inventory_balance
 				  where barang_id = {$this->id}
 				  ")->queryRow();
-        return $stok['stok'] ? $stok['stok'] : null;
+        return $stok['stok'] ? $stok['stok'] : 0;
     }
 
     public function getHargaJualRaw()

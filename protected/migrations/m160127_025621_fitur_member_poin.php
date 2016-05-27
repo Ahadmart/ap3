@@ -17,8 +17,7 @@ class m160127_025621_fitur_member_poin extends CDbMigration
     // Use safeUp/safeDown to do migration with transaction
     public function safeUp()
     {
-        $dbEngine = 'MyISAM';
-        // $dbEngine = 'InnoDB';
+        $dbEngine = 'InnoDB';
 
         $this->createTable('member_periode_poin', array(
             'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -61,7 +60,7 @@ class m160127_025621_fitur_member_poin extends CDbMigration
 
     public function safeDown()
     {
-        
+
     }
 
 }

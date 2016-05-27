@@ -24,21 +24,40 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
         <span class="secondary label">Total</span><span class="label" id="total-penjualan"><?php echo $model->total; ?></span>
     </div>
     <div class="large-5 columns">
-        <?php
-        echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Penjualan', $this->createUrl('simpanpenjualan', array('id' => $model->id)), array(
-            'data' => "simpan=true",
-            'type' => 'POST',
-            'success' => 'function(data) {
+        <ul class="button-group right">
+            <li>
+                <button href="#" accesskey="p" data-dropdown="printinvoice" aria-controls="printinvoice" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-file-text fa-fw"></i> <span class="ak">P</span>rint Draft Invoice (rrp)</button><br>
+                <ul id="printinvoice" data-dropdown-content class="f-dropdown" aria-hidden="true">
+                    <?php
+                    foreach ($printerInvoiceRrp as $printer) {
+                        ?>
+                        <li>
+                            <a href="<?php echo $this->createUrl('printdraftinvoice', array('id' => $model->id, 'printId' => $printer['id'])) ?>">
+                                <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
+                        </li>
+                        <?php
+                    }
+                    ?>
+                </ul>
+            </li>
+            <li>
+                <?php
+                echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Penjualan', $this->createUrl('simpanpenjualan', array('id' => $model->id)), array(
+                    'data' => "simpan=true",
+                    'type' => 'POST',
+                    'success' => 'function(data) {
                             if (data.sukses) {
                                 location.reload();;
                             }
                         }'
-                ), array(
-            'class' => 'tiny bigfont button right',
-            'accesskey' => 's'
-                )
-        );
-        ?>
+                        ), array(
+                    'class' => 'tiny bigfont button',
+                    'accesskey' => 's'
+                        )
+                );
+                ?>
+            </li>
+        </ul>
     </div>
 </div>
 <div class="row">

@@ -87,10 +87,10 @@ return array(
     'params' => array(
         // dipakai untuk authManager
         'superuser' => 'admin',
-        
+
         // dipakai untuk jabatan user yang berstatus admin secara SOP
         'useradmin' => 'admin',
-        
+
         // this is used in contact page
         'adminEmail' => 'webmaster@example.com',
     ),

@@ -36,6 +36,7 @@ class Penerimaan extends CActiveRecord
 
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;
+    public $namaUpdatedBy;
 
     /**
      * @return string the associated database table name
@@ -62,7 +63,7 @@ class Penerimaan extends CActiveRecord
             array('tanggal_referensi, created_at, updated_at, updated_by, tanggal', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, tanggal, keterangan, profil_id, kas_bank_id, kategori_id, jenis_transaksi_id, referensi, tanggal_referensi, status, updated_at, updated_by, created_at, namaProfil', 'safe', 'on' => 'search'),
+            array('id, nomor, tanggal, keterangan, profil_id, kas_bank_id, kategori_id, jenis_transaksi_id, referensi, tanggal_referensi, status, updated_at, updated_by, created_at, namaProfil, namaUpdatedBy', 'safe', 'on' => 'search'),
         );
     }
 
@@ -104,7 +105,8 @@ class Penerimaan extends CActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
-            'namaProfil' => 'Profil'
+            'namaProfil' => 'Profil',
+            'namaUpdatedBy' => 'User'
         );
     }
 
@@ -128,50 +130,55 @@ class Penerimaan extends CActiveRecord
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('nomor', $this->nomor, true);
-        $criteria->compare('t.tanggal', $this->tanggal, true);
+        $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('t.keterangan', $this->keterangan, true);
         $criteria->compare('profil_id', $this->profil_id, true);
         $criteria->compare('kas_bank_id', $this->kas_bank_id, true);
         $criteria->compare('kategori_id', $this->kategori_id, true);
         $criteria->compare('jenis_transaksi_id', $this->jenis_transaksi_id, true);
         $criteria->compare('referensi', $this->referensi, true);
-        $criteria->compare('tanggal_referensi', $this->tanggal_referensi, true);
+        $criteria->compare("DATE_FORMAT(tanggal_referensi, '%d-%m-%Y')", $this->tanggal_referensi, true);
         $criteria->compare('uang_dibayar', $this->uang_dibayar, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        $criteria->with = array('profil');
+        $criteria->with = ['profil', 'updatedBy'];
         $criteria->compare('profil.nama', $this->namaProfil, true);
+        $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
 
-        $sort = array(
+        $sort = [
             'defaultOrder' => 't.status, t.tanggal desc, t.nomor desc',
-            'attributes' => array(
+            'attributes' => [
                 '*',
-                'namaJenisTr' => array(
+                'namaJenisTr' => [
                     'asc' => 'jenisTransaksi.nama',
                     'desc' => 'jenisTransaksi.nama desc'
-                ),
-                'namaKasBank' => array(
+                ],
+                'namaKasBank' => [
                     'asc' => 'kasBank.nama',
                     'desc' => 'kasBank.nama desc'
-                ),
-                'namaKategori' => array(
+                ],
+                'namaKategori' => [
                     'asc' => 'kategori.nama',
                     'desc' => 'kategori.nama desc'
-                ),
-                'namaProfil' => array(
+                ],
+                'namaProfil' => [
                     'asc' => 'profil.nama',
                     'desc' => 'profil.nama desc'
-                )
-            )
-        );
+                ],
+                'namaUpdatedBy' => [
+                    'asc' => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc'
+                ],
+            ]
+        ];
 
-        return new CActiveDataProvider($this, array(
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
             'sort' => $sort
-        ));
+        ]);
     }
 
     /**
@@ -243,7 +250,7 @@ class Penerimaan extends CActiveRecord
      */
     public function totalSudahBayar($hutangPiutangId)
     {
-        $penerimaan = Yii::app()->db->createCommand(' 
+        $penerimaan = Yii::app()->db->createCommand('
 							   SELECT hutang_piutang_id,sum(jumlah) jumlah
 								FROM penerimaan_detail
 								WHERE hutang_piutang_id = :hutangPiutangId
