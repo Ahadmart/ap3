@@ -20,7 +20,11 @@
  * @property Profil $profil
  * @property User $updatedBy
  * @property HutangPiutangDetail[] $hutangPiutangDetails
- * @property Pembelian[] $pembelian
+ * @property Pembelian[] $pembelians
+ * @property PenerimaanDetail[] $penerimaanDetails
+ * @property PengeluaranDetail[] $pengeluaranDetails
+ * @property Penjualan[] $penjualans
+ * @property ReturPenjualan[] $returPenjualans
  */
 class HutangPiutang extends CActiveRecord
 {
@@ -97,7 +101,11 @@ class HutangPiutang extends CActiveRecord
             'profil' => array(self::BELONGS_TO, 'Profil', 'profil_id'),
             'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
             'hutangPiutangDetails' => array(self::HAS_MANY, 'HutangPiutangDetail', 'hutang_piutang_id'),
-            'pembelian' => array(self::HAS_ONE, 'Pembelian', 'hutang_piutang_id'),
+            'pembelians' => array(self::HAS_MANY, 'Pembelian', 'hutang_piutang_id'),
+            'penerimaanDetails' => array(self::HAS_MANY, 'PenerimaanDetail', 'hutang_piutang_id'),
+            'pengeluaranDetails' => array(self::HAS_MANY, 'PengeluaranDetail', 'hutang_piutang_id'),
+            'penjualans' => array(self::HAS_MANY, 'Penjualan', 'hutang_piutang_id'),
+            'returPenjualans' => array(self::HAS_MANY, 'ReturPenjualan', 'hutang_piutang_id'),
         );
     }
 
