@@ -37,6 +37,13 @@ endif;
         'id' => 'pembelian-detail-grid',
         'dataProvider' => $pembelianDetail->search(),
         //'filter' => $pembelianDetail,
+        'rowCssClassExpression' => function($row, $data, $this) {
+            if ($data->isBarangBaru()) {
+                return 'baru';
+            } else if ($data->isHargaJualBerubah()) {
+                return 'hj-berubah';
+            }
+        },
         'summaryText' => '{start}-{end} dari {count}, Total: ' . $pembelian->total,
         'columns' => array(
             array(
@@ -74,13 +81,12 @@ endif;
                 'headerHtmlOptions' => array('class' => 'rata-kanan'),
                 'htmlOptions' => array('class' => 'rata-kanan'),
                 'value' => function($data) {
-                    if (is_null($data->harga_jual_rekomendasi)) {
-                        return 'NULL';
-                    }
-                    else {
-                        return number_format($data->harga_jual_rekomendasi, 0, ',', '.');
-                    }
-                }
+            if (is_null($data->harga_jual_rekomendasi)) {
+                return 'NULL';
+            } else {
+                return number_format($data->harga_jual_rekomendasi, 0, ',', '.');
+            }
+        }
             ),
             array(
                 'name' => 'subTotal',

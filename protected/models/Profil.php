@@ -79,12 +79,14 @@ class Profil extends CActiveRecord
         );
     }
 
-    public function defaultScope()
-    {
-        return array(
-            'order' => 'nama',
-        );
-    }
+    /*
+      public function defaultScope()
+      {
+      return array(
+      'order' => 'profil.nama',
+      );
+      }
+     */
 
     public function scopes()
     {
@@ -255,7 +257,7 @@ class Profil extends CActiveRecord
     }
 
     /**
-     * Memeriksa apakah profil mempunyai nomor member. 
+     * Memeriksa apakah profil mempunyai nomor member.
      * Fixme: Satu saat mungkin perlu status member atau bukan
      * @return boolean true jika punya nomor, false jika bukan
      */

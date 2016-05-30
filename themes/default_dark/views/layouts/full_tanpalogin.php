@@ -57,7 +57,7 @@
                     <ul class="title-area">
                         <li class="name">
                             <h1>
-                                <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
+                                <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" style="margin-left: 10px"/>
                             </h1>
                         </li>
                         <li class="toggle-topbar menu-icon"><a href="#"><span></span></a></li>

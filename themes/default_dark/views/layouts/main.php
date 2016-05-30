@@ -164,10 +164,12 @@
                                         'items' => array(
                                             //array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pembelian', 'url' => array('/report/pembelian')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Penjualan', 'url' => array('/report/penjualan')),
+                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Total Stok', 'url' => array('/report/totalstok')),
                                             array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Detail', 'url' => array('/report/hariandetail')),
+                                            array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Detail (Omzet=Penjualan)', 'url' => array('/report/hariandetail2')),
                                             array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
+                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Top Rank', 'url' => array('/report/toprank')),
                                         //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
-                                        //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
                                         'submenuOptions' => array('class' => 'dropdown'),

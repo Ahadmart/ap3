@@ -41,6 +41,7 @@ class Pembelian extends CActiveRecord
     public $namaSupplier;
     public $max; // Untuk mencari untuk nomor surat;
     public $nomorHutang;
+    public $namaUpdatedBy;
 
     /**
      * @return string the associated database table name
@@ -65,7 +66,7 @@ class Pembelian extends CActiveRecord
             array('tanggal_referensi, created_at, updated_at, updated_by, tanggal', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, tanggal, profil_id, referensi, tanggal_referensi, hutang_piutang_id, status, updated_at, updated_by, created_at, namaSupplier, nomorHutang', 'safe', 'on' => 'search'),
+            array('id, nomor, tanggal, profil_id, referensi, tanggal_referensi, hutang_piutang_id, status, updated_at, updated_by, created_at, namaSupplier, nomorHutang, namaUpdatedBy', 'safe', 'on' => 'search'),
         );
     }
 
@@ -101,7 +102,8 @@ class Pembelian extends CActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
-            'nomorHutang' => 'Nomor Hutang'
+            'nomorHutang' => 'Nomor Hutang',
+            'namaUpdatedBy' => 'User'
         );
     }
 
@@ -125,39 +127,44 @@ class Pembelian extends CActiveRecord
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('t.nomor', $this->nomor, true);
-        $criteria->compare('tanggal', $this->tanggal, true);
-        $criteria->compare('profil_id', $this->profil_id, true);
+        //$criteria->compare("DATE_FORMAT(tanggal, '%d-%m-%Y %H:%i:%s')", $this->tanggal, true);
+        $criteria->compare("DATE_FORMAT(tanggal, '%d-%m-%Y')", $this->tanggal, true);
+        $criteria->compare('profil_id', $this->profil_id);
         $criteria->compare('referensi', $this->referensi, true);
-        $criteria->compare('tanggal_referensi', $this->tanggal_referensi, true);
+        $criteria->compare("DATE_FORMAT(tanggal_referensi, '%d-%m-%Y')", $this->tanggal_referensi, true);
         $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        $criteria->with = array('profil', 'hutangPiutang');
+        $criteria->with = ['hutangPiutang', 'profil', 'updatedBy'];
         $criteria->compare('profil.nama', $this->namaSupplier, true);
         $criteria->compare('hutangPiutang.nomor', $this->nomorHutang, true);
+        $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
 
-        $sort = array(
+        $sort = [
             'defaultOrder' => 't.status, t.tanggal desc',
-            'attributes' => array(
-                'namaSupplier' => array(
+            'attributes' => [
+                'namaSupplier' => [
                     'asc' => 'profil.nama',
                     'desc' => 'profil.nama desc'
-                ),
-                'nomorHutang' => array(
+                ],
+                'nomorHutang' => [
                     'asc' => 'hutangPiutang.nomor',
                     'desc' => 'hutangPiutang.nomor desc'
-                ),
+                ],
+                'namaUpdatedBy' => [
+                    'asc' => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc'
+                ],
                 '*'
-            )
-        );
+            ]
+        ];
 
-        return new CActiveDataProvider($this, array(
-            'criteria' => $criteria,
+        return new CActiveDataProvider($this, ['criteria' => $criteria,
             'sort' => $sort
-        ));
+        ]);
     }
 
     /**

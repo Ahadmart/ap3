@@ -24,32 +24,36 @@ $this->widget('BGridView', array(
             'type' => 'raw',
         ),
         'nomor_dokumen_asal',
-        //'nomor',
+        array(
+            'name' => 'noRef',
+            'header' => 'Ref',
+            'value' => 'is_null($data->noref)? "" : $data->noref'
+        ),
         array(
             'class' => 'BDataColumn',
             'name' => 'nomor',
-            'header' => 'Nom<span class="ak">o</span>r',
+            'header' => 'N<span class="ak">o</span> Hutang Piutang',
             'accesskey' => 'o',
             'type' => 'raw',
             'value' => function($data) {
                 return '<a href="' . Yii::app()->controller->createUrl('pilihdokumen', array('id' => $data->id)) . '" class="pilih dokumen">' . $data->nomor . '</a>';
             },
-        ),
-		  array(
-				'name'=>'sisa',
-				'header' => 'Unpaid',
-				'value' => 'number_format($data->sisa, 0, ",",".")',
-            'htmlOptions' => array('class' => 'rata-kanan'),
-            'headerHtmlOptions' => array('class' => 'rata-kanan'),
-				'filter' => false,
-		  ),
-        array(
-            'name' => 'jumlah',
-				'value' => 'number_format($data->jumlah, 0, ",",".")',
-            'htmlOptions' => array('class' => 'rata-kanan'),
-            'headerHtmlOptions' => array('class' => 'rata-kanan')
-        ),
-        'created_at',
-    ),
-));
+                ),
+                array(
+                    'name' => 'sisa',
+                    'header' => 'Unpaid',
+                    'value' => 'number_format($data->sisa, 0, ",",".")',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
+                    'filter' => false,
+                ),
+                array(
+                    'name' => 'jumlah',
+                    'value' => 'number_format($data->jumlah, 0, ",",".")',
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'headerHtmlOptions' => array('class' => 'rata-kanan')
+                ),
+                'created_at',
+            ),
+        ));
 

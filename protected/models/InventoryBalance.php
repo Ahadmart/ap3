@@ -450,7 +450,7 @@ class InventoryBalance extends CActiveRecord
          * FIX ME
          */
         if ($sisa > 0) {
-            throw new Exception('Stok tidak cukup untuk diretur', 500);
+            throw new Exception("Stok {$returBeliDetail->inventoryBalance->barang->nama} tidak cukup untuk diretur", 500);
         }
 
         return $inventoryTerpakai;
@@ -517,7 +517,7 @@ class InventoryBalance extends CActiveRecord
          * berarti qty barang yang diretur lebih banyak dari qty barang yang di jual ??
          * cari di penjualan berikutnya */
         if ($sisa > 0) {
-            throw new Exception("Retur jual lebih banyak dari penjualan: barang=".$returPenjualanDetail->penjualanDetail->barang->nama);
+            throw new Exception("Retur jual lebih banyak dari penjualan: barang=" . $returPenjualanDetail->penjualanDetail->barang->nama);
         }
     }
 
@@ -692,7 +692,7 @@ class InventoryBalance extends CActiveRecord
             }
         }
         if ($sisa > 0) {
-            $this->soInvSebelumnya($soModel, $soDetailId, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id);
+            $this->soInvSebelumnya($soModel, $soDetailId, $inventory->id, $inventory->barang_id, $sisa, $inventory->pembelian_detail_id, $inventory->harga_beli);
         }
     }
 
@@ -722,7 +722,17 @@ class InventoryBalance extends CActiveRecord
             'condition' => 'barang_id=:barangId and qty <>0',
             'order' => 'id',
             'params' => array(':barangId' => $barangId)));
-        return $inventory->harga_beli;
+
+        /* Jika tidak ada stok yang pantas (stok = 0 semua)
+         * maka cari inventory yang paling baru
+         */
+        if (is_null($inventory)) {
+            $inventory = InventoryBalance::model()->find(array(
+                'condition' => 'barang_id=:barangId',
+                'order' => 'id desc',
+                'params' => array(':barangId' => $barangId)));
+        }
+        return is_null($inventory) ? 0 : $inventory->harga_beli;
     }
 
     /**
@@ -758,6 +768,16 @@ class InventoryBalance extends CActiveRecord
             case InventoryBalance::ASAL_SO;
                 return StockOpname::model()->find("nomor={$this->nomor_dokumen}");
         }
+    }
+
+    public function totalInventory()
+    {
+        $inventory = Yii::app()->db->createCommand()->
+                select('sum(harga_beli * qty) total')->
+                from('inventory_balance')->
+                where('qty > 0')->
+                queryRow();
+        return $inventory['total'];
     }
 
 }

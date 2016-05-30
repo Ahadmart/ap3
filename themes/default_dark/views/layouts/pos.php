@@ -10,6 +10,10 @@
         <title><?php echo CHtml::encode($this->pageTitle); ?></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/png" href="<?php echo Yii::app()->theme->baseUrl; ?>/img/fav/favicon-32x32.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="<?php echo Yii::app()->theme->baseUrl; ?>/img/fav/android-chrome-192x192.png" sizes="192x192">
+        <link rel="icon" type="image/png" href="<?php echo Yii::app()->theme->baseUrl; ?>/img/fav/favicon-96x96.png" sizes="96x96">
+        <link rel="icon" type="image/png" href="<?php echo Yii::app()->theme->baseUrl; ?>/img/fav/favicon-16x16.png" sizes="16x16">
 
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
@@ -32,17 +36,17 @@
                             <section class="left-small">
                                 <a class="left-off-canvas-toggle menu-icon" accesskey="l"><span></span></a>
                             </section>
-        
+
                             <section class="middle tab-bar-section" style="text-align: left">
                                 <span class="title"><a href="<?php echo Yii::app()->baseUrl; ?>"><img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" /></a></span>
                                 <span class="right" style="font-size: 0.9em"><i class="fa fa-user fa-fw"></i> <?php echo Yii::app()->user->namaLengkap; ?>&nbsp;&nbsp;&nbsp;<i class="fa fa-clock-o fa-fw"></i> <span id="clock">00:00:00</span></span>
                             </section>
-        
+
                             <section class="right-small">
                                 <a class="right-off-canvas-toggle menu-icon" accesskey="r"><span></span></a>
                             </section>
                         </nav>
-        
+
                         <aside class="left-off-canvas-menu">
                             <ul class="off-canvas-list">
                                 <li><label>Menu</label></li>
@@ -72,7 +76,7 @@
                                 </form>
                             </ul>
                         </aside>
-        
+
                         <aside class="right-off-canvas-menu">
                             <ul class="off-canvas-list">
                                 <li><label>Users</label></li>
@@ -95,13 +99,13 @@
                                 <li><a href="#">...</a></li>
                             </ul>
                         </aside>
-        
+
                         <section class="main-section">
         <?php // echo $content; ?>
                         </section>
-        
+
                         <a class="exit-off-canvas"></a>
-        
+
                     </div>
                 </div>-->
         <div class="fixed">
@@ -155,7 +159,7 @@
           </footer>
           <?php
           endif;
-         * 
+         *
          */
         ?>
         <script src="<?php echo Yii::app()->theme->baseUrl; ?>/js/foundation.min.js"></script>

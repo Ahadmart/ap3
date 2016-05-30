@@ -20,7 +20,7 @@ $this->boxHeader['normal'] = 'Barang: ' . $model->nama;
             ?>
         </div>
     </div>
-    <div class="medium-6 large-4 columns">
+    <div class="medium-6 large-5 columns">
         <div class="panel">
             <?php
             $this->renderPartial('_view_inventory_balance', array(
@@ -36,7 +36,7 @@ $this->boxHeader['normal'] = 'Barang: ' . $model->nama;
             ?>
         </div>
     </div>
-    <div class="medium-6 large-4 columns end">
+    <div class="medium-6 large-3 columns end">
         <div class="panel">
             <?php
             $this->renderPartial('_view_harga_jual', array(

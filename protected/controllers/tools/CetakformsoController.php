@@ -10,6 +10,9 @@ class CetakformsoController extends Controller
         if (isset($_POST['CetakStockOpnameForm'])) {
             $modelForm->attributes = $_POST['CetakStockOpnameForm'];
             if ($modelForm->validate()) {
+                /* Penambahan memory_limit jika file pdf "agak" besar */
+                ini_set('memory_limit', '256M');
+                set_time_limit(0);
                 $this->formSoPdf($modelForm, $modelForm->dataForm());
             }
         }
@@ -70,7 +73,6 @@ class CetakformsoController extends Controller
         /*
          * Persiapan render PDF
          */
-        set_time_limit(0);
         $tanggalCetak = date('d-m-Y H:i:s');
         $listNamaKertas = CetakStockOpnameForm::listNamaKertas();
 

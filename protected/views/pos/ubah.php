@@ -79,7 +79,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         <div class="small-3 large-3 columns">
             <span class="postfix">[D]</span>
         </div>
-    </div>	
+    </div>
     <div class="row collapse">
         <div class="small-3 large-2 columns">
             <span class="prefix huruf">IDR</span>
@@ -207,7 +207,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     });
 
     $("#tombol-simpan").click(function () {
-        $("#tombol-simpan").disabled;
+        $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
+
         dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
         dataKirim = {
             'pos[account]': $("#account").val(),

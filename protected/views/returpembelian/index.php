@@ -67,7 +67,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                     'htmlOptions' => array('class' => 'rata-kanan')
                 ),
                 array(
-                    'name' => 'updated_by',
+                    'name' => 'namaUpdatedBy',
                     'value' => '$data->updatedBy->nama_lengkap',
                 ),
                 array(

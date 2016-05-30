@@ -60,7 +60,7 @@ class m160127_025621_fitur_member_poin extends CDbMigration
 
     public function safeDown()
     {
-        
+
     }
 
 }

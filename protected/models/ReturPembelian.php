@@ -36,11 +36,11 @@ class ReturPembelian extends CActiveRecord
 
     public $namaSupplier;
     public $max; // Untuk mencari untuk nomor surat;
+    public $namaUpdatedBy;
 
     /**
      * @return string the associated database table name
      */
-
     public function tableName()
     {
         return 'retur_pembelian';
@@ -61,7 +61,7 @@ class ReturPembelian extends CActiveRecord
             array('created_at, tanggal, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, tanggal, profil_id, hutang_piutang_id, status, updated_at, updated_by, created_at, namaSupplier', 'safe', 'on' => 'search'),
+            array('id, nomor, tanggal, profil_id, hutang_piutang_id, status, updated_at, updated_by, created_at, namaSupplier, namaUpdatedBy', 'safe', 'on' => 'search'),
         );
     }
 
@@ -94,6 +94,7 @@ class ReturPembelian extends CActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
+            'namaUpdatedBy' => 'User'
         );
     }
 
@@ -117,7 +118,7 @@ class ReturPembelian extends CActiveRecord
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('nomor', $this->nomor, true);
-        $criteria->compare('tanggal', $this->tanggal, true);
+        $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('profil_id', $this->profil_id, true);
         $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
         $criteria->compare('status', $this->status);
@@ -125,23 +126,28 @@ class ReturPembelian extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        $criteria->with = array('profil');
+        $criteria->with = ['profil', 'updatedBy'];
         $criteria->compare('profil.nama', $this->namaSupplier, true);
+        $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
 
-        $sort = array(
+        $sort = [
             'defaultOrder' => 't.status, t.tanggal desc',
-            'attributes' => array(
-                'namaSupplier' => array(
+            'attributes' => [
+                'namaSupplier' => [
                     'asc' => 'profil.nama',
                     'desc' => 'profil.nama desc'
-                ),
+                ],
+                'namaUpdatedBy' => [
+                    'asc' => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc'
+                ],
                 '*'
-            )
-        );
-        return new CActiveDataProvider($this, array(
+            ]
+        ];
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
             'sort' => $sort
-        ));
+        ]);
     }
 
     /**
@@ -319,13 +325,19 @@ class ReturPembelian extends CActiveRecord
                 }
 
                 $transaction->commit();
-                return true;
+
+                return ['sukses' => true];
             } else {
                 throw new Exception("Gagal Simpan Retur Pembelian");
             }
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
             $transaction->rollback();
-            throw $e;
+            return [
+                'sukses' => false,
+                'error' => [
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
         }
     }
 

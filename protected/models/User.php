@@ -23,7 +23,7 @@ class User extends CActiveRecord {
 
 	public $newPassword;
 	public $newPasswordRepeat;
-	
+
 	public $namaTheme;
 
 	/**
@@ -105,7 +105,7 @@ class User extends CActiveRecord {
 		$criteria = new CDbCriteria;
 
 		$criteria->compare('id', $this->id);
-		$criteria->compare('nama', $this->nama, true);
+		$criteria->compare('t.nama', $this->nama, true);
 		$criteria->compare('nama_lengkap', $this->nama_lengkap, true);
 		$criteria->compare('password', $this->password, true);
 		$criteria->compare('salt', $this->salt, true);

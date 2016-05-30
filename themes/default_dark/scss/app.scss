@@ -26,7 +26,7 @@ body{
     margin: 0;
     font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
     font-style: normal;
-    font-weight: 300;
+    /*font-weight: 300;*/
     line-height: 1;
     position: relative;
     cursor: default;
@@ -84,6 +84,28 @@ option{
     }
     td{
         font-size: 0.825em;
+    }
+    tr.baru{
+        background-color: #F57C00;
+        font-weight: bold;
+        td{
+            color: #fff;
+            a.editable{
+                color: #fff;     
+                border-bottom-color: #fff;
+            }
+        }
+    }
+    tr.hj-berubah{
+        background-color: #388E3C;
+        font-weight: bold;
+        td{
+            color: #fff;
+            a.editable{
+                color: #fff;     
+                border-bottom-color: #fff;           
+            }
+        }
     }
 }
 input, select {

@@ -167,13 +167,17 @@ class PembelianController extends Controller
             $pilihBarang = FALSE;
         }
 
+        /* Mengambil nilai pembulatan ke atas untuk harga jual */
+        $config = Config::model()->find('nama=:nama', [':nama' => 'pembelian.pembulatankeatashj']);
+
         $this->render('ubah', array(
             'model' => $model,
             'barangBarcode' => $barangBarcode,
             'barangNama' => $barangNama,
             'pembelianDetail' => $pembelianDetail,
             'barang' => $barang,
-            'pilihBarang' => $pilihBarang
+            'pilihBarang' => $pilihBarang,
+            'pembulatan' => $config->nilai
                 //'totalPembelian' => $model->ambilTotal()
         ));
     }
@@ -345,7 +349,7 @@ class PembelianController extends Controller
         // cek jika 'simpan' ada dan bernilai true
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $pembelian = $this->loadModel($id);
-            if ($pembelian->status == 0) {
+            if ($pembelian->status == Pembelian::STATUS_DRAFT) {
                 /*
                  * simpan pembelian jika hanya dan hanya jika status masih draft
                  */
