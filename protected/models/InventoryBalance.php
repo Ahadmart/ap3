@@ -722,7 +722,17 @@ class InventoryBalance extends CActiveRecord
             'condition' => 'barang_id=:barangId and qty <>0',
             'order' => 'id',
             'params' => array(':barangId' => $barangId)));
-        return $inventory->harga_beli;
+
+        /* Jika tidak ada stok yang pantas (stok = 0 semua)
+         * maka cari inventory yang paling baru
+         */
+        if (is_null($inventory)) {
+            $inventory = InventoryBalance::model()->find(array(
+                'condition' => 'barang_id=:barangId',
+                'order' => 'id desc',
+                'params' => array(':barangId' => $barangId)));
+        }
+        return is_null($inventory) ? 0 : $inventory->harga_beli;
     }
 
     /**
