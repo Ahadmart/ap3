@@ -61,6 +61,7 @@ class HutangPiutang extends CActiveRecord
 
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;
+    public $noRef;
 
     /**
      * @return string the associated database table name
@@ -86,7 +87,7 @@ class HutangPiutang extends CActiveRecord
             array('created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, jumlah, tipe, status, asal, nomor_dokumen_asal, updated_at, updated_by, created_at, namaProfil', 'safe', 'on' => 'search'),
+            array('id, nomor, jumlah, tipe, status, asal, nomor_dokumen_asal, updated_at, updated_by, created_at, namaProfil, noRef', 'safe', 'on' => 'search'),
         );
     }
 
@@ -162,9 +163,13 @@ class HutangPiutang extends CActiveRecord
 
         $criteria->with = array('profil');
         $criteria->compare('profil.nama', $this->namaProfil, true);
+        $criteria->join = 'LEFT JOIN pembelian on pembelian.hutang_piutang_id = t.id';
 
         if ($this->scenario == 'pilihDokumen') {
             $criteria->addCondition('t.status=' . HutangPiutang::STATUS_BELUM_LUNAS);
+        }
+        if (isset($this->noRef)) {
+            $criteria->addCondition("pembelian.referensi like '%{$this->noRef}%'");
         }
 
         $sort = array(
@@ -172,6 +177,10 @@ class HutangPiutang extends CActiveRecord
                 'namaProfil' => array(
                     'asc' => 'profil.nama',
                     'desc' => 'profil.nama desc'
+                ),
+                'noRef' => array(
+                    'asc' => 'pembelian.referensi',
+                    'desc' => 'pembelian.referensi desc'
                 ),
                 '*'
             )
@@ -408,8 +417,19 @@ class HutangPiutang extends CActiveRecord
         }
     }
 
-//    public function getNamaProfil() {
-//        $profil = Profil::model()->findByPk($this->profil_id);
-//        return is_null($profil) ? '' : $profil->nama;
-//    }
+    /**
+     * Ambil nomor referensi untuk pembelian
+     * @return text nomor referensi, null jika selain pembelian
+     */
+    public function getNoref()
+    {
+        switch ($this->asal) {
+            case HutangPiutang::DARI_PEMBELIAN:
+                $model = Pembelian::model()->find('hutang_piutang_id =' . $this->id);
+                return $model->referensi;
+            default:
+                return null;
+        }
+    }
+
 }
