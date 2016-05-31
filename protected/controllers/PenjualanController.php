@@ -81,7 +81,7 @@ class PenjualanController extends Controller
         if (isset($_POST['Penjualan'])) {
             $model->attributes = $_POST['Penjualan'];
             if ($model->save())
-                $this->redirect(array('ubah', 'id' => $model->id));
+                $this->redirect(array('ubah', 'id' => $model->id, 'uid' => Yii::app()->user->id));
         }
 
         $customerList = Profil::model()->findAll(array(
@@ -98,14 +98,22 @@ class PenjualanController extends Controller
     /**
      * Updates a particular model.
      * @param integer $id the ID of the model to be updated
+     * @param integer $uid User ID of the model to be updated
      */
-    public function actionUbah($id)
+    public function actionUbah($id, $uid)
     {
         $model = $this->loadModel($id);
 
         // Jika status sudah tidak draft, tidak bisa ubah
         if ($model->status != Penjualan::STATUS_DRAFT) {
             $this->redirect(array('view', 'id' => $id));
+        }
+
+        /* Jika user ID yang di link tidak sama dengan yang di database, maka
+         * redirect ke index (berarti link dimanipulasi)
+         */
+        if ($uid != $model->updated_by) {
+            $this->redirect(['index']);
         }
 
         $model->scenario = 'tampil';
@@ -246,7 +254,7 @@ class PenjualanController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('ubah', array('id' => $data->id)) . '">' .
+                    $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
                     $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
