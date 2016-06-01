@@ -45,6 +45,9 @@ $this->boxHeader['normal'] = 'Import Pembelian';
                     <?php echo $form->fileField($modelCsvForm, 'csvFile', array("class" => "tiny bigfont success button")); ?>
                     <?php echo $form->error($modelCsvForm, 'csvFile'); ?>
                 </div>
+                <div class="small-12 columns" id="info-nota">
+
+                </div>
                 <div class="small-12 columns">
                     <?php
                     echo CHtml::submitButton('Upload CSV', array(
@@ -60,7 +63,76 @@ $this->boxHeader['normal'] = 'Import Pembelian';
 
         </div>
     </div>
+    <?php
+    Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.csv.js', CClientScript::POS_HEAD);
+    ?>
+    <script>
+        $(document).ready(function () {
+            if (isAPIAvailable()) {
+                $('#UploadCsvPembelianForm_csvFile').bind('change', handleFileSelect);
+            }
+        });
 
+        function isAPIAvailable() {
+            // Check for the various File API support.
+            if (window.File && window.FileReader && window.FileList && window.Blob) {
+                // Great success! All the File APIs are supported.
+                return true;
+            } else {
+                // source: File API availability - http://caniuse.com/#feat=fileapi
+                // source: <output> availability - http://html5doctor.com/the-output-element/
+                document.writeln('The HTML5 APIs used in this form are only available in the following browsers:<br />');
+                // 6.0 File API & 13.0 <output>
+                document.writeln(' - Google Chrome: 13.0 or later<br />');
+                // 3.6 File API & 6.0 <output>
+                document.writeln(' - Mozilla Firefox: 6.0 or later<br />');
+                // 10.0 File API & 10.0 <output>
+                document.writeln(' - Internet Explorer: Not supported (partial support expected in 10.0)<br />');
+                // ? File API & 5.1 <output>
+                document.writeln(' - Safari: Not supported<br />');
+                // ? File API & 9.2 <output>
+                document.writeln(' - Opera: Not supported');
+                return false;
+            }
+        }
+
+        function handleFileSelect(evt) {
+            var files = evt.target.files;
+            var file = files[0];
+            baca(file);
+        }
+
+        function baca(file) {
+            var reader = new FileReader();
+            reader.readAsText(file);
+            reader.onload = function (event) {
+                var jumlah = 0;
+                csv = event.target.result;
+                // console.log(csv);
+                var data = $.csv.toArrays(csv);
+                for (var row in data) {
+                    if (row > 0) {
+                        subTotal = data[row][3] * data[row][5];
+                        jumlah += subTotal;
+                        //console.log(subTotal);
+                    }
+                }
+                var namaFile = escape(file.name);
+                var nF = namaFile.split('-');
+                var nomor = nF[0];
+                //var profilNama = $("#UploadCsvPembelianForm_profilId :selected").text();
+                var profilId = $("#UploadCsvPembelianForm_profilId").val();
+                tampilkanInfo(profilId, nomor, jumlah);
+            };
+            reader.onerror = function () {
+                alert('Unable to read ' + file.fileName);
+            };
+        }
+
+        function tampilkanInfo(profilId, nomorRef, nominal) {
+            console.log(profilId + ' | ' + nomorRef + ' | ' + nominal);
+        }
+    </script>
     <div class="medium-6 columns">
         <div class="panel">
             <h4><small>dari</small> Database</h4>

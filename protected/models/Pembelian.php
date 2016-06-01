@@ -562,4 +562,9 @@ class Pembelian extends CActiveRecord
         );
     }
 
+    public function cariDuplikatByRef($profilId, $noRef, $nominal)
+    {
+
+    }
+
 }

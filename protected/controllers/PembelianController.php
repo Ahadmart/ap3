@@ -650,4 +650,9 @@ class PembelianController extends Controller
         }
     }
 
+    public function infoNota($profilId, $noRef, $nominal)
+    {
+        //$pembelians = Pembelian::model()->findAll('profil_id=:profilId and referensi=:noRef and ')
+    }
+
 }
