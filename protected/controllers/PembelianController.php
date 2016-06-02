@@ -521,7 +521,7 @@ class PembelianController extends Controller
         }
 
         $modelCsvForm = new UploadCsvPembelianForm;
-        $supplierList = Profil::model()->profilTrx()->tipeSupplier()->findAll(array(
+        $supplierList = Profil::model()->profilTrx()->tipeSupplier()->orderByNama()->findAll(array(
             'select' => 'id, nama'
         ));
         if (isset($_POST['UploadCsvPembelianForm'])) {
