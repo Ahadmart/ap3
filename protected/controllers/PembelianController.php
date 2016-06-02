@@ -94,11 +94,11 @@ class PembelianController extends Controller
          * Tampilkan daftar sesuai pilihan tipe
          */
         if ($tipe == Profil::TIPE_SUPPLIER) {
-            $profilList = Profil::model()->profilTrx()->tipeSupplier()->findAll(array(
+            $profilList = Profil::model()->profilTrx()->tipeSupplier()->orderByNama()->findAll(array(
                 'select' => 'id, nama'
             ));
         } else {
-            $profilList = Profil::model()->profilTrx()->findAll(array(
+            $profilList = Profil::model()->profilTrx()->orderByNama()->findAll(array(
                 'select' => 'id, nama'
             ));
         }
@@ -650,9 +650,10 @@ class PembelianController extends Controller
         }
     }
 
-    public function infoNota($profilId, $noRef, $nominal)
+    public function actionCariByRef($profilId, $nomorRef, $nominal)
     {
-        //$pembelians = Pembelian::model()->findAll('profil_id=:profilId and referensi=:noRef and ')
+        $pembelian = Pembelian::model()->cariByRef($profilId, $nomorRef, $nominal);
+        empty($pembelian) ? $this->renderJSON(['ada' => false]) : $this->renderJSON(['ada' => true, 'pembelian' => $this->renderPartial('_import_sudah_ada',['pembelian'=>$pembelian], true)]);
     }
 
 }

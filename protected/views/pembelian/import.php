@@ -45,7 +45,7 @@ $this->boxHeader['normal'] = 'Import Pembelian';
                     <?php echo $form->fileField($modelCsvForm, 'csvFile', array("class" => "tiny bigfont success button")); ?>
                     <?php echo $form->error($modelCsvForm, 'csvFile'); ?>
                 </div>
-                <div class="small-12 columns" id="info-nota">
+                <div class="small-12 columns" id="info-nota-ada">
 
                 </div>
                 <div class="small-12 columns">
@@ -120,7 +120,6 @@ $this->boxHeader['normal'] = 'Import Pembelian';
                 var namaFile = escape(file.name);
                 var nF = namaFile.split('-');
                 var nomor = nF[0];
-                //var profilNama = $("#UploadCsvPembelianForm_profilId :selected").text();
                 var profilId = $("#UploadCsvPembelianForm_profilId").val();
                 tampilkanInfo(profilId, nomor, jumlah);
             };
@@ -130,7 +129,24 @@ $this->boxHeader['normal'] = 'Import Pembelian';
         }
 
         function tampilkanInfo(profilId, nomorRef, nominal) {
-            console.log(profilId + ' | ' + nomorRef + ' | ' + nominal);
+            //console.log(profilId + ' | ' + nomorRef + ' | ' + nominal);
+            $("#info-nota-ada").html('');
+            var dataKirim = {
+                profilId: profilId,
+                nomorRef: nomorRef,
+                nominal: nominal
+            };
+            $.ajax({
+                type: 'GET',
+                url: '<?php echo $this->createUrl('caribyref'); ?>',
+                data: dataKirim,
+                success: function (data) {
+                    if (data.ada) {
+                        $("#info-nota-ada").html(data.pembelian);
+                    }
+
+                }
+            });
         }
     </script>
     <div class="medium-6 columns">
