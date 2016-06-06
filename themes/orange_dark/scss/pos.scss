@@ -7,7 +7,7 @@ $biru: #0b62a4;
 $biru-muda: #7A92A3;
 $hijau: #4da74d;
 $toska: #afd8f8;
-$oranye: #edc240;
+$oranye: #ff5722;
 $merah: #cb4b4b;
 $violet: #9440ed;
 
@@ -16,7 +16,7 @@ body, html {
 }
 body{
     color: #222222;
-    background: #dddcd6 url(../img/bg-b.jpg) repeat-y center fixed;
+    background: #cfd8dc;
     padding: 0;
     margin: 0;
     font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
@@ -270,7 +270,7 @@ table tr th, table tr td {
 }
 
 #scan, #uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password{
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #eff1f3;
     color: rgb(255, 255, 0);
     border-color: transparent;
 }
