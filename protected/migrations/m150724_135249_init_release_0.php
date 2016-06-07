@@ -31,7 +31,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'status' => "tinyint(1) NOT NULL DEFAULT '1' COMMENT '0=tidak aktif; 1=aktif;'",
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             "PRIMARY KEY (`id`)",
             "UNIQUE KEY `barcode_UNIQUE` (`barcode`)",
             "KEY `fk_barang_updatedby_idx` (`updated_by`)",
@@ -46,7 +46,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'harga' => 'decimal(18,2) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'KEY `fk_barang_harga_jual_updatedby_idx` (`updated_by`)',
             'KEY `fk_barang_harga_jual_barang_idx` (`barang_id`)'
@@ -58,7 +58,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'harga' => 'decimal(18,2) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'KEY `fk_barang_hjr_updatedby_idx` (`updated_by`)',
             'KEY `fk_barang_harga_jual_rekomendasi_barang_idx` (`barang_id`)'
@@ -69,38 +69,38 @@ class m150724_135249_init_release_0 extends CDbMigration
             'nama' => 'varchar(45) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'KEY `fk_barang_kategori_updatedby_idx` (`updated_by`)'
                 ), 'ENGINE=' . $dbEngine . '  DEFAULT CHARSET=utf8');
 
         $this->insertMultiple('barang_kategori', array(
-            array('nama' => 'umum', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'wafer', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'biskuit', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'sirup', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'mie', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'kopi', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'isotonik drink', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'makanan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'gula', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'kosmetik', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'perlengkapan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'sabun cuci', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'minuman', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'susu', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'atk', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'elektronik', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'bayi', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'obat nyamuk', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'pecah belah', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'muslim', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'sabun', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'shampo', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'mainan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'pakaian', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'obat', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('nama' => 'umum', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'wafer', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'biskuit', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'sirup', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'mie', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'kopi', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'isotonik drink', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'makanan', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'gula', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'kosmetik', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'perlengkapan', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'sabun cuci', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'minuman', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'susu', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'atk', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'elektronik', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'bayi', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'obat nyamuk', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'pecah belah', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'muslim', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'sabun', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'shampo', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'mainan', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'pakaian', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'obat', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
         ));
 
         $this->createTable('barang_rak', array(
@@ -108,7 +108,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'nama' => 'varchar(45) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'KEY `fk_barang_rak_updatedby_idx` (`updated_by`)'
@@ -119,54 +119,54 @@ class m150724_135249_init_release_0 extends CDbMigration
             'nama' => 'varchar(45) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'KEY `fk_barang_satuan_updatedby_idx` (`updated_by`)'
                 ), 'ENGINE=' . $dbEngine . '  DEFAULT CHARSET=utf8');
 
         $this->insertMultiple('barang_satuan', array(
-            array('nama' => 'pcs', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'kg', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Ons', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Kardus', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'pak', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'lusin', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'box', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'set', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'gr', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'ltr', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'ml', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('nama' => 'pcs', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'kg', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Ons', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Kardus', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'pak', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'lusin', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'box', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'set', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'gr', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'ltr', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'ml', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
         ));
 
         $this->createTable('config', array(
             'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
             'nama' => 'varchar(45) NOT NULL',
-            'nilai' => 'varchar(255) NOT NULL',
+            'nilai' => 'varchar(255) NULL',
             'deskripsi' => 'varchar(1000) DEFAULT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'KEY `fk_config_updatedby_idx` (`updated_by`)'
                 ), 'ENGINE=' . $dbEngine . '  DEFAULT CHARSET=utf8');
 
         $this->insertMultiple('config', array(
-            array('nama' => 'toko.nama', 'nilai' => 'Toko Mart', 'deskripsi' => 'Nama Toko', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'toko.kode', 'nilai' => '01', 'deskripsi' => 'Kode Toko', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'toko.alamat1', 'nilai' => '', 'deskripsi' => 'Alamat 1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'toko.alamat2', 'nilai' => '', 'deskripsi' => 'Alamat 2', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'toko.alamat3', 'nilai' => '', 'deskripsi' => 'Alamat 3', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'toko.telp', 'nilai' => '', 'deskripsi' => 'Telp', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'toko.email', 'nilai' => 'toko@mart.com', 'deskripsi' => 'E-mail', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'penjualan.jatuh_tempo', 'nilai' => '7', 'deskripsi' => 'Jatuh tempo pembayaran untuk penjualan (hari)', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'keuangan.saldo_awal', 'nilai' => '0', 'deskripsi' => 'Saldo Awal', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'struk.header1', 'deskripsi' => 'Header 1 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'struk.header2', 'deskripsi' => 'Header 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'struk.footer1', 'deskripsi' => 'Footer 1 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'struk.footer2', 'deskripsi' => 'Footer 2 struk penjualan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'pos.autoprint', 'nilai' => '1', 'deskripsi' => 'Langsung print ketika disimpan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('nama' => 'toko.nama', 'nilai' => 'Toko Mart', 'deskripsi' => 'Nama Toko', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'toko.kode', 'nilai' => '01', 'deskripsi' => 'Kode Toko', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'toko.alamat1', 'nilai' => '', 'deskripsi' => 'Alamat 1', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'toko.alamat2', 'nilai' => '', 'deskripsi' => 'Alamat 2', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'toko.alamat3', 'nilai' => '', 'deskripsi' => 'Alamat 3', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'toko.telp', 'nilai' => '', 'deskripsi' => 'Telp', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'toko.email', 'nilai' => 'toko@mart.com', 'deskripsi' => 'E-mail', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'penjualan.jatuh_tempo', 'nilai' => '7', 'deskripsi' => 'Jatuh tempo pembayaran untuk penjualan (hari)', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'keuangan.saldo_awal', 'nilai' => '0', 'deskripsi' => 'Saldo Awal', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'struk.header1', 'deskripsi' => 'Header 1 struk penjualan', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'struk.header2', 'deskripsi' => 'Header 2 struk penjualan', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'struk.footer1', 'deskripsi' => 'Footer 1 struk penjualan', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'struk.footer2', 'deskripsi' => 'Footer 2 struk penjualan', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'pos.autoprint', 'nilai' => '1', 'deskripsi' => 'Langsung print ketika disimpan', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
         ));
 
         $this->createTable('harga_pokok_penjualan', array(
@@ -178,7 +178,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'harga_beli_temp' => "decimal(18,2) DEFAULT NULL COMMENT 'field ini diisi harga beli terakhir jika stok negatif, dan nanti harga_beli diisi jika sudah ada pembelian'",
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'KEY `fk_harga_pokok_penjualan_updatedby_idx` (`updated_by`)',
             'KEY `fk_harga_pokok_penjualan_belidetail_idx` (`pembelian_detail_id`)',
@@ -196,7 +196,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'nomor_dokumen_asal' => 'varchar(45) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nomor` (`nomor`)',
             'KEY `fk_hutang_piutang_updatedby_idx` (`updated_by`)',
@@ -210,7 +210,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'jumlah' => 'decimal(18,2) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'KEY `fk_hutangpiutang_detail_header_idx` (`hutang_piutang_id`)',
             'KEY `fk_hutangpiutang_detail_updatedby_idx` (`updated_by`)'
@@ -229,7 +229,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'stock_opname_detail_id' => 'int(10) unsigned DEFAULT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'KEY `fk_inventory_balance_updatedby_idx` (`updated_by`)',
             'KEY `fk_inventory_balance_barang_idx` (`barang_id`)',
@@ -245,7 +245,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'jenis' => "tinyint(4) NOT NULL COMMENT '0=Pengeluaran; 1=Penerimaan'",
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'KEY `fk_item_keuangan_updatedby_idx` (`updated_by`)',
@@ -253,24 +253,24 @@ class m150724_135249_init_release_0 extends CDbMigration
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 AUTO_INCREMENT=101');
 
         $this->insertMultiple('item_keuangan', array(
-            array('id' => 1, 'nama' => 'Bayar Hutang', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 2, 'nama' => 'Pembelian', 'parent_id' => 1, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 3, 'nama' => 'Penerimaan Piutang', 'jenis' => 1, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 4, 'nama' => 'Penjualan', 'jenis' => 1, 'parent_id' => 3, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 5, 'nama' => 'Retur Beli', 'jenis' => 1, 'parent_id' => 3, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 6, 'nama' => 'Retur Jual', 'parent_id' => 1, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 7, 'nama' => 'Expense', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 8, 'nama' => 'Non Expense', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 9, 'nama' => 'Pendapatan Lain', 'jenis' => 1, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Listrik', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Alat Tulis Kantor', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Gaji Karyawan', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Internet', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Air Minum', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Sampah', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'RT', 'parent_id' => 7, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Kasbon', 'parent_id' => 8, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Jual Kardus', 'jenis' => 1, 'parent_id' => 9, 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('id' => 1, 'nama' => 'Bayar Hutang', 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 2, 'nama' => 'Pembelian', 'parent_id' => 1, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 3, 'nama' => 'Penerimaan Piutang', 'jenis' => 1, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 4, 'nama' => 'Penjualan', 'jenis' => 1, 'parent_id' => 3, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 5, 'nama' => 'Retur Beli', 'jenis' => 1, 'parent_id' => 3, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 6, 'nama' => 'Retur Jual', 'parent_id' => 1, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 7, 'nama' => 'Expense', 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 8, 'nama' => 'Non Expense', 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 9, 'nama' => 'Pendapatan Lain', 'jenis' => 1, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Listrik', 'parent_id' => 7, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Alat Tulis Kantor', 'parent_id' => 7, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Gaji Karyawan', 'parent_id' => 7, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Internet', 'parent_id' => 7, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Air Minum', 'parent_id' => 7, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Sampah', 'parent_id' => 7, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'RT', 'parent_id' => 7, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Kasbon', 'parent_id' => 8, 'jenis' => 0, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Jual Kardus', 'jenis' => 1, 'parent_id' => 9, 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
         ));
 
         $this->createTable('jenis_transaksi', array(
@@ -278,15 +278,15 @@ class m150724_135249_init_release_0 extends CDbMigration
             'nama' => 'varchar(45) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'KEY `fk_tipe_pembayaran_updatedby_idx` (`updated_by`)',
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 AUTO_INCREMENT=3');
 
         $this->insertMultiple('jenis_transaksi', array(
-            array('nama' => 'Tunai', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Transfer', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('nama' => 'Tunai', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Transfer', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
         ));
 
         $this->createTable('jurnal', array(
@@ -297,7 +297,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'status' => "tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0=draft; 1=saved; 2; posting'",
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nomor_UNIQUE` (`nomor`)',
             'KEY `fk_jurnal_updatedby_idx` (`updated_by`)',
@@ -313,7 +313,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'kredit' => 'decimal(10,0) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'KEY `fk_jurnal_detail_kodeakun_idx` (`kode_akun_id`)',
             'KEY `fk_jurnal_detail_header_idx` (`jurnal_id`)',
@@ -326,15 +326,15 @@ class m150724_135249_init_release_0 extends CDbMigration
             'kode_akun_id' => 'int(10) unsigned DEFAULT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'KEY `fk_kas_bank_akun_idx` (`kode_akun_id`)',
             'KEY `fk_kas_bank_updatedby_idx` (`updated_by`)',
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
 
-        $this->insert('kas_bank', array('nama' => 'Kas', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'));
-        $this->insert('kas_bank', array('nama' => 'Bank', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'));
+        $this->insert('kas_bank', array('nama' => 'Kas', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'));
+        $this->insert('kas_bank', array('nama' => 'Bank', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'));
 
         $this->createTable('kode_akun', array(
             'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -345,7 +345,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'trx' => "tinyint(4) NOT NULL DEFAULT '0' COMMENT 'trx=1, Kode akun untuk transaksi aplikasi. Lainnya untuk memorial, dll'",
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `kode` (`kode`)',
             'KEY `fk_kode_akun_parent_idx` (`parent_id`)',
@@ -358,7 +358,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'nama' => 'varchar(45) NOT NULL',
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'UNIQUE KEY `kode_UNIQUE` (`kode`)',
@@ -375,7 +375,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             'status' => "tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0:draft; 1:hutang; 2:lunas;'",
             'updated_at' => "timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nomor_UNIQUE` (`nomor`)',
             'KEY `fk_pembelian_updatedby_idx` (`updated_by`)',
@@ -394,7 +394,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `tanggal_kadaluwarsa` date DEFAULT NULL,
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_pembelian_detail_pemb_idx` (`pembelian_id`),
            KEY `fk_pembelian_detail_barang_idx` (`barang_id`),
@@ -416,7 +416,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0:draft; 1:bayar;',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            UNIQUE KEY `nomor_UNIQUE` (`nomor`),
            KEY `fk_penerimaan_updatedby_idx` (`updated_by`),
@@ -436,7 +436,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `posisi` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=Debet (+); 1=Kredit (-)',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_penerimaan_detail_updatedby_idx` (`updated_by`),
            KEY `fk_penerimaan_detail_header_idx` (`penerimaan_id`),
@@ -450,15 +450,15 @@ class m150724_135249_init_release_0 extends CDbMigration
            `deskripsi` varchar(255) DEFAULT NULL,
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            UNIQUE KEY `nama_UNIQUE` (`nama`),
            KEY `fk_penerimaan_kategori_updatedby_idx` (`updated_by`)"
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
 
         $this->insertMultiple('penerimaan_kategori', array(
-            array('nama' => 'Penjualan/Retur Beli', 'deskripsi' => 'Transaksi Via Aplikasi', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Pendapatan Lain', 'deskripsi' => 'Pendapatan Lain-lain', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('nama' => 'Penjualan/Retur Beli', 'deskripsi' => 'Transaksi Via Aplikasi', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Pendapatan Lain', 'deskripsi' => 'Pendapatan Lain-lain', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
         ));
 
         $this->createTable('pengeluaran', array(
@@ -476,7 +476,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `status` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '0:draft; 1:bayar;',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            UNIQUE KEY `nomor_UNIQUE` (`nomor`),
            KEY `fk_pengeluaran_updatedby_idx` (`updated_by`),
@@ -496,7 +496,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `posisi` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0=Debet (+); 1=Kredit (-)',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_pengeluaran_detail_updatedby_idx` (`updated_by`),
            KEY `fk_pengeluaran_detail_header_idx` (`pengeluaran_id`),
@@ -510,15 +510,15 @@ class m150724_135249_init_release_0 extends CDbMigration
            `deskripsi` varchar(255) DEFAULT NULL,
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            UNIQUE KEY `nama_UNIQUE` (`nama`),
            KEY `fk_pengeluaran_kategori_updatedby_idx` (`updated_by`)"
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
 
         $this->insertMultiple('pengeluaran_kategori', array(
-            array('nama' => 'Pembelian / Retur Jual', 'deskripsi' => 'Transaksi Via Aplikasi', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('nama' => 'Pengeluaran Lainnya', 'deskripsi' => 'Biaya dan pengeluaran lain', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
+            array('nama' => 'Pembelian / Retur Jual', 'deskripsi' => 'Transaksi Via Aplikasi', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('nama' => 'Pengeluaran Lainnya', 'deskripsi' => 'Biaya dan pengeluaran lain', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
         ));
 
         $this->createTable('penjualan', array(
@@ -530,7 +530,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0:draft; 1:piutang; 2:lunas;',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            UNIQUE KEY `nomor_UNIQUE` (`nomor`),
            KEY `fk_penjualan_updatedby_idx` (`updated_by`),
@@ -547,7 +547,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `harga_jual_rekomendasi` decimal(18,2) DEFAULT NULL,
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_penjualan_detail_updatedby_idx` (`updated_by`),
            KEY `fk_penjualan_detail_header_idx` (`penjualan_id`),
@@ -565,15 +565,15 @@ class m150724_135249_init_release_0 extends CDbMigration
            `keterangan` varchar(1000) DEFAULT NULL,
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_profil_updatedby_idx` (`updated_by`),
            KEY `fk_profil_tipe_idx` (`tipe_id`)"
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 AUTO_INCREMENT=101');
 
         $this->insertMultiple('profil', array(
-            array('id' => 1, 'tipe_id' => 1, 'nama' => 'Init', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 2, 'tipe_id' => 2, 'nama' => 'Umum', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00')
+            array('id' => 1, 'tipe_id' => 1, 'nama' => 'Init', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 2, 'tipe_id' => 2, 'nama' => 'Umum', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00')
         ));
 
         $this->execute('ALTER TABLE `profil` AUTO_INCREMENT = 101');
@@ -583,7 +583,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `nama` varchar(45) NOT NULL,
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            UNIQUE KEY `nama` (`nama`),
            UNIQUE KEY `nama_UNIQUE` (`nama`),
@@ -591,9 +591,9 @@ class m150724_135249_init_release_0 extends CDbMigration
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
 
         $this->insertMultiple('profil_tipe', array(
-            array('id' => 1, 'nama' => 'Supplier', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 2, 'nama' => 'Customer', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 3, 'nama' => 'Karyawan', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00')
+            array('id' => 1, 'nama' => 'Supplier', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 2, 'nama' => 'Customer', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 3, 'nama' => 'Karyawan', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00')
         ));
 
         $this->createTable('retur_pembelian', array(
@@ -605,7 +605,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0=draft;1=piutang;2=lunas',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            UNIQUE KEY `nomor` (`nomor`),
            KEY `fk_retur_pembelian_updatedby_idx` (`updated_by`),
@@ -619,7 +619,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `qty` int(10) unsigned NOT NULL DEFAULT '1',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_retur_pembelian_detail_header_idx` (`retur_pembelian_id`),
            KEY `fk_retur_pembelian_detail_updatedby_idx` (`updated_by`),
@@ -635,7 +635,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0=draft;1=hutang;2=lunas',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            UNIQUE KEY `nomor` (`nomor`),
            KEY `fk_retur_penjualan_updatedby_idx` (`updated_by`),
@@ -651,7 +651,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `harga_jual` decimal(18,2) NOT NULL,
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_retur_penjualan_detail_header_idx` (`retur_penjualan_id`),
            KEY `fk_retur_penjualan_detail_updatedby_idx` (`updated_by`),
@@ -667,7 +667,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0=draft; 1=so',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            UNIQUE KEY `nomor` (`nomor`),
            KEY `fk_stock_opname_updatedby_idx` (`updated_by`),
@@ -682,7 +682,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `qty_sebenarnya` int(11) NOT NULL,
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_stock_opname_detail_updatedby_idx` (`updated_by`),
            KEY `fk_stock_opname_detail_barang_idx` (`barang_id`),
@@ -696,7 +696,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            `default` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1=default',
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_supplier_barang_updatedby_idx` (`updated_by`),
            KEY `fk_supplier_barang_supplier_idx` (`supplier_id`),
@@ -709,15 +709,15 @@ class m150724_135249_init_release_0 extends CDbMigration
            `deskripsi` varchar(500) DEFAULT NULL,
            `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
            `updated_by` int(10) unsigned NOT NULL,
-           `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+           `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
            PRIMARY KEY (`id`),
            KEY `fk_theme_updatedby_idx` (`updated_by`)"
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
 
         $this->insertMultiple('theme', array(
-            array('id' => 1, 'nama' => 'default', 'deskripsi' => 'Default', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 2, 'nama' => 'default_dark', 'deskripsi' => 'Default Dark', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('id' => 3, 'nama' => 'materialize', 'deskripsi' => 'G Material Design', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00')
+            array('id' => 1, 'nama' => 'default', 'deskripsi' => 'Default', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 2, 'nama' => 'default_dark', 'deskripsi' => 'Default Dark', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('id' => 3, 'nama' => 'materialize', 'deskripsi' => 'G Material Design', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00')
         ));
 
         $this->createTable('laporan_harian', array(
@@ -727,7 +727,7 @@ class m150724_135249_init_release_0 extends CDbMigration
             `keterangan` varchar(5000) DEFAULT NULL,
             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             `updated_by` int(10) unsigned NOT NULL,
-            `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+            `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
             PRIMARY KEY (`id`),
             UNIQUE KEY `tanggal_UNIQUE` (`tanggal`),
             KEY `fk_laporan_harian_updatedby_idx` (`updated_by`)"
@@ -743,18 +743,18 @@ class m150724_135249_init_release_0 extends CDbMigration
             `lf_setelah` tinyint(4) DEFAULT NULL,
             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             `updated_by` int(10) unsigned NOT NULL,
-            `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+            `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
             PRIMARY KEY (`id`),
             UNIQUE KEY `nama_UNIQUE` (`nama`),
             KEY `fk_device_updatedby_idx` (`updated_by`)"
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
 
         $this->insertMultiple('device', array(
-            array('tipe_id' => 0, 'nama' => 'Kasir 1', 'keterangan' => 'Komputer Kasir 1', 'address' => '192.168.1.1', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('tipe_id' => 1, 'nama' => 'printer192.168.1.1', 'keterangan' => 'Printer di Kasir 1', 'address' => '192.168.1.1', 'lf_setelah' => '5', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('tipe_id' => 2, 'nama' => 'Plain/Text', 'keterangan' => 'Export to text file', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('tipe_id' => 3, 'nama' => 'PDF', 'keterangan' => 'Export to PDF', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00'),
-            array('tipe_id' => 4, 'nama' => 'CSV', 'keterangan' => 'Export to CSV', 'updated_at' => '0000-00-00 00:00:00', 'updated_by' => 1, 'created_at' => '0000-00-00 00:00:00')
+            array('tipe_id' => 0, 'nama' => 'Kasir 1', 'keterangan' => 'Komputer Kasir 1', 'address' => '192.168.1.1', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('tipe_id' => 1, 'nama' => 'printer192.168.1.1', 'keterangan' => 'Printer di Kasir 1', 'address' => '192.168.1.1', 'lf_setelah' => '5', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('tipe_id' => 2, 'nama' => 'Plain/Text', 'keterangan' => 'Export to text file', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('tipe_id' => 3, 'nama' => 'PDF', 'keterangan' => 'Export to PDF', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
+            array('tipe_id' => 4, 'nama' => 'CSV', 'keterangan' => 'Export to CSV', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00')
         ));
 
         /* Foreign Key Tabel barang */

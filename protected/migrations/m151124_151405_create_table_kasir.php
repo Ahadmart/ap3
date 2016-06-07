@@ -33,7 +33,7 @@ class m151124_151405_create_table_kasir extends CDbMigration
             `total_retur` decimal(18,2) DEFAULT NULL,
             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             `updated_by` int(10) unsigned NOT NULL,
-            `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+            `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
             PRIMARY KEY (`id`),
             KEY `fk_kasir_user_idx` (`user_id`),
             KEY `fk_kasir_device_idx` (`device_id`),

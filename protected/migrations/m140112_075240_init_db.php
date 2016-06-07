@@ -69,7 +69,7 @@ class m140112_075240_init_db extends CDbMigration
         $this->createTable('template 1', array(
             'id' => 'int(11) NOT NULL AUTO_INCREMENT',
             'nama' => 'varchar(45) NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'updated_at' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
             'updated_by' => 'int(11) NOT NULL',
             'PRIMARY KEY (`id`)',
@@ -87,7 +87,7 @@ class m140112_075240_init_db extends CDbMigration
             'theme_id' => 'tinyint(3) unsigned DEFAULT NULL',
             'updated_at' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
             'updated_by' => 'int(10) unsigned NOT NULL',
-            'created_at' => "timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'KEY `fk_user_theme_idx` (`theme_id`)'
@@ -99,8 +99,8 @@ class m140112_075240_init_db extends CDbMigration
             'nama_lengkap' => 'Administrator',
             'password' => 'JDJ5JDEwJGVSU29DMUlkWERMQTl3VVhPRTg0d2VISjB6WWJvclBuNkhHQlptY3Jza0FUUGl4TVVBUTlH',
             'salt' => 'eRSoC1IdXDLA9wUXOE84wjTPy3VVFg==',
-            'created_at' => '0000-00-00 00:00:00',
-            'updated_at' => '0000-00-00 00:00:00',
+            'created_at' => '2000-01-01 00:00:00',
+            'updated_at' => '2000-01-01 00:00:00',
             'updated_by' => 1
         ));
 
