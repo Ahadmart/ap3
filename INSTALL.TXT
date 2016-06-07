@@ -1,0 +1,53 @@
+Installation steps : for Ubuntu 16.04
+
+# refresh software manager's database
+apt-get update
+# install apache + php + mysql
+apt-get install phpmyadmin mysql-server
+
+# download & unpack latest version of AhadPOS3
+cd /var/www/html
+mkdir ap3
+cd ap3
+wget https://github.com/AbuMuhammad/ap3/archive/master.zip
+unzip master.zip
+mv ap3-master/* .
+mv ap3-master/.htaccess .
+
+# set proper permission for these directories
+chmod 777 /var/www/html/ap3/protected/runtime
+chmod 777 /var/www/html/ap3/assets
+
+# create the database
+mysql -e "create database ahadpos3"
+
+
+## NOTE : mysql 5.7 will NOT accept empty password with mysql_native_password plugin
+## NOTE : mysql 5.7 default to auth_socket plugin. 
+##  This causes Yii framework to fail with error SQLSTATE 1698 : 
+##          https://translate.google.co.id/translate?hl=en&sl=zh-CN&u=http://www.codes51.com/article/detail_273734.html&prev=search
+##          http://dev.mysql.com/doc/refman/5.7/en/error-messages-server.html#error_er_access_denied_no_password_error
+
+## If you're using MySQL 5.7, execute the following command
+##mysql -e "UPDATE mysql . user SET authentication_string = PASSWORD( 'YourPasswordHere' ), plugin = 'mysql_native_password' WHERE user = 'root' ; flush privileges;"
+## again remember, MySQL 5.7 will NOT accept empty password
+
+# need to enable the Rewrite commands in .htaccess file, by changing "AllowOverride None" into "AllowOverride All"
+# (just the one for /var/www/ Directory)
+awk '/AllowOverride None/{c+=1}{if(c==3){sub("AllowOverride None","AllowOverride All",$0)};print}' /etc/apache2/apache2.conf > /tmp/nih
+cp /tmp/nih /etc/apache2/apache2.conf
+
+# enable the Rewrite module
+a2enmod rewrite ; service apache2 restart
+
+# edit config, make sure the password there for MySQL is correct
+nano protected/config/db.php
+
+# execute the install script
+/var/www/ap3/fresh-install.sh
+
+# done !
+# open this link on the browser :
+# http://localhost/ap3/fresh-install.php
+# user: admin
+# pass: admin
