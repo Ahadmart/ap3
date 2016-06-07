@@ -94,11 +94,11 @@ class PembelianController extends Controller
          * Tampilkan daftar sesuai pilihan tipe
          */
         if ($tipe == Profil::TIPE_SUPPLIER) {
-            $profilList = Profil::model()->profilTrx()->tipeSupplier()->findAll(array(
+            $profilList = Profil::model()->profilTrx()->tipeSupplier()->orderByNama()->findAll(array(
                 'select' => 'id, nama'
             ));
         } else {
-            $profilList = Profil::model()->profilTrx()->findAll(array(
+            $profilList = Profil::model()->profilTrx()->orderByNama()->findAll(array(
                 'select' => 'id, nama'
             ));
         }
@@ -521,7 +521,7 @@ class PembelianController extends Controller
         }
 
         $modelCsvForm = new UploadCsvPembelianForm;
-        $supplierList = Profil::model()->profilTrx()->tipeSupplier()->findAll(array(
+        $supplierList = Profil::model()->profilTrx()->tipeSupplier()->orderByNama()->findAll(array(
             'select' => 'id, nama'
         ));
         if (isset($_POST['UploadCsvPembelianForm'])) {
@@ -648,6 +648,12 @@ class PembelianController extends Controller
                     break;
             }
         }
+    }
+
+    public function actionCariByRef($profilId, $nomorRef, $nominal)
+    {
+        $pembelian = Pembelian::model()->cariByRef($profilId, $nomorRef, $nominal);
+        empty($pembelian) ? $this->renderJSON(['ada' => false]) : $this->renderJSON(['ada' => true, 'pembelian' => $this->renderPartial('_import_sudah_ada',['pembelian'=>$pembelian], true)]);
     }
 
 }

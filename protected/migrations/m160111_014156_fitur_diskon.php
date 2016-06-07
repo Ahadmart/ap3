@@ -33,7 +33,7 @@ class m160111_014156_fitur_diskon extends CDbMigration
             `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '0:tidak aktif; 1:aktif',
             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             `updated_by` int(10) unsigned NOT NULL,
-            `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+            `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
             PRIMARY KEY (`id`),
             KEY `fk_barang_diskon_barang_idx` (`barang_id`),
             KEY `fk_barang_diskon_updatedby_idx` (`updated_by`)"
@@ -48,7 +48,7 @@ class m160111_014156_fitur_diskon extends CDbMigration
             `tipe_diskon_id` tinyint(3) unsigned DEFAULT NULL COMMENT '1: Promo (pengurangan harga per waktu tertentu)\n2: Grosir (beli banyak harga turun)\n3: Banded (beli qty tertentu harga turun)',
             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             `updated_by` int(10) unsigned NOT NULL,
-            `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+            `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
             PRIMARY KEY (`id`),
             KEY `fk_penjualan_diskon_penjualandetail_idx` (`penjualan_detail_id`),
             KEY `fk_penjualan_diskon_penjualan_idx` (`penjualan_id`),

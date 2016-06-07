@@ -562,4 +562,41 @@ class Pembelian extends CActiveRecord
         );
     }
 
+    public function cariByRef($profilId, $noRef, $nominal)
+    {
+        return Yii::app()->db->createCommand()->
+                        select('*')->
+                        from("
+                    (SELECT
+                        id, nomor, tanggal, referensi, `status`
+                    FROM
+                        pembelian
+                    WHERE
+                        profil_id = :profilId
+                            AND referensi = :noRef) t1
+                        ")->
+                        join("
+                    (SELECT
+                        pembelian_id, SUM(qty * harga_beli) total
+                    FROM
+                        pembelian_detail
+                    WHERE
+                        pembelian_id IN (SELECT
+                                id
+                            FROM
+                                pembelian
+                            WHERE
+                                profil_id = :profilId
+                                    AND referensi = :noRef)
+                    GROUP BY pembelian_id
+                    HAVING SUM(qty * harga_beli) = :nominal) t2
+                        ", 't1.id = t2.pembelian_id')->
+                        bindValues([
+                            ':profilId' => $profilId,
+                            ':noRef' => $noRef,
+                            ':nominal' => $nominal
+                        ])
+                        ->queryAll();
+    }
+
 }

@@ -8,9 +8,9 @@ class m151204_102756_tambah_penerimaan_kategori extends CDbMigration
         $this->insert('penerimaan_kategori', array(
             'nama' => 'POS',
             'deskripsi' => 'Transaksi Via POS',
-            'updated_at' => '0000-00-00 00:00:00',
+            'updated_at' => '2000-01-01 00:00:00',
             'updated_by' => 1,
-            'created_at' => '0000-00-00 00:00:00'
+            'created_at' => '2000-01-01 00:00:00'
                 )
         );
     }

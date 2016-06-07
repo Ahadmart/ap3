@@ -168,7 +168,7 @@ class HutangPiutang extends CActiveRecord
         if ($this->scenario == 'pilihDokumen') {
             $criteria->addCondition('t.status=' . HutangPiutang::STATUS_BELUM_LUNAS);
         }
-        if (isset($this->noRef)) {
+        if ($this->noRef != '') {
             $criteria->addCondition("pembelian.referensi like '%{$this->noRef}%'");
         }
 

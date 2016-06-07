@@ -90,14 +90,17 @@ class Profil extends CActiveRecord
 
     public function scopes()
     {
-        return array(
-            'profilTrx' => array(
+        return [
+            'profilTrx' => [
                 'condition' => 'id>' . self::AWAL_ID
-            ),
-            'tipeSupplier' => array(
+            ],
+            'tipeSupplier' => [
                 'condition' => 'tipe_id=' . self::TIPE_SUPPLIER
-            )
-        );
+            ],
+            'orderByNama' => [
+                'order' => 'nama'
+            ]
+        ];
     }
 
     /**
