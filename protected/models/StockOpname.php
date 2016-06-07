@@ -163,7 +163,7 @@ class StockOpname extends CActiveRecord
              */
             $this->tanggal = date('Y-m-d H:i:s');
         }
-        $this->updated_at = null; // Trigger current timestamp
+        $this->updated_at = date("Y-m-d H:i:s");
         $this->updated_by = Yii::app()->user->id;
         // Jika disimpan melalui proses simpan so
         if ($this->scenario === 'simpanSo') {
