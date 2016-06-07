@@ -16,7 +16,7 @@ body, html {
 }
 body{
     color: #222222;
-    background: #cfd8dc;
+    background: #eceff1;
     padding: 0;
     margin: 0;
     font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
@@ -27,7 +27,7 @@ body{
     cursor: default;
 }
 a{
-    color: #35e9c5;
+    color: #f45524;
 }
 .prefix .fa-2x{
     padding-top:4px;
@@ -37,27 +37,11 @@ a{
 }
 
 .sidebar {
-    // height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: #263238;
     padding-top: 15px;	
-    /*    .prefix .fa-2x{
-            padding-top:4px;
-        }
-        .postfix .fa-2x{
-            padding-top:4px;
-        }*/
     .huruf{
-        /*font-weight: bold;*/
         font-size: 1.5rem;
-    }
-    /*	&.kiri{
-           Collapsed 
-          width: 0; 
-          overflow: hidden;
-          position: fixed;
-          top: 0;
-          left: 0;
-       }*/
+    }    
 }
 #info-tabel{
     width: 100%;
@@ -187,24 +171,24 @@ tr.pilih, tr.selected {
 }
 
 table, table thead{
-    background: none;
+    background: #cfd8dc;
 }
 
 table thead tr th, table thead tr td {
-    color: #E0E0E0;
+    color: #546e7a;
     font-size: 0.9rem;
     font-weight: normal;
     padding: 0.5rem 0.625rem 0.625rem;
-    background-color: rgba(19, 37, 49, 0.7);
+    background-color: #cfd8dc;
 }
 
 table tr.even, table tr.alt, table tr:nth-of-type(even) {
-    background-color: rgba(12, 28, 41, 0.7);
+    background-color: #455a64;
 
 }
 
 table tr.odd{
-    background-color: rgba(7, 81, 108, 0.45);
+    background-color: #37474f;
 }
 
 table tr th, table tr td {
@@ -271,19 +255,19 @@ table tr th, table tr td {
 
 #scan, #uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password{
     background-color: #eff1f3;
-    color: rgb(255, 255, 0);
+    color: 546e7a;
     border-color: transparent;
 }
 
 #scan:focus, #uang-dibayar:focus, #account:focus,
 #jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus{
-    border-color: #00BCD4;
-    box-shadow: 0px 0px 15px #00BCD4;
+    border-color: #ff5722;
+    box-shadow: 0px 0px 15px #ff5722;
 }
 
 #scan-icon, span.prefix, span.postfix{
-    background-color: rgba(0, 0, 0, 0.5);
-    color: $toska;
+    //background-color: rgba(0, 0, 0, 0.5);
+    color: #546e7a;
     border-color: transparent;
 }
 
