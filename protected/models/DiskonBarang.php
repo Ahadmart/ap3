@@ -5,6 +5,7 @@
  *
  * The followings are the available columns in table 'barang_diskon':
  * @property string $id
+ * @property integer $semua_barang
  * @property string $barang_id
  * @property integer $tipe_diskon_id
  * @property string $nominal
@@ -32,6 +33,8 @@ class DiskonBarang extends CActiveRecord
     const TIPE_MANUAL = 3;
     const TIPE_PROMO_MEMBER = 4;
     /* ========= */
+    const SEMUA_BARANG = 1;
+    /* ========= */
     const STATUS_TIDAK_AKTIF = 0;
     const STATUS_AKTIF = 1;
 
@@ -54,15 +57,15 @@ class DiskonBarang extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('barang_id, tipe_diskon_id, nominal, dari', 'required', 'message' => '{attribute} harus diisi'),
-            array('tipe_diskon_id, status', 'numerical', 'integerOnly' => true),
+            array('tipe_diskon_id, nominal, dari', 'required', 'message' => '{attribute} harus diisi'),
+            array('semua_barang, tipe_diskon_id, status', 'numerical', 'integerOnly' => true),
             array('persen', 'numerical'),
             array('barang_id, qty, qty_min, qty_max, updated_by', 'length', 'max' => 10),
             array('nominal', 'length', 'max' => 18),
             array('sampai, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, status, barcode, namaBarang', 'safe', 'on' => 'search'),
+            array('id, semua_barang, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, status, barcode, namaBarang', 'safe', 'on' => 'search'),
         );
     }
 
@@ -86,6 +89,7 @@ class DiskonBarang extends CActiveRecord
     {
         return array(
             'id' => 'ID',
+            'semua_barang' => 'Semua Barang',
             'barang_id' => 'Barang',
             'tipe_diskon_id' => 'Tipe Diskon',
             'nominal' => 'Diskon (Nominal)',
@@ -121,6 +125,7 @@ class DiskonBarang extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('t.id', $this->id, true);
+        $criteria->compare('semua_barang', $this->semua_barang);
         $criteria->compare('barang_id', $this->barang_id, true);
         $criteria->compare('tipe_diskon_id', $this->tipe_diskon_id);
         $criteria->compare('nominal', $this->nominal, true);
@@ -227,6 +232,7 @@ class DiskonBarang extends CActiveRecord
 
     public function beforeValidate()
     {
+        $this->barang_id = $this->semua_barang ? NULL : $this->barang_id;
         $this->dari = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s') : NULL;
         $this->sampai = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s') : NULL;
 

@@ -34,10 +34,21 @@
     <div class="row">
         <div class="small-12 columns">
             <?php echo $form->hiddenField($model, 'barang_id'); ?>
-            <input type="hidden" id="harga-jual-raw" <?php echo $model->isNewRecord ? '' : 'value="' . $model->barang->getHargaJualRaw() . '"' ?>/>
+            <?php
+            if (!$model->isNewRecord) {
+                $hargaJualRaw = is_null($model->barang) ? 0 : $model->barang->getHargaJualRaw();
+            }
+            ?>
+            <input type="hidden" id="harga-jual-raw" <?php echo $model->isNewRecord ? '' : 'value="' . $hargaJualRaw . '"' ?>/>
         </div>
     </div>
 
+    <div class="row" id="cb_semua_barang" style="display: none">
+        <div class="small-12 columns">
+            <?php echo $form->checkBox($model, 'semua_barang'); ?>
+            <?php echo $form->labelEx($model, 'semua_barang'); ?>
+        </div>
+    </div>
     <div class="row">
         <div class="small-12 columns">
             <label for="scan" class="required">Barang <span class="required">*</span></label>
@@ -46,7 +57,10 @@
                     <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
                 </div>
                 <div class="small-6 large-8 columns">
-                    <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b"<?php echo $model->isNewRecord ? '' : 'value="' . $model->barang->barcode . '"' ?>/>
+                    <?php
+                    $barcode = !is_null($model->barang) ? $model->barang->barcode : ''
+                    ?>
+                    <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b"<?php echo $model->isNewRecord ? '' : 'value="' . $barcode . '"' ?>/>
                 </div>
                 <div class="small-3 large-2 columns">
                     <a href="#" class="button postfix" id="tombol-scan-ok"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
@@ -148,6 +162,20 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         shField(tipeId);
     });
 
+    $("#DiskonBarang_semua_barang").change(function () {
+        enDisScan(this.checked);
+    });
+
+    function enDisScan(enable) {
+        if (enable) {
+            $("#scan").prop('disabled', true);
+            $("#tombol-scan-ok").attr('disabled', 'disabled');
+        } else {
+            $("#scan").prop('disabled', false);
+            $("#tombol-scan-ok").removeAttr('disabled');
+        }
+    }
+
     function shField(tipeId) {
         switch (tipeId) {
             case '<?php echo DiskonBarang::TIPE_PROMO; ?>':
@@ -160,7 +188,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                 bandedFields();
                 break;
             case '<?php echo DiskonBarang::TIPE_PROMO_MEMBER; ?>':
-                promoFields();
+                promoMemberFields();
                 break;
         }
     }
@@ -168,11 +196,20 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     function promoFields() {
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
+        $("#cb_semua_barang").hide(500);
         $("#row-qty-max").show(500);
+    }
+
+    function promoMemberFields() {
+        $("#row-qty").hide(500);
+        $("#row-qty-min").hide(500);
+        $("#row-qty-max").show(500);
+        $("#cb_semua_barang").show(500);
     }
 
     function grosirFields() {
         $("#row-qty").hide(500);
+        $("#cb_semua_barang").hide(500);
         $("#row-qty-max").hide(500);
         $("#row-qty-min").show(500);
     }
@@ -180,6 +217,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     function bandedFields() {
         $("#row-qty-min").hide(500);
         $("#row-qty-max").hide(500);
+        $("#cb_semua_barang").hide(500);
         $("#row-qty").show(500);
     }
 
@@ -294,7 +332,18 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 <?php
 if (!$model->isNewRecord) {
     ?>
-            kalkulasiDiskonDariNominal();
+            enDisScan(<?php echo $model->semua_barang; ?>);
+    <?php
+    if ($model->nominal > 0) {
+        ?>
+                kalkulasiDiskonDariNominal();
+        <?php
+    } else {
+        ?>
+                kalkulasiDiskonDariPersen();
+        <?php
+    }
+    ?>
             tampilkanHargaBanded();// Jalan jika qty > 0
             $("#tombol-scan-ok").click();
     <?php

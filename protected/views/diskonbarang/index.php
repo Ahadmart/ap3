@@ -28,7 +28,7 @@ $this->boxHeader['normal'] = 'Diskon Barang';
                     'header' => '<span class="ak">B</span>arcode',
                     'accesskey' => 'b',
                     'type' => 'raw',
-                    'value' => '$data->barang->barcode',
+                    'value' => '!is_null($data->barang) ? $data->barang->barcode : ""',
                 ),
                 array(
                     'class' => 'BDataColumn',
@@ -43,12 +43,12 @@ $this->boxHeader['normal'] = 'Diskon Barang';
                     'filter' => $model->listTipeSort(),
                     'value' => '$data->namaTipeSort'
                 ),
-                array(
-                    'header' => 'Harga Asli',
-                    'value' => '$data->barang->hargaJual',
-                    'htmlOptions' => array('class' => 'rata-kanan'),
-                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
-                ),
+//                array(
+//                    'header' => 'Harga Asli',
+//                    'value' => '$data->barang->hargaJual',
+//                    'htmlOptions' => array('class' => 'rata-kanan'),
+//                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+//                ),
                 array(
                     'name' => 'nominal',
                     'htmlOptions' => array('class' => 'rata-kanan'),

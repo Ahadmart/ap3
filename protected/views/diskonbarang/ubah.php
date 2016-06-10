@@ -10,7 +10,13 @@ $this->breadcrumbs = array(
 );
 
 $this->boxHeader['small'] = 'Ubah';
-$this->boxHeader['normal'] = "Diskon Barang: {$model->barang->nama}";
+$headerBoxSmall = 'Diskon Barang: ';
+if (!is_null($model->barang_id)) {
+    $headerBoxSmall .= $model->barang->nama;
+} else {
+    $headerBoxSmall .= 'Semua Barang';
+}
+$this->boxHeader['normal'] = $headerBoxSmall;
 
 $this->renderPartial('_form', array('model' => $model));
 

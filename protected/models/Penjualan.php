@@ -447,10 +447,11 @@ class Penjualan extends CActiveRecord
     {
 
         $diskonPromo = DiskonBarang::model()->find(array(
-            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
+            'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
             'order' => 'id desc',
             'params' => array(
                 'barangId' => $barangId,
+                'semuaBarang' => DiskonBarang::SEMUA_BARANG,
                 'status' => DiskonBarang::STATUS_AKTIF,
                 'tipeDiskon' => DiskonBarang::TIPE_PROMO_MEMBER
             )
@@ -463,8 +464,9 @@ class Penjualan extends CActiveRecord
             $qtyPromo = $qty;
             $sisa = 0;
         }
-        $hargaJualSatuan = $hargaJualNormal - $diskonPromo->nominal;
-        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonPromo->nominal, DiskonBarang::TIPE_PROMO_MEMBER);
+        $diskonNominal = ($diskonPromo->nominal > 0) ? $hargaJualNormal - $diskonPromo->nominal : $hargaJualNormal * ($diskonPromo->persen / 100);
+        $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
+        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonNominal, DiskonBarang::TIPE_PROMO_MEMBER);
         return $sisa;
     }
 
@@ -537,11 +539,15 @@ class Penjualan extends CActiveRecord
 
     public function cekDiskon($barangId, $tipeDiskonId)
     {
-        return DiskonBarang::model()->find(array(
-                    'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
+        return DiskonBarang::model()->find([
+                    'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
                     'order' => 'id desc',
-                    'params' => array('barangId' => $barangId, 'status' => DiskonBarang::STATUS_AKTIF, 'tipeDiskon' => $tipeDiskonId)
-        ));
+                    'params' => [
+                        'barangId' => $barangId,
+                        'semuaBarang' => DiskonBarang::SEMUA_BARANG,
+                        'status' => DiskonBarang::STATUS_AKTIF,
+                        'tipeDiskon' => $tipeDiskonId]
+        ]);
     }
 
     /**
@@ -1378,9 +1384,11 @@ class Penjualan extends CActiveRecord
             $qty = $penjualanDetail->qty;
             $hargaJual = $hargaManual;
             $diskon = $penjualanDetail->harga_jual - $hargaManual;
+            
+            $barang = Barang::model()->findByPk($barangId);
+            $this->cleanBarang($barang);
 
             $this->insertBarang($barangId, $qty, $hargaJual, $diskon, DiskonBarang::TIPE_MANUAL);
-            $penjualanDetail->delete();
             $transaction->commit();
             return array(
                 'sukses' => true
