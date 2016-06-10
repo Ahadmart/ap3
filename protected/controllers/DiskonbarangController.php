@@ -221,7 +221,7 @@ class DiskonbarangController extends Controller
         if (!is_null($data->barang)) {
             $return = '<a href="' .
                     $this->createUrl('view', array('id' => $data->id)) . '">' .
-                    $data->barang->nama . '</a>';//[SEMUA BARANG]
+                    $data->barang->nama . '</a>';
         } else {
             $return = '<a href="' .
                     $this->createUrl('view', array('id' => $data->id)) . '">[SEMUA BARANG]</a>';
