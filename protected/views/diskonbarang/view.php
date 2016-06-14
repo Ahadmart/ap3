@@ -8,7 +8,13 @@ $this->breadcrumbs = array(
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Diskon Barang: ' . $model->barang->nama;
+$headerBoxSmall = 'Diskon Barang: ';
+if (!is_null($model->barang_id)) {
+    $headerBoxSmall .= $model->barang->nama;
+} else {
+    $headerBoxSmall .= 'Semua Barang';
+}
+$this->boxHeader['normal'] = $headerBoxSmall;
 ?>
 <div class="row">
     <div class="small-12 columns">

@@ -218,10 +218,13 @@ class DiskonbarangController extends Controller
     public function renderLinkToView($data)
     {
         $return = '';
-        if (isset($data->barang)) {
+        if (!is_null($data->barang)) {
             $return = '<a href="' .
                     $this->createUrl('view', array('id' => $data->id)) . '">' .
                     $data->barang->nama . '</a>';
+        } else {
+            $return = '<a href="' .
+                    $this->createUrl('view', array('id' => $data->id)) . '">[SEMUA BARANG]</a>';
         }
         return $return;
     }

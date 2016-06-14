@@ -210,7 +210,7 @@ class HutangPiutang extends CActiveRecord
             $this->created_at = date('Y-m-d H:i:s');
             $this->nomor = $this->generateNomor();
         }
-        $this->updated_at = null; // Trigger current timestamp
+        $this->updated_at = date("Y-m-d H:i:s");
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }

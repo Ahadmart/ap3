@@ -139,7 +139,7 @@ class User extends CActiveRecord {
 			$this->password = base64_encode($this->hashPassword($this->newPassword, $salt));
 			$this->salt = base64_encode($salt);
 		}
-		$this->updated_at = null; // Trigger current timestamp
+		$this->updated_at = date("Y-m-d H:i:s");
 		$this->updated_by = Yii::app()->user->id;
 		return parent::beforeSave();
 	}

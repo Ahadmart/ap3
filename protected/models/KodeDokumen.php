@@ -120,7 +120,7 @@ class KodeDokumen extends CActiveRecord {
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = null; // Trigger current timestamp
+        $this->updated_at = date("Y-m-d H:i:s");
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
