@@ -15,7 +15,7 @@ body, html {
     height: 100%;
 }
 body{
-    color: #222222;
+    color: #546e7a;
     background: #eceff1;
     padding: 0;
     margin: 0;
@@ -27,7 +27,7 @@ body{
     cursor: default;
 }
 a{
-    color: #f45524;
+    color: #00e5ff;
 }
 .prefix .fa-2x{
     padding-top:4px;
@@ -62,7 +62,7 @@ a{
 }
 #total-belanja{
     font-size: 3.5rem;
-    color: #FF0;
+    color: #FFF;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
@@ -78,8 +78,8 @@ a{
     text-shadow: 1px 1px black;
 }
 #kembali{
-    font-size: 2rem;
-    color: #ADFF2F;
+    font-size: 2.5rem;
+    color: #FFF;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
@@ -192,7 +192,7 @@ table tr.odd{
 }
 
 table tr th, table tr td {
-    color: #FFEB3B;
+    color: #FFF;
 }
 
 #label-customer{
@@ -227,7 +227,7 @@ table tr th, table tr td {
     width: 45%;
 }
 .ac-harga{
-    color: $violet;
+    color: #fff;
     font-weight: bold;
     float:left;
     width: 15%;
@@ -239,7 +239,7 @@ table tr th, table tr td {
     padding-left: 5px;
 }
 .ac-stok{
-    color: $violet;
+    color: #fff;
     font-weight: bold;
     float:left;
     width: 10%;
@@ -261,7 +261,8 @@ table tr th, table tr td {
 
 #scan:focus, #uang-dibayar:focus, #account:focus,
 #jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus{
-    border-color: #ff5722;
+    border-top-color: #ff5722;
+    border-bottom-color: #ff5722;
     box-shadow: 0px 0px 15px #ff5722;
 }
 
@@ -272,7 +273,7 @@ table tr th, table tr td {
 }
 
 .ui-autocomplete{
-    background-color: rgba(0, 0, 0, 0.95);
+    background-color: rgba(55, 71, 79, 0.95);
     border-color: transparent;
 }
 
@@ -286,4 +287,7 @@ table tr th, table tr td {
 
 .ui-menu-item.ui-state-focus{
     background-color: #263238;
+}
+button.warning, .button.warning {
+    color: #263238;
 }
