@@ -1,27 +1,27 @@
-<div class="row">  
+<div class="row">
     <div class="medium-7 large-8 columns">
         <div class="row">
             <div class="small-12 columns">
-                <div class="panel" style="background-color: rgba(0, 0, 0, 0.5);padding: 0.75rem;" >
-                    <h4 style="font-weight: 400;color: #fff">&nbsp;
+                <div class="panel" style="padding: 0.75rem;" >
+                    <h4>&nbsp;
                         <span class="" id="view-nama"></span>
                     </h4>
-                    <h4 style="font-weight: 400;color: #fff;">&nbsp;
+                    <h4>&nbsp;
                         <span class="" id="view-barcode"></span>
-                    </h4>                     
+                    </h4>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="small-12 columns">
-                <div class="panel" style="backgroundcolor: rgba(0, 0, 0, 0.5);padding: 0.75rem;" >
-                    <h1 style="font-weight: 700;font-size: 48pt; color: #fff">&nbsp;<span class="right" id="view-harga"></span>
+                <div class="panel" style="padding: 0.75rem;" >
+                    <h1>&nbsp;<span class="right" id="view-harga"></span>
                     </h1>
                 </div>
             </div>
         </div>
     </div>
-    <div class="medium-5 large-4 columns"> 
+    <div class="medium-5 large-4 columns">
         <div class="row" style="margin-bottom: 20px">
             <div class="small-12 columns">
                 <input id="scan" type="text" placeholder="Scan Barcode" style="background-color: rgba(0, 0, 0, 0.9);color:#4da74d" autofocus="autofocus" autocomplete="off"/>

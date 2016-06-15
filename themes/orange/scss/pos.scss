@@ -146,14 +146,19 @@ a{
 .editable-clear-x {
     margin-top: -7px;
 }
-.tabel-index tr td{
-    font-family: "Open Sans";
-    font-size: 0.875rem;
-    font-weight: 700;
-    text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
-    &.barcode{
-        font-size: 0.7rem;
+.tabel-index {
+    th a{
+        color: #263238;
+    }
+    tr td{
+        font-family: "Open Sans";
+        font-size: 0.875rem;
         font-weight: 700;
+        text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
+        &.barcode{
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
     }
 }
 
@@ -290,4 +295,21 @@ table tr th, table tr td {
 }
 button.warning, .button.warning {
     color: #263238;
+}
+
+.panel{
+    background: #263238;
+    h1, h2, h3, h4, h5, h6, p, li, dl{
+        color: #FFF;
+
+    }
+    h1{
+        font-weight: 700;
+        font-size: 48pt; 
+        color: #fff
+    }
+    h4{
+        font-weight: 400;
+        color: #fff
+    }
 }
