@@ -172,7 +172,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                     "Nothing selected, input was " + this.value);
             if (ui.item) {
                 $("#scan").val(ui.item.value);
-                $("#tombol-tambah-barang").click();
             }
         }
     }).autocomplete("instance")._renderItem = function (ul, item) {
