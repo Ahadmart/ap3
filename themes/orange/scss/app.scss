@@ -423,26 +423,30 @@ label{
 }
 
 .datepicker.dropdown-menu{    
-    background-color: #34383b;
+    //background-color: #34383b;
     border-color: #515356;
 }
 
 .datepicker table{
     th{
-        background-color: #34383b;
+        background-color: #cfd8dc;
     }
     td{        
-        background-color: #34383b; 
+        background-color: #cfd8dc; 
         &.day{
-            color: #fff;
+            color: #37474f;
         }
         &.old, &.new{
             color: #999
         }
         span.hour{
-            color: #fff;
+            color: #37474f;
         }
         span.minute{
+            color: #37474f;
+        }
+        &.active.day, span.active{
+            background-color: #e73700;
             color: #fff;
         }
     }
