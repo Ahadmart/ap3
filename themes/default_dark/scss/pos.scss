@@ -173,8 +173,17 @@ a{
     }
 }
 
-tr.pilih, tr.selected {
-    background-color: rgba(0, 0, 0, 0.5) !important;
+tr{
+    transition: background-color 0.5s ease;
+    &.pilih, &.selected{
+        background-color: rgba(0,0,0,0.5) !important;
+        a{
+            color: #388E3C;
+        }
+        td{
+            color: #fff;
+        }
+    }
 }
 /* ============== */
 
