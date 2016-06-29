@@ -94,9 +94,20 @@ class PosController extends Controller
         $penjualanDetail->unsetAttributes();
         $penjualanDetail->setAttribute('penjualan_id', '=' . $id);
 
+        $barang = new Barang('search');
+        $barang->unsetAttributes();
+
+        if (isset($_GET['cariBarang'])) {
+            $barang->setAttribute('nama', $_GET['namaBarang']);
+        }
+
+        $configCariBarang = Config::model()->find("nama='pos.caribarangmode'");
+
         $this->render('ubah', array(
             'model' => $model,
-            'penjualanDetail' => $penjualanDetail
+            'penjualanDetail' => $penjualanDetail,
+            'barang' => $barang,
+            'tipeCari' => $configCariBarang->nilai
         ));
     }
 

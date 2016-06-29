@@ -4,6 +4,9 @@ class Pos extends Penjualan
 {
 
     const KATEGORI_TRX = 3; //Kategori Penerimaan untuk POS
+    /* Cari barang */
+    const CARI_AUTOCOMPLETE = 0;
+    const CARI_TABLE = 1;
 
     /**
      * Simpan POS
