@@ -99,6 +99,9 @@ class PosController extends Controller
 
         if (isset($_GET['cariBarang'])) {
             $barang->setAttribute('nama', $_GET['namaBarang']);
+            $criteria = new CDbCriteria;
+            $criteria->order = 'nama ASC';
+            $barang->setDbCriteria($criteria);
         }
 
         $configCariBarang = Config::model()->find("nama='pos.caribarangmode'");
