@@ -1,0 +1,60 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Apr 15, 2016, 9:29:46 AM
+    Author     : abumuhammad
+*/
+body{
+    font-family: OpenSans;
+    font-size: 11pt;
+}
+.label{
+    border: 1px solid #000;  
+    height:30mm; 
+    padding: 0 5px;
+    text-align: center; 
+    overflow: hidden;
+    margin-bottom: 2mm;
+}
+
+.label-container{
+    width:53mm; 
+    page-break-inside: avoid;
+    float:left; 
+    margin-left: 2mm;
+}
+
+.nama-barang{
+    margin-top: 3px;
+    text-transform: uppercase;
+    font-family: Ubuntu;
+}
+
+.harga-jual{
+    font-size: 25pt;
+}
+
+.barcode, .tgl-cetak{
+    font-size: 6pt;
+    margin: 0;
+}
+
+.barcode{
+    width: 40%;
+    float:left;
+    text-align: left;
+    padding-left: 9px
+}
+.tgl-cetak{
+    width: 40%;
+    float:right;
+    text-align: right;
+    font-size: 6pt;
+    padding-top: 12px;
+    padding-right: 9px;
+    /*display: none;*/
+}
+
