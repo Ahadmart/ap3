@@ -445,18 +445,17 @@ label{
 }
 
 .datepicker.dropdown-menu{    
-    //background-color: #34383b;
-    border-color: #515356;
+    border-color: #a8cf45;
 }
 
 .datepicker table{
     th{
-        background-color: #cfd8dc;
+        background-color: #fff;
     }
     td{        
-        background-color: #cfd8dc; 
+        background-color: #fff; 
         &.day{
-            color: #d2e28b;
+            color: #000;            
         }
         &.old, &.new{
             color: #999
@@ -468,7 +467,7 @@ label{
             color: #d2e28b;
         }
         &.active.day, span.active{
-            background-color: #e73700;
+            background-color: #a8cf45;
             color: #fff;
         }
     }
