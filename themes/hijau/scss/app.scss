@@ -131,7 +131,7 @@ option{
 }
 table {
     tr.even, table tr.alt, table tr:nth-of-type(2n) {
-    background: #eef4d2;
+        background: #eef4d2;
     }
     tr td{
         color: #000;
@@ -548,7 +548,7 @@ select {
 
 .ui-autocomplete{
     background-color: #fff;
-    border: 1px solid #dddcd6; 
+    border: 1px solid #a8cf45; 
     max-height: 400px;
     overflow-y: auto;
     /* prevent horizontal scrollbar */
@@ -556,8 +556,9 @@ select {
 }
 
 .ui-menu-item{
+    border-bottom: 1px solid #a8cf45;
     a{
-        color: #d2e28b;    
+        color: #000;    
         font-size: 0.9rem;
         small{
             font-size: 0.75rem;
