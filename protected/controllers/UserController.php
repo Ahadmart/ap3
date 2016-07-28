@@ -81,7 +81,7 @@ class UserController extends Controller {
         // $this->performAjaxValidation($model);
 
         if (isset($_POST['User'])) {
-            $model->attributes = $_POST['User'];
+            $model->setAttributes($_POST['User']);
             if ($model->save()) {
                 $this->redirect(array('view', 'id' => $id));
             }

@@ -51,6 +51,7 @@ class User extends CActiveRecord {
 			 array('theme_id, updated_by', 'length', 'max' => 10),
 			 array('last_ipaddress', 'length', 'max' => 15),
 			 array('last_logon, created_at, updated_at, updated_by, newPasswordRepeat', 'safe'),
+			 array('last_logon, last_ipaddress', 'safe', 'on' => 'update'),
 			 // The following rule is used by search().
 			 // @todo Please remove those attributes that should not be searched.
 			 array('id, nama, nama_lengkap, last_logon, last_ipaddress, created_at, updated_at, updated_by', 'safe', 'on' => 'search'),
@@ -187,12 +188,6 @@ class User extends CActiveRecord {
 	public function afterDelete() {
 		AuthAssignment::model()->deleteAll('userid='.$this->id);
 		return parent::afterDelete();
-	}
-
-	public function afterFind() {
-		$this->last_logon = isset($this->last_logon) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->last_logon), 'd-m-Y H:i:s') : null;
-		$this->last_ipaddress = long2ip($this->last_ipaddress);
-		return parent::afterFind();
 	}
 
 }
