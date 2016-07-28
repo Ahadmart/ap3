@@ -51,7 +51,7 @@ class User extends CActiveRecord {
 			 array('theme_id, updated_by', 'length', 'max' => 10),
 			 array('last_ipaddress', 'length', 'max' => 15),
 			 array('last_logon, created_at, updated_at, updated_by, newPasswordRepeat', 'safe'),
-			 array('last_logon, last_ipaddress, created_at, updated_at, updated_by', 'safe', 'on' => 'update'),
+			 array('last_logon, last_ipaddress', 'safe', 'on' => 'update'),
 			 // The following rule is used by search().
 			 // @todo Please remove those attributes that should not be searched.
 			 array('id, nama, nama_lengkap, last_logon, last_ipaddress, created_at, updated_at, updated_by', 'safe', 'on' => 'search'),
