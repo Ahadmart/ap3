@@ -169,6 +169,7 @@
                                             array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Detail (Omzet=Penjualan)', 'url' => array('/report/hariandetail2')),
                                             array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
                                             array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Top Rank', 'url' => array('/report/toprank')),
+                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Hutang Piutang', 'url' => array('/report/hutangpiutang')),
                                         //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
