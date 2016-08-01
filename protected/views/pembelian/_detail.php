@@ -37,7 +37,7 @@ endif;
         'id' => 'pembelian-detail-grid',
         'dataProvider' => $pembelianDetail->search(),
         //'filter' => $pembelianDetail,
-        'rowCssClassExpression' => function($row, $data, $this) {
+        'rowCssClassExpression' => function($row, $data) {
             if ($data->isBarangBaru()) {
                 return 'baru';
             } else if ($data->isHargaJualBerubah()) {

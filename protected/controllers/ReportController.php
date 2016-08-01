@@ -376,4 +376,30 @@ class ReportController extends Controller
         $mPDF1->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
+    public function actionHutangPiutang()
+    {
+        $model = new ReportHutangPiutangForm();
+        $report = null;
+        if (isset($_POST['ReportHutangPiutangForm'])) {
+            $model->attributes = $_POST['ReportHutangPiutangForm'];
+            if ($model->validate()) {
+                $report = $model->reportHutangPiutang();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $kertasUntukPdf = ReportHutangPiutangForm::listKertas();
+        $this->render('hutangpiutang', [
+            'model' => $model,
+            'profil' => $profil,
+            'report' => $report,
+            'listAsalHP' => HutangPiutang::model()->listNamaAsal(),
+            'kertasPdf' => $kertasUntukPdf
+        ]);
+    }
 }

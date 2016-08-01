@@ -23,15 +23,38 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         <div class="small-2 medium-1 columns">
             <a href="#" class="button postfix" id="tombol-tambah-barang"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
         </div>
-        <div class="small-2 medium-1 columns">
-            <a href="#" class="success button postfix" id="tombol-cari-barang" accesskey="c"><i class="fa fa-search fa-2x"></i></a>
-        </div>
+        <?php
+        switch ($tipeCari):
+            case Pos::CARI_AUTOCOMPLETE:
+                ?>
+                <div class="small-2 medium-1 columns">
+                    <a href="#" class="success button postfix" id="tombol-cari-barang" accesskey="c"><i class="fa fa-search fa-2x"></i></a>
+                </div>
+                <?php
+                break;
+
+            case Pos::CARI_TABLE:
+                ?>
+                <div class="small-2 medium-1 columns">
+                    <a href="#" class="success button postfix" id="tombol-cari-tabel" accesskey="c"><i class="fa fa-search-plus fa-2x"></i></a>
+                </div>
+                <?php
+                break;
+        endswitch;
+        ?>
     </div>
     <div id="transaksi">
         <?php
         $this->renderPartial('_detail', array(
             'penjualan' => $model,
             'penjualanDetail' => $penjualanDetail
+        ));
+        ?>
+    </div>
+    <div id="barang-list" style="display:none">
+        <?php
+        $this->renderPartial('_barang_list', array(
+            'barang' => $barang,
         ));
         ?>
     </div>
@@ -106,40 +129,48 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
     }
 
+    function kirimBarcode() {
+        dataUrl = '<?php echo $this->createUrl('tambahbarang', array('id' => $model->id)); ?>';
+        dataKirim = {barcode: $("#scan").val()};
+        console.log(dataUrl);
+        /* Jika tidak ada barang, keluar! */
+        if ($("#scan").val() === '') {
+            $("#barang-list:visible").hide(100, function () {
+                $("#transaksi").show(100);
+            });
+            $("#scan").focus();
+            return false;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: dataUrl,
+            data: dataKirim,
+            success: function (data) {
+                if (data.sukses) {
+                    $("#tombol-admin-mode").removeClass('geleng');
+                    $("#tombol-admin-mode").removeClass('alert');
+                    $.fn.yiiGridView.update('penjualan-detail-grid');
+                    updateTotal();
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 3000,
+                        //class_name: 'gritter-center'
+                    });
+                }
+                $("#scan").val("");
+                $("#scan").focus();
+                $("#scan").autocomplete("disable");
+            }
+        });
+    }
+
     $(function () {
         $("#scan").autocomplete("disable");
         $(document).on('click', "#tombol-tambah-barang", function () {
-            dataUrl = '<?php echo $this->createUrl('tambahbarang', array('id' => $model->id)); ?>';
-            dataKirim = {barcode: $("#scan").val()};
-            console.log(dataUrl);
-            /* Jika tidak ada barang, keluar! */
-            if ($("#scan").val() === '') {
-                return false;
-            }
-
-            $.ajax({
-                type: 'POST',
-                url: dataUrl,
-                data: dataKirim,
-                success: function (data) {
-                    if (data.sukses) {
-                        $("#tombol-admin-mode").removeClass('geleng');
-                        $("#tombol-admin-mode").removeClass('alert');
-                        $.fn.yiiGridView.update('penjualan-detail-grid');
-                        updateTotal();
-                    } else {
-                        $.gritter.add({
-                            title: 'Error ' + data.error.code,
-                            text: data.error.msg,
-                            time: 3000,
-                            //class_name: 'gritter-center'
-                        });
-                    }
-                    $("#scan").val("");
-                    $("#scan").focus();
-                    $("#scan").autocomplete("disable");
-                }
-            });
+            kirimBarcode();
             return false;
         });
         $(document).on('click', "#tombol-cari-barang", function () {
@@ -147,6 +178,23 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             var nilai = $("#scan").val();
             $("#scan").autocomplete("search", nilai);
             $("#scan").focus();
+        });
+        $(document).on('click', "#tombol-cari-tabel", function () {
+            var datakirim = {
+                'cariBarang': true,
+                'namaBarang': $("#scan").val()
+            };
+            $('#barang-grid').yiiGridView('update', {
+                data: datakirim
+            });
+            $("#transaksi").hide(100, function () {
+                $("#barang-list").show(100, function () {
+                    $("#scan").val("");
+                    $("#tombol-cari-tabel").focus();
+                });
+
+            });
+            return false;
         });
     });
 
