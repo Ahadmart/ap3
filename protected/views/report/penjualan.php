@@ -50,6 +50,7 @@ if (!empty($report['detail'])):
                     <tr>
                         <th>Tanggal</th>
                         <th>Nomor</th>
+                        <th>Profil</th>
                         <th class="rata-kanan">Total</th>
                         <th class="rata-kanan">Margin</th>
                         <th class="rata-kanan">Profit Margin</th>
@@ -62,6 +63,7 @@ if (!empty($report['detail'])):
                         <tr>
                             <td><?php echo $barisReport['tanggal']; ?></td>
                             <td><a href="<?php echo Yii::app()->createUrl('penjualan/view', array('id' => $barisReport['id'])); ?>"><?php echo $barisReport['nomor']; ?></a></td>
+                            <td><?= $barisReport['nama']; ?> </td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['margin'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['margin'] / $barisReport['total'] * 100, 2, ',', '.') . '%'; ?></td>
