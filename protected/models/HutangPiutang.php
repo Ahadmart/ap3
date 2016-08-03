@@ -366,12 +366,13 @@ class HutangPiutang extends CActiveRecord
      */
     public function bayar()
     {
-        if ($this->sisa == 0) {
+        if ($this->sisa < 1 && $this->sisa >= 0) {
+            /* Jika masih ada selisih/sisa dibelakang koma, maka dianggap lunas*/
             $this->status = HutangPiutang::STATUS_LUNAS;
             $this->updateStatusDokumenAsal(HutangPiutang::STATUS_LUNAS);
             return true;
         } else
-        if ($this->sisa > 0) {
+        if ($this->sisa >= 1) {
             $this->status = HutangPiutang::STATUS_BELUM_LUNAS;
             $this->updateStatusDokumenAsal(HutangPiutang::STATUS_BELUM_LUNAS);
             return true;
