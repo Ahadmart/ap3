@@ -1,14 +1,14 @@
 <?php
 
 /**
- * ReportHutangPiutangForm class.
- * ReportHutangPiutangForm is the data structure for keeping
- * report hutangPiutang form data. It is used by the 'hutangpiutang' action of 'ReportController'.
+ * ReportRekapHutangPiutangForm class.
+ * ReportRekapHutangPiutangForm is the data structure for keeping
+ * report rekapHutangPiutang form data. It is used by the 'rekaphutangpiutang' action of 'ReportController'.
  *
  * The followings are the available model relations:
  * @property Profil $profil
  */
-class ReportHutangPiutangForm extends CFormModel
+class ReportRekapHutangPiutangForm extends CFormModel
 {
 
     const KERTAS_LETTER = 10;
@@ -19,7 +19,6 @@ class ReportHutangPiutangForm extends CFormModel
     const KERTAS_A4_NAMA = 'A4';
     const KERTAS_FOLIO_NAMA = 'Folio';
 
-    public $profilId;
     public $showDetail = false;
     public $kertas;
 
@@ -29,7 +28,7 @@ class ReportHutangPiutangForm extends CFormModel
     public function rules()
     {
         return array(
-            array('profilId, showDetail, kertas', 'safe')
+            array('showDetail, kertas', 'safe')
         );
     }
 
@@ -39,7 +38,6 @@ class ReportHutangPiutangForm extends CFormModel
     public function attributeLabels()
     {
         return array(
-            'profilId' => 'Profil',
             'showDetail' => 'Tampilkan Detail',
         );
     }
@@ -50,10 +48,11 @@ class ReportHutangPiutangForm extends CFormModel
         return $profil->nama;
     }
 
-    public function reportHutangPiutang()
+    public function reportRekapHutangPiutang()
     {
+
         $commandRekap = Yii::app()->db->createCommand();
-        $commandRekap->select('tipe, sum(jumlah) jumlah,  sum(jumlah_bayar) jumlah_bayar');
+        $commandRekap->select('sum(jumlah) jumlah,  sum(jumlah_bayar) jumlah_bayar');
         $commandRekap->from("hutang_piutang hp");
         $commandRekap->leftJoin("
                 (SELECT
@@ -64,7 +63,6 @@ class ReportHutangPiutangForm extends CFormModel
                 FROM
                     penerimaan_detail detail
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
-                    AND hp.profil_id = :profilId
                     AND hp.status = :statusHp
                     AND hp.tipe = :tipeHp
                 UNION
@@ -73,15 +71,12 @@ class ReportHutangPiutangForm extends CFormModel
                 FROM
                     pengeluaran_detail detail
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
-                    AND hp.profil_id = :profilId
                     AND hp.status = :statusHp
                     AND hp.tipe = :tipeHp) t
                 GROUP BY hutang_piutang_id) tbayar", "hp.id = tbayar.hutang_piutang_id");
-        $commandRekap->where("profil_id = :profilId  AND tipe = :tipeHp AND status = :statusHp");
-        $commandRekap->group('tipe');
+        $commandRekap->where("tipe = :tipeHp AND status = :statusHp");
 
         $commandRekap->bindValues([
-            ':profilId' => $this->profilId,
             ':tipeHp' => HutangPiutang::TIPE_HUTANG,
             ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
         ]);
@@ -89,21 +84,18 @@ class ReportHutangPiutangForm extends CFormModel
         $rekapHutang = $commandRekap->queryRow();
 
         $commandRekap->bindValues([
-            ':profilId' => $this->profilId,
             ':tipeHp' => HutangPiutang::TIPE_PIUTANG,
             ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
         ]);
 
         $rekapPiutang = $commandRekap->queryRow();
 
-        $dataHutang = [];
-        $dataPiutang = [];
 
-        if ($this->showDetail) {
-            $command = Yii::app()->db->createCommand();
-            $command->select('hp.*, tbayar.*');
-            $command->from("hutang_piutang hp");
-            $command->leftJoin("
+
+        $command = Yii::app()->db->createCommand();
+        $command->select('profil_id, profil.nama, sum(jumlah) jumlah,  sum(jumlah_bayar) jumlah_bayar');
+        $command->from("hutang_piutang hp");
+        $command->leftJoin("
                 (SELECT
                     hutang_piutang_id, SUM(jumlah) jumlah_bayar
                 FROM
@@ -112,7 +104,6 @@ class ReportHutangPiutangForm extends CFormModel
                 FROM
                     penerimaan_detail detail
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
-                    AND hp.profil_id = :profilId
                     AND hp.status = :statusHp
                     AND hp.tipe = :tipeHp
                 UNION
@@ -121,34 +112,33 @@ class ReportHutangPiutangForm extends CFormModel
                 FROM
                     pengeluaran_detail detail
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
-                    AND hp.profil_id = :profilId
                     AND hp.status = :statusHp
                     AND hp.tipe = :tipeHp) t
                 GROUP BY hutang_piutang_id) tbayar", "hp.id = tbayar.hutang_piutang_id");
-            $command->order("nomor");
-            $command->where("profil_id = :profilId  AND tipe = :tipeHp AND status = :statusHp");
+        $command->join("profil", "hp.profil_id = profil.id");
+        $command->where("tipe = :tipeHp AND status = :statusHp");
+        $command->group('profil_id');
+        $command->order("profil.nama");
 
-            $command->bindValues([
-                ':profilId' => $this->profilId,
-                ':tipeHp' => HutangPiutang::TIPE_HUTANG,
-                ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
-            ]);
+        $command->bindValues([
+            ':tipeHp' => HutangPiutang::TIPE_HUTANG,
+            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+        ]);
 
-            $dataHutang = $command->queryAll();
+        $dataHutang = $command->queryAll();
 
-            $command->bindValues([
-                ':profilId' => $this->profilId,
-                ':tipeHp' => HutangPiutang::TIPE_PIUTANG,
-                ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
-            ]);
+        $command->bindValues([
+            ':tipeHp' => HutangPiutang::TIPE_PIUTANG,
+            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+        ]);
 
-            $dataPiutang = $command->queryAll();
-        }
+        $dataPiutang = $command->queryAll();
+
         return [
             'rekapHutang' => $rekapHutang,
             'rekapPiutang' => $rekapPiutang,
             'dataHutang' => $dataHutang,
-            'dataPiutang' => $dataPiutang
+            'dataPiutang' => $dataPiutang,
         ];
     }
 

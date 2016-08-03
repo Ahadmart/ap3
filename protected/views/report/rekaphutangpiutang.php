@@ -3,22 +3,15 @@
 
 $this->breadcrumbs = array(
     'Laporan' => array('index'),
-    'Hutang Piutang',
+    'Rekap Hutang Piutang',
 );
 
-$this->boxHeader['small'] = 'Hutang Piutang';
-$this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Hutang Piutang';
+$this->boxHeader['small'] = 'Rekap Hutang Piutang';
+$this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Rekap Hutang Piutang';
 
-$this->renderPartial('_form_hutangpiutang', array('model' => $model));
+$this->renderPartial('_form_rekaphutangpiutang', array('model' => $model));
 ?>
 
-<div class="row">
-    <div class="small-12 columns">
-        <div id="tabel-profil" style="display: none">
-            <?php $this->renderPartial('_profil', array('profil' => $profil)); ?>
-        </div>
-    </div>
-</div>
 <?php
 if (isset($report)):
     /*
@@ -34,7 +27,7 @@ if (isset($report)):
         </div>
     </div>
     <div class="row">
-        <div class="small-12 columns">
+        <div class="small-12 large-6 columns">
             <h3>Hutang</h3>
             <h4><small>Total</small> <?= number_format($report['rekapHutang']['jumlah'], 0, ',', '.'); ?> <small>Bayar</small> <?= number_format($report['rekapHutang']['jumlah_bayar'], 0, ',', '.'); ?> <small>Sisa</small> <?= number_format($report['rekapHutang']['jumlah'] - $report['rekapHutang']['jumlah_bayar'], 0, ',', '.'); ?></h4>
             <?php
@@ -45,10 +38,7 @@ if (isset($report)):
                     <thead>
                         <tr>
                             <th class="rata-kanan">No</th>
-                            <th>No H/P</th>
-                            <th>Tanggal</th>
-                            <th>Dokumen Asal</th>
-                            <th>No Dokumen</th>
+                            <th>Profil</th>
                             <th class="rata-kanan">Jumlah</th>
                             <th class="rata-kanan">Bayar</th>
                             <th class="rata-kanan">Sisa</th>
@@ -63,10 +53,7 @@ if (isset($report)):
                             ?>
                             <tr>
                                 <td class="rata-kanan"><?php echo $i; ?></td>
-                                <td><?php echo $baris['nomor']; ?></td>
-                                <td><?php echo $baris['created_at']; ?></td>
-                                <td><?php echo $listAsalHP[$baris['asal']]; ?></td>
-                                <td><?php echo $baris['nomor_dokumen_asal']; ?></td>
+                                <td><?php echo $baris['nama']; ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah'], 0, ',', '.'); ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah_bayar'], 0, ',', '.'); ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah'] - $baris['jumlah_bayar'], 0, ',', '.'); ?></td>
@@ -81,8 +68,7 @@ if (isset($report)):
             endif;
             ?>
         </div>
-    </div><div class="row">
-        <div class="small-12 columns">
+        <div class="small-12 large-6 columns">
             <h3>Piutang</h3>
             <h4><small>Total</small> <?= number_format($report['rekapPiutang']['jumlah'], 0, ',', '.'); ?> <small>Bayar</small> <?= number_format($report['rekapPiutang']['jumlah_bayar'], 0, ',', '.'); ?> <small>Sisa</small> <?= number_format($report['rekapPiutang']['jumlah'] - $report['rekapPiutang']['jumlah_bayar'], 0, ',', '.'); ?></h4>
             <?php
@@ -92,10 +78,7 @@ if (isset($report)):
                     <thead>
                         <tr>
                             <th class="rata-kanan">No</th>
-                            <th>No H/P</th>
-                            <th>Tanggal</th>
-                            <th>Dokumen Asal</th>
-                            <th>No Dokumen</th>
+                            <th>Profil</th>
                             <th class="rata-kanan">Jumlah</th>
                             <th class="rata-kanan">Bayar</th>
                             <th class="rata-kanan">Sisa</th>
@@ -110,10 +93,7 @@ if (isset($report)):
                             ?>
                             <tr>
                                 <td class="rata-kanan"><?php echo $i; ?></td>
-                                <td><?php echo $baris['nomor']; ?></td>
-                                <td><?php echo $baris['created_at']; ?></td>
-                                <td><?php echo $listAsalHP[$baris['asal']]; ?></td>
-                                <td><?php echo $baris['nomor_dokumen_asal']; ?></td>
+                                <td><?php echo $baris['nama']; ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah'], 0, ',', '.'); ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah_bayar'], 0, ',', '.'); ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah'] - $baris['jumlah_bayar'], 0, ',', '.'); ?></td>
