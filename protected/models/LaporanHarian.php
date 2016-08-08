@@ -560,7 +560,7 @@ class LaporanHarian extends CActiveRecord
 
         if ($this->groupByProfil) {
             $sql = "
-                    select distinct nama, sum(jumlah) jumlah, sum(jml_bayar)
+                    select distinct nama, sum(jumlah) jumlah, sum(jml_bayar) jml_bayar
                     from ({$sql}) t
                     group by nama
                     order by nama
@@ -618,26 +618,31 @@ class LaporanHarian extends CActiveRecord
     public function penjualanBayar()
     {
         $sql = "
-         select penjualan.nomor, profil.nama, t.jumlah_bayar
+         select profil.nama, penjualan.nomor, t1.*
          from
          (
-            select sum(pd.jumlah) jumlah_bayar, penjualan.id
-            from penerimaan_detail pd
-            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
-            join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join penjualan on hp.id=penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')<:tanggal
-            group by penjualan.id
-            union
-            select sum(pd.jumlah) jumlah_bayar, penjualan.id
-            from pengeluaran_detail pd
-            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
-            join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join penjualan on hp.id=penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')<:tanggal
-            group by penjualan.id
-         ) t
-         join penjualan on t.id=penjualan.id
-         join profil on penjualan.profil_id=profil.id
-         group by penjualan.nomor";
+             select penjualan.id, sum(t.jumlah_bayar) jumlah_bayar
+             from
+             (
+                select sum(pd.jumlah) jumlah_bayar, penjualan.id
+                from penerimaan_detail pd
+                join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+                join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
+                join penjualan on hp.id=penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')<:tanggal
+                group by penjualan.id
+                union
+                select sum(pd.jumlah) jumlah_bayar, penjualan.id
+                from pengeluaran_detail pd
+                join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+                join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
+                join penjualan on hp.id=penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')<:tanggal
+                group by penjualan.id
+             ) t
+             join penjualan on t.id=penjualan.id
+             group by penjualan.id
+        ) t1
+        join penjualan on t1.id = penjualan.id
+        join profil on penjualan.profil_id = profil.id";
 
         if ($this->groupByProfil) {
             $sql = "
