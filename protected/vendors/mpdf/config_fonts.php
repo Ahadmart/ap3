@@ -138,6 +138,18 @@ $this->fontdata = array(
 		'I' => "FreeMonoOblique.ttf",
 		'BI' => "FreeMonoBoldOblique.ttf",
 	),
+	"ubuntu" => array(
+		'R' => "Ubuntu-R.ttf",
+		'B' => "Ubuntu-B.ttf",
+		'I' => "Ubuntu-RI.ttf",
+		'BI' => "Ubuntu-BI.ttf",
+	),
+	"opensans" => array(
+		'R' => "OpenSans-R.ttf",
+		'B' => "OpenSans-B.ttf",
+		'I' => "OpenSans-RI.ttf",
+		'BI' => "OpenSans-BI.ttf",
+	),
 	/* OCR-B font for Barcodes */
 	"ocrb" => array(
 		'R' => "ocrb10.ttf",
