@@ -49,7 +49,7 @@
             <?php echo $form->labelEx($model, 'semua_barang'); ?>
         </div>
     </div>
-    <div class="row">
+    <div class="row" id="input-perbarang">
         <div class="small-12 columns">
             <label for="scan" class="required">Barang <span class="required">*</span></label>
             <div class="row collapse">
@@ -160,6 +160,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         console.log($(this).val());
         var tipeId = $(this).val();
         shField(tipeId);
+        $("#scan").focus();
     });
 
     $("#DiskonBarang_semua_barang").change(function () {
@@ -167,12 +168,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     });
 
     function enDisScan(enable) {
-        if (enable) {
-            $("#scan").prop('disabled', true);
-            $("#tombol-scan-ok").attr('disabled', 'disabled');
-        } else {
-            $("#scan").prop('disabled', false);
-            $("#tombol-scan-ok").removeAttr('disabled');
+        if (enable) {     
+            $("#input-perbarang").hide(500);
+        } else {   
+            $("#input-perbarang").show(500);
+            $("#scan").focus();
         }
     }
 
