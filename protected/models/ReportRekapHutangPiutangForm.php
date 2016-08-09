@@ -65,6 +65,8 @@ class ReportRekapHutangPiutangForm extends CFormModel
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
                     AND hp.status = :statusHp
                     AND hp.tipe = :tipeHp
+                JOIN penerimaan ON detail.penerimaan_id = penerimaan.id 
+                    AND penerimaan.status= :statusPenerimaan
                 UNION
                 SELECT
                     detail.hutang_piutang_id, detail.jumlah
@@ -72,20 +74,26 @@ class ReportRekapHutangPiutangForm extends CFormModel
                     pengeluaran_detail detail
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
                     AND hp.status = :statusHp
-                    AND hp.tipe = :tipeHp) t
+                    AND hp.tipe = :tipeHp
+                JOIN pengeluaran ON detail.pengeluaran_id = pengeluaran.id
+                    AND pengeluaran.status = :statusPengeluaran) t
                 GROUP BY hutang_piutang_id) tbayar", "hp.id = tbayar.hutang_piutang_id");
         $commandRekap->where("tipe = :tipeHp AND status = :statusHp");
 
         $commandRekap->bindValues([
             ':tipeHp' => HutangPiutang::TIPE_HUTANG,
-            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+            ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+            ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
         ]);
 
         $rekapHutang = $commandRekap->queryRow();
 
         $commandRekap->bindValues([
             ':tipeHp' => HutangPiutang::TIPE_PIUTANG,
-            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+            ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+            ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
         ]);
 
         $rekapPiutang = $commandRekap->queryRow();
@@ -106,6 +114,8 @@ class ReportRekapHutangPiutangForm extends CFormModel
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
                     AND hp.status = :statusHp
                     AND hp.tipe = :tipeHp
+                JOIN penerimaan ON detail.penerimaan_id = penerimaan.id 
+                    AND penerimaan.status= :statusPenerimaan
                 UNION
                 SELECT
                     detail.hutang_piutang_id, detail.jumlah
@@ -113,7 +123,9 @@ class ReportRekapHutangPiutangForm extends CFormModel
                     pengeluaran_detail detail
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
                     AND hp.status = :statusHp
-                    AND hp.tipe = :tipeHp) t
+                    AND hp.tipe = :tipeHp
+                JOIN pengeluaran ON detail.pengeluaran_id = pengeluaran.id
+                    AND pengeluaran.status = :statusPengeluaran) t
                 GROUP BY hutang_piutang_id) tbayar", "hp.id = tbayar.hutang_piutang_id");
         $command->join("profil", "hp.profil_id = profil.id");
         $command->where("tipe = :tipeHp AND status = :statusHp");
@@ -122,14 +134,18 @@ class ReportRekapHutangPiutangForm extends CFormModel
 
         $command->bindValues([
             ':tipeHp' => HutangPiutang::TIPE_HUTANG,
-            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+                ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+                ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
         ]);
 
         $dataHutang = $command->queryAll();
 
         $command->bindValues([
             ':tipeHp' => HutangPiutang::TIPE_PIUTANG,
-            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+                ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+                ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
         ]);
 
         $dataPiutang = $command->queryAll();
