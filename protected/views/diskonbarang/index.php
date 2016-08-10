@@ -14,6 +14,13 @@ $this->boxHeader['small'] = 'Diskon Barang';
 $this->boxHeader['normal'] = 'Diskon Barang';
 ?>
 <div class="row">
+    <div class="small-12 columns">   
+        <ul class="button-group">	
+            <li><a href="#" class="tiny bigfont button" accesskey="x" id="tombol-autoexpire">Auto E<span class="ak">x</span>pire</a></li>
+        </ul>
+    </div>
+</div>
+<div class="row">
     <div class="small-12 columns">
         <?php
         $this->widget('BGridView', array(
@@ -89,6 +96,42 @@ $this->boxHeader['normal'] = 'Diskon Barang';
         ?>
     </div>
 </div>
+<?php
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+?>
+<script>
+    $("#tombol-autoexpire").click(function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        dataUrl = '<?php echo $this->createUrl('autoexpire'); ?>';
+        dataKirim = {autoexpire: true};
+        console.log(dataKirim);
+        $.ajax({
+            type: 'POST',
+            url: dataUrl,
+            data: dataKirim,
+            success: function (data) {
+                if (data.sukses) {
+                    $.gritter.add({
+                        title: 'Sukses',
+                        text: data.rowAffected + ' diskon dinonaktifkan',
+                        time: 3000
+                    });
+                    $.fn.yiiGridView.update('diskon-barang-grid');
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 3000
+                    });
+                }
+            }
+        });
+        return false;
+    });
+
+</script>
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => ''),

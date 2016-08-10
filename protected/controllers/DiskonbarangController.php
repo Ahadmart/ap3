@@ -229,4 +229,9 @@ class DiskonbarangController extends Controller
         return $return;
     }
 
+    public function actionAutoExpire()
+    {
+        $this->renderJSON(DiskonBarang::model()->autoExpire());
+    }
+
 }
