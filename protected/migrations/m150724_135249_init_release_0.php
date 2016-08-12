@@ -114,6 +114,8 @@ class m150724_135249_init_release_0 extends CDbMigration
             'KEY `fk_barang_rak_updatedby_idx` (`updated_by`)'
                 ), 'ENGINE=' . $dbEngine . '  DEFAULT CHARSET=utf8');
 
+        $this->insert('barang_rak', array('nama' => 'Rak 1', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'));
+
         $this->createTable('barang_satuan', array(
             'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
             'nama' => 'varchar(45) NOT NULL',
