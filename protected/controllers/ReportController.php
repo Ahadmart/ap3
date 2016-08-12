@@ -402,4 +402,21 @@ class ReportController extends Controller
             'kertasPdf' => $kertasUntukPdf
         ]);
     }
+
+    public function actionRekapHutangPiutang()
+    {
+        $model = new ReportRekapHutangPiutangForm;
+        $report = null;
+        if (isset($_POST['tombol_submit'])) {
+            $report = $model->reportRekapHutangPiutang();
+        }
+
+        $kertasUntukPdf = ReportRekapHutangPiutangForm::listKertas();
+        $this->render('rekaphutangpiutang', [
+            'model' => $model,
+            'report' => $report,
+            'kertasPdf' => $kertasUntukPdf
+        ]);
+    }
+
 }

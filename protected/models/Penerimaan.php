@@ -257,7 +257,7 @@ class Penerimaan extends CActiveRecord
 								GROUP BY hutang_piutang_id')
                 ->bindValue(":hutangPiutangId", $hutangPiutangId)
                 ->queryRow();
-        return $penerimaan['jumlah'];
+        return $penerimaan ? $penerimaan['jumlah'] : 0;
     }
 
     /**

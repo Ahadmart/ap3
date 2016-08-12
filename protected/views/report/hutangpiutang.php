@@ -30,6 +30,11 @@ if (isset($report)):
     ?>
     <div class="row">
         <div class="small-12 columns">
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
             <h3>Hutang</h3>
             <h4><small>Total</small> <?= number_format($report['rekapHutang']['jumlah'], 0, ',', '.'); ?> <small>Bayar</small> <?= number_format($report['rekapHutang']['jumlah_bayar'], 0, ',', '.'); ?> <small>Sisa</small> <?= number_format($report['rekapHutang']['jumlah'] - $report['rekapHutang']['jumlah_bayar'], 0, ',', '.'); ?></h4>
             <?php

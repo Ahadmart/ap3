@@ -3,7 +3,7 @@
 /**
  * ReportHutangPiutangForm class.
  * ReportHutangPiutangForm is the data structure for keeping
- * report hutangPiutang form data. It is used by the 'penjualan' action of 'ReportController'.
+ * report hutangPiutang form data. It is used by the 'hutangpiutang' action of 'ReportController'.
  *
  * The followings are the available model relations:
  * @property Profil $profil
@@ -67,6 +67,8 @@ class ReportHutangPiutangForm extends CFormModel
                     AND hp.profil_id = :profilId
                     AND hp.status = :statusHp
                     AND hp.tipe = :tipeHp
+                JOIN penerimaan ON detail.penerimaan_id = penerimaan.id 
+                    AND penerimaan.status= :statusPenerimaan
                 UNION
                 SELECT
                     detail.hutang_piutang_id, detail.jumlah
@@ -75,7 +77,10 @@ class ReportHutangPiutangForm extends CFormModel
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
                     AND hp.profil_id = :profilId
                     AND hp.status = :statusHp
-                    AND hp.tipe = :tipeHp) t
+                    AND hp.tipe = :tipeHp
+                JOIN pengeluaran ON detail.pengeluaran_id = pengeluaran.id
+                    AND pengeluaran.status = :statusPengeluaran
+                    ) t
                 GROUP BY hutang_piutang_id) tbayar", "hp.id = tbayar.hutang_piutang_id");
         $commandRekap->where("profil_id = :profilId  AND tipe = :tipeHp AND status = :statusHp");
         $commandRekap->group('tipe');
@@ -83,7 +88,9 @@ class ReportHutangPiutangForm extends CFormModel
         $commandRekap->bindValues([
             ':profilId' => $this->profilId,
             ':tipeHp' => HutangPiutang::TIPE_HUTANG,
-            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+            ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+            ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
         ]);
 
         $rekapHutang = $commandRekap->queryRow();
@@ -91,7 +98,9 @@ class ReportHutangPiutangForm extends CFormModel
         $commandRekap->bindValues([
             ':profilId' => $this->profilId,
             ':tipeHp' => HutangPiutang::TIPE_PIUTANG,
-            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+            ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+            ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+            ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
         ]);
 
         $rekapPiutang = $commandRekap->queryRow();
@@ -115,6 +124,8 @@ class ReportHutangPiutangForm extends CFormModel
                     AND hp.profil_id = :profilId
                     AND hp.status = :statusHp
                     AND hp.tipe = :tipeHp
+                JOIN penerimaan ON detail.penerimaan_id = penerimaan.id 
+                    AND penerimaan.status= :statusPenerimaan
                 UNION
                 SELECT
                     detail.hutang_piutang_id, detail.jumlah
@@ -123,7 +134,10 @@ class ReportHutangPiutangForm extends CFormModel
                 JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
                     AND hp.profil_id = :profilId
                     AND hp.status = :statusHp
-                    AND hp.tipe = :tipeHp) t
+                    AND hp.tipe = :tipeHp
+                JOIN pengeluaran ON detail.pengeluaran_id = pengeluaran.id
+                    AND pengeluaran.status = :statusPengeluaran
+                    ) t
                 GROUP BY hutang_piutang_id) tbayar", "hp.id = tbayar.hutang_piutang_id");
             $command->order("nomor");
             $command->where("profil_id = :profilId  AND tipe = :tipeHp AND status = :statusHp");
@@ -131,7 +145,9 @@ class ReportHutangPiutangForm extends CFormModel
             $command->bindValues([
                 ':profilId' => $this->profilId,
                 ':tipeHp' => HutangPiutang::TIPE_HUTANG,
-                ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+                ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+                ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+                ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
             ]);
 
             $dataHutang = $command->queryAll();
@@ -139,7 +155,9 @@ class ReportHutangPiutangForm extends CFormModel
             $command->bindValues([
                 ':profilId' => $this->profilId,
                 ':tipeHp' => HutangPiutang::TIPE_PIUTANG,
-                ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS
+                ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+                ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+                ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
             ]);
 
             $dataPiutang = $command->queryAll();

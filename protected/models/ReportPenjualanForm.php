@@ -69,7 +69,7 @@ class ReportPenjualanForm extends CFormModel
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
 
         $command = Yii::app()->db->createCommand();
-        $command->select('*, (t_penjualan.total - t_modal.totalModal) margin');
+        $command->select('t_penjualan.*, t_modal.*, profil.nama, (t_penjualan.total - t_modal.totalModal) margin');
         $command->from("(SELECT 
                             pd.penjualan_id,
                                 pj.nomor,
@@ -90,6 +90,7 @@ class ReportPenjualanForm extends CFormModel
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                         GROUP BY pj.id) t_modal", "t_penjualan.penjualan_id = t_modal.id");
+        $command->join("profil", "t_penjualan.profil_id = profil.id");
         $command->order("t_penjualan.nomor");
         $command->where("t_penjualan.profil_id is not null");
 

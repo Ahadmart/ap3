@@ -37,16 +37,25 @@ mysql -e "create database ahadpos3"
 awk '/AllowOverride None/{c+=1}{if(c==3){sub("AllowOverride None","AllowOverride All",$0)};print}' /etc/apache2/apache2.conf > /tmp/nih
 cp /tmp/nih /etc/apache2/apache2.conf
 
+#install mcrypt and mbstring module (php7)
+sudo apt-get install php7.0-mcrypt php7.0-mbstring
+
+#enable mbstring module (php)
+sudo phpenmod mbstring
+
 # enable the Rewrite module
 a2enmod rewrite ; service apache2 restart
 
 # edit config, make sure the password there for MySQL is correct
 nano protected/config/db.php
 
+# edit install script, make sure the password there for MySQL is correct (mysql -u[user] -p[password])
+nano fresh-install.sh
 # execute the install script
 /var/www/ap3/fresh-install.sh
-
 # done !
+
+# OR
 # open this link on the browser :
 # http://localhost/ap3/fresh-install.php
 # user: admin

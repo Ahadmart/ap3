@@ -325,7 +325,7 @@ class Pengeluaran extends CActiveRecord
 								GROUP BY hutang_piutang_id')
                 ->bindValue(":hutangPiutangId", $hutangPiutangId)
                 ->queryRow();
-        return $pengeluaran['jumlah'];
+        return $pengeluaran ? $pengeluaran['jumlah'] : 0;
     }
 
     public function getNamaStatus()
