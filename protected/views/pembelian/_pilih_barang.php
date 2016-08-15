@@ -1,23 +1,57 @@
 <div id="pilih-barang" class="medium-6 large-5 columns">
     <div class="panel">
-        <h5>Pilih Barang: <a href="#" id="tambah-barang-baru" class="button tiny bigfont right" accesskey="g">Tambah baran<span class="ak">g</span></a></h5>
-
-        <?php echo CHtml::label('<span class="ak">1</span> Barcode', 'barcode'); ?>
-        <div class="row collapse">
-            <div class="medium-10 columns">
-                <?php echo CHtml::dropDownList('barcode', '', $barangBarcode, array('accesskey' => '1', 'id' => 'barcode-pilih')); ?>
-            </div>
-            <div class="medium-2 columns">
-                <a href="#" id="pilih-barcode" class="button postfix tombol-pilih" accesskey="2"><span class="ak">2</span> Pilih</a>
-            </div>
+        <div class="row">
+            <h5>Pilih Barang: <a href="#" id="tambah-barang-baru" class="button tiny bigfont right" accesskey="g">Tambah baran<span class="ak">g</span></a></h5>
         </div>
-        <?php echo CHtml::label('<span class="ak">3</span> Nama', 'nama'); ?>
-        <div class="row collapse">
-            <div class="medium-10 columns">
-                <?php echo CHtml::dropDownList('nama', '', $barangNama, array('accesskey' => '3', 'id' => 'nama-pilih')); ?>
+        <div class="row collapse" id="scan-cari-barang" style="display: none">
+            <div class="small-2 medium-1 columns">
+                <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
             </div>
-            <div class="medium-2 columns">
-                <a href="#" id="pilih-nama" class="button postfix tombol-pilih" accesskey="4" ><span class="ak">4</span> Pilih</a>
+            <div class="small-6 medium-9 columns">
+                <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>
+            </div>
+            <div class="small-2 medium-1 columns">
+                <a href="#" class="button postfix" id="tombol-tambah-barang"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
+            </div>
+            <?php
+            $tipeCari = 1;
+            switch ($tipeCari):
+                case 0:
+                    ?>
+                    <div class="small-2 medium-1 columns">
+                        <a href="#" class="success button postfix" id="tombol-cari-barang" accesskey="c"><i class="fa fa-search fa-2x"></i></a>
+                    </div>
+                    <?php
+                    break;
+
+                case 1:
+                    ?>
+                    <div class="small-2 medium-1 columns">
+                        <a href="#" class="success button postfix" id="tombol-cari-tabel" accesskey="c"><i class="fa fa-search-plus fa-2x"></i></a>
+                    </div>
+                    <?php
+                    break;
+            endswitch;
+            ?>
+        </div>
+        <div id="dropdown-barang">
+            <?php echo CHtml::label('<span class="ak">1</span> Barcode', 'barcode'); ?>
+            <div class="row collapse">
+                <div class="medium-10 columns">
+                    <?php echo CHtml::dropDownList('barcode', '', $barangBarcode, array('accesskey' => '1', 'id' => 'barcode-pilih')); ?>
+                </div>
+                <div class="medium-2 columns">
+                    <a href="#" id="pilih-barcode" class="button postfix tombol-pilih" accesskey="2"><span class="ak">2</span> Pilih</a>
+                </div>
+            </div>
+            <?php echo CHtml::label('<span class="ak">3</span> Nama', 'nama'); ?>
+            <div class="row collapse">
+                <div class="medium-10 columns">
+                    <?php echo CHtml::dropDownList('nama', '', $barangNama, array('accesskey' => '3', 'id' => 'nama-pilih')); ?>
+                </div>
+                <div class="medium-2 columns">
+                    <a href="#" id="pilih-nama" class="button postfix tombol-pilih" accesskey="4" ><span class="ak">4</span> Pilih</a>
+                </div>
             </div>
         </div>
     </div>
@@ -120,7 +154,46 @@
         $("#Barang_satuan_id").val('');
         $("#Barang_rak_id").val('');
     }
+
+
+    $(function () {
+//        $("#scan").autocomplete("disable");
+        $(document).on('click', "#tombol-tambah-barang", function () {
+            kirimBarcode();
+            return false;
+        });
+//        $(document).on('click', "#tombol-cari-barang", function () {
+//            $("#scan").autocomplete("enable");
+//            var nilai = $("#scan").val();
+//            $("#scan").autocomplete("search", nilai);
+//            $("#scan").focus();
+//        });
+        $(document).on('click', "#tombol-cari-tabel", function () {
+            var datakirim = {
+                'cariBarang': true,
+                'namaBarang': $("#scan").val()
+            };
+            $('#barang-grid').yiiGridView('update', {
+                data: datakirim
+            });
+            $("#barang-list").show(100, function () {
+                $("#scan").val("");
+                $("#tombol-cari-tabel").focus();
+            });
+
+            return false;
+        });
+    });
+
+
 </script>
+<div id="barang-list" class="medium-6 large-7 columns"  style="display:none">
+    <?php
+    $this->renderPartial('_barang_list', array(
+        'barang' => $barangList,
+    ));
+    ?>
+</div> 
 <div id="input-barang-baru" class="medium-6 large-7 columns" style="display: none">
     <?php
     $formInputBaru = $this->beginWidget('CActiveForm', array(

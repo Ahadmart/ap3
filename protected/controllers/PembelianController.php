@@ -152,6 +152,16 @@ class PembelianController extends Controller
             $barangNama[$barang['id']] = "{$barang['nama']} ({$barang['barcode']})";
         }
 
+        $barangList = new Barang('search');
+        $barangList->unsetAttributes();
+
+        if (isset($_GET['cariBarang'])) {
+            $barangList->setAttribute('nama', $_GET['namaBarang']);
+            $criteria = new CDbCriteria;
+            $criteria->order = 'nama ASC';
+            $barangList->setDbCriteria($criteria);
+        }
+
         $pembelianDetail = new PembelianDetail('search');
         $pembelianDetail->unsetAttributes();
         $pembelianDetail->setAttribute('pembelian_id', '=' . $id);
@@ -175,6 +185,7 @@ class PembelianController extends Controller
             'barangBarcode' => $barangBarcode,
             'barangNama' => $barangNama,
             'pembelianDetail' => $pembelianDetail,
+            'barangList' => $barangList,
             'barang' => $barang,
             'pilihBarang' => $pilihBarang,
             'pembulatan' => $config->nilai
@@ -653,7 +664,7 @@ class PembelianController extends Controller
     public function actionCariByRef($profilId, $nomorRef, $nominal)
     {
         $pembelian = Pembelian::model()->cariByRef($profilId, $nomorRef, $nominal);
-        empty($pembelian) ? $this->renderJSON(['ada' => false]) : $this->renderJSON(['ada' => true, 'pembelian' => $this->renderPartial('_import_sudah_ada',['pembelian'=>$pembelian], true)]);
+        empty($pembelian) ? $this->renderJSON(['ada' => false]) : $this->renderJSON(['ada' => true, 'pembelian' => $this->renderPartial('_import_sudah_ada', ['pembelian' => $pembelian], true)]);
     }
 
 }
