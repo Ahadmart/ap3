@@ -228,4 +228,10 @@ class PembelianDetail extends CActiveRecord
         return $ketemu != false;
     }
 
+    public function beforeValidate()
+    {
+        $this->tanggal_kadaluwarsa = $this->tanggal_kadaluwarsa == '' ? NULL : $this->tanggal_kadaluwarsa;
+        return parent::beforeValidate();
+    }
+
 }
