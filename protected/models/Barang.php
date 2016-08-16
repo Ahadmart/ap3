@@ -141,7 +141,7 @@ class Barang extends CActiveRecord
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search($pageSize = 10)
+    public function search($pageSize = 10, $merge = null)
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
@@ -163,6 +163,10 @@ class Barang extends CActiveRecord
         } else {
             $criteria->addCondition('rak_id IS NULL');
         }
+        if ($merge !== null) {
+            $criteria->mergeWith($merge);
+        }
+
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
             'pagination' => [
