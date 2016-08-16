@@ -1,7 +1,7 @@
 <?php
 $this->widget('BGridView', array(
     'id' => 'barang-grid',
-    'dataProvider' => $barang->search(20),
+    'dataProvider' => $barang->search(20, $curSupplierCr),
     'enableSorting' => false,
     //'filter' => $penjualanDetail,
     'columns' => array(
@@ -23,7 +23,7 @@ $this->widget('BGridView', array(
             'class' => 'BButtonColumn',
             'htmlOptions' => array('style' => 'text-align:center'),
             // Pakai template delete untuk pilih :) biar gampang
-            'deleteButtonUrl' => '$data->barcode',
+            'deleteButtonUrl' => '$data->id',
             'deleteButtonImageUrl' => false,
             'deleteButtonLabel' => '<i class="fa fa-check"></i> Pilih',
             'deleteButtonOptions' => array('title' => 'Pilih', 'class' => 'pilih'),
@@ -53,12 +53,20 @@ $this->widget('BGridView', array(
 ?>
     $("body").on("click", "a.pilih", function () {
         //console.log($(this).attr("href"));
-        var barcode = $(this).attr("href");
+        var barangId = $(this).attr("href");
 
         $("#barang-list").hide(100, function () {
-            $("#transaksi").show(100, function () {
-                $("#scan").val(barcode);
-                kirimBarcode();
+            var datakirim = {
+                'barangId': barangId
+            };
+            var dataurl = "<?php echo $this->createUrl('getbarang') ?>";
+
+            $.ajax({
+                data: datakirim,
+                url: dataurl,
+                type: "POST",
+                dataType: "json",
+                success: updateFormDetail
             });
 
         });

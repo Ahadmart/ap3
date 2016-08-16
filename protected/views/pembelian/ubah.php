@@ -58,7 +58,9 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
             'barangNama' => $barangNama,
             'barang' => $barang,
             'pembulatan' => $pembulatan,
-            'barangList' => $barangList
+            'barangList' => $barangList,
+            'curSupplierCr' => $curSupplierCr,
+            'tipeCari' => $tipeCari
         ));
     }
     ?>

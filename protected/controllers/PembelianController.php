@@ -154,12 +154,13 @@ class PembelianController extends Controller
 
         $barangList = new Barang('search');
         $barangList->unsetAttributes();
+        $curSupplierCr = NULL;
 
         if (isset($_GET['cariBarang'])) {
             $barangList->setAttribute('nama', $_GET['namaBarang']);
-            $criteria = new CDbCriteria;
-            $criteria->order = 'nama ASC';
-            $barangList->setDbCriteria($criteria);
+            $curSupplierCr = new CDbCriteria;
+            $curSupplierCr->join = "JOIN supplier_barang ON barang_id = t.id AND supplier_id = {$model->profil_id}";
+            $curSupplierCr->order = 'nama ASC';
         }
 
         $pembelianDetail = new PembelianDetail('search');
@@ -179,6 +180,7 @@ class PembelianController extends Controller
 
         /* Mengambil nilai pembulatan ke atas untuk harga jual */
         $config = Config::model()->find('nama=:nama', [':nama' => 'pembelian.pembulatankeatashj']);
+        $configCariBarang = Config::model()->find("nama='pembelian.caribarangmode'");
 
         $this->render('ubah', array(
             'model' => $model,
@@ -186,9 +188,11 @@ class PembelianController extends Controller
             'barangNama' => $barangNama,
             'pembelianDetail' => $pembelianDetail,
             'barangList' => $barangList,
+            'curSupplierCr' => $curSupplierCr,
             'barang' => $barang,
             'pilihBarang' => $pilihBarang,
-            'pembulatan' => $config->nilai
+            'pembulatan' => $config->nilai,
+            'tipeCari' => $configCariBarang->nilai
                 //'totalPembelian' => $model->ambilTotal()
         ));
     }
@@ -261,21 +265,24 @@ class PembelianController extends Controller
     {
         if (isset($_POST['barangId'])) {
             $barangId = $_POST['barangId'];
-            $barang = Pembelian::model()->ambilDataBarang($barangId);
-            $arr = array(
-                'barangId' => $barangId,
-                'nama' => $barang['nama'],
-                'barcode' => $barang['barcode'],
-                'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
-                'hargaBeli' => number_format($barang['harga_beli'], 0, '', ''),
-                'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
-                'hargaJual' => number_format($barang['harga_jual'], 0, '', ''),
-                'labelRrp' => number_format($barang['rrp'], 0, ',', '.'),
-                'rrp' => number_format($barang['rrp'], 0, '', ''),
-                'satuan' => $barang['satuan'],
-            );
-            echo CJSON::encode($arr);
+        } else if (isset($_POST['barcode'])) {
+            $barang = Barang::model()->find('barcode = :barcode', [':barcode' => $_POST['barcode']]);
+            $barangId = $barang->id;
         }
+        $barang = Pembelian::model()->ambilDataBarang($barangId);
+        $arr = array(
+            'barangId' => $barangId,
+            'nama' => $barang['nama'],
+            'barcode' => $barang['barcode'],
+            'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
+            'hargaBeli' => number_format($barang['harga_beli'], 0, '', ''),
+            'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
+            'hargaJual' => number_format($barang['harga_jual'], 0, '', ''),
+            'labelRrp' => number_format($barang['rrp'], 0, ',', '.'),
+            'rrp' => number_format($barang['rrp'], 0, '', ''),
+            'satuan' => $barang['satuan'],
+        );
+        echo CJSON::encode($arr);
     }
 
     public function actionTambahBarang($id)
@@ -665,6 +672,27 @@ class PembelianController extends Controller
     {
         $pembelian = Pembelian::model()->cariByRef($profilId, $nomorRef, $nominal);
         empty($pembelian) ? $this->renderJSON(['ada' => false]) : $this->renderJSON(['ada' => true, 'pembelian' => $this->renderPartial('_import_sudah_ada', ['pembelian' => $pembelian], true)]);
+    }
+
+    public function actionCariBarang($profilId, $term)
+    {
+        $q = new CDbCriteria();
+        $q->addCondition("barcode like :term OR nama like :term");
+        $q->order = 'nama';
+        $q->join = "JOIN supplier_barang ON barang_id = t.id AND supplier_id = {$profilId}";
+        $q->params = [':term' => "%{$term}%"];
+        $barangs = Barang::model()->findAll($q);
+
+        $r = array();
+        foreach ($barangs as $barang) {
+            $r[] = array(
+                'label' => $barang->nama,
+                'value' => $barang->barcode,
+                'id' => $barang->id
+            );
+        }
+
+        $this->renderJSON($r);
     }
 
 }
