@@ -228,4 +228,11 @@ class PembelianDetail extends CActiveRecord
         return $ketemu != false;
     }
 
+    public function beforeValidate()
+    {
+        $this->tanggal_kadaluwarsa = $this->tanggal_kadaluwarsa == '' ? NULL : $this->tanggal_kadaluwarsa;
+        $this->harga_jual_rekomendasi = $this->harga_jual_rekomendasi == '' ? NULL : $this->harga_jual_rekomendasi;
+        return parent::beforeValidate();
+    }
+
 }

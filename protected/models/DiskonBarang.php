@@ -135,7 +135,7 @@ class DiskonBarang extends CActiveRecord
         $criteria->compare('qty', $this->qty, true);
         $criteria->compare('qty_min', $this->qty_min, true);
         $criteria->compare('qty_max', $this->qty_max, true);
-        $criteria->compare('status', $this->status);
+        $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
@@ -235,6 +235,9 @@ class DiskonBarang extends CActiveRecord
         $this->barang_id = $this->semua_barang ? NULL : $this->barang_id;
         $this->dari = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s') : NULL;
         $this->sampai = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s') : NULL;
+        $this->qty = empty($this->qty) ? NULL : $this->qty;
+        $this->qty_max = empty($this->qty_max) ? NULL : $this->qty_max;
+        $this->qty_min = empty($this->qty_min) ? NULL : $this->qty_min;
 
         /* Fixme: Pindahkan cek validasi di bawah ini ke tempat yang seharusnya */
         switch ($this->tipe_diskon_id) {
@@ -266,6 +269,24 @@ class DiskonBarang extends CActiveRecord
         $this->dari = !is_null($this->dari) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->dari), 'd-m-Y H:i') : '';
         $this->sampai = !is_null($this->sampai) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->sampai), 'd-m-Y H:i') : '';
         return parent::afterFind();
+    }
+
+    public function autoExpire()
+    {
+        try {
+            $rowAffected = Yii::app()->db->createCommand("UPDATE barang_diskon SET status = 0 WHERE sampai <= NOW()")->execute();
+            return [
+                'sukses' => true,
+                'rowAffected' => $rowAffected
+            ];
+        } catch (Exception $ex) {
+            return [
+                'sukses' => false,
+                'error' => [
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
+        }
     }
 
 }

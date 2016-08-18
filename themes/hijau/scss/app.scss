@@ -130,7 +130,7 @@ option{
     @include animasi(tada 1s infinite);
 }
 table {
-    tr.even, table tr.alt, table tr:nth-of-type(2n) {
+    & tr.even, & tr.alt, & tr:nth-of-type(2n) {
         background: #eef4d2;
     }
     tr td{
