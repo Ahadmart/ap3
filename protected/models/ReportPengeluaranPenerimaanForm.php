@@ -10,7 +10,7 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
 {
 
     public $profilId;
-    public $items;
+    public $itemKeuId;
     public $dari;
     public $sampai;
 
@@ -21,7 +21,7 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
     {
         return array(
             array('dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            array('profilId, items', 'safe')
+            array('profilId, itemKeuId', 'safe')
         );
     }
 
@@ -32,7 +32,7 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
     {
         return array(
             'profilId' => 'Profil',
-            'items' => 'Item Keuangan',
+            'itemKeuId' => 'Item Keuangan',
             'dari' => 'Dari',
             'sampai' => 'Sampai'
         );
@@ -42,6 +42,13 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
     {
         $profil = Profil::model()->findByPk($this->profilId);
         return $profil->nama;
+    }
+
+    public function getNamaItemKeu()
+    {
+        $itemKeu = ItemKeuangan::model()->findByPk($this->itemKeuId);
+        $namaParent = isset($itemKeu->parent) ? '(' . $itemKeu->parent->nama . ')' : '(-)';
+        return $namaParent . ' ' . $itemKeu->nama;
     }
 
     public function reportPengeluaranPenerimaan()
