@@ -422,32 +422,36 @@ class ReportController extends Controller
     public function actionPengeluaranPenerimaan()
     {
         $model = new ReportPengeluaranPenerimaanForm;
-        $report = array();
+        $report = [];
         if (isset($_POST['ReportPengeluaranPenerimaanForm'])) {
             $model->attributes = $_POST['ReportPengeluaranPenerimaanForm'];
             if ($model->validate()) {
                 $report = $model->reportPengeluaranPenerimaan();
             }
         }
-        
+
         $profil = new Profil('search');
         $profil->unsetAttributes();  // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
-        
+
         $itemKeuangan = new ItemKeuangan('search');
         $itemKeuangan->unsetAttributes();  // clear any default values
+        $itemKeuangan->parent_id = '>0';
+        $itemKeuangan->id = '>' . ItemKeuangan::ITEM_TRX_SAJA;
         if (isset($_GET['ItemKeuangan'])) {
             $itemKeuangan->attributes = $_GET['ItemKeuangan'];
         }
-        
-        $this->render('pengeluaranpenerimaan',[
+
+        $this->render('pengeluaranpenerimaan', [
             'model' => $model,
             'profil' => $profil,
-            'itemKeuangan' => $itemKeuangan
+            'itemKeuangan' => $itemKeuangan,
+            'report' => $report
         ]);
     }
+
     public function renderLinkPilihItemKeu($data)
     {
         $return = '';

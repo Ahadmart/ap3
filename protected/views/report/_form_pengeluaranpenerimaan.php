@@ -1,11 +1,11 @@
 <?php
 /* @var $this ReportController */
-/* @var $model ReportPenjualanForm */
+/* @var $model ReportPengeluaranPenerimaanForm */
 /* @var $form CActiveForm */
 ?>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
-    'id' => 'report-penjualan-form',
+    'id' => 'report-pengeluaran-penerimaan-form',
     // Please note: When you enable ajax validation, make sure the corresponding
     // controller action is handling ajax validation correctly.
     // See class documentation of CActiveForm for details on this,

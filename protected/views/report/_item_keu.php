@@ -5,8 +5,8 @@ $this->widget('BGridView', ['id' => 'item-keuangan-grid',
     'filter' => $itemKeuangan,
     'columns' => [
         [
-            'name' => 'parent_id',
-            'filter' => false
+            'name' => 'namaParent',
+            'value' => '$data->parent->nama',
         ],
         ['name' => 'nama',
             'filter' => '<input name="ItemKeuangan[nama]" maxlength="100" type="text" autocomplete="off" />',

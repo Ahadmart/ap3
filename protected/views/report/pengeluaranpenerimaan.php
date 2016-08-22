@@ -55,29 +55,27 @@ if (!empty($report['detail'])):
             <table class="tabel-index responsive">
                 <thead>
                     <tr>
-                        <th class="rata-kanan">No</th>
                         <th>Tanggal</th>
                         <th>Nomor</th>
                         <th>Profil</th>
-                        <th class="rata-kanan">Total</th>
-                        <th class="rata-kanan">Margin</th>
-                        <th class="rata-kanan">Profit Margin</th>
+                        <th>Nota Ket</th>
+                        <th>Item Ket</th>
+                        <th class="rata-kanan">Jumlah</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
                     $i = 1;
-                    foreach ($report['detail'] as $barisReport):
+                    foreach ($report['detail'] as $baris):
                         ?>
                         <tr>
-                            <td class="rata-kanan"><?= $i ?></td>
-                            <td><?php echo $barisReport['tanggal']; ?></td>
-                            <td><a href="<?php echo Yii::app()->createUrl('penjualan/view', array('id' => $barisReport['id'])); ?>"><?php echo $barisReport['nomor']; ?></a></td>
-                            <td><?= $barisReport['nama']; ?> </td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['margin'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['margin'] / $barisReport['total'] * 100, 2, ',', '.') . '%'; ?></td>
-                        </tr>
+                            <td><?= $baris['tanggal']; ?></td>
+                            <td><?= $baris['nomor']; ?></td>
+                            <td><?= $baris['profil']; ?></td>
+                            <td><?= $baris['nota_ket']; ?></td>
+                            <td><?= "{$baris['keterangan']}"; ?></td>
+                            <td class="rata-kanan"><?= number_format($baris['jumlah'], 0, ',', '.'); ?></td>
+                    </tr>
                         <?php
                         $i++;
                     endforeach;
