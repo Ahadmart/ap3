@@ -56,10 +56,9 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
         $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
 
-        $queryItem = '';
+        $queryItem = 'AND item.id >' . ItemKeuangan::ITEM_TRX_SAJA;
         $selectProfil = '';
         $queryProfil = '';
-        $joinProfil = '';
         if (!empty($this->itemKeuId)) {
             $queryItem = 'AND item.id = :itemId';
         }
@@ -67,10 +66,8 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
             $selectProfil = 'profil.nama profil,';
             $queryProfil = 'AND profil.id = :profilId';
         }
-
-        $command = Yii::app()->db->createCommand();
-        $command->from("
-        (
+        
+        $sqlForm = "(
         SELECT 
             0 jenis_nota,
             p.nomor,
@@ -83,7 +80,14 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
             item.nama item,
             item.jenis item_jenis,
             detail.keterangan,
-            detail.jumlah,
+            CASE posisi
+                WHEN 0 THEN detail.jumlah
+                ELSE NULL
+            END debet,
+            CASE posisi
+                WHEN 1 THEN detail.jumlah
+                ELSE NULL
+            END kredit,
             detail.posisi
         FROM
             pengeluaran_detail detail
@@ -113,7 +117,14 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
             item.nama item,
             item.jenis item_jenis,
             detail.keterangan,
-            detail.jumlah,
+            CASE posisi
+                WHEN 1 THEN detail.jumlah
+                ELSE NULL
+            END debet,
+            CASE posisi
+                WHEN 0 THEN detail.jumlah
+                ELSE NULL
+            END kredit,
             detail.posisi
         FROM
             penerimaan_detail detail
@@ -131,8 +142,10 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
             penerimaan_kategori kategori ON p.kategori_id = kategori.id
                 JOIN
             jenis_transaksi jenis ON p.jenis_transaksi_id = jenis.id
-        ) AS t
-                ");
+        ) AS t";
+
+        $command = Yii::app()->db->createCommand();
+        $command->from($sqlForm);
         $command->order("tanggal, nomor");
 
         if (!empty($this->itemKeuId)) {
@@ -145,10 +158,27 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
         $command->bindValue(':statusPenerimaan', Penerimaan::STATUS_BAYAR);
         $command->bindValue(':dari', $dari);
         $command->bindValue(':sampai', $sampai);
-
+        
         $data = $command->queryAll();
 
-        return ['detail' => $data];
+        $commandRekap = Yii::app()->db->createCommand();
+        $commandRekap->select("sum(debet) total_debet, sum(kredit) total_kredit");
+        $commandRekap->from($sqlForm);
+        
+        if (!empty($this->itemKeuId)) {
+            $commandRekap->bindValue(':itemId', $this->itemKeuId);
+        }
+        if (!empty($this->profilId)) {
+            $commandRekap->bindValue(':profilId', $this->profilId);
+        }
+        $commandRekap->bindValue(':statusPengeluaran', Pengeluaran::STATUS_BAYAR);
+        $commandRekap->bindValue(':statusPenerimaan', Penerimaan::STATUS_BAYAR);
+        $commandRekap->bindValue(':dari', $dari);
+        $commandRekap->bindValue(':sampai', $sampai);
+        
+        $rekap = $commandRekap->queryRow();
+
+        return ['detail' => $data, 'rekap' => $rekap];
     }
 
 }

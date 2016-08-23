@@ -4,23 +4,23 @@
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/foundation-datepicker.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
 
-$this->breadcrumbs = array(
-    'Laporan' => array('index'),
+$this->breadcrumbs = [
+    'Laporan' => ['index'],
     'Pengeluaran Penerimaan',
-);
+];
 
 $this->boxHeader['small'] = 'Pengeluaran Penerimaan';
 $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Pengeluaran Penerimaan';
 
-$this->renderPartial('_form_pengeluaranpenerimaan', array('model' => $model));
+$this->renderPartial('_form_pengeluaranpenerimaan', ['model' => $model]);
 ?>
 <div class="row">
     <div class="small-12 columns">
         <div id="tabel-profil" style="display: none">
-            <?php $this->renderPartial('_profil', array('profil' => $profil)); ?>
+            <?php $this->renderPartial('_profil', ['profil' => $profil]); ?>
         </div>
         <div id="tabel-itemkeu" style="display: none">
-            <?php $this->renderPartial('_item_keu', array('itemKeuangan' => $itemKeuangan)); ?>
+            <?php $this->renderPartial('_item_keu', ['itemKeuangan' => $itemKeuangan]); ?>
         </div>
     </div>
 </div>
@@ -29,21 +29,12 @@ if (isset($report['rekap']) && $report['rekap']) {
     ?>
     <div class="row">
         <div class="small-12 columns rata-kanan">
-            <h6>Total : <?php echo number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
-            <h6>Margin : <?php echo number_format($report['rekap']['margin'], 0, ',', '.'); ?></h6>
-            <?php if ($report['rekap']['total'] != 0) {
-                ?>
-                <h6>Profit Margin: <?php echo number_format($report['rekap']['margin'] / $report['rekap']['total'] * 100, 2, ',', '.'); ?>%</h6>
-                <?php
-            }
-            ?>
             <?php
-            if (!empty($report['detail'])):
-                ?>
-                <h6><?= count($report['detail']) ?> Transaksi</h6>
-                <?php
-            endif;
+            //print_r($report['rekap']);
             ?>
+            <h6>Pengeluaran (D) : <?php echo number_format($report['rekap']['total_debet'], 0, ',', '.'); ?></h6>
+            <h6>Penerimaan (K) : <?php echo number_format($report['rekap']['total_kredit'], 0, ',', '.'); ?></h6>
+            <h6>Total <?= $report['rekap']['total_debet'] > $report['rekap']['total_kredit'] ? 'Pengeluaran' : 'Penerimaan' ?> : <?php echo number_format(abs($report['rekap']['total_debet'] - $report['rekap']['total_kredit']), 0, ',', '.'); ?></h6>
         </div>
     </div>
     <?php
@@ -57,10 +48,12 @@ if (!empty($report['detail'])):
                     <tr>
                         <th>Tanggal</th>
                         <th>Nomor</th>
-                        <th>Profil</th>
                         <th>Nota Ket</th>
+                        <th>Profil</th>
+                        <th>Item</th>
                         <th>Item Ket</th>
-                        <th class="rata-kanan">Jumlah</th>
+                        <th class="rata-kanan">D</th>
+                        <th class="rata-kanan">K</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,11 +64,13 @@ if (!empty($report['detail'])):
                         <tr>
                             <td><?= $baris['tanggal']; ?></td>
                             <td><?= $baris['nomor']; ?></td>
-                            <td><?= $baris['profil']; ?></td>
                             <td><?= $baris['nota_ket']; ?></td>
-                            <td><?= "{$baris['keterangan']}"; ?></td>
-                            <td class="rata-kanan"><?= number_format($baris['jumlah'], 0, ',', '.'); ?></td>
-                    </tr>
+                            <td><?= $baris['profil']; ?></td>
+                            <td><?= $baris['item']; ?></td>
+                            <td><?= $baris['keterangan']; ?></td>
+                            <td class="rata-kanan"><?= number_format($baris['debet'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?= number_format($baris['kredit'], 0, ',', '.'); ?></td>
+                        </tr>
                         <?php
                         $i++;
                     endforeach;
@@ -131,7 +126,7 @@ endif;
 
     function isiItemKeu(data) {
         console.log(data);
-        $("#itemKeu").val('(' + data.parent + ') '+data.nama);
+        $("#itemKeu").val('(' + data.parent + ') ' + data.nama);
         $("#tabel-itemkeu").slideUp(500);
         $("#ReportPengeluaranPenerimaanForm_itemKeuId").val(data.id);
     }
