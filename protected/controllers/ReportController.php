@@ -419,4 +419,59 @@ class ReportController extends Controller
         ]);
     }
 
+    public function actionPengeluaranPenerimaan()
+    {
+        $model = new ReportPengeluaranPenerimaanForm;
+        $report = [];
+        if (isset($_POST['ReportPengeluaranPenerimaanForm'])) {
+            $model->attributes = $_POST['ReportPengeluaranPenerimaanForm'];
+            if ($model->validate()) {
+                $report = $model->reportPengeluaranPenerimaan();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $itemKeuangan = new ItemKeuangan('search');
+        $itemKeuangan->unsetAttributes();  // clear any default values
+        $itemKeuangan->parent_id = '>0';
+        $itemKeuangan->id = '>' . ItemKeuangan::ITEM_TRX_SAJA;
+        if (isset($_GET['ItemKeuangan'])) {
+            $itemKeuangan->attributes = $_GET['ItemKeuangan'];
+        }
+
+        $this->render('pengeluaranpenerimaan', [
+            'model' => $model,
+            'profil' => $profil,
+            'itemKeuangan' => $itemKeuangan,
+            'report' => $report
+        ]);
+    }
+
+    public function renderLinkPilihItemKeu($data)
+    {
+        $return = '';
+        if (isset($data->nama)) {
+            $return = '<a href="' .
+                    $this->createUrl('pilihitemkeu', array('id' => $data->id)) .
+                    '" class="pilih itemkeu">' . $data->nama . '</a>';
+        }
+        return $return;
+    }
+
+    public function actionPilihItemKeu($id)
+    {
+        $itemKeuangan = ItemKeuangan::model()->findByPk($id);
+        $return = array(
+            'id' => $id,
+            'parent' => isset($itemKeuangan->parent) ? $itemKeuangan->parent->nama : '-',
+            'nama' => $itemKeuangan->nama,
+        );
+        $this->renderJSON($return);
+    }
+
 }

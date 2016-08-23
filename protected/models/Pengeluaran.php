@@ -129,7 +129,7 @@ class Pengeluaran extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id, true);
-        $criteria->compare('nomor', $this->nomor, true);
+        $criteria->compare('t.nomor', $this->nomor, true);
         $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('t.keterangan', $this->keterangan, true);
         $criteria->compare('profil_id', $this->profil_id, true);
