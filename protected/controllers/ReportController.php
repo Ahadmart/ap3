@@ -474,4 +474,20 @@ class ReportController extends Controller
         $this->renderJSON($return);
     }
 
+    public function actionUmurBarang()
+    {
+        $model = new ReportUmurBarangForm;
+        $report = null;
+        if (isset($_POST['ReportUmurBarangForm'])) {
+            $model->attributes = $_POST['ReportUmurBarangForm'];
+            if ($model->validate()) {
+                $report = $model->reportUmurBarang();
+            }
+        }
+
+        $this->render('umurbarang', [
+            'model' => $model,
+        ]);
+    }
+
 }
