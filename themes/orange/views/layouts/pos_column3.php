@@ -52,14 +52,6 @@
         <script>
 
             $(function () {
-                /* Mencegah klik 2 kali atau lebih*/
-                $(function () {
-                    $('#tombol-new').one('click', function (e) {
-                        $(this).click(function () {
-                            return false;
-                        });
-                    });
-                });
                 $(document).on('click', "#label-customer", function () {
                     $("#ganti-customer").toggle(500, function () {
                         if ($("#ganti-customer").is(':visible')) {
