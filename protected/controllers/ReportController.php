@@ -439,7 +439,10 @@ class ReportController extends Controller
         $itemKeuangan = new ItemKeuangan('search');
         $itemKeuangan->unsetAttributes();  // clear any default values
         $itemKeuangan->parent_id = '>0';
-        $itemKeuangan->id = '>' . ItemKeuangan::ITEM_TRX_SAJA;
+        /* Uncomment jika ingin trx diluar trx inventory 
+         * fix me: masukkan ke config.
+         */
+        //$itemKeuangan->id = '>' . ItemKeuangan::ITEM_TRX_SAJA;
         if (isset($_GET['ItemKeuangan'])) {
             $itemKeuangan->attributes = $_GET['ItemKeuangan'];
         }
