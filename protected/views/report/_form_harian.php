@@ -46,11 +46,13 @@ $this->endWidget();
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/foundation-datepicker.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/locales/foundation-datepicker.id.js', CClientScript::POS_HEAD);
 ?>
 <script>
     $(function () {
         $('.tanggalan').fdatepicker({
-            format: 'dd-mm-yyyy'
+            format: 'dd-mm-yyyy',
+            language: 'id'
         });
     });
 </script>

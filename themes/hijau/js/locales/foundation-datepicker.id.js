@@ -4,9 +4,9 @@
  */
 ;(function($){
 	$.fn.fdatepicker.dates['id'] = {
-		days: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"],
-		daysShort: ["Mgu", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Mgu"],
-		daysMin: ["Mg", "Sn", "Sl", "Ra", "Ka", "Ju", "Sa", "Mg"],
+		days: ["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Ahad"],
+		daysShort: ["Ahd", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Ahd"],
+		daysMin: ["Ah", "Sn", "Sl", "Ra", "Ka", "Ju", "Sa", "Ah"],
 		months: ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"],
 		monthsShort: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"]
 	};
