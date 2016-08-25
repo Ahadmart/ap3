@@ -66,6 +66,8 @@ class ReportUmurBarangForm extends CFormModel
     {
         $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
+        
+        
     }
 
     public function filterKategori()
