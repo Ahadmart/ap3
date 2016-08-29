@@ -125,7 +125,11 @@ class StockopnameController extends Controller
      */
     public function actionHapus($id)
     {
-        $this->loadModel($id)->delete();
+        $model = $this->loadModel($id);
+        if ($model->status == StockOpname::STATUS_DRAFT) {
+            StockOpnameDetail::model()->deleteAll('stock_opname_id=:id', [':id' => $id]);
+            $model->delete();
+        }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))

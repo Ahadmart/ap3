@@ -150,10 +150,9 @@ class PenerimaanController extends Controller
      */
     public function actionHapus($id)
     {
-
         $model = $this->loadModel($id);
         if ($model->status == Penerimaan::STATUS_DRAFT) {
-            PenerimaanDetail::model()->deleteAll('penerimaan_id=' . $id);
+            PenerimaanDetail::model()->deleteAll('penerimaan_id=:id', [':id' => $id]);
             $model->delete();
         }
 

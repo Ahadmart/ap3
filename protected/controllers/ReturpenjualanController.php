@@ -144,7 +144,11 @@ class ReturpenjualanController extends Controller
      */
     public function actionHapus($id)
     {
-        $this->loadModel($id)->delete();
+        $model = $this->loadModel($id);
+        if ($model->status == ReturPenjualan::STATUS_DRAFT) {
+            ReturPenjualanDetail::model()->deleteAll('retur_penjualan_id=:id', [':id' => $id]);
+            $model->delete();
+        }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))

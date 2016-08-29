@@ -148,8 +148,11 @@ class PengeluaranController extends Controller
      */
     public function actionHapus($id)
     {
-        $this->loadModel($id)->delete();
-
+        $model = $this->loadModel($id);
+        if ($model->status == Pengeluaran::STATUS_DRAFT) {
+            PengeluaranDetail::model()->deleteAll('pengeluaran_id=:id', [':id' => $id]);
+            $model->delete();
+        }
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));

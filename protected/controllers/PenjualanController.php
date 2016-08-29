@@ -156,7 +156,11 @@ class PenjualanController extends Controller
      */
     public function actionHapus($id)
     {
-        $this->loadModel($id)->delete();
+        $model = $this->loadModel($id);
+        if ($model->status == Penjualan::STATUS_DRAFT) {
+            PenjualanDetail::model()->deleteAll('penjualan_id=:id', [':id' => $id]);
+            $model->delete();
+        }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))

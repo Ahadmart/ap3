@@ -206,7 +206,7 @@ class PembelianController extends Controller
     {
         $model = $this->loadModel($id);
         if ($model->status == Pembelian::STATUS_DRAFT) {
-            PembelianDetail::model()->deleteAll('pembelian_id=' . $id);
+            PembelianDetail::model()->deleteAll('pembelian_id=:id', [':id' => $id]);
             $model->delete();
         }
 
