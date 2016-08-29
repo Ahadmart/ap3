@@ -172,6 +172,7 @@
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Rekap Hutang Piutang', 'url' => array('/report/rekaphutangpiutang')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Hutang Piutang (per Profil)', 'url' => array('/report/hutangpiutang')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pengeluaran/Penerimaan', 'url' => array('/report/pengeluaranpenerimaan')),
+                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Umur Barang (Aging of Inventory)', 'url' => array('/report/umurbarang')),
                                         //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
