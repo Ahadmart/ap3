@@ -55,7 +55,7 @@ class ReportUmurBarangForm extends CFormModel
     public function attributeLabels()
     {
         return [
-            'bulan' => 'Umur',
+            'bulan' => 'Umur (Kosongkan jika memilih tanggal !)',
             'kategoriId' => 'Kategori',
             'sortBy0' => 'Sort 1',
             'sortBy1' => 'Sort 2',
@@ -66,8 +66,52 @@ class ReportUmurBarangForm extends CFormModel
     {
         $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
+        if (empty($this->bulan)) {
+            $whereBulan = "created_at BETWEEN :dari AND :sampai";
+        } else {
+            $whereBulan = "TIMESTAMPDIFF(MONTH, created_at, NOW()) >= :bulan";
+        }
+        $command = Yii::app()->db->createCommand();
+        $command->select("
+                t_inventory.*,
+                SUM(ib.qty) total_stok,
+                TIMESTAMPDIFF(MONTH, tgl_beli_awal, NOW()) umur_bulan,
+                TIMESTAMPDIFF(DAY, tgl_beli_awal, NOW()) umur_hari,
+                barang.barcode,
+                barang.nama
+                ");
+        $command->from("
+                (SELECT 
+                    barang_id,
+                        SUM(qty) qty,
+                        SUM(qty * harga_beli) nominal,
+                        MIN(created_at) tgl_beli_awal,
+                        COUNT(*) count
+                FROM
+                    inventory_balance
+                WHERE
+                    $whereBulan
+                        AND qty > 0
+                GROUP BY barang_id
+                LIMIT {$this->limit}) AS t_inventory
+                ");
+        $command->join('inventory_balance ib', 't_inventory.barang_id = ib.barang_id');
+        $command->join('barang', 't_inventory.barang_id = barang.id');
+        $command->group('barang_id');
+        $command->order([$this->listSortBy2()[$this->sortBy0], $this->listSortBy2()[$this->sortBy1]]);
+        if (!empty($this->kategoriId)) {
+            $command->where('barang.kategori_id = :kategoriId');
+            $command->bindValue(':kategoriId', $this->kategoriId);
+        }
+
+        if (empty($this->bulan)) {
+            $command->bindValue(':dari', $dari);
+            $command->bindValue(':sampai', $sampai);
+        } else {
+            $command->bindValue(':bulan', $this->opsiUmurBulan2()[$this->bulan]);
+        }
         
-        
+        return $command->queryAll();
     }
 
     public function filterKategori()
@@ -84,6 +128,15 @@ class ReportUmurBarangForm extends CFormModel
         ];
     }
 
+    public function opsiUmurBulan2()
+    {
+        return [
+            self::OPSI_BULAN_3 => '3',
+            self::OPSI_BULAN_6 => '6',
+            self::OPSI_BULAN_12 => '12',
+        ];
+    }
+
     public function listSortBy()
     {
         return [
@@ -91,10 +144,24 @@ class ReportUmurBarangForm extends CFormModel
             self::SORT_BY_STOK_DSC => 'Stok [z-a]',
             self::SORT_BY_NILAISTOK_ASC => 'Nilai Stok [a-z]',
             self::SORT_BY_NILAISTOK_DSC => 'Nilai Stok [z-a]',
-            self::SORT_BY_AVGDAILYSALES_ASC => 'Rata-rata Penjualan Harian [a-z]',
-            self::SORT_BY_AVGDAILYSALES_DSC => 'Rata-rata Penjualan Harian [z-a]',
+//            self::SORT_BY_AVGDAILYSALES_ASC => 'Rata-rata Penjualan Harian [a-z]',
+//            self::SORT_BY_AVGDAILYSALES_DSC => 'Rata-rata Penjualan Harian [z-a]',
             self::SORT_BY_UMUR_ASC => 'Umur [a-z]',
             self::SORT_BY_UMUR_DSC => 'Umur [z-a]',
+        ];
+    }
+
+    public function listSortBy2()
+    {
+        return [
+            self::SORT_BY_STOK_ASC => 'qty',
+            self::SORT_BY_STOK_DSC => 'qty desc',
+            self::SORT_BY_NILAISTOK_ASC => 'nominal',
+            self::SORT_BY_NILAISTOK_DSC => 'nominal desc',
+//            self::SORT_BY_AVGDAILYSALES_ASC => 'Rata-rata Penjualan Harian [a-z]',
+//            self::SORT_BY_AVGDAILYSALES_DSC => 'Rata-rata Penjualan Harian [z-a]',
+            self::SORT_BY_UMUR_ASC => 'tgl_beli_awal desc',
+            self::SORT_BY_UMUR_DSC => 'tgl_beli_awal',
         ];
     }
 

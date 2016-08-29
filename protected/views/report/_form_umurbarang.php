@@ -19,12 +19,11 @@ $form = $this->beginWidget('CActiveForm', [
     <div class="medium-4 large-3 columns">
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'bulan'); ?>
-            <?php echo $form->dropDownList($model, 'bulan', $model->opsiUmurBulan(), ['empty' => '']); ?>
+            <?php echo $form->dropDownList($model, 'bulan', $model->opsiUmurBulan()); ?>
             <?php echo $form->error($model, 'bulan', array('class' => 'error')); ?>
         </div>   
-        <div class="small-12 columns">
-            <p>Atau pilih tanggal pembelian:</p>
-        </div>     
+    </div>
+    <div class="medium-4 large-3 end columns">
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'dari'); ?>
             <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan dari', 'value' => empty($model->dari) ? '' : $model->dari)); ?>
@@ -39,7 +38,7 @@ $form = $this->beginWidget('CActiveForm', [
     <div class="medium-4 large-3 end columns">
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'kategoriId'); ?>
-            <?php echo $form->dropDownList($model, 'kategoriId', $model->filterKategori()); ?>
+            <?php echo $form->dropDownList($model, 'kategoriId', $model->filterKategori(), ['prompt' => '[SEMUA]']); ?>
             <?php echo $form->error($model, 'kategoriId', array('class' => 'error')); ?>
         </div>
         <div class="small-12 columns">
@@ -48,15 +47,27 @@ $form = $this->beginWidget('CActiveForm', [
             <?php echo $form->error($model, 'limit', array('class' => 'error')); ?>
         </div>
     </div>
-    <div class="medium-4 large-3 end columns">
+    <div class="medium-4 large-3 columns">
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'sortBy0'); ?>
-            <?php echo $form->dropDownList($model, 'sortBy0', $model->listSortBy()); ?>
+            <?php
+            echo $form->dropDownList($model, 'sortBy0', $model->listSortBy(), [
+                'options' => [
+                    isset($model->sortBy1) ? $model->sortBy0 : ReportUmurBarangForm::SORT_BY_UMUR_DSC => ['selected' => 'selected']
+                ]
+            ]);
+            ?>
             <?php echo $form->error($model, 'sortBy0', array('class' => 'error')); ?>
         </div>
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'sortBy1'); ?>
-            <?php echo $form->dropDownList($model, 'sortBy1', $model->listSortBy()); ?>
+            <?php
+            echo $form->dropDownList($model, 'sortBy1', $model->listSortBy(), [
+                'options' => [
+                    isset($model->sortBy1) ? $model->sortBy1 : ReportUmurBarangForm::SORT_BY_NILAISTOK_DSC => ['selected' => 'selected']
+                ]
+            ]);
+            ?>
             <?php echo $form->error($model, 'sortBy1', array('class' => 'error')); ?>
         </div>
         <div class="small-12 columns">
@@ -83,7 +94,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         });
         $('.tanggalan.sampai').fdatepicker({
             format: 'dd-mm-yyyy',
-            initialDate: '<?= date('d-m-Y', strtotime(date('Y-m-d') . ' -181 day')) ?>',
+            initialDate: '<?= date('d-m-Y', strtotime(date('Y-m-d') . '-91 day')) ?>',
             language: 'id'
 
         });

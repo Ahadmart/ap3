@@ -490,6 +490,7 @@ class ReportController extends Controller
 
         $this->render('umurbarang', [
             'model' => $model,
+            'report' => $report
         ]);
     }
 
