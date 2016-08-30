@@ -18,25 +18,26 @@ $form = $this->beginWidget('CActiveForm', array(
 <?php echo $form->hiddenField($model, 'profilId'); ?>
 
 <div class="row">
-   <div class="medium-6 large-4 columns">
-      <div class="row collapse">
-         <label>Profil</label>
-         <div class="small-9 columns">
-            <?php echo CHtml::textField('profil', empty($model->profilId) ? '' : $model->namaProfil, array('size' => 60, 'maxlength' => 500, 'disabled' => 'disabled')); ?>
-         </div>
-         <div class="small-3 columns">
-            <a class="tiny bigfont button postfix" id="tombol-browse-profil" accesskey="p"><span class="ak">P</span>ilih..</a>
-         </div>
-      </div>
-   </div>
-    <div class="small-12 columns">
-        <?php echo $form->labelEx($model, 'showDetail'); ?>
-        <?php echo $form->checkBox($model, 'showDetail'); ?>
-        <?php echo $form->error($model, 'showDetail', array('class' => 'error')); ?>
-
+    <div class="medium-6 large-4 columns">
+        <div class="row collapse">
+            <label>Profil</label>
+            <div class="small-9 columns">
+                <?php echo CHtml::textField('profil', empty($model->profilId) ? '' : $model->namaProfil, array('size' => 60, 'maxlength' => 500, 'disabled' => 'disabled')); ?>
+            </div>
+            <div class="small-3 columns">
+                <a class="tiny bigfont button postfix" id="tombol-browse-profil" accesskey="p"><span class="ak">P</span>ilih..</a>
+            </div>
+        </div>
     </div>
 </div>
-
+<div class="row">
+    <div class="small-12 medium-3 large-2 columns">
+        <?php echo $form->checkBoxList($model, 'showDetail', ['1' => 'Tampilkan Detail']); ?>
+    </div>
+    <div class="small-12 medium-3 large-2 end columns">
+        <?php echo $form->checkBoxList($model, 'pilihCetak', ['hutang' => 'Hutang', 'piutang' => 'Piutang']); ?>
+    </div>
+</div>
 <div class="row">
     <div class="small-12 columns">
         <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button')); ?>

@@ -382,6 +382,7 @@ class ReportController extends Controller
         $report = null;
         if (isset($_POST['ReportHutangPiutangForm'])) {
             $model->attributes = $_POST['ReportHutangPiutangForm'];
+            $model->pilihCetak = $_POST['ReportHutangPiutangForm']['pilihCetak'];
             if ($model->validate()) {
                 $report = $model->reportHutangPiutang();
             }
@@ -401,6 +402,47 @@ class ReportController extends Controller
             'listAsalHP' => HutangPiutang::model()->listNamaAsal(),
             'kertasPdf' => $kertasUntukPdf
         ]);
+    }
+
+    public function actionHutangPiutangPdf()
+    {
+        $model = new ReportHutangPiutangForm;
+        $report = null;
+
+        if (isset($_POST['ReportHutangPiutangForm'])) {
+            $model->attributes = $_POST['ReportHutangPiutangForm'];
+            $report = $model->reportHutangPiutang();
+        } else {
+            throw new Exception("Tidak ada data, klik lagi dari tombol cetak", 500);
+        }
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        /*
+         * Persiapan render PDF
+         */
+        $waktuCetak = date('dmY His');
+        $listNamaKertas = ReportHutangPiutangForm::listKertas();
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_hutangpiutang_pdf', array(
+                    'model' => $model,
+                    'report' => $report,
+                    'config' => $branchConfig,
+                    'waktuCetak' => $waktuCetak
+                        ), true
+        ));
+        $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->pagenumPrefix = 'Hal ';
+        $mPDF1->pagenumSuffix = ' / ';
+        // Render PDF
+        $mPDF1->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionRekapHutangPiutang()

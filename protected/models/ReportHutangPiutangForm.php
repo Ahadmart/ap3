@@ -20,8 +20,9 @@ class ReportHutangPiutangForm extends CFormModel
     const KERTAS_FOLIO_NAMA = 'Folio';
 
     public $profilId;
-    public $showDetail = false;
+    public $showDetail = true;
     public $kertas;
+    public $pilihCetak = ['hutang'];
 
     /**
      * Declares the validation rules.
@@ -52,6 +53,16 @@ class ReportHutangPiutangForm extends CFormModel
 
     public function reportHutangPiutang()
     {
+        $pilihHutang = false;
+        $pilihPiutang = false;
+        foreach ($this->pilihCetak as $pilihan) {
+            if ($pilihan == 'hutang') {
+                $pilihHutang = true;
+            } else if ($pilihan == 'piutang') {
+                $pilihPiutang = true;
+            }
+        }
+
         $commandRekap = Yii::app()->db->createCommand();
         $commandRekap->select('tipe, sum(jumlah) jumlah,  sum(jumlah_bayar) jumlah_bayar');
         $commandRekap->from("hutang_piutang hp");
@@ -93,8 +104,10 @@ class ReportHutangPiutangForm extends CFormModel
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
         ]);
 
-        $rekapHutang = $commandRekap->queryRow();
-
+        $rekapHutang = [];
+        if ($pilihHutang) {
+            $rekapHutang = $commandRekap->queryRow();
+        }
         $commandRekap->bindValues([
             ':profilId' => $this->profilId,
             ':tipeHp' => HutangPiutang::TIPE_PIUTANG,
@@ -103,7 +116,10 @@ class ReportHutangPiutangForm extends CFormModel
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
         ]);
 
-        $rekapPiutang = $commandRekap->queryRow();
+        $rekapPiutang = [];
+        if ($pilihPiutang) {
+            $rekapPiutang = $commandRekap->queryRow();
+        }
 
         $dataHutang = [];
         $dataPiutang = [];
@@ -150,7 +166,9 @@ class ReportHutangPiutangForm extends CFormModel
                 ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
             ]);
 
-            $dataHutang = $command->queryAll();
+            if ($pilihHutang) {
+                $dataHutang = $command->queryAll();
+            }
 
             $command->bindValues([
                 ':profilId' => $this->profilId,
@@ -160,7 +178,9 @@ class ReportHutangPiutangForm extends CFormModel
                 ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
             ]);
 
-            $dataPiutang = $command->queryAll();
+            if ($pilihPiutang) {
+                $dataPiutang = $command->queryAll();
+            }
         }
         return [
             'rekapHutang' => $rekapHutang,
