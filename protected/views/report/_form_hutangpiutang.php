@@ -32,7 +32,7 @@ $form = $this->beginWidget('CActiveForm', array(
 </div>
 <div class="row">
     <div class="small-12 medium-3 large-2 columns">
-        <?php echo $form->checkBoxList($model, 'showDetail', ['1' => 'Tampilkan Detail']); ?>
+        <?php echo $form->checkBoxList($model, 'showDetail', [true => 'Tampilkan Detail']); ?>
     </div>
     <div class="small-12 medium-3 large-2 end columns">
         <?php echo $form->checkBoxList($model, 'pilihCetak', ['hutang' => 'Hutang', 'piutang' => 'Piutang']); ?>

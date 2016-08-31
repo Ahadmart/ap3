@@ -411,6 +411,7 @@ class ReportController extends Controller
 
         if (isset($_POST['ReportHutangPiutangForm'])) {
             $model->attributes = $_POST['ReportHutangPiutangForm'];
+            $model->pilihCetak = $_POST['ReportHutangPiutangForm']['pilihCetak'];
             $report = $model->reportHutangPiutang();
         } else {
             throw new Exception("Tidak ada data, klik lagi dari tombol cetak", 500);
@@ -428,14 +429,18 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        $waktuCetak = date('dmY His');
+        $waktu = date('Y-m-d H:i:s');
+        $waktuCetak = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportHutangPiutangForm::listKertas();
         $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
         $mPDF1->WriteHTML($this->renderPartial('_hutangpiutang_pdf', array(
                     'model' => $model,
                     'report' => $report,
                     'config' => $branchConfig,
-                    'waktuCetak' => $waktuCetak
+                    'listAsalHP' => HutangPiutang::model()->listNamaAsal(),
+                    'waktu' => $waktu,
+                    'waktuCetak' => $waktuCetak,
+                    'profil' => Profil::model()->findByPk($model->profilId)
                         ), true
         ));
         $mPDF1->SetDisplayMode('fullpage');

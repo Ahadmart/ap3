@@ -19,6 +19,12 @@ $form = $this->beginWidget('CActiveForm', array(
 
 echo $form->hiddenField($model, 'profilId');
 ?>
+<div style="display: none">
+    <?php
+    echo $form->checkBoxList($model, 'showDetail', ['1' => 'Tampilkan Detail']);
+    echo $form->checkBoxList($model, 'pilihCetak', ['hutang' => 'Hutang', 'piutang' => 'Piutang']);
+    ?>
+</div>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
 <div class="row">
     <div class="small-12 medium-2 columns">

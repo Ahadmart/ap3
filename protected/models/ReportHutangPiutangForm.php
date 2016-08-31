@@ -29,9 +29,9 @@ class ReportHutangPiutangForm extends CFormModel
      */
     public function rules()
     {
-        return array(
-            array('profilId, showDetail, kertas', 'safe')
-        );
+        return [
+            ['profilId, showDetail, kertas', 'safe']
+        ];
     }
 
     /**
@@ -39,10 +39,10 @@ class ReportHutangPiutangForm extends CFormModel
      */
     public function attributeLabels()
     {
-        return array(
+        return [
             'profilId' => 'Profil',
             'showDetail' => 'Tampilkan Detail',
-        );
+        ];
     }
 
     public function getNamaProfil()
@@ -55,11 +55,22 @@ class ReportHutangPiutangForm extends CFormModel
     {
         $pilihHutang = false;
         $pilihPiutang = false;
-        foreach ($this->pilihCetak as $pilihan) {
-            if ($pilihan == 'hutang') {
-                $pilihHutang = true;
-            } else if ($pilihan == 'piutang') {
-                $pilihPiutang = true;
+        if (is_array($this->pilihCetak)) {
+            foreach ($this->pilihCetak as $pilihan) {
+                if ($pilihan == 'hutang') {
+                    $pilihHutang = true;
+                } else if ($pilihan == 'piutang') {
+                    $pilihPiutang = true;
+                }
+            }
+        }
+
+        $showDetail = false;
+        if (is_array($this->showDetail)) {
+            foreach ($this->showDetail as $show) {
+                if ($show == true) {
+                    $showDetail = true;
+                }
             }
         }
 
@@ -124,7 +135,7 @@ class ReportHutangPiutangForm extends CFormModel
         $dataHutang = [];
         $dataPiutang = [];
 
-        if ($this->showDetail) {
+        if ($showDetail) {
             $command = Yii::app()->db->createCommand();
             $command->select('hp.*, tbayar.*');
             $command->from("hutang_piutang hp");

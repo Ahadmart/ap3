@@ -11,7 +11,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Top R
 
 $this->renderPartial('_form_toprank', array('model' => $model));
 
-if (isset($report)):
+if (isset($report)) {
 
     $this->renderPartial('_form_toprank_cetak', array(
         'model' => $model,
@@ -57,10 +57,4 @@ if (isset($report)):
         </div>
     </div>
     <?php
-
-
-
-
-
-
-endif;
+}
