@@ -21,17 +21,19 @@ $this->renderPartial('_form_hutangpiutang', array('model' => $model));
 </div>
 <?php
 if (isset($report)):
-    $this->renderPartial('_form_hutangpiutang_cetak', array(
-        'model' => $model,
-        'printers' => $printers,
-        'kertasPdf' => $kertasPdf
-    ));
     ?>
     <div class="row">
         <div class="small-12 columns">
             <hr>
         </div>
     </div>
+    <?php
+    $this->renderPartial('_form_hutangpiutang_cetak', array(
+        'model' => $model,
+        'printers' => $printers,
+        'kertasPdf' => $kertasPdf
+    ));
+    ?>
     <div class="row">
         <div class="small-12 columns">
             <?php
