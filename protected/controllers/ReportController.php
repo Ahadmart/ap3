@@ -394,27 +394,47 @@ class ReportController extends Controller
             $profil->attributes = $_GET['Profil'];
         }
 
+        $tipePrinterAvailable = array(Device::TIPE_PDF_PRINTER, Device::TIPE_CSV_PRINTER);
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
         $kertasUntukPdf = ReportHutangPiutangForm::listKertas();
         $this->render('hutangpiutang', [
             'model' => $model,
             'profil' => $profil,
             'report' => $report,
             'listAsalHP' => HutangPiutang::model()->listNamaAsal(),
+            'printers' => $printers,
             'kertasPdf' => $kertasUntukPdf
         ]);
     }
 
-    public function actionHutangPiutangPdf()
+    public function actionPrintHutangPiutang()
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    /* Ada tambahan parameter kertas untuk tipe pdf */
+                    $this->hutangPiutangPdf($_GET['profilId'], $_GET['showDetail'], $_GET['pilihCetak'], $_GET['kertas']);
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    $this->hutangPiutangCsv($_GET['profilId'], $_GET['showDetail'], $_GET['pilihCetak']);
+                    break;
+            }
+        }
+    }
+
+    public function hutangPiutangPdf($profilId, $showDetail, $pilihCetak, $kertas)
     {
         $model = new ReportHutangPiutangForm;
         $report = null;
 
-        if (isset($_POST['ReportHutangPiutangForm'])) {
-            $model->attributes = $_POST['ReportHutangPiutangForm'];
-            $model->pilihCetak = $_POST['ReportHutangPiutangForm']['pilihCetak'];
+        if (isset($profilId)) {
+            $model->profilId = $profilId;
+            $model->showDetail = $showDetail;
+            $model->pilihCetak = $pilihCetak;
             $report = $model->reportHutangPiutang();
         } else {
-            throw new Exception("Tidak ada data, klik lagi dari tombol cetak", 500);
+            throw new Exception("Tidak ada data", 500);
         }
 
         $configs = Config::model()->findAll();
@@ -432,7 +452,7 @@ class ReportController extends Controller
         $waktu = date('Y-m-d H:i:s');
         $waktuCetak = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportHutangPiutangForm::listKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
         $mPDF1->WriteHTML($this->renderPartial('_hutangpiutang_pdf', array(
                     'model' => $model,
                     'report' => $report,
@@ -448,6 +468,31 @@ class ReportController extends Controller
         $mPDF1->pagenumSuffix = ' / ';
         // Render PDF
         $mPDF1->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+    }
+
+    public function hutangPiutangCsv($profilId, $showDetail, $pilihCetak)
+    {
+        $model = new ReportHutangPiutangForm;
+        $csv = null;
+
+        if (isset($profilId)) {
+            $model->profilId = $profilId;
+            $model->showDetail = $showDetail;
+            $model->pilihCetak = $pilihCetak;
+            $csv = $model->reportHutangPiutangCsv();
+        } else {
+            throw new Exception("Tidak ada data", 500);
+        }
+        $profil = Profil::model()->findByPk($profilId);
+
+        $namaToko = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp = date("Y-m-d-H-i");
+        $namaFile = "HP {$namaToko->nilai} {$profil->nama} {$timeStamp}";
+
+        $this->renderPartial('_csv', array(
+            'namaFile' => $namaFile,
+            'csv' => $csv
+        ));
     }
 
     public function actionRekapHutangPiutang()

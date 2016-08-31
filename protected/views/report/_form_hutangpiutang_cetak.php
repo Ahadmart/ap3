@@ -1,41 +1,61 @@
 <?php
 /* @var $this ReportController */
 /* @var $model ReporHutangPiutangForm */
-/* @var $form CActiveForm */
 ?>
-<?php
-$form = $this->beginWidget('CActiveForm', array(
-    'id' => 'hutangpiutang-cetak-form',
-    'action' => $this->createUrl('hutangpiutangpdf'),
-// Please note: When you enable ajax validation, make sure the corresponding
-// controller action is handling ajax validation correctly.
-// See class documentation of CActiveForm for details on this,
-// you need to use the performAjaxValidation()-method described there.
-    'enableAjaxValidation' => false,
-    'htmlOptions' => array(
-        'target' => '_blank',
-    )
-        ));
-
-echo $form->hiddenField($model, 'profilId');
-?>
-<div style="display: none">
-    <?php
-    echo $form->checkBoxList($model, 'showDetail', ['1' => 'Tampilkan Detail']);
-    echo $form->checkBoxList($model, 'pilihCetak', ['hutang' => 'Hutang', 'piutang' => 'Piutang']);
-    ?>
-</div>
-<?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
 <div class="row">
-    <div class="small-12 medium-2 columns">
-        <?php echo $form->labelEx($model, 'kertas'); ?>
-        <?php echo $form->dropDownList($model, 'kertas', $kertasPdf); ?>
-        <?php echo $form->error($model, 'kertas', array('class' => 'error')); ?>
-    </div>
-    <div class="small-12 medium-2 large-1 end columns">
-        <label for="tombol-cetak">&nbsp;</label>
-        <?php echo CHtml::submitButton('Cetak', array('name' => 'cetak', 'id' => 'tombol-cetak', 'class' => 'tiny success bigfont button right')); ?>
+    <div class="small-12 columns">
+
+        <ul class="button-group right">
+            <li>
+                <a href="#" accesskey="p" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
+                <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
+                    <?php
+                    foreach ($printers as $printer) {
+                        ?>
+                        <?php
+                        if ($printer['tipe_id'] == Device::TIPE_PDF_PRINTER) {
+                            /* Jika printer pdf, tambahkan pilihan ukuran kertas */
+                            ?>
+                            <span class="sub-dropdown"><?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></span>
+                            <ul>
+                                <?php
+                                foreach ($kertasPdf as $key => $value):
+                                    ?>
+                                    <li><a target="blank" href="<?=
+                                        $this->createUrl('printhutangpiutang', [
+                                            'printId' => $printer['id'],
+                                            'kertas' => $key,
+                                            'profilId' => $model->profilId,
+                                            'showDetail' => $model->showDetail,
+                                            'pilihCetak' => $model->pilihCetak
+                                        ])
+                                        ?>"><?= $value; ?></a></li>
+                                        <?php
+                                    endforeach;
+                                    ?>
+                            </ul>
+                            <?php
+                        } else {
+                            ?>
+                            <li>
+                                <a href="<?=
+                                $this->createUrl('printhutangpiutang', [
+                                    'printId' => $printer['id'],
+                                    'profilId' => $model->profilId,
+                                    'showDetail' => $model->showDetail,
+                                    'pilihCetak' => $model->pilihCetak
+                                ])
+                                ?>">
+                                    <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
+                            </li>
+                            <?php
+                        }
+                        ?>
+                        <?php
+                    }
+                    ?>
+                </ul>
+            </li>
+        </ul>  
     </div>
 </div>
-<?php
-$this->endWidget();

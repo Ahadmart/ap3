@@ -201,6 +201,114 @@ class ReportHutangPiutangForm extends CFormModel
         ];
     }
 
+    public function reportHutangPiutangCsv()
+    {
+        $csv = '"jenis","nomor_hp","tgl","asal_dokumen","asal_nomor","jumlah","bayar","sisa"' . PHP_EOL;
+
+        $pilihHutang = false;
+        $pilihPiutang = false;
+        if (is_array($this->pilihCetak)) {
+            foreach ($this->pilihCetak as $pilihan) {
+                if ($pilihan == 'hutang') {
+                    $pilihHutang = true;
+                } else if ($pilihan == 'piutang') {
+                    $pilihPiutang = true;
+                }
+            }
+        }
+
+        $listAsalHP = HutangPiutang::model()->listNamaAsal();
+
+        /* Untuk csv selalu tampilkan detail */
+        $showDetail = true;
+
+        if ($showDetail) {
+            $command = Yii::app()->db->createCommand();
+            $command->select('hp.*, tbayar.*');
+            $command->from("hutang_piutang hp");
+            $command->leftJoin("
+                (SELECT
+                    hutang_piutang_id, SUM(jumlah) jumlah_bayar
+                FROM
+                    (SELECT
+                    detail.hutang_piutang_id, detail.jumlah
+                FROM
+                    penerimaan_detail detail
+                JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
+                    AND hp.profil_id = :profilId
+                    AND hp.status = :statusHp
+                    AND hp.tipe = :tipeHp
+                JOIN penerimaan ON detail.penerimaan_id = penerimaan.id 
+                    AND penerimaan.status= :statusPenerimaan
+                UNION
+                SELECT
+                    detail.hutang_piutang_id, detail.jumlah
+                FROM
+                    pengeluaran_detail detail
+                JOIN hutang_piutang hp ON detail.hutang_piutang_id = hp.id
+                    AND hp.profil_id = :profilId
+                    AND hp.status = :statusHp
+                    AND hp.tipe = :tipeHp
+                JOIN pengeluaran ON detail.pengeluaran_id = pengeluaran.id
+                    AND pengeluaran.status = :statusPengeluaran
+                    ) t
+                GROUP BY hutang_piutang_id) tbayar", "hp.id = tbayar.hutang_piutang_id");
+            $command->order("nomor");
+            $command->where("profil_id = :profilId  AND tipe = :tipeHp AND status = :statusHp");
+
+            $command->bindValues([
+                ':profilId' => $this->profilId,
+                ':tipeHp' => HutangPiutang::TIPE_HUTANG,
+                ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+                ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+                ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
+            ]);
+
+            if ($pilihHutang) {
+                $dataHutang = $command->queryAll();
+                foreach ($dataHutang as $data) {
+                    $sisa = $data['jumlah'] - $data['jumlah_bayar'];
+                    $csv .=
+                            "\"hutang\","
+                            . "\"{$data['nomor']}\","
+                            . "\"{$data['created_at']}\","
+                            . "\"{$listAsalHP[$data['asal']]}\","
+                            . "\"{$data['nomor_dokumen_asal']}\","
+                            . "\"{$data['jumlah']}\","
+                            . "\"{$data['jumlah_bayar']}\","
+                            . "\"" . $sisa . "\","
+                            . PHP_EOL;
+                }
+            }
+
+            $command->bindValues([
+                ':profilId' => $this->profilId,
+                ':tipeHp' => HutangPiutang::TIPE_PIUTANG,
+                ':statusHp' => HutangPiutang::STATUS_BELUM_LUNAS,
+                ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
+                ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR
+            ]);
+
+            if ($pilihPiutang) {
+                $dataPiutang = $command->queryAll();
+                foreach ($dataPiutang as $data) {
+                    $sisa = $data['jumlah'] - $data['jumlah_bayar'];
+                    $csv .=
+                            "\"piutang\","
+                            . "\"{$data['nomor']}\","
+                            . "\"{$data['created_at']}\","
+                            . "\"{$listAsalHP[$data['asal']]}\","
+                            . "\"{$data['nomor_dokumen_asal']}\","
+                            . "\"{$data['jumlah']}\","
+                            . "\"{$data['jumlah_bayar']}\","
+                            . "\"" . $sisa . "\","
+                            . PHP_EOL;
+                }
+            }
+        }
+        return $csv;
+    }
+
     public function listKertas()
     {
         return [

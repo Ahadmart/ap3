@@ -23,6 +23,7 @@ $this->renderPartial('_form_hutangpiutang', array('model' => $model));
 if (isset($report)):
     $this->renderPartial('_form_hutangpiutang_cetak', array(
         'model' => $model,
+        'printers' => $printers,
         'kertasPdf' => $kertasPdf
     ));
     ?>
