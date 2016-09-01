@@ -124,9 +124,16 @@ class ReportController extends Controller
             }
         }
 
+        $tipePrinterAvailable = array(Device::TIPE_PDF_PRINTER);
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf = ReportHarianForm::listKertas();
+
         $this->render('harian', array(
             'model' => $model,
-            'judul' => 'Harian Detail'
+            'judul' => 'Harian Detail',
+            'printers' => $printers,
+            'kertasPdf' => $kertasPdf,
+            'printHandle' => 'printharian'
         ));
     }
 
@@ -137,22 +144,60 @@ class ReportController extends Controller
     {
         $this->layout = '//layouts/box_kecil';
         $model = new ReportHarianForm;
-        if (isset($_REQUEST['ReportHarianForm'])) {
-            $model->attributes = $_REQUEST['ReportHarianForm'];
-            if ($model->validate()) {
-                $report = $model->reportHarianDetail();
-                $report['tanggal'] = $model->tanggal;
-                $report['namaToko'] = $this->namaToko();
-                $report['kodeToko'] = $this->kodeToko();
-                $this->harianDetailPdf2($report);
-                Yii::app()->end();
-            }
-        }
+
+        $tipePrinterAvailable = array(Device::TIPE_PDF_PRINTER);
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf = ReportHarianForm::listKertas();
 
         $this->render('harian', array(
             'model' => $model,
-            'judul' => 'Harian Detail'
+            'judul' => 'Harian Detail',
+            'printers' => $printers,
+            'kertasPdf' => $kertasPdf,
+            'printHandle' => 'printharian2'
         ));
+    }
+
+    public function actionPrintHarian($printId, $kertas, $tanggal, $group)
+    {
+        $model = new ReportHarianForm;
+        $model->tanggal = $tanggal;
+        $model->groupByProfil = $group;
+        if ($model->validate()) {
+            $report = $model->reportHarianDetail();
+            $report['tanggal'] = $tanggal;
+            $report['namaToko'] = $this->namaToko();
+            $report['kodeToko'] = $this->kodeToko();
+            $device = Device::model()->findByPk($printId);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    /* Ada tambahan parameter kertas untuk tipe pdf */
+                    $this->harianDetailPdf($report, $kertas);
+                    break;
+            }
+            Yii::app()->end();
+        }
+    }
+
+    public function actionPrintHarian2($printId, $kertas, $tanggal, $group)
+    {
+        $model = new ReportHarianForm;
+        $model->tanggal = $tanggal;
+        $model->groupByProfil = $group;
+        if ($model->validate()) {
+            $report = $model->reportHarianDetail();
+            $report['tanggal'] = $tanggal;
+            $report['namaToko'] = $this->namaToko();
+            $report['kodeToko'] = $this->kodeToko();
+            $device = Device::model()->findByPk($printId);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    /* Ada tambahan parameter kertas untuk tipe pdf */
+                    $this->harianDetailPdf2($report, $kertas);
+                    break;
+            }
+            Yii::app()->end();
+        }
     }
 
     /**
@@ -192,13 +237,14 @@ class ReportController extends Controller
         return $config->nilai;
     }
 
-    public function harianDetailPdf($report)
+    public function harianDetailPdf($report, $kertas)
     {
 
         /*
          * Persiapan render PDF
          */
-        $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
+        $listNamaKertas = ReportHarianForm::listKertas();
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
         $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf', array(
                     'report' => $report,
                         ), true
@@ -211,13 +257,14 @@ class ReportController extends Controller
         $mPDF1->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
     }
 
-    public function harianDetailPdf2($report)
+    public function harianDetailPdf2($report, $kertas)
     {
 
         /*
          * Persiapan render PDF
          */
-        $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
+        $listNamaKertas = ReportHarianForm::listKertas();
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
         $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf_2', array(
                     'report' => $report,
                         ), true
