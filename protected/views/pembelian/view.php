@@ -62,7 +62,7 @@ $this->boxHeader['normal'] = 'Pembelian: ' . $model->nomor;
         <?php
         $this->widget('BGridView', array(
             'id' => 'pembelian-detail-grid',
-            'dataProvider' => $pembelianDetail->search(),
+            'dataProvider' => $pembelianDetail->search('t.id'),
             'filter' => $pembelianDetail,
             'summaryText' => '{start}-{end} dari {count}, Total: ' . $model->total,
             'columns' => array(

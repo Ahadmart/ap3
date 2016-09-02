@@ -75,6 +75,7 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
     $this->renderPartial('_detail', array(
         'pembelian' => $model,
         'pembelianDetail' => $pembelianDetail,
+        'pilihBarang' => $pilihBarang
     ));
     ?>
 </div>

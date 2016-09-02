@@ -809,7 +809,7 @@ class Penjualan extends CActiveRecord
                     join barang_satuan sb on sb.id = barang.satuan_id
                     join barang_kategori kb on kb.id = barang.kategori_id
                     where penjualan_id={$this->id}
-                    order by barang.nama")
+                    order by pd.id")
                 ->queryAll();
         /* Kalau perlu harga beli, tambahkan ini ke sql
          * (

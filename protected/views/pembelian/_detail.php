@@ -35,7 +35,7 @@ endif;
     <?php
     $this->widget('BGridView', array(
         'id' => 'pembelian-detail-grid',
-        'dataProvider' => $pembelianDetail->search(),
+        'dataProvider' => $pembelianDetail->search($pilihBarang ? NULL : 't.id'),
         //'filter' => $pembelianDetail,
         'rowCssClassExpression' => function($row, $data) {
             if ($data->isBarangBaru()) {
