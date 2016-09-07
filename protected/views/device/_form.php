@@ -51,38 +51,55 @@
         </div>
     </div>
     <?php
-    /* Fixme: logic di view - sebaiknya TIDAK di view */
+    /* Tampilan tambahan ketika ubah (setelah tambah) */
+    if (!$model->isNewRecord) {
+        if ($model->tipe_id == Device::TIPE_POS_CLIENT) {
+            ?>
+            <div class="row">
+                <div class="small-12 columns">
+                    <?php echo $form->labelEx($model, 'default_printer_id'); ?>
+                    <?php
+                    echo $form->dropDownList($model, 'default_printer_id', $model->listPrinter(), array('prompt' => 'Pilih satu..'));
+                    ?>
+                    <?php echo $form->error($model, 'default_printer_id', array('class' => 'error')); ?>
+                </div>
+            </div>
+            <?php
+        } else {
+            ?>
+            <div class="row">
+                <div class="small-12 columns">
+                    <?php echo $form->labelEx($model, 'lf_sebelum'); ?>
+                    <?php echo $form->textField($model, 'lf_sebelum'); ?>
+                    <?php echo $form->error($model, 'lf_sebelum', array('class' => 'error')); ?>
+                </div>
+            </div>
 
-    if ($model->tipe_id == Device::TIPE_POS_CLIENT) {
-        ?>
-        <div class="row">
-            <div class="small-12 columns">
-                <?php echo $form->labelEx($model, 'default_printer_id'); ?>
-                <?php
-                echo $form->dropDownList($model, 'default_printer_id', $model->listPrinter(), array('prompt' => 'Pilih satu..'));
-                ?>
-                <?php echo $form->error($model, 'default_printer_id', array('class' => 'error')); ?>
+            <div class="row">
+                <div class="small-12 columns">
+                    <?php echo $form->labelEx($model, 'lf_setelah'); ?>
+                    <?php echo $form->textField($model, 'lf_setelah'); ?>
+                    <?php echo $form->error($model, 'lf_setelah', array('class' => 'error')); ?>
+                </div>
             </div>
-        </div>
-        <?php
-    } else {
-        ?>
-        <div class="row">
-            <div class="small-12 columns">
-                <?php echo $form->labelEx($model, 'lf_sebelum'); ?>
-                <?php echo $form->textField($model, 'lf_sebelum'); ?>
-                <?php echo $form->error($model, 'lf_sebelum', array('class' => 'error')); ?>
+            <?php
+        }
+        if ($model->tipe_id == Device::TIPE_LPR) {
+            ?>
+            <div class="row">
+                <div class="small-6 columns">
+                    <?php echo $form->labelEx($model, 'paper_autocut'); ?>
+                    <?php echo $form->dropDownList($model, 'paper_autocut', [1 => 'Ya'], ['prompt' => 'Tidak']); ?>
+                    <?php echo $form->error($model, 'paper_autocut', array('class' => 'error')); ?>
+                </div>
+                <div class="small-6 columns">
+                    <?php echo $form->labelEx($model, 'cashdrawer_kick'); ?>
+                    <?php echo $form->dropDownList($model, 'cashdrawer_kick', [1 => 'Ya'], ['prompt' => 'Tidak']); ?>
+                    <?php echo $form->error($model, 'cashdrawer_kick', array('class' => 'error')); ?>
+                </div>
             </div>
-        </div>
-
-        <div class="row">
-            <div class="small-12 columns">
-                <?php echo $form->labelEx($model, 'lf_setelah'); ?>
-                <?php echo $form->textField($model, 'lf_setelah'); ?>
-                <?php echo $form->error($model, 'lf_setelah', array('class' => 'error')); ?>
-            </div>
-        </div>
-        <?php
+            <?php
+        }
     }
     ?>
 

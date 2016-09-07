@@ -12,6 +12,8 @@
  * @property string $default_printer_id
  * @property integer $lf_sebelum
  * @property integer $lf_setelah
+ * @property integer $paper_autocut
+ * @property integer $cashdrawer_kick
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
@@ -48,7 +50,7 @@ class Device extends CActiveRecord
         // will receive user inputs.
         return array(
             array('tipe_id', 'required'),
-            array('tipe_id, lf_sebelum, lf_setelah', 'numerical', 'integerOnly' => true),
+            array('tipe_id, lf_sebelum, lf_setelah, paper_autocut, cashdrawer_kick', 'numerical', 'integerOnly' => true),
             array('nama, address', 'length', 'max' => 100),
             array('keterangan', 'length', 'max' => 500),
             array('default_printer_id, updated_by', 'length', 'max' => 10),
@@ -88,6 +90,8 @@ class Device extends CActiveRecord
             'default_printer_id' => 'Default Printer',
             'lf_sebelum' => 'LF Sebelum',
             'lf_setelah' => 'LF Setelah',
+            'paper_autocut' => 'Otomatis Potong Kertas',
+            'cashdrawer_kick' => 'Otomatis Buka Laci Kas',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
@@ -121,6 +125,8 @@ class Device extends CActiveRecord
         $criteria->compare('default_printer_id', $this->default_printer_id, true);
         $criteria->compare('lf_sebelum', $this->lf_sebelum);
         $criteria->compare('lf_setelah', $this->lf_setelah);
+        $criteria->compare('paper_autocut', $this->paper_autocut);
+        $criteria->compare('cashdrawer_kick', $this->cashdrawer_kick);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
@@ -213,11 +219,39 @@ class Device extends CActiveRecord
         for ($index1 = 0; $index1 < $this->lf_setelah; $index1++) {
             $revText .= PHP_EOL;
         }
-        return $revText;
+        return $revText . $this->potongKertas();
+    }
+
+    public function potongKertas()
+    {
+        $r = '';
+        if ($this->paper_autocut == 1) {
+            $r = chr(27) . "@" . chr(29) . "V" . chr(1);
+        }
+        return $r;
+    }
+
+    public function bukaLaciKas()
+    {
+        if ($this->cashdrawer_kick == 1) {
+            /**
+             * Init printer, dan buka cash drawer
+             */
+            $command = chr(27) . "@"; //Init printer
+            $command .= chr(27) . chr(112) . chr(48) . chr(60) . chr(120); // buka cash drawer
+            $command .= chr(27) . chr(101) . chr(1); //1 reverse lf
+
+            $perintahPrinter = "-H {$this->address} -P {$this->nama}";
+
+            $perintah = "echo \"{$command}\" |lpr {$perintahPrinter} -l";
+            exec($perintah, $output);
+        }
     }
 
     public function printLpr($text)
     {
+        $this->bukaLaciKas();
+
         $perintahPrinter = "-H {$this->address} -P {$this->nama}";
 
         $perintah = "echo \"{$this->revisiText($text)}\" |lpr {$perintahPrinter} -l";

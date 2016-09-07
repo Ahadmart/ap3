@@ -53,6 +53,14 @@ $this->boxHeader['normal'] = 'Device';
                     'filter' => false,
                 ),
                 array(
+                    'name' => 'paper_autocut',
+                    'filter' => false,
+                ),
+                array(
+                    'name' => 'cashdrawer_kick',
+                    'filter' => false,
+                ),
+                array(
                     'class' => 'BButtonColumn',
                 ),
             ),
