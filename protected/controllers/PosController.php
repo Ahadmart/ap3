@@ -406,11 +406,17 @@ class PosController extends Controller
                 'msg' => 'Sempurnakan input!',
             )
         );
+
         if (isset($_POST['pos'])) {
             $pos = Pos::model('Pos')->findByPk($id);
-            if ($pos->status == Penjualan::STATUS_DRAFT) {
+
+            $i = 1;
+            /* Simpan, jiga gagal dicoba max 3 kali */
+            while ($pos->status == Penjualan::STATUS_DRAFT && $return['sukses'] == false && $i <= 3) {
                 $return = $pos->simpanPOS($_POST['pos']);
+                $i++;
             }
+
             if ($return['sukses']) {
                 if ($this->isOtorisasiAdmin($id)) {
                     $this->adminLogout();
