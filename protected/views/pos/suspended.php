@@ -13,6 +13,11 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Suspende
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 ?>
+<script>
+    $(function () {
+        $("#tombol-new").focus();
+    });
+</script>
 <div class="medium-10 columns" style="/*height: 100%; overflow: scroll*/">
     <?php
     $this->widget('BGridView', array(
