@@ -67,9 +67,14 @@ class ReportUmurBarangForm extends CFormModel
         $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
         if (empty($this->bulan)) {
-            $whereBulan = "created_at BETWEEN :dari AND :sampai";
+            $whereBulan = "inventory_balance.created_at BETWEEN :dari AND :sampai";
         } else {
-            $whereBulan = "TIMESTAMPDIFF(MONTH, created_at, NOW()) >= :bulan";
+            $whereBulan = "TIMESTAMPDIFF(MONTH, inventory_balance.created_at, NOW()) >= :bulan";
+        }
+        $kategoriQuery = '';
+        if (!empty($this->kategoriId)) {
+            $kategoriQuery = 'JOIN barang ON inventory_balance.barang_id = barang.id
+                                AND barang.kategori_id = :kategoriId';
         }
         $command = Yii::app()->db->createCommand();
         $command->select("
@@ -85,12 +90,13 @@ class ReportUmurBarangForm extends CFormModel
                     barang_id,
                         SUM(qty) qty,
                         SUM(qty * harga_beli) nominal,
-                        MIN(created_at) tgl_beli_awal,
+                        MIN(inventory_balance.created_at) tgl_beli_awal,
                         COUNT(*) count
                 FROM
                     inventory_balance
+        {$kategoriQuery}    
                 WHERE
-                    $whereBulan
+        {$whereBulan}
                         AND qty > 0
                 GROUP BY barang_id
                 LIMIT {$this->limit}) AS t_inventory
@@ -100,7 +106,6 @@ class ReportUmurBarangForm extends CFormModel
         $command->group('barang_id');
         $command->order([$this->listSortBy2()[$this->sortBy0], $this->listSortBy2()[$this->sortBy1]]);
         if (!empty($this->kategoriId)) {
-            $command->where('barang.kategori_id = :kategoriId');
             $command->bindValue(':kategoriId', $this->kategoriId);
         }
 
@@ -110,7 +115,7 @@ class ReportUmurBarangForm extends CFormModel
         } else {
             $command->bindValue(':bulan', $this->opsiUmurBulan2()[$this->bulan]);
         }
-        
+
         return $command->queryAll();
     }
 
