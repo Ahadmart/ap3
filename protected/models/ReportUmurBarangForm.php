@@ -121,7 +121,7 @@ class ReportUmurBarangForm extends CFormModel
 
     public function filterKategori()
     {
-        return ['NULL' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return ['' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
     }
 
     public function opsiUmurBulan()

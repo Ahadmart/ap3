@@ -13,10 +13,11 @@ $this->renderPartial('_form_umurbarang', ['model' => $model]);
 
 if (isset($report)) {
 
-//    $this->renderPartial('_form_toprank_cetak', [
-//        'model' => $model,
-//        'kertasPdf' => $kertasPdf
-//    ]);
+    $this->renderPartial('_form_umurbarang_cetak', [
+        'model' => $model,
+        'printers' => $printers,
+        'kertasPdf' => $kertasPdf
+    ]);
     ?>
     <div class="row">
         <div class="small-12 columns">
@@ -28,12 +29,12 @@ if (isset($report)) {
                         <th rowspan="2">Nama</th>
                         <th rowspan="2" class="rata-kanan">Stok</th>
                         <th rowspan="2" class="rata-kanan">Nilai Stok</th>
-                        <th colspan="2" class='rata-tengah'>Umur Stok</th>
+                        <th colspan="2" class='rata-tengah'>Umur Stok dalam</th>
                         <th rowspan="2" class="rata-kanan">Total Stok</th>
                     </tr>
                     <tr>
                         <th class="rata-kanan">Hari</th>
-                        <th class="rata-kanan">Bulan (Kalender)</th>
+                        <th class="rata-kanan">Bulan</th>
                     </tr>
                 </thead>
                 <tbody>

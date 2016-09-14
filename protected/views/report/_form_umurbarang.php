@@ -28,7 +28,7 @@ $form = $this->beginWidget('CActiveForm', [
                     ]
                 ]);
                 ?>
-<?php echo $form->error($model, 'bulan', array('class' => 'error')); ?>
+                <?php echo $form->error($model, 'bulan', array('class' => 'error')); ?>
             </div>   
         </div>
     </div>
@@ -36,13 +36,13 @@ $form = $this->beginWidget('CActiveForm', [
         <div class="row collapse">
             <div class="small-12 columns">
                 <?php echo $form->labelEx($model, 'dari'); ?>
-<?php echo $form->textField($model, 'dari', array('class' => 'tanggalan dari', 'value' => empty($model->dari) ? '' : $model->dari)); ?>
+                <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan dari', 'value' => empty($model->dari) ? '' : $model->dari)); ?>
                 <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
             </div>
             <div class="small-12 columns">
                 <?php echo $form->labelEx($model, 'sampai'); ?>
-<?php echo $form->textField($model, 'sampai', array('class' => 'tanggalan sampai', 'value' => empty($model->sampai) ? '' : $model->sampai)); ?>
-<?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
+                <?php echo $form->textField($model, 'sampai', array('class' => 'tanggalan sampai', 'value' => empty($model->sampai) ? '' : $model->sampai)); ?>
+                <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
             </div>
         </div>
     </div>
@@ -50,13 +50,13 @@ $form = $this->beginWidget('CActiveForm', [
         <div class="row collapse">
             <div class="small-12 columns">
                 <?php echo $form->labelEx($model, 'kategoriId'); ?>
-<?php echo $form->dropDownList($model, 'kategoriId', $model->filterKategori(), ['prompt' => '[SEMUA]']); ?>
+                <?php echo $form->dropDownList($model, 'kategoriId', $model->filterKategori()); ?>
                 <?php echo $form->error($model, 'kategoriId', array('class' => 'error')); ?>
             </div>
             <div class="small-12 columns">
                 <?php echo $form->labelEx($model, 'limit'); ?>
-<?php echo $form->textField($model, 'limit'); ?>
-<?php echo $form->error($model, 'limit', array('class' => 'error')); ?>
+                <?php echo $form->textField($model, 'limit'); ?>
+                <?php echo $form->error($model, 'limit', array('class' => 'error')); ?>
             </div>
         </div>
     </div>
@@ -85,7 +85,7 @@ $form = $this->beginWidget('CActiveForm', [
                 <?php echo $form->error($model, 'sortBy1', array('class' => 'error')); ?>
             </div>
             <div class="small-12 columns">
-<?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
+                <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
             </div>
         </div>
     </div>

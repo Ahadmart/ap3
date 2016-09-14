@@ -627,10 +627,71 @@ class ReportController extends Controller
             }
         }
 
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasUntukPdf = ReportUmurBarangForm::listKertas();
         $this->render('umurbarang', [
             'model' => $model,
-            'report' => $report
+            'report' => $report,
+            'printers' => $printers,
+            'kertasPdf' => $kertasUntukPdf
         ]);
+    }
+
+    public function actionPrintUmurBarang()
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    $this->umurBarangPdf($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1'], $_GET['kertas']);
+                    break;
+            }
+        }
+    }
+
+    public function umurBarangPdf($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $kertas)
+    {
+        $model = new ReportUmurBarangForm();
+
+        $model->bulan = $bulan;
+        $model->dari = $dari;
+        $model->sampai = $sampai;
+        $model->kategoriId = $kategoriId;
+        $model->limit = $limit;
+        $model->sortBy0 = $sortBy0;
+        $model->sortBy1 = $sortBy1;
+        $report = $model->reportUmurBarang();
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        /*
+         * Persiapan render PDF
+         */
+        $waktu = date('Y-m-d H:i:s');
+        $waktuCetak = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
+        $listNamaKertas = ReportUmurBarangForm::listKertas();
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_umurbarang_pdf', array(
+                    'model' => $model,
+                    'report' => $report,
+                    'config' => $branchConfig,
+                    'waktu' => $waktu,
+                    'waktuCetak' => $waktuCetak,
+                        ), true
+        ));
+        $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->pagenumPrefix = 'Hal ';
+        $mPDF1->pagenumSuffix = ' / ';
+        // Render PDF
+        $mPDF1->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
 }
