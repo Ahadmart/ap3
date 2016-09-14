@@ -13,7 +13,7 @@ $this->boxHeader['normal'] = 'Stock Opname: '.$model->nomor;
 <div class="row">
    <div class="small-12 columns header">
       <span class="secondary label">Tanggal</span><span class="label"><?php echo $model->tanggal; ?></span>
-      <span class="secondary label">Rak</span><span class="label"><?php echo $model->rak->nama; ?></span>
+      <span class="secondary label">Rak</span><span class="label"><?php echo empty($model->rak) ? '-' : $model->rak->nama; ?></span>
       <span class="secondary label">Status</span><span class="warning label"><?php echo $model->getNamaStatus(); ?></span>
    </div>
 </div>
