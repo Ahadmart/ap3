@@ -37,17 +37,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             ));
             ?>
 
-<?php $this->renderPartial('_barang', array('model' => $labelCetak)); ?>
+            <?php $this->renderPartial('_barang', array('model' => $labelCetak)); ?>
         </div>
     </div>
 </div>
 <script>
-    $(function () {
-        $('.tanggalan').fdatepicker({
-            format: 'dd-mm-yyyy'
-        });
-    });
-
     $("#tombol-browse-profil").click(function () {
         $("#tabel-profil").slideToggle(500);
         $("input[name='Profil[nama]']").focus();

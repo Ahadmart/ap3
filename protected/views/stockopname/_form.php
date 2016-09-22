@@ -32,7 +32,7 @@
             <?php echo $form->labelEx($model, 'rak_id'); ?>
             <?php
             echo $form->dropDownList($model, 'rak_id', CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama'), array(
-                'empty' => 'Pilih satu..'
+                'empty' => ''
             ));
             ?>
             <?php echo $form->error($model, 'rak_id', array('class' => 'error')); ?>

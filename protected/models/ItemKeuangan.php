@@ -100,7 +100,7 @@ class ItemKeuangan extends CActiveRecord {
 
         $criteria->compare('t.id', $this->id);
         $criteria->compare('t.nama', $this->nama, true);
-        $criteria->compare('parent_id', $this->parent_id);
+        $criteria->compare('t.parent_id', $this->parent_id);
         $criteria->compare('jenis', $this->jenis);
         $criteria->compare('created_at', $this->created_at, true);
         $criteria->compare('updated_at', $this->updated_at, true);

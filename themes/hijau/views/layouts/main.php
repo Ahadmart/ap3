@@ -9,6 +9,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#a8cf45" />
 
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/normalize.css">
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/foundation.css">
@@ -171,6 +172,8 @@
                                             array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Top Rank', 'url' => array('/report/toprank')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Rekap Hutang Piutang', 'url' => array('/report/rekaphutangpiutang')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Hutang Piutang (per Profil)', 'url' => array('/report/hutangpiutang')),
+                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pengeluaran/Penerimaan', 'url' => array('/report/pengeluaranpenerimaan')),
+                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Umur Barang (Aging of Inventory)', 'url' => array('/report/umurbarang')),
                                         //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),

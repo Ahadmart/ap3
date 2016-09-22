@@ -24,7 +24,7 @@ table{
     width: 100%;
 }
 
-th{
+th, tfoot tr td{
     text-transform: uppercase;
     padding: 5px;
 }
@@ -58,7 +58,14 @@ td{
     text-align: right;
 }
 
+.rata-tengah{
+    text-align: center;
+}
+
 tr.alt{
     background-color: #E0E0E0;
 }
 
+tfoot tr td{
+    font-weight: bold;
+}

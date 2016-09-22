@@ -78,6 +78,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                 ),
                 array(
                     'class' => 'BButtonColumn',
+                    'buttons' => [
+                        'delete' => [
+                            'visible' => '$data->status == ' . Pengeluaran::STATUS_DRAFT,
+                        ]
+                    ]
                 ),
             ),
         ));

@@ -47,20 +47,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
-
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/dt/foundation-datepicker.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/dt/foundation-datepicker.js', CClientScript::POS_HEAD);
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/dt/locales/foundation-datepicker.id.js', CClientScript::POS_HEAD);
 ?>
 <script>
     $(function () {
-        $('.tanggal-waktu').fdatepicker({
-            format: 'dd-mm-yyyy  hh:ii',
-            disableDblClickSelection: true,
-            language: 'id',
-            pickTime: true
-        });
-
         $("#cetak-label-rak-form").submit(function (event) {
             event.preventDefault();
             dataUrl = '<?php echo $this->createUrl('tambahkanbarang'); ?>';

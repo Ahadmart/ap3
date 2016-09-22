@@ -30,27 +30,76 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->checkBox($model, 'groupByProfil'); ?>
         <?php echo $form->error($model, 'groupByProfil', array('class' => 'error')); ?>
 
+        <ul class="button-group right">
+            <li>
+                <a href="#" accesskey="p" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
+                <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
+                    <?php
+                    foreach ($printers as $printer) {
+                        ?>
+                        <?php
+                        if ($printer['tipe_id'] == Device::TIPE_PDF_PRINTER) {
+                            /* Jika printer pdf, tambahkan pilihan ukuran kertas */
+                            ?>
+                            <span class="sub-dropdown"><?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></span>
+                            <ul>
+                                <?php
+                                foreach ($kertasPdf as $key => $value):
+                                    ?>
+                                    <li><a target="blank" class="tombol-cetak" href="<?=
+                                        $this->createUrl($printHandle, [
+                                            'printId' => $printer['id'],
+                                            'kertas' => $key,
+                                        ])
+                                        ?>"><?= $value; ?></a></li>
+                                        <?php
+                                    endforeach;
+                                    ?>
+                            </ul>
+                            <?php
+                        } else {
+                            ?>
+                            <li>
+                                <a class="tombol-cetak" href="<?=
+                                   $this->createUrl($printHandle, [
+                                       'printId' => $printer['id'],
+                                   ])
+                                   ?>">
+                                    <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
+                            </li>
+                            <?php
+                        }
+                        ?>
+                        <?php
+                    }
+                    ?>
+                </ul>
+            </li>
+        </ul>  
     </div>
-
-
-
 </div>
-<div class="row">
-    <div class="small-12 columns">
-        <?php echo CHtml::submitButton('Submit', array('name' => 'submit', 'class' => 'tiny bigfont button right')); ?>
-    </div>
-</div>
-
 <?php
 $this->endWidget();
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/foundation-datepicker.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/locales/foundation-datepicker.id.js', CClientScript::POS_HEAD);
 ?>
 <script>
     $(function () {
         $('.tanggalan').fdatepicker({
-            format: 'dd-mm-yyyy'
+            format: 'dd-mm-yyyy',
+            language: 'id'
         });
+    });
+
+    $(".tombol-cetak").click(function () {
+        var dataKirim = {
+            'tanggal': $("#ReportHarianForm_tanggal").val(),
+            'group': $("#ReportHarianForm_groupByProfil").is(':checked') ? 1 : 0
+        };
+        var dataUrl = $(this).attr('href');
+        window.open(dataUrl + '&' + $.param(dataKirim), '_blank');
+        return false;
     });
 </script>

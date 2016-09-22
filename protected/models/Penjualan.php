@@ -567,6 +567,25 @@ class Penjualan extends CActiveRecord
     }
 
     /**
+     * Mencari nomor untuk penomoran surat
+     * @return int maksimum+1 atau 1 jika belum ada nomor untuk bulan ini
+     */
+    /*
+      public function cariNomor()
+      {
+      $tahunBulan = date('ym');
+      $data = $this->find(array(
+      'select' => 'max(substring(nomor,9)*1) as max',
+      'condition' => "substring(nomor,5,4)='{$tahunBulan}'")
+      );
+
+      $value = is_null($data) ? 0 : $data->max;
+      return $value + 1;
+      }
+     * 
+     */
+
+    /**
      * Membuat nomor surat
      * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
      */
@@ -809,7 +828,7 @@ class Penjualan extends CActiveRecord
                     join barang_satuan sb on sb.id = barang.satuan_id
                     join barang_kategori kb on kb.id = barang.kategori_id
                     where penjualan_id={$this->id}
-                    order by barang.nama")
+                    order by pd.id")
                 ->queryAll();
         /* Kalau perlu harga beli, tambahkan ini ke sql
          * (
@@ -1364,6 +1383,27 @@ class Penjualan extends CActiveRecord
                             ':profilId' => $profil->id
                         ))
                         ->queryRow();
+            } else {
+                /* Berarti periode lintas tahun (awal > akhir ) */
+                $periodePoinL = MemberPeriodePoin::model()->find('awal <= month(now()) OR month(now()) <= akhir AND awal > akhir');
+                if (!is_null($periodePoinL)) {
+                    $queryPoin = Yii::app()->db->createCommand()
+                            ->select('sum(poin) total')
+                            ->from(PenjualanMember::model()->tableName() . ' tpm')
+                            ->where('profil_id=:profilId');
+                    $curMonth = date('n');
+                    if ($curMonth >= $periodePoinL->akhir){
+                        $queryPoin->andWhere('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND :akhir');
+                        $queryPoin->bindValues([]);
+                    }
+                    $queryPoin->bindValues(array(
+                        //':tahun' => 'year(' . $this->tanggal . ')',
+                        ':awal' => $periodePoinL->awal,
+                        ':akhir' => $periodePoinL->akhir,
+                        ':profilId' => $profil->id
+                    ));
+                    $poin = $queryPoin->queryRow();
+                }
             }
             return $poin ? $poin['total'] : 0;
         } else {

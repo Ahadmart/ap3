@@ -30,6 +30,10 @@ $this->boxHeader['normal'] = 'Device: ' . $model->nama;
             $attribute[] = 'lf_sebelum';
             $attribute[] = 'lf_setelah';
         }
+        if ($model->tipe_id == Device::TIPE_LPR) {
+            $attribute[] = ['name' => 'paper_autocut'];
+            $attribute[] = ['name' => 'cashdrawer_kick'];
+        }
 
         $this->widget('BDetailView', array(
             'data' => $model,

@@ -55,7 +55,7 @@ class DeviceController extends Controller
         if (isset($_POST['Device'])) {
             $model->attributes = $_POST['Device'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->id));
+                $this->redirect(array('ubah', 'id' => $model->id));
         }
 
         $this->render('tambah', array(

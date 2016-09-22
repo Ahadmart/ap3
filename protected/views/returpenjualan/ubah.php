@@ -82,6 +82,12 @@ $this->menu = array(
                     'class' => 'button',
                     'accesskey' => 't'
                 )),
+            array('label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
+                    'class' => 'alert button',
+                    'accesskey' => 'h',
+                    'submit' => array('hapus', 'id' => $model->id),
+                    'confirm' => 'Anda yakin?'
+                )),
             array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
                     'accesskey' => 'i'
@@ -93,6 +99,11 @@ $this->menu = array(
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
                     'class' => 'button',
+                )),
+            array('label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
+                    'class' => 'alert button',
+                    'submit' => array('hapus', 'id' => $model->id),
+                    'confirm' => 'Anda yakin?'
                 )),
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',

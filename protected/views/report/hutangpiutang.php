@@ -21,22 +21,29 @@ $this->renderPartial('_form_hutangpiutang', array('model' => $model));
 </div>
 <?php
 if (isset($report)):
-    /*
-      $this->renderPartial('_form_hutangpiutang_cetak', array(
-      'model' => $model,
-      'kertasPdf' => $kertasPdf
-      ));
-     */
     ?>
     <div class="row">
         <div class="small-12 columns">
             <hr>
         </div>
     </div>
+    <?php
+    $this->renderPartial('_form_hutangpiutang_cetak', array(
+        'model' => $model,
+        'printers' => $printers,
+        'kertasPdf' => $kertasPdf
+    ));
+    ?>
     <div class="row">
         <div class="small-12 columns">
-            <h3>Hutang</h3>
-            <h4><small>Total</small> <?= number_format($report['rekapHutang']['jumlah'], 0, ',', '.'); ?> <small>Bayar</small> <?= number_format($report['rekapHutang']['jumlah_bayar'], 0, ',', '.'); ?> <small>Sisa</small> <?= number_format($report['rekapHutang']['jumlah'] - $report['rekapHutang']['jumlah_bayar'], 0, ',', '.'); ?></h4>
+            <?php
+            if (!empty($report['rekapHutang'])) {
+                ?>
+                <h3>Hutang</h3>
+                <h4><small>Total</small> <?= number_format($report['rekapHutang']['jumlah'], 0, ',', '.'); ?> <small>Bayar</small> <?= number_format($report['rekapHutang']['jumlah_bayar'], 0, ',', '.'); ?> <small>Sisa</small> <?= number_format($report['rekapHutang']['jumlah'] - $report['rekapHutang']['jumlah_bayar'], 0, ',', '.'); ?></h4>
+                <?php
+            }
+            ?>
             <?php
             if (!empty($report['dataHutang'])):
                 ?>
@@ -83,8 +90,14 @@ if (isset($report)):
         </div>
     </div><div class="row">
         <div class="small-12 columns">
-            <h3>Piutang</h3>
-            <h4><small>Total</small> <?= number_format($report['rekapPiutang']['jumlah'], 0, ',', '.'); ?> <small>Bayar</small> <?= number_format($report['rekapPiutang']['jumlah_bayar'], 0, ',', '.'); ?> <small>Sisa</small> <?= number_format($report['rekapPiutang']['jumlah'] - $report['rekapPiutang']['jumlah_bayar'], 0, ',', '.'); ?></h4>
+            <?php
+            if (!empty($report['rekapPiutang'])) {
+                ?>
+                <h3>Piutang</h3>
+                <h4><small>Total</small> <?= number_format($report['rekapPiutang']['jumlah'], 0, ',', '.'); ?> <small>Bayar</small> <?= number_format($report['rekapPiutang']['jumlah_bayar'], 0, ',', '.'); ?> <small>Sisa</small> <?= number_format($report['rekapPiutang']['jumlah'] - $report['rekapPiutang']['jumlah_bayar'], 0, ',', '.'); ?></h4>
+                <?php
+            }
+            ?>
             <?php
             if (!empty($report['dataPiutang'])):
                 ?>

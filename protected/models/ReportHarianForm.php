@@ -11,8 +11,17 @@
 class ReportHarianForm extends CFormModel
 {
 
+    const KERTAS_LETTER = 10;
+    const KERTAS_A4 = 20;
+    const KERTAS_FOLIO = 30;
+    /* ===================== */
+    const KERTAS_LETTER_NAMA = 'Letter';
+    const KERTAS_A4_NAMA = 'A4';
+    const KERTAS_FOLIO_NAMA = 'Folio';
+
     public $tanggal;
-    public $groupByProfil = false;
+    public $groupByProfil = true;
+    public $kertas;
 
     /**
      * Declares the validation rules.
@@ -155,6 +164,15 @@ class ReportHarianForm extends CFormModel
             //'returJualBayar' => $laporanHarian->returJualBayar(),
             'totalReturJualBayar' => $laporanHarian->totalReturJualBayar(),
         );
+    }
+
+    public function listKertas()
+    {
+        return [
+            self::KERTAS_A4 => self::KERTAS_A4_NAMA,
+            self::KERTAS_FOLIO => self::KERTAS_FOLIO_NAMA,
+            self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA
+        ];
     }
 
 }

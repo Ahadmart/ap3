@@ -7,7 +7,7 @@
                         self.close();
                         window.history.go(-1);
                     },
-                    5000
+                    3000
                     );
         </script>
     </head>
