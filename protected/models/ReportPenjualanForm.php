@@ -15,6 +15,7 @@ class ReportPenjualanForm extends CFormModel
     public $userId;
     public $dari;
     public $sampai;
+    public $kategoriId;
 
     /**
      * Declares the validation rules.
@@ -23,7 +24,7 @@ class ReportPenjualanForm extends CFormModel
     {
         return array(
             array('dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            array('profilId, userId', 'safe')
+            array('profilId, userId, kategoriId', 'safe')
         );
     }
 
@@ -36,7 +37,8 @@ class ReportPenjualanForm extends CFormModel
             'profilId' => 'Profil',
             'userId' => 'User',
             'dari' => 'Dari',
-            'sampai' => 'Sampai'
+            'sampai' => 'Sampai',
+            'kategoriId' => 'Kategori'
         );
     }
 
@@ -68,6 +70,12 @@ class ReportPenjualanForm extends CFormModel
         $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
 
+        $kategoriQuery = '';
+        if (!empty($this->kategoriId)) {
+            $kategoriQuery = 'JOIN barang ON pd.barang_id = barang.id
+                                AND barang.kategori_id = :kategoriId';
+        }
+
         $command = Yii::app()->db->createCommand();
         $command->select('t_penjualan.*, t_modal.*, profil.nama, (t_penjualan.total - t_modal.totalModal) margin');
         $command->from("(SELECT 
@@ -81,12 +89,14 @@ class ReportPenjualanForm extends CFormModel
                             penjualan_detail pd
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                        {$kategoriQuery}   
                         GROUP BY pd.penjualan_id) t_penjualan");
         $command->join("(SELECT 
                             pj.id, SUM(hpp.qty * hpp.harga_beli) totalmodal
                         FROM
                             harga_pokok_penjualan hpp
                         JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
+                        {$kategoriQuery} 
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                         GROUP BY pj.id) t_modal", "t_penjualan.penjualan_id = t_modal.id");
@@ -100,11 +110,13 @@ class ReportPenjualanForm extends CFormModel
             $command->bindValue(":profilId", $this->profilId);
             $whereSub.=" AND pj.profil_id = :profilId";
         }
-
         if (!empty($this->userId)) {
             $command->andWhere("t_penjualan.updated_by=:userId");
             $command->bindValue(":userId", $this->userId);
             $whereSub.=" AND pj.updated_by = :userId";
+        }
+        if (!empty($this->kategoriId)) {
+            $command->bindValue(':kategoriId', $this->kategoriId);
         }
         $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $command->bindValue(":dari", $dari);
@@ -118,11 +130,13 @@ class ReportPenjualanForm extends CFormModel
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai 
                             {$whereSub}
+                        {$kategoriQuery}   
                         ) t_penjualan, 
                         (SELECT SUM(hpp.qty * hpp.harga_beli) totalmodal
                         FROM
                             harga_pokok_penjualan hpp
                         JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
+                        {$kategoriQuery} 
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                             {$whereSub}
@@ -134,6 +148,9 @@ class ReportPenjualanForm extends CFormModel
         if (!empty($this->userId)) {
             $commandRekap->bindValue(":userId", $this->userId);
         }
+        if (!empty($this->kategoriId)) {
+            $commandRekap->bindValue(':kategoriId', $this->kategoriId);
+        }
         $commandRekap->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $commandRekap->bindValue(":dari", $dari);
         $commandRekap->bindValue(":sampai", $sampai);
@@ -144,6 +161,11 @@ class ReportPenjualanForm extends CFormModel
             'detail' => $penjualan,
             'rekap' => $rekap
         );
+    }
+
+    public function filterKategori()
+    {
+        return ['' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
     }
 
 }
