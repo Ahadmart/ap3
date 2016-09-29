@@ -51,10 +51,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 'accesskey' => 'm'
             ));
         } else {
-            echo CHtml::link('<i class="fa fa-keyboard-o"></i> <span class="ak">M</span>ode Manual', $this->createUrl('ubah', array('id' => $model->id, 'manual' => true)), array(
-                'class' => 'secondary tiny bigfont button right',
-                'accesskey' => 'm'
-            ));
+            if (!is_null($model->rak_id)) {
+                echo CHtml::link('<i class="fa fa-keyboard-o"></i> <span class="ak">M</span>ode Manual', $this->createUrl('ubah', array('id' => $model->id, 'manual' => true)), array(
+                    'class' => 'secondary tiny bigfont button right',
+                    'accesskey' => 'm'
+                ));
+            }
         }
         ?>
     </div>
@@ -74,6 +76,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     } else {
         $this->renderPartial('_input_detail', array(
             'model' => $model,
+            'scanBarcode' => $scanBarcode
         ));
     }
     ?>
