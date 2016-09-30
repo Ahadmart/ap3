@@ -27,6 +27,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                     'name' => 'barcode',
                     'header' => '<span class="ak">B</span>arcode',
                     'accesskey' => 'b',
+                    'autoFocus' => true
                 ),
                 array(
                     'class' => 'BDataColumn',
