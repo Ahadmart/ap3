@@ -1,5 +1,8 @@
 <?php
-Yii::app()->clientScript->registerScriptFile($this->createAbsoluteUrl('/js') . '/zxing.js', CClientScript::POS_HEAD);
+/* Tidak perlu pakai ini (zxing.js) jika:
+ * Browser di android diset default chrome
+ */
+//Yii::app()->clientScript->registerScriptFile($this->createAbsoluteUrl('/js') . '/zxing.js', CClientScript::POS_HEAD);
 ?>
 
 <div class="small-12 columns">
@@ -17,8 +20,11 @@ Yii::app()->clientScript->registerScriptFile($this->createAbsoluteUrl('/js') . '
                     <?php
                     /* https://github.com/zxing/zxing/wiki/Scanning-From-Web-Pages */
                     /* http://stackoverflow.com/questions/26356626/using-zxing-barcode-scanner-within-a-web-page */
+                    /*
+                      <a class="prefix secondary button" onclick="getZxing()"><i class="fa fa-barcode fa-2x"></i></a>
+                     */
                     ?>
-                    <a class="prefix secondary button" onclick="getZxing()"><i class="fa fa-barcode fa-2x"></i></a>
+                    <a class="prefix secondary button" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('ubah', ['id' => $model->id, 'barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a> 
                 </div>
                 <div class="small-6 columns">
                     <input id="scan" type="text"  placeholder="Scan [B]arcode" accesskey="b" autofocus="autofocus" autocomplete="off"/>
@@ -68,7 +74,7 @@ Yii::app()->clientScript->registerScriptFile($this->createAbsoluteUrl('/js') . '
         $("#barang-info").show();
         text = data.nama + ' <small>' + data.barcode + '</small><br />';
         text += '<small>Qty</small> ' + data.stok + '  <small>Qty SO</small> ' + data.qtySudahSo;
-        text += ' <a href="" onclick="location.reload()"> Kembali </a>';
+        text += ' <a href="<?= $this->createUrl('ubah', ['id' => $model->id]) ?>"> Kembali </a>';
         $("#barang-info p").html(text);
     }
 
@@ -187,8 +193,24 @@ Yii::app()->clientScript->registerScriptFile($this->createAbsoluteUrl('/js') . '
         return false;
     });
 
-<?php /* Proses barcode yang didapat dari scan zxing */ ?>
-    function processBarcode(b) {
-        kirimBarcode(b);
-    }
+<?php
+/* Proses barcode yang didapat dari scan zxing */
+/*
+  function processBarcode(b) {
+  $("#scan").val(b);
+  kirimBarcode(b);
+  }
+ * 
+ */
+?>
+<?php
+if (!is_null($scanBarcode)) {
+    ?>
+        $(function () {
+            $("#scan").val(<?= $scanBarcode ?>);
+            kirimBarcode(<?= $scanBarcode ?>);
+        });
+    <?php
+}
+?>
 </script>
