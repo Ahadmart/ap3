@@ -12,6 +12,12 @@ $this->boxHeader['normal'] = 'Barang';
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
+
+// Agar focus tetap di input cari barcode setelah pencarian
+Yii::app()->clientScript->registerScript('editableQty', ''
+        . '$( document ).ajaxComplete(function() {'
+        . '$("input[name=\'Barang[barcode]\'").select();'
+        . '});');
 ?>
 <div class="row">
     <div class="small-12 columns">
