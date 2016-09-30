@@ -189,7 +189,6 @@ Yii::app()->clientScript->registerScriptFile($this->createAbsoluteUrl('/js') . '
 
 <?php /* Proses barcode yang didapat dari scan zxing */ ?>
     function processBarcode(b) {
-        $("#scan").val(b);
         kirimBarcode(b);
     }
 </script>
