@@ -19,8 +19,6 @@ $this->widget('BGridView', array(
             'name' => 'namaBarang',
             'value' => '$data->barang->nama'
         ],
-        //'qty',
-        //'ads',
         [
             'name' => 'qty',
             'value' => function($data) {
@@ -53,11 +51,5 @@ $this->widget('BGridView', array(
             'htmlOptions' => array('class' => 'rata-kanan'),
             'headerHtmlOptions' => array('class' => 'rata-kanan'),
         ],
-        //'stok',
-        //'sisa_hari',
-        //'updated_at',
-        array(
-            'class' => 'BButtonColumn',
-        ),
     ),
 ));
