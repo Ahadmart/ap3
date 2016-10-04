@@ -83,4 +83,17 @@ class AppController extends PublicController
         $this->redirect(Yii::app()->homeUrl);
     }
 
+    /* Untuk tabel NPLS */
+
+    public function renderLinkToViewBarang($data)
+    {
+        $return = '';
+        if (isset($data->barang)) {
+            $return = '<a target="_blank" href="' .
+                    $this->createUrl('barang/view', ['id' => $data->barang_id]) . '">' .
+                    $data->barang->barcode . '</a>';
+        }
+        return $return;
+    }
+
 }

@@ -62,10 +62,10 @@ class RekapAds extends CActiveRecord
     {
         return [
             'barang_id' => 'Barang',
-            'qty' => 'Qty',
-            'ads' => 'Ads',
+            'qty' => 'Penjualan (qty)',
+            'ads' => 'Penjualan/Hari',
             'stok' => 'Stok',
-            'sisa_hari' => 'Sisa Hari',
+            'sisa_hari' => 'Estimasi Sisa Hari',
             'updated_at' => 'Updated At',
         ];
     }
