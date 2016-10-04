@@ -1,20 +1,35 @@
 <?php
 
-class AppController extends PublicController {
+class AppController extends PublicController
+{
 
     /**
      * This is the default 'index' action that is invoked
      * when an action is not explicitly requested by users.
      */
-    public function actionIndex() {
-        $this->layout = '//layouts/box_kecil';
+    public function actionIndex()
+    {
+        $this->layout = '//layouts/box';
+        $homeShowNpls = true;
+
+        $rekapAds = null;
+        if ($homeShowNpls) {
+            $tabelRekapAds = Yii::app()->db->schema->getTable('rekap_ads');
+            if (!is_null($tabelRekapAds)) {
+                $rekapAds = new RekapAds('search');
+                $rekapAds->unsetAttributes();
+                /* Tampilkan yang sisa hari < 7 hari */
+                $rekapAds->setAttribute('sisa_hari', '< 7');
+            }
+        }
+
         if (Yii::app()->user->isGuest) {
             $this->redirect($this->createUrl('/app/login'));
-        }
-        else {
+        } else {
             $roles = AuthAssignment::model()->assignedList(Yii::app()->user->id);
             $this->render('index', array(
-                'roles' => $roles
+                'roles' => $roles,
+                'rekapAds' => $rekapAds
             ));
         }
     }
@@ -22,7 +37,8 @@ class AppController extends PublicController {
     /**
      * This is the action to handle external exceptions.
      */
-    public function actionError() {
+    public function actionError()
+    {
         $this->layout = '//layouts/box_kecil';
         if ($error = Yii::app()->errorHandler->error) {
             if (Yii::app()->request->isAjaxRequest)
@@ -35,7 +51,8 @@ class AppController extends PublicController {
     /**
      * Displays the login page
      */
-    public function actionLogin() {
+    public function actionLogin()
+    {
         $model = new LoginForm;
 
         // if it is ajax validation request
@@ -60,7 +77,8 @@ class AppController extends PublicController {
     /**
      * Logs out the current user and redirect to homepage.
      */
-    public function actionLogout() {
+    public function actionLogout()
+    {
         Yii::app()->user->logout();
         $this->redirect(Yii::app()->homeUrl);
     }
