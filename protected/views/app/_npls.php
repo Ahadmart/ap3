@@ -12,16 +12,49 @@ $this->widget('BGridView', array(
     'columns' => array(
         [
             'name' => 'barcode',
-            'value' => '$data->barang->barcode'
+            'type' => 'raw',
+            'value' => array($this, 'renderLinkToViewBarang'),
         ],
         [
             'name' => 'namaBarang',
             'value' => '$data->barang->nama'
         ],
-        'qty',
-        'ads',
-        'stok',
-        'sisa_hari',
+        //'qty',
+        //'ads',
+        [
+            'name' => 'qty',
+            'value' => function($data) {
+                return number_format($data->qty, 0, ',', '.');
+            },
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+        ],
+        [
+            'name' => 'ads',
+            'value' => function($data) {
+                return number_format($data->ads, 4, ',', '.');
+            },
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+        ],
+        [
+            'name' => 'stok',
+            'value' => function($data) {
+                return number_format($data->stok, 0, ',', '.');
+            },
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+        ],
+        [
+            'name' => 'sisa_hari',
+            'value' => function($data) {
+                return number_format($data->sisa_hari, 2, ',', '.');
+            },
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
+        ],
+        //'stok',
+        //'sisa_hari',
         //'updated_at',
         array(
             'class' => 'BButtonColumn',
