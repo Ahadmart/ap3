@@ -45,7 +45,7 @@ class NplsCommand extends CConsoleCommand
                 FROM
                     inventory_balance
                 GROUP BY barang_id
-                /*HAVING SUM(qty) >= 0*/) AS t_stok ON t_stok.barang_id = t_jualan.barang_id
+                HAVING SUM(qty) >= 0) AS t_stok ON t_stok.barang_id = t_jualan.barang_id
                 ";
         echo "INSERT INTO rekap_ads \n";
         echo Yii::app()->db->createCommand($sqlAds)->bindValue(':interval', $intervalHari)->execute() . ' row(s) affected' . PHP_EOL;
