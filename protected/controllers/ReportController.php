@@ -692,9 +692,9 @@ class ReportController extends Controller
         $mPDF1->pagenumSuffix = ' / ';
         // Render PDF
         $mPDF1->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
-    }    
-    
-   public function actionNpls()
+    }
+
+    public function actionNpls()
     {
         $model = new ReportNplsForm();
         $report = null;
@@ -710,13 +710,69 @@ class ReportController extends Controller
             $profil->attributes = $_GET['Profil'];
         }
 
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
         $kertasUntukPdf = ReportNplsForm::listKertas();
         $this->render('npls', [
             'model' => $model,
             'profil' => $profil,
             'report' => $report,
+            'printers' => $printers,
             'kertasPdf' => $kertasUntukPdf
         ]);
+    }
+
+    public function actionPrintNpls()
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    $this->nplsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['sisaHariMax'], $_GET['sortBy'], $_GET['kertas']);
+                    break;
+            }
+        }
+    }
+
+    public function nplsPdf($jumlahHari, $profilId, $sisaHariMax, $sortBy, $kertas)
+    {
+        $model = new ReportNplsForm();
+
+        $model->jumlahHari = $jumlahHari;
+        $model->profilId = $profilId;
+        $model->sisaHariMax = $sisaHariMax;
+        $model->sortBy = $sortBy;
+        $report = $model->reportNpls();
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        /*
+         * Persiapan render PDF
+         */
+        $waktu = date('Y-m-d H:i:s');
+        $waktuCetak = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
+        $listNamaKertas = ReportNplsForm::listKertas();
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_npls_pdf', array(
+                    'model' => $model,
+                    'report' => $report,
+                    'config' => $branchConfig,
+                    'waktu' => $waktu,
+                    'waktuCetak' => $waktuCetak,
+                        ), true
+        ));
+        $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->pagenumPrefix = 'Hal ';
+        $mPDF1->pagenumSuffix = ' / ';
+        // Render PDF
+        $mPDF1->Output("NPLS {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
 }
