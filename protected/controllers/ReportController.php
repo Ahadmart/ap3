@@ -692,6 +692,31 @@ class ReportController extends Controller
         $mPDF1->pagenumSuffix = ' / ';
         // Render PDF
         $mPDF1->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+    }    
+    
+   public function actionNpls()
+    {
+        $model = new ReportNplsForm();
+        $report = null;
+        if (isset($_POST['ReportNplsForm'])) {
+            $model->attributes = $_POST['ReportNplsForm'];
+            if ($model->validate()) {
+                $report = $model->reportNpls();
+            }
+        }
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $kertasUntukPdf = ReportNplsForm::listKertas();
+        $this->render('npls', [
+            'model' => $model,
+            'profil' => $profil,
+            'report' => $report,
+            'kertasPdf' => $kertasUntukPdf
+        ]);
     }
 
 }
