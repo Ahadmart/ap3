@@ -16,18 +16,19 @@ $this->renderPartial('_form_npls', array('model' => $model));
         <div id="tabel-profil" style="display: none">
             <?php $this->renderPartial('_profil', array('profil' => $profil)); ?>
         </div>
-<!--        <div id="tabel-user" style="display: none">
-            <?php //$this->renderPartial('_user', array('user' => $user)); ?>
-        </div>-->
+        <!--        <div id="tabel-user" style="display: none">
+        <?php //$this->renderPartial('_user', array('user' => $user)); ?>
+                </div>-->
     </div>
 </div>
 <?php
 if (isset($report)) {
 
-//    $this->renderPartial('_form_npls_cetak', array(
-//        'model' => $model,
-//        'kertasPdf' => $kertasPdf
-//    ));
+    $this->renderPartial('_form_npls_cetak', array(
+        'model' => $model,
+        'printers' => $printers,
+        'kertasPdf' => $kertasPdf
+    ));
     ?>
     <div class="row">
         <div class="small-12 columns">
