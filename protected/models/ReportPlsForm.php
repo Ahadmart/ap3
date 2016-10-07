@@ -1,13 +1,13 @@
 <?php
 
 /**
- * ReportNplsForm class.
- * ReportNplsForm is the data structure for keeping
- * report Top rank form data. It is used by the 'npls' action of 'ReportController'.
+ * ReportPlsForm class.
+ * ReportPlsForm is the data structure for keeping
+ * report PLS form data. It is used by the 'pls' action of 'ReportController'.
  *
  * The followings are the available model relations:
  */
-class ReportNplsForm extends CFormModel
+class ReportPlsForm extends CFormModel
 {
 
     const SORT_BY_SISA_HARI_ASC = 1;
@@ -58,7 +58,7 @@ class ReportNplsForm extends CFormModel
         return $model->nama;
     }
 
-    public function reportNpls()
+    public function reportPls()
     {
         $command = Yii::app()->db->createCommand();
         $command->select("

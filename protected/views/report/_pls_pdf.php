@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>NPLS : <?php echo $config['toko.nama'] . ' | ' . $waktuCetak; ?></title>
+        <title>PLS : <?php echo $config['toko.nama'] . ' | ' . $waktuCetak; ?></title>
         <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf-tabel.css" />
     </head>
     <body>
@@ -8,7 +8,7 @@
             <htmlpagefooter name="footer">
                 <table style="border-top:thin solid black">
                     <tr>
-                        <td style="text-align:left">NPLS | <?php
+                        <td style="text-align:left">PLS | <?php
         echo $config['toko.nama'];
         ?> | <?php echo $waktuCetak; ?>
                         </td>
@@ -22,7 +22,7 @@
             <sethtmlpagefooter name="footer" value="on" />
           mpdf-->
         <div id="header1">
-            <div>NPLS <?php echo $config['toko.nama']; ?></div>
+            <div>POTENSI LOST SALES <?php echo $config['toko.nama']; ?></div>
             <div>Range Analisa: <?= $model->jumlahHari ?> hari terakhir</div>
             <div>Limit: Sisa hari <= <?= $model->sisaHariMax ?> hari</div>
         </div>
