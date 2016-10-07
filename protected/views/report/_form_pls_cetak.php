@@ -63,11 +63,3 @@
         </ul>  
     </div>
 </div>
-<?php
-/*
-
-echo $form->hiddenField($model, 'jumlahHari');
-echo $form->hiddenField($model, 'profilId');
-echo $form->hiddenField($model, 'sisaHariMax');
-echo $form->hiddenField($model, 'sortBy');
-?>
