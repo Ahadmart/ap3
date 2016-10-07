@@ -1,11 +1,11 @@
 <?php
 /* @var $this ReportController */
-/* @var $model ReportNplsForm */
+/* @var $model ReportPlsForm */
 /* @var $form CActiveForm */
 ?>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
-    'id' => 'report-npls-form',
+    'id' => 'report-pls-form',
     // Please note: When you enable ajax validation, make sure the corresponding
     // controller action is handling ajax validation correctly.
     // See class documentation of CActiveForm for details on this,
@@ -42,7 +42,7 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php
         echo $form->dropDownList($model, 'sortBy', $model->listSortBy(), [
             'options' => [
-                isset($model->sortBy) ? $model->sortBy : ReportNplsForm::SORT_BY_SISA_HARI_ASC => ['selected' => 'selected']
+                isset($model->sortBy) ? $model->sortBy : ReportPlsForm::SORT_BY_SISA_HARI_ASC => ['selected' => 'selected']
             ]
         ]);
         ?>

@@ -1,6 +1,6 @@
 <?php
 /* @var $this ReportController */
-/* @var $model ReporNplsForm */
+/* @var $model ReporPlsForm */
 ?>
 <div class="row">
     <div class="small-12 columns">
@@ -22,7 +22,7 @@
                                 foreach ($kertasPdf as $key => $value):
                                     ?>
                                     <li><a target="blank" href="<?=
-                                        $this->createUrl('printnpls', [
+                                        $this->createUrl('printpls', [
                                             'printId' => $printer['id'],
                                             'kertas' => $key,
                                             'jumlahHari' => $model->jumlahHari,
@@ -41,7 +41,7 @@
                               ?>
                               <li>
                               <a href="<?=
-                              $this->createUrl('printnpls', [
+                              $this->createUrl('printpls', [
                               'printId' => $printer['id'],
                               'profilId' => $model->profilId,
                               'showDetail' => $model->showDetail,

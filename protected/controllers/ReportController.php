@@ -694,14 +694,14 @@ class ReportController extends Controller
         $mPDF1->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
-    public function actionNpls()
+    public function actionPls()
     {
-        $model = new ReportNplsForm();
+        $model = new ReportPlsForm();
         $report = null;
-        if (isset($_POST['ReportNplsForm'])) {
-            $model->attributes = $_POST['ReportNplsForm'];
+        if (isset($_POST['ReportPlsForm'])) {
+            $model->attributes = $_POST['ReportPlsForm'];
             if ($model->validate()) {
-                $report = $model->reportNpls();
+                $report = $model->reportPls();
             }
         }
         $profil = new Profil('search');
@@ -712,8 +712,8 @@ class ReportController extends Controller
 
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
         $printers = Device::model()->listDevices($tipePrinterAvailable);
-        $kertasUntukPdf = ReportNplsForm::listKertas();
-        $this->render('npls', [
+        $kertasUntukPdf = ReportPlsForm::listKertas();
+        $this->render('pls', [
             'model' => $model,
             'profil' => $profil,
             'report' => $report,
@@ -722,27 +722,27 @@ class ReportController extends Controller
         ]);
     }
 
-    public function actionPrintNpls()
+    public function actionPrintPls()
     {
         if (isset($_GET['printId'])) {
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->nplsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['sisaHariMax'], $_GET['sortBy'], $_GET['kertas']);
+                    $this->plsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['sisaHariMax'], $_GET['sortBy'], $_GET['kertas']);
                     break;
             }
         }
     }
 
-    public function nplsPdf($jumlahHari, $profilId, $sisaHariMax, $sortBy, $kertas)
+    public function plsPdf($jumlahHari, $profilId, $sisaHariMax, $sortBy, $kertas)
     {
-        $model = new ReportNplsForm();
+        $model = new ReportPlsForm();
 
         $model->jumlahHari = $jumlahHari;
         $model->profilId = $profilId;
         $model->sisaHariMax = $sisaHariMax;
         $model->sortBy = $sortBy;
-        $report = $model->reportNpls();
+        $report = $model->reportPls();
 
         $configs = Config::model()->findAll();
         /*
@@ -758,9 +758,9 @@ class ReportController extends Controller
          */
         $waktu = date('Y-m-d H:i:s');
         $waktuCetak = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
-        $listNamaKertas = ReportNplsForm::listKertas();
+        $listNamaKertas = ReportPlsForm::listKertas();
         $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_npls_pdf', array(
+        $mPDF1->WriteHTML($this->renderPartial('_pls_pdf', array(
                     'model' => $model,
                     'report' => $report,
                     'config' => $branchConfig,

@@ -3,13 +3,13 @@
 
 $this->breadcrumbs = array(
     'Laporan' => array('index'),
-    'NPLS',
+    'PLS',
 );
 
-$this->boxHeader['small'] = 'NPLS';
-$this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan NPLS';
+$this->boxHeader['small'] = 'PLS';
+$this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Potensi Lost Sales';
 
-$this->renderPartial('_form_npls', array('model' => $model));
+$this->renderPartial('_form_pls', array('model' => $model));
 ?>
 <div class="row">
     <div class="small-12 columns">
@@ -24,7 +24,7 @@ $this->renderPartial('_form_npls', array('model' => $model));
 <?php
 if (isset($report)) {
 
-    $this->renderPartial('_form_npls_cetak', array(
+    $this->renderPartial('_form_pls_cetak', array(
         'model' => $model,
         'printers' => $printers,
         'kertasPdf' => $kertasPdf
