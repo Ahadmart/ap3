@@ -736,6 +736,10 @@ class ReportController extends Controller
 
     public function plsPdf($jumlahHari, $profilId, $sisaHariMax, $sortBy, $kertas)
     {
+        /* Agar tetap muncul, walaupun "agak" lama */
+        ini_set('memory_limit', '-1');
+        set_time_limit(300);
+
         $model = new ReportPlsForm();
 
         $model->jumlahHari = $jumlahHari;
