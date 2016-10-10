@@ -695,4 +695,15 @@ class PembelianController extends Controller
         $this->renderJSON($r);
     }
 
+    public function actionRetur($id)
+    {
+        if (isset($id)) {
+            $model = $this->loadModel($id);
+            $return = $model->retur();
+            if ($return['sukses']) {
+                $this->redirect(['returpembelian/ubah', 'id' => $return['data']['returPembelianId']]);
+            }
+        }
+    }
+
 }
