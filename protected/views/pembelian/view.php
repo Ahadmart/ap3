@@ -19,8 +19,9 @@ $this->boxHeader['normal'] = 'Pembelian: ' . $model->nomor;
         <span class="secondary label">Status</span><span class="warning label"><?php echo $model->getNamaStatus(); ?></span>
 
         <ul class="button-group right">
+            <li><a href="<?= $this->createUrl("retur", ['id' => $model->id]) ?>" class="tiny bigfont alert button" accesskey="r"><i class="fa fa-reply fa-fw"></i> <span class="ak">R</span>etur</a></li>
             <li>
-                <a href="#" accesskey="p" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
+                <a href="#" accesskey="c" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
                 <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
                     <?php
                     foreach ($printerPembelian as $printer) {
