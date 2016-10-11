@@ -116,7 +116,6 @@ endif;
                 success: function (response, newValue) {
                     if (response.sukses) {
                         $.fn.yiiGridView.update("pembelian-detail-grid");
-                        updateTotal();
                     }
                 },
                 source: [
