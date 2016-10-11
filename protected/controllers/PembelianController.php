@@ -352,6 +352,25 @@ class PembelianController extends Controller
             $this->renderJSON($return);
         }
     }
+    /**
+     * Update rak barang dari detail pembelian via ajax
+     */
+    public function actionUpdateRak()
+    {
+        if (isset($_POST['pk'])) {
+            $pk = $_POST['pk'];
+            $rakId = $_POST['value'];
+            $barang = Barang::model()->findByPk($pk);
+            $barang->rak_id = $rakId;
+
+            $return = array('sukses' => false);
+            if ($barang->save()) {
+                $return = array('sukses' => true);
+            }
+
+            $this->renderJSON($return);
+        }
+    }
 
     /**
      * Simpan pembelian:

@@ -4,30 +4,6 @@ if ($pembelian->status == Pembelian::STATUS_DRAFT):
     Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.poshytip.js', CClientScript::POS_HEAD);
     Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery-editable-poshytip.min.js', CClientScript::POS_HEAD);
     Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-editable.css');
-    /*
-     * 	Menambahkan rutin pada saat edit qty
-     * 1. Update Grid Pembelian detail
-     * 2. Update Total Pembelian
-     */
-    Yii::app()->clientScript->registerScript('editableQty', ''
-            . '$( document ).ajaxComplete(function() {'
-            . '$(".editable-qty").editable({'
-            . '	success: function(response, newValue) {'
-            . '					if (response.sukses) {'
-            . '						$.fn.yiiGridView.update("pembelian-detail-grid");'
-            . '						updateTotal();'
-            . '					}'
-            . '				}  '
-            . '});'
-            . '});'
-            . '$(".editable-qty").editable({'
-            . '	success: function(response, newValue) {'
-            . '					if (response.sukses) {'
-            . '						$.fn.yiiGridView.update("pembelian-detail-grid");'
-            . '						updateTotal();'
-            . '					}'
-            . '				}  '
-            . '});', CClientScript::POS_END);
 endif;
 ?>
 
@@ -96,6 +72,20 @@ endif;
                 'htmlOptions' => array('class' => 'rata-kanan'),
                 'filter' => false
             ),
+            [
+                'header' => 'Rak=NULL',
+                'value' => function($data) {
+                    if (is_null($data->barang->rak_id)) {
+                        return '<a href="#" class="editable-rak" data-type="select" data-pk="' . $data->barang_id . '" data-url="' . Yii::app()->controller->createUrl('updaterak') . '">NULL</a>';
+                    } else {
+                        /* Uncomment jika ingin ditampilkan nama rak */
+                        //return $data->barang->rak->nama;
+                    }
+                },
+                'type' => 'raw',
+                'headerHtmlOptions' => array('class' => 'rata-tengah'),
+                'htmlOptions' => array('class' => 'rata-tengah'),
+            ],
             // Jika pembelian masih draft tampilkan tombol hapus
             array(
                 'class' => 'BButtonColumn',
@@ -107,3 +97,51 @@ endif;
     ));
     ?>
 </div>
+
+<script>
+    function enableEditable() {
+        $(".editable-qty").editable({
+            mode: "inline",
+            inputclass: "input-editable-qty",
+            success: function (response, newValue) {
+                if (response.sukses) {
+                    $.fn.yiiGridView.update("pembelian-detail-grid");
+                    updateTotal();
+                }
+            }
+        });
+        $(".editable-rak").editable({
+        mode: "inline",
+                //inputclass: "input-editable-qty",
+                success: function (response, newValue) {
+                    if (response.sukses) {
+                        $.fn.yiiGridView.update("pembelian-detail-grid");
+                        updateTotal();
+                    }
+                },
+                source: [
+<?php
+$listRak = CHtml::listData(RakBarang::model()->findAll(array('select' => 'id,nama', 'order' => 'nama')), 'id', 'nama');
+$firstRow = TRUE;
+foreach ($listRak as $key => $value):
+    ?>
+    <?php
+    if (!$firstRow) {
+        echo ',';
+    }
+    $firstRow = false;
+    ?>
+                    {value : <?php echo $key; ?>, text : "<?php echo $value; ?>"}
+    <?php
+endforeach;
+?>
+                ]
+        });
+    }
+    $(function () {
+        enableEditable();
+    });
+    $(document).ajaxComplete(function () {
+        enableEditable();
+    });
+</script>
