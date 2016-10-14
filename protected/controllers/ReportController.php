@@ -779,4 +779,26 @@ class ReportController extends Controller
         $mPDF1->Output("NPLS {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
+    public function actionKartuStok()
+    {
+        $model = new ReportKartuStokForm();
+        $report = null;
+        if (isset($_POST['ReportKartuStokForm'])) {
+            $model->attributes = $_POST['ReportKartuStokForm'];
+            if ($model->validate()) {
+                $report = $model->reportPls();
+            }
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasUntukPdf = ReportKartuStokForm::listKertas();
+        $this->render('kartustok', [
+            'model' => $model,
+            'report' => $report,
+            'printers' => $printers,
+            'kertasPdf' => $kertasUntukPdf
+        ]);
+    }
+
 }
