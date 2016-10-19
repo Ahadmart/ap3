@@ -16,29 +16,6 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
 $this->renderPartial('_form_kartustok', array('model' => $model));
 ?>
 <?php
-if (isset($report['rekap']) && $report['rekap']) {
-    ?>
-    <div class="row">
-        <div class="small-12 columns rata-kanan">
-            <h6>Total : <?php echo number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
-            <h6>Margin : <?php echo number_format($report['rekap']['margin'], 0, ',', '.'); ?></h6>
-            <?php if ($report['rekap']['total'] != 0) {
-                ?>
-                <h6>Profit Margin: <?php echo number_format($report['rekap']['margin'] / $report['rekap']['total'] * 100, 2, ',', '.'); ?>%</h6>
-                <?php
-            }
-            ?>
-            <?php
-            if (!empty($report['detail'])):
-                ?>
-                <h6><?= count($report['detail']) ?> Transaksi</h6>
-                <?php
-            endif;
-            ?>
-        </div>
-    </div>
-    <?php
-}
 if (!empty($report['detail'])):
     ?>
     <div class="row">
@@ -49,25 +26,44 @@ if (!empty($report['detail'])):
                         <th class="rata-kanan">No</th>
                         <th>Tanggal</th>
                         <th>Nomor</th>
-                        <th>Profil</th>
-                        <th class="rata-kanan">Total</th>
-                        <th class="rata-kanan">Margin</th>
-                        <th class="rata-kanan">Profit Margin</th>
+                        <th>Tipe</th>
+                        <th class="rata-kanan">In</th>
+                        <th class="rata-kanan">Out</th>
+                        <th class="rata-kanan">Balance</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
                     $i = 1;
+
+                    $balanceIn = 0;
+                    $balanceOut = 0;
                     foreach ($report['detail'] as $barisReport):
+                        $in = in_array($barisReport['kode'], [KodeDokumen::PEMBELIAN, KodeDokumen::RETUR_PENJUALAN]) ? $barisReport['qty'] : 0;
+                        $out = in_array($barisReport['kode'], [KodeDokumen::PENJUALAN, KodeDokumen::RETUR_PEMBELIAN]) ? $barisReport['qty'] : 0;
+                        /* Jika SO lihat tanda nya */
+                        if ($barisReport['kode'] == KodeDokumen::SO) {
+                            if ($barisReport['qty'] > 0) {
+                                $in = $barisReport['qty'];
+                            } else {
+                                $out = abs($barisReport['qty']);
+                            }
+                        }
                         ?>
                         <tr>
                             <td class="rata-kanan"><?= $i ?></td>
-                            <td><?php echo $barisReport['tanggal']; ?></td>
-                            <td><a href="<?php echo Yii::app()->createUrl('kartustok/view', array('id' => $barisReport['id'])); ?>"><?php echo $barisReport['nomor']; ?></a></td>
-                            <td><?= $barisReport['nama']; ?> </td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['margin'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['margin'] / $barisReport['total'] * 100, 2, ',', '.') . '%'; ?></td>
+                            <td><?= $barisReport['tanggal']; ?></td>
+                            <td><?= $barisReport['nomor']; ?></td>
+                            <td><?= $barisReport['kode']; ?> </td>
+                            <td class="rata-kanan">
+                                <?= $in > 0 ? number_format($in, 0, ',', '.') : ''; ?>
+                            </td>
+                            <td class="rata-kanan">
+                                <?= $out > 0 ? number_format($out, 0, ',', '.') : ''; ?>
+                            </td>
+                            <td>
+
+                            </td>
                         </tr>
                         <?php
                         $i++;

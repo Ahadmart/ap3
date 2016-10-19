@@ -50,14 +50,13 @@ class ReportKartuStokForm extends CFormModel
         );
     }
 
-
     public function reportKartuStok()
     {
         $command = Yii::app()->db->createCommand();
         $command->select("*");
         $command->from("
             (SELECT 
-                5 tipe,
+                '05' kode,
                     (sd.qty_sebenarnya - sd.qty_tercatat) qty,
                     0 harga_beli,
                     so.nomor,
@@ -68,7 +67,7 @@ class ReportKartuStokForm extends CFormModel
             WHERE
                 sd.barang_id = :barangId
                     AND sd.qty_sebenarnya != sd.qty_tercatat UNION SELECT 
-                1 tipe,
+                '01' kode,
                     pd.qty,
                     pd.harga_beli,
                     pembelian.nomor,
@@ -78,13 +77,13 @@ class ReportKartuStokForm extends CFormModel
             JOIN pembelian ON pd.pembelian_id = pembelian.id
             WHERE
                 pd.barang_id = :barangId UNION SELECT 
-                2 tipe, rd.qty, ib.harga_beli, retur.nomor, retur.tanggal
+                '02' kode, rd.qty, ib.harga_beli, retur.nomor, retur.tanggal
             FROM
                 retur_pembelian_detail rd
             JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
                 AND ib.barang_id = :barangId
             JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id UNION SELECT 
-                3 tipe,
+                '03' tipe,
                     hpp.qty,
                     hpp.harga_beli,
                     penjualan.nomor,
@@ -94,23 +93,25 @@ class ReportKartuStokForm extends CFormModel
             JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
             JOIN penjualan ON pd.penjualan_id = penjualan.id UNION SELECT 
-                4 tipe, rd.qty, 0 harga_beli, retur.nomor, retur.tanggal
+                '04' tipe, rd.qty, 0 harga_beli, retur.nomor, retur.tanggal
             FROM
                 retur_penjualan_detail rd
             JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
             JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id) t1");
-        
-        $command->order("tanggal" . $this->listNamaSortBy()[$this->sortBy]);
+
+        $command->order("tanggal " . $this->listNamaSortBy()[$this->sortBy]);
 
         $command->bindValues([
             ':barangId' => $this->barangId,
         ]);
 
-        return $command->queryAll();
+        $report = [
+            'detail' => $command->queryAll()
+                ];
+        return $report;
     }
 
- 
     public function listSortBy()
     {
         return [
