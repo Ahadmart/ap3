@@ -785,8 +785,9 @@ class ReportController extends Controller
         $report = null;
         if (isset($_POST['ReportKartuStokForm'])) {
             $model->attributes = $_POST['ReportKartuStokForm'];
+            $model->sortBy = ReportKartuStokForm::SORT_BY_TANGGAL_ASC;
             if ($model->validate()) {
-                $report = $model->reportPls();
+                $report = $model->reportKartuStok();
             }
         }
 
@@ -799,6 +800,28 @@ class ReportController extends Controller
             'printers' => $printers,
             'kertasPdf' => $kertasUntukPdf
         ]);
+    }
+
+    public function actionCariBarang($term)
+    {
+        $q = new CDbCriteria();
+        $q->addCondition("barcode like :term OR nama like :term");
+        $q->order = 'nama';
+        $q->params = [':term' => "%{$term}%"];
+        $barangs = Barang::model()->findAll($q);
+
+        $r = array();
+        foreach ($barangs as $barang) {
+            $r[] = array(
+                'label' => $barang->nama,
+                'value' => $barang->barcode,
+                'id' => $barang->id,
+                'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
+                'harga' => $barang->hargaJual
+            );
+        }
+
+        $this->renderJSON($r);
     }
 
 }
