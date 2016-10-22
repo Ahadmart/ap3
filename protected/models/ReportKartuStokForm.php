@@ -22,6 +22,7 @@ class ReportKartuStokForm extends CFormModel
     const KERTAS_FOLIO_NAMA = 'Folio';
 
     public $barangId;
+    public $barcode;
     public $dari;
     public $sampai;
     public $sortBy;
@@ -32,7 +33,7 @@ class ReportKartuStokForm extends CFormModel
     public function rules()
     {
         return [
-            ['barangId, dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'],
+            ['barcode, dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'],
             ['barangId', 'length', 'max' => 10],
         ];
     }
@@ -52,6 +53,12 @@ class ReportKartuStokForm extends CFormModel
 
     public function reportKartuStok()
     {
+        if (!empty($this->barcode)) {
+            $barang = Barang::model()->find('barcode=:barcode', [':barcode' => $this->barcode]);
+            if (!is_null($barang)) {
+                $this->barangId = $barang->id;
+            }
+        }
         $command = Yii::app()->db->createCommand();
         $command->select("*");
         $command->from("
@@ -108,7 +115,7 @@ class ReportKartuStokForm extends CFormModel
 
         $report = [
             'detail' => $command->queryAll()
-                ];
+        ];
         return $report;
     }
 

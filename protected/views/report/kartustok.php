@@ -12,14 +12,19 @@ $this->breadcrumbs = array(
 
 $this->boxHeader['small'] = 'Kartu Stok';
 $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu Stok';
-
-$this->renderPartial('_form_kartustok', array('model' => $model));
 ?>
-<?php
-if (!empty($report['detail'])):
-    ?>
-    <div class="row">
-        <div class="small-12 columns">
+
+<div class="row">
+    <div class="large-4 columns">
+        <?php
+        $this->renderPartial('_form_kartustok', array('model' => $model));
+        ?>
+    </div>
+
+    <?php
+    if (!empty($report['detail'])):
+        ?>
+        <div class="small-12 large-8 columns">
             <table class="tabel-index responsive">
                 <thead>
                     <tr>
@@ -72,10 +77,10 @@ if (!empty($report['detail'])):
                 </tbody>
             </table>
         </div>
-    </div>
-    <?php
-endif;
-?>
+        <?php
+    endif;
+    ?>
+</div>
 <script>
     $(function () {
         $('.tanggalan').fdatepicker({
