@@ -38,12 +38,12 @@ $form = $this->beginWidget('CActiveForm', array(
     <?php echo $form->hiddenField($model, 'barangId'); ?>
     <div class="medium-2 large-6 columns">
         <?php echo $form->labelEx($model, 'dari'); ?>
-        <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan', 'value' => empty($model->dari) ? date('d-m-Y') : $model->dari)); ?>
+        <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan dari', 'value' => empty($model->dari) ? '' : $model->dari)); ?>
         <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
     </div>
     <div class="medium-2 large-6 columns">
         <?php echo $form->labelEx($model, 'sampai'); ?>
-        <?php echo $form->textField($model, 'sampai', array('class' => 'tanggalan', 'value' => empty($model->sampai) ? date('d-m-Y') : $model->sampai)); ?>
+        <?php echo $form->textField($model, 'sampai', array('class' => 'tanggalan sampai', 'value' => empty($model->sampai) ? date('d-m-Y') : $model->sampai)); ?>
         <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
     </div>
     <div class="small-12 columns">
@@ -66,14 +66,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 ?>
 <script>
     $(function () {
-        $('.tanggalan').fdatepicker({
+        $('.tanggalan.dari').fdatepicker({
+            format: 'dd-mm-yyyy',
+            initialDate: '<?= date('d-m-Y', strtotime(date('Y-m-d') . '-30 day')) ?>',
+            language: 'id'
+        });
+        $('.tanggalan.sampai').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
         });
-
-//        $(document).ready(function () {
-//            $("#scan").autocomplete("enable");
-//        });
 
         $("#scan").autocomplete({
             source: "<?php echo $this->createUrl('caribarang'); ?>",

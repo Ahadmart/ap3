@@ -64,6 +64,8 @@ class ReportKartuStokForm extends CFormModel
                 $this->barangId = $barang->id;
             }
         }
+        $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
+        $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
 
         $tempTableName = $this->tempTableName();
 
@@ -72,25 +74,25 @@ class ReportKartuStokForm extends CFormModel
                 *
             FROM
                 (SELECT 
-                :kodeSo kode,
+                    :kodeSo kode,
                     (sd.qty_sebenarnya - sd.qty_tercatat) qty,
                     0 harga_beli,
                     so.nomor,
                     so.tanggal
             FROM
                 stock_opname_detail sd
-            JOIN stock_opname so ON sd.stock_opname_id = so.id
+            JOIN stock_opname so ON sd.stock_opname_id = so.id AND DATE_FORMAT(so.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             WHERE
                 sd.barang_id = :barangId
                     AND sd.qty_sebenarnya != sd.qty_tercatat UNION SELECT 
-                :kodePembelian kode,
+                    :kodePembelian kode,
                     pd.qty,
                     pd.harga_beli,
                     pembelian.nomor,
                     pembelian.tanggal
             FROM
                 pembelian_detail pd
-            JOIN pembelian ON pd.pembelian_id = pembelian.id
+            JOIN pembelian ON pd.pembelian_id = pembelian.id AND DATE_FORMAT(pembelian.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             WHERE
                 pd.barang_id = :barangId UNION SELECT 
                 :kodeReturPembelian kode, rd.qty, ib.harga_beli, retur.nomor, retur.tanggal
@@ -98,8 +100,10 @@ class ReportKartuStokForm extends CFormModel
                 retur_pembelian_detail rd
             JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
                 AND ib.barang_id = :barangId
-            JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id UNION SELECT 
-                :kodePenjualan tipe,
+            JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id 
+                AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+            UNION SELECT 
+                    :kodePenjualan tipe,
                     hpp.qty,
                     hpp.harga_beli,
                     penjualan.nomor,
@@ -108,13 +112,16 @@ class ReportKartuStokForm extends CFormModel
                 harga_pokok_penjualan hpp
             JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
-            JOIN penjualan ON pd.penjualan_id = penjualan.id UNION SELECT 
+            JOIN penjualan ON pd.penjualan_id = penjualan.id 
+                AND DATE_FORMAT(penjualan.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+            UNION SELECT 
                 :kodeReturPenjualan tipe, rd.qty, 0 harga_beli, retur.nomor, retur.tanggal
             FROM
                 retur_penjualan_detail rd
             JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
-            JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id) t1
+            JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id
+                AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai) t1
             ORDER BY tanggal            
                 ";
         $sql = " 
@@ -138,13 +145,59 @@ class ReportKartuStokForm extends CFormModel
             ':kodePembelian' => KodeDokumen::PEMBELIAN,
             ':kodeReturPembelian' => KodeDokumen::RETUR_PEMBELIAN,
             ':kodePenjualan' => KodeDokumen::PENJUALAN,
-            ':kodeReturPenjualan' => KodeDokumen::RETUR_PENJUALAN
+            ':kodeReturPenjualan' => KodeDokumen::RETUR_PENJUALAN,
+            ':dari' => $dari,
+            ':sampai' => $sampai
         ]);
 
         $com = Yii::app()->db->createCommand()
                 ->from($tempTableName);
 
+        $comBalance = Yii::app()->db->createCommand("
+            SELECT 
+                SUM(qty) total
+            FROM
+                (SELECT 
+                    5 tipe, SUM(sd.qty_sebenarnya - sd.qty_tercatat) qty
+                FROM
+                    stock_opname_detail sd
+                JOIN stock_opname so ON sd.stock_opname_id = so.id AND DATE_FORMAT(so.tanggal, '%Y-%m-%d') < :dari
+                WHERE
+                    sd.barang_id = :barangId
+                        AND sd.qty_sebenarnya != sd.qty_tercatat UNION SELECT 
+                    1 tipe, SUM(pd.qty)
+                FROM
+                    pembelian_detail pd
+                JOIN pembelian ON pd.pembelian_id = pembelian.id AND DATE_FORMAT(pembelian.tanggal, '%Y-%m-%d') < :dari
+                WHERE
+                    pd.barang_id = :barangId UNION SELECT 
+                    2 tipe, 0-SUM(rd.qty) qty
+                FROM
+                    retur_pembelian_detail rd
+                JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
+                    AND ib.barang_id = :barangId
+                JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id 
+                    AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') < :dari
+                UNION SELECT 
+                    3 tipe, 0-SUM(hpp.qty) qty
+                FROM
+                    harga_pokok_penjualan hpp
+                JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
+                    AND pd.barang_id = :barangId
+                JOIN penjualan ON pd.penjualan_id = penjualan.id 
+                    AND DATE_FORMAT(penjualan.tanggal, '%Y-%m-%d') < :dari
+                UNION SELECT 
+                    4 tipe, SUM(rd.qty) qty
+                FROM
+                    retur_penjualan_detail rd
+                JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
+                    AND pd.barang_id = :barangId
+                JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id
+                    AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') < :dari) AS t1
+                 ")->queryRow(true, [':dari' => $dari, 'barangId' => $this->barangId]);
+
         $report = [
+            'balance' => $comBalance['total'],
             'detail' => $com->queryAll()
         ];
 
