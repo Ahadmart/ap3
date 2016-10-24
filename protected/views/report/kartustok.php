@@ -30,8 +30,8 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                     <tr>
                         <th class="rata-kanan">No</th>
                         <th>Tanggal</th>
-                        <th>Nomor</th>
                         <th>Tipe</th>
+                        <th>Nomor</th>
                         <th class="rata-kanan">In</th>
                         <th class="rata-kanan">Out</th>
                         <th class="rata-kanan">Balance</th>
@@ -41,7 +41,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                     <?php
                     $i = 1;
 
-                    $balanceIn = 0;
+                    $balance = 0;
                     $balanceOut = 0;
                     foreach ($report['detail'] as $barisReport):
                         $in = in_array($barisReport['kode'], [KodeDokumen::PEMBELIAN, KodeDokumen::RETUR_PENJUALAN]) ? $barisReport['qty'] : 0;
@@ -54,20 +54,22 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                                 $out = abs($barisReport['qty']);
                             }
                         }
+                        $balance+=$in;
+                        $balance-=$out;
                         ?>
                         <tr>
                             <td class="rata-kanan"><?= $i ?></td>
                             <td><?= $barisReport['tanggal']; ?></td>
+                            <td><?= KodeDokumen::model()->getNamaDokumen($barisReport['kode']); ?> </td>
                             <td><?= $barisReport['nomor']; ?></td>
-                            <td><?= $barisReport['kode']; ?> </td>
                             <td class="rata-kanan">
                                 <?= $in > 0 ? number_format($in, 0, ',', '.') : ''; ?>
                             </td>
                             <td class="rata-kanan">
                                 <?= $out > 0 ? number_format($out, 0, ',', '.') : ''; ?>
                             </td>
-                            <td>
-
+                            <td class="rata-kanan">
+                                <?= $balance > 0 ? number_format($balance, 0, ',', '.') : ''; ?>
                             </td>
                         </tr>
                         <?php
