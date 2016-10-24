@@ -28,10 +28,11 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
     if (!empty($report['detail'])):
         ?>
         <div class="small-12 large-8 columns">
+            <h6><?= $model->namaBarang ?> <small><?= $model->barcode ?></small></h6>
             <table class="tabel-index responsive">
                 <thead>
                     <tr>
-                        <!--<th class="rata-kanan">No</th>-->
+                        <th class="rata-kanan">No</th>
                         <th>Tanggal</th>
                         <th>Tipe</th>
                         <th>Nomor</th>
@@ -43,9 +44,11 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                 <tbody>
                     <?php
                     $balance = $report['balance'];
+                    $totalIn = 0;
+                    $totalOut = 0;
                     ?>
                     <tr>
-                        <!--<td></td>-->
+                        <td></td>
                         <td colspan="5" style="font-weight: bold">< <?= $model->dari ?></td>
                         <td class="rata-kanan" style="font-weight: bold"><?= number_format($balance, 0, ',', '.') ?></td>
                     </tr>
@@ -64,9 +67,11 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                         }
                         $balance+=$in;
                         $balance-=$out;
+                        $totalIn+=$in;
+                        $totalOut+=$out;
                         ?>
                         <tr>
-                            <!--<td class="rata-kanan"><?= $i ?></td>-->
+                            <td class="rata-kanan"><?= $i ?></td>
                             <td><?= date_format(date_create_from_format('Y-m-d H:i:s', $barisReport['tanggal']), 'd-m-Y H:i:s'); ?></td>
                             <td><?= KodeDokumen::model()->getNamaDokumen($barisReport['kode']); ?> </td>
                             <td><?= $barisReport['nomor']; ?></td>
@@ -85,7 +90,14 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                     endforeach;
                     ?>
                     <tr>
-                        <td colspan="5" style="font-weight: bold">Balance</td>
+                        <td></td>
+                        <td colspan="3" style="font-weight: bold">Total / Balance</td>                        
+                        <td class="rata-kanan" style="font-weight: bold">
+                            <?= number_format($totalIn, 0, ',', '.') ?>
+                        </td>  
+                        <td class="rata-kanan" style="font-weight: bold">
+                            <?= number_format($totalOut, 0, ',', '.') ?>
+                        </td>  
                         <td class="rata-kanan" style="font-weight: bold">
                             <?= number_format($balance, 0, ',', '.') ?>
                         </td>                            

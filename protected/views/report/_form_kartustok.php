@@ -75,6 +75,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             format: 'dd-mm-yyyy',
             language: 'id'
         });
+        
+        $("#scan").select();
 
         $("#scan").autocomplete({
             source: "<?php echo $this->createUrl('caribarang'); ?>",

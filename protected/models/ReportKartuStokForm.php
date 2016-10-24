@@ -43,12 +43,20 @@ class ReportKartuStokForm extends CFormModel
      */
     public function attributeLabels()
     {
-        return array(
+        return [
             'barangId' => 'Barang',
             'dari' => 'Dari',
             'sampai' => 'Sampai',
             'sortBy' => 'Urut berdasarkan',
-        );
+        ];
+    }
+
+    public function getNamaBarang()
+    {
+        $barang = Barang::model()->find('barcode=:barcode', [':barcode' => $this->barcode]);
+        if (!is_null($barang)) {
+            return $barang->nama;
+        }
     }
 
     public function tempTableName()
@@ -74,6 +82,7 @@ class ReportKartuStokForm extends CFormModel
                 *
             FROM
                 (SELECT 
+                    sd.id,
                     :kodeSo kode,
                     (sd.qty_sebenarnya - sd.qty_tercatat) qty,
                     0 harga_beli,
@@ -85,6 +94,7 @@ class ReportKartuStokForm extends CFormModel
             WHERE
                 sd.barang_id = :barangId
                     AND sd.qty_sebenarnya != sd.qty_tercatat UNION SELECT 
+                    pd.id,
                     :kodePembelian kode,
                     pd.qty,
                     pd.harga_beli,
@@ -95,7 +105,7 @@ class ReportKartuStokForm extends CFormModel
             JOIN pembelian ON pd.pembelian_id = pembelian.id AND DATE_FORMAT(pembelian.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             WHERE
                 pd.barang_id = :barangId UNION SELECT 
-                :kodeReturPembelian kode, rd.qty, ib.harga_beli, retur.nomor, retur.tanggal
+                rd.id, :kodeReturPembelian kode, rd.qty, ib.harga_beli, retur.nomor, retur.tanggal
             FROM
                 retur_pembelian_detail rd
             JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
@@ -103,6 +113,7 @@ class ReportKartuStokForm extends CFormModel
             JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id 
                 AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             UNION SELECT 
+                    hpp.id,
                     :kodePenjualan tipe,
                     hpp.qty,
                     hpp.harga_beli,
@@ -115,7 +126,7 @@ class ReportKartuStokForm extends CFormModel
             JOIN penjualan ON pd.penjualan_id = penjualan.id 
                 AND DATE_FORMAT(penjualan.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             UNION SELECT 
-                :kodeReturPenjualan tipe, rd.qty, 0 harga_beli, retur.nomor, retur.tanggal
+                rd.id, :kodeReturPenjualan tipe, rd.qty, 0 harga_beli, retur.nomor, retur.tanggal
             FROM
                 retur_penjualan_detail rd
             JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
@@ -127,6 +138,7 @@ class ReportKartuStokForm extends CFormModel
         $sql = " 
             CREATE TEMPORARY TABLE IF NOT EXISTS 
             {$tempTableName} (
+              `local_id` int(10) UNSIGNED DEFAULT NULL,
               `tipe` varchar(45) DEFAULT NULL,
               `qty` int(11) DEFAULT NULL,
               `harga_beli` decimal(18,2) DEFAULT NULL,
