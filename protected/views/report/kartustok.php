@@ -5,6 +5,9 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/fou
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/locales/foundation-datepicker.id.js', CClientScript::POS_HEAD);
 
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
+
 $this->breadcrumbs = array(
     'Laporan' => array('index'),
     'Kartu Stok',
@@ -28,7 +31,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
             <table class="tabel-index responsive">
                 <thead>
                     <tr>
-                        <th class="rata-kanan">No</th>
+                        <!--<th class="rata-kanan">No</th>-->
                         <th>Tanggal</th>
                         <th>Tipe</th>
                         <th>Nomor</th>
@@ -39,10 +42,15 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                 </thead>
                 <tbody>
                     <?php
+                    $balance = $report['balance'];
+                    ?>
+                    <tr>
+                        <!--<td></td>-->
+                        <td colspan="5" style="font-weight: bold">< <?= $model->dari ?></td>
+                        <td class="rata-kanan" style="font-weight: bold"><?= number_format($balance, 0, ',', '.') ?></td>
+                    </tr>
+                    <?php
                     $i = 1;
-
-                    $balance = 0;
-                    $balanceOut = 0;
                     foreach ($report['detail'] as $barisReport):
                         $in = in_array($barisReport['kode'], [KodeDokumen::PEMBELIAN, KodeDokumen::RETUR_PENJUALAN]) ? $barisReport['qty'] : 0;
                         $out = in_array($barisReport['kode'], [KodeDokumen::PENJUALAN, KodeDokumen::RETUR_PEMBELIAN]) ? $barisReport['qty'] : 0;
@@ -58,8 +66,8 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                         $balance-=$out;
                         ?>
                         <tr>
-                            <td class="rata-kanan"><?= $i ?></td>
-                            <td><?= $barisReport['tanggal']; ?></td>
+                            <!--<td class="rata-kanan"><?= $i ?></td>-->
+                            <td><?= date_format(date_create_from_format('Y-m-d H:i:s', $barisReport['tanggal']), 'd-m-Y H:i:s'); ?></td>
                             <td><?= KodeDokumen::model()->getNamaDokumen($barisReport['kode']); ?> </td>
                             <td><?= $barisReport['nomor']; ?></td>
                             <td class="rata-kanan">
@@ -69,13 +77,19 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                                 <?= $out > 0 ? number_format($out, 0, ',', '.') : ''; ?>
                             </td>
                             <td class="rata-kanan">
-                                <?= $balance > 0 ? number_format($balance, 0, ',', '.') : ''; ?>
+                                <?= number_format($balance, 0, ',', '.') ?>
                             </td>
                         </tr>
                         <?php
                         $i++;
                     endforeach;
                     ?>
+                    <tr>
+                        <td colspan="5" style="font-weight: bold">Balance</td>
+                        <td class="rata-kanan" style="font-weight: bold">
+                            <?= number_format($balance, 0, ',', '.') ?>
+                        </td>                            
+                    </tr>
                 </tbody>
             </table>
         </div>
