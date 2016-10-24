@@ -14,38 +14,41 @@ $form = $this->beginWidget('CActiveForm', array(
         ));
 ?>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
-<div class="small-12 columns">
-    <div class="row collapse">
-        <div class="small-2 medium-1 large-2 columns">
-            <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+<div class="row">
+    <div class="small-12 medium-8 large-12 columns">
+        <?php echo $form->labelEx($model, 'barcode'); ?>
+        <div class="row collapse">
+            <div class="small-2 medium-1 large-2 columns">
+                <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+            </div>
+            <div class="small-10 medium-11 large-10 columns">
+                <!--<input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>-->
+                <?=
+                $form->textField($model, 'barcode', [
+                    'placeholder' => 'Scan [B]arcode / Input nama',
+                    'accesskey' => 'b',
+                    'autofocus' => 'autofocus',
+                    'id' => 'scan'
+                ]);
+                ?>
+            </div>
+            </di>
         </div>
-        <div class="small-10 medium-11 large-10 columns">
-            <!--<input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>-->
-            <?=
-            $form->textField($model, 'barcode', [
-                'placeholder' => 'Scan [B]arcode / Input nama',
-                'accesskey' => 'b',
-                'autofocus' => 'autofocus',
-                'id'=>'scan'
-            ]);
-            ?>
-        </div>
-        </di>
     </div>
-</div>
-<?php echo $form->hiddenField($model, 'barangId'); ?>
-<div class="medium-6 columns">
-    <?php echo $form->labelEx($model, 'dari'); ?>
-    <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan', 'value' => empty($model->dari) ? date('d-m-Y') : $model->dari)); ?>
-    <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
-</div>
-<div class="medium-6 columns">
-    <?php echo $form->labelEx($model, 'sampai'); ?>
-    <?php echo $form->textField($model, 'sampai', array('class' => 'tanggalan', 'value' => empty($model->sampai) ? date('d-m-Y') : $model->sampai)); ?>
-    <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
-</div>
-<div class="small-12 columns">
-    <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
+    <?php echo $form->hiddenField($model, 'barangId'); ?>
+    <div class="medium-2 large-6 columns">
+        <?php echo $form->labelEx($model, 'dari'); ?>
+        <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan', 'value' => empty($model->dari) ? date('d-m-Y') : $model->dari)); ?>
+        <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
+    </div>
+    <div class="medium-2 large-6 columns">
+        <?php echo $form->labelEx($model, 'sampai'); ?>
+        <?php echo $form->textField($model, 'sampai', array('class' => 'tanggalan', 'value' => empty($model->sampai) ? date('d-m-Y') : $model->sampai)); ?>
+        <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
+    </div>
+    <div class="small-12 columns">
+        <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
+    </div>
 </div>
 
 <?php
@@ -68,15 +71,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             language: 'id'
         });
 
-//        $(document).on('click', "#tombol-cari-barang", function () {
+//        $(document).ready(function () {
 //            $("#scan").autocomplete("enable");
-//            var nilai = $("#scan").val();
-//            $("#scan").autocomplete("search", nilai);
-//            $("#scan").focus();
 //        });
-        $(document).ready(function () {
-            $("#scan").autocomplete("enable");
-        });
 
         $("#scan").autocomplete({
             source: "<?php echo $this->createUrl('caribarang'); ?>",
