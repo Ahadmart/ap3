@@ -51,6 +51,11 @@ class ReportKartuStokForm extends CFormModel
         );
     }
 
+    public function tempTableName()
+    {
+        return 'mem_kartu_stok';
+    }
+
     public function reportKartuStok()
     {
         if (!empty($this->barcode)) {
@@ -59,11 +64,15 @@ class ReportKartuStokForm extends CFormModel
                 $this->barangId = $barang->id;
             }
         }
-        $command = Yii::app()->db->createCommand();
-        $command->select("*");
-        $command->from("
-            (SELECT 
-                '05' kode,
+
+        $tempTableName = $this->tempTableName();
+
+        $sqlSelect = "
+            SELECT 
+                *
+            FROM
+                (SELECT 
+                :kodeSo kode,
                     (sd.qty_sebenarnya - sd.qty_tercatat) qty,
                     0 harga_beli,
                     so.nomor,
@@ -74,7 +83,7 @@ class ReportKartuStokForm extends CFormModel
             WHERE
                 sd.barang_id = :barangId
                     AND sd.qty_sebenarnya != sd.qty_tercatat UNION SELECT 
-                '01' kode,
+                :kodePembelian kode,
                     pd.qty,
                     pd.harga_beli,
                     pembelian.nomor,
@@ -84,13 +93,13 @@ class ReportKartuStokForm extends CFormModel
             JOIN pembelian ON pd.pembelian_id = pembelian.id
             WHERE
                 pd.barang_id = :barangId UNION SELECT 
-                '02' kode, rd.qty, ib.harga_beli, retur.nomor, retur.tanggal
+                :kodeReturPembelian kode, rd.qty, ib.harga_beli, retur.nomor, retur.tanggal
             FROM
                 retur_pembelian_detail rd
             JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
                 AND ib.barang_id = :barangId
             JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id UNION SELECT 
-                '03' tipe,
+                :kodePenjualan tipe,
                     hpp.qty,
                     hpp.harga_beli,
                     penjualan.nomor,
@@ -100,22 +109,45 @@ class ReportKartuStokForm extends CFormModel
             JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
             JOIN penjualan ON pd.penjualan_id = penjualan.id UNION SELECT 
-                '04' tipe, rd.qty, 0 harga_beli, retur.nomor, retur.tanggal
+                :kodeReturPenjualan tipe, rd.qty, 0 harga_beli, retur.nomor, retur.tanggal
             FROM
                 retur_penjualan_detail rd
             JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
-            JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id) t1");
+            JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id) t1
+            ORDER BY tanggal            
+                ";
+        $sql = " 
+            CREATE TEMPORARY TABLE IF NOT EXISTS 
+            {$tempTableName} (
+              `tipe` varchar(45) DEFAULT NULL,
+              `qty` int(11) DEFAULT NULL,
+              `harga_beli` decimal(18,2) DEFAULT NULL,
+              `nomor` varchar(45) DEFAULT NULL,
+              `tanggal` datetime DEFAULT NULL)
+              ENGINE=MEMORY 
+            AS (
+            {$sqlSelect}
+            )    ";
 
-        $command->order("tanggal " . $this->listNamaSortBy()[$this->sortBy]);
-
-        $command->bindValues([
+        Yii::app()->db->createCommand("DROP TEMPORARY TABLE IF EXISTS {$tempTableName}")->execute();
+        $command = Yii::app()->db->createCommand($sql);
+        $command->execute([
             ':barangId' => $this->barangId,
+            ':kodeSo' => KodeDokumen::SO,
+            ':kodePembelian' => KodeDokumen::PEMBELIAN,
+            ':kodeReturPembelian' => KodeDokumen::RETUR_PEMBELIAN,
+            ':kodePenjualan' => KodeDokumen::PENJUALAN,
+            ':kodeReturPenjualan' => KodeDokumen::RETUR_PENJUALAN
         ]);
 
+        $com = Yii::app()->db->createCommand()
+                ->from($tempTableName);
+
         $report = [
-            'detail' => $command->queryAll()
+            'detail' => $com->queryAll()
         ];
+
         return $report;
     }
 
