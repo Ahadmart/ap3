@@ -228,7 +228,7 @@ class PenjualanController extends Controller
             $penjualan = $this->loadModel($id);
             $qty = $_POST['qty'];
             $barcode = $_POST['barcode'];
-            $return = $penjualan->transfer_mode ? $penjualan->transferBarang($barcode, $qty) : $penjualan->tambahBarang($barcode, $qty);
+            $return = $penjualan->transfer_mode ? $penjualan->transferBarang($barcode, $qty, true) : $penjualan->tambahBarang($barcode, $qty, true);
         }
         $this->renderJSON($return);
     }

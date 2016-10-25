@@ -694,4 +694,134 @@ class ReportController extends Controller
         $mPDF1->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
+    public function actionPls()
+    {
+        $model = new ReportPlsForm();
+        $report = null;
+        if (isset($_POST['ReportPlsForm'])) {
+            $model->attributes = $_POST['ReportPlsForm'];
+            if ($model->validate()) {
+                $report = $model->reportPls();
+            }
+        }
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasUntukPdf = ReportPlsForm::listKertas();
+        $this->render('pls', [
+            'model' => $model,
+            'profil' => $profil,
+            'report' => $report,
+            'printers' => $printers,
+            'kertasPdf' => $kertasUntukPdf
+        ]);
+    }
+
+    public function actionPrintPls()
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    $this->plsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['sisaHariMax'], $_GET['sortBy'], $_GET['kertas']);
+                    break;
+            }
+        }
+    }
+
+    public function plsPdf($jumlahHari, $profilId, $sisaHariMax, $sortBy, $kertas)
+    {
+        /* Agar tetap muncul, walaupun "agak" lama */
+        ini_set('memory_limit', '-1');
+        set_time_limit(300);
+
+        $model = new ReportPlsForm();
+
+        $model->jumlahHari = $jumlahHari;
+        $model->profilId = $profilId;
+        $model->sisaHariMax = $sisaHariMax;
+        $model->sortBy = $sortBy;
+        $report = $model->reportPls();
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = array();
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        /*
+         * Persiapan render PDF
+         */
+        $waktu = date('Y-m-d H:i:s');
+        $waktuCetak = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
+        $listNamaKertas = ReportPlsForm::listKertas();
+        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_pls_pdf', array(
+                    'model' => $model,
+                    'report' => $report,
+                    'config' => $branchConfig,
+                    'waktu' => $waktu,
+                    'waktuCetak' => $waktuCetak,
+                        ), true
+        ));
+        $mPDF1->SetDisplayMode('fullpage');
+        $mPDF1->pagenumPrefix = 'Hal ';
+        $mPDF1->pagenumSuffix = ' / ';
+        // Render PDF
+        $mPDF1->Output("NPLS {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+    }
+
+    public function actionKartuStok()
+    {
+        $model = new ReportKartuStokForm();
+        $report = null;
+        if (isset($_POST['ReportKartuStokForm'])) {
+            $model->attributes = $_POST['ReportKartuStokForm'];
+            $model->sortBy = ReportKartuStokForm::SORT_BY_TANGGAL_ASC;
+            if ($model->validate()) {
+                $report = $model->reportKartuStok();
+            }
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasUntukPdf = ReportKartuStokForm::listKertas();
+        $this->render('kartustok', [
+            'model' => $model,
+            'report' => $report,
+            'printers' => $printers,
+            'kertasPdf' => $kertasUntukPdf
+        ]);
+    }
+
+    public function actionCariBarang($term)
+    {
+        $q = new CDbCriteria();
+        $q->addCondition("barcode like :term OR nama like :term");
+        $q->order = 'nama';
+        $q->params = [':term' => "%{$term}%"];
+        $barangs = Barang::model()->findAll($q);
+
+        $r = array();
+        foreach ($barangs as $barang) {
+            $r[] = array(
+                'label' => $barang->nama,
+                'value' => $barang->barcode,
+                'id' => $barang->id,
+                'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
+                'harga' => $barang->hargaJual
+            );
+        }
+
+        $this->renderJSON($r);
+    }
+
 }

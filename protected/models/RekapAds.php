@@ -1,39 +1,28 @@
 <?php
 
 /**
- * This is the model class for table "kode_dokumen".
+ * This is the model class for table "rekap_ads".
  *
- * The followings are the available columns in table 'kode_dokumen':
- * @property integer $id
- * @property string $kode
- * @property string $nama
- * @property string $created_at
+ * The followings are the available columns in table 'rekap_ads':
+ * @property string $barang_id
+ * @property integer $qty
+ * @property double $ads
+ * @property integer $stok
+ * @property double $sisa_hari
  * @property string $updated_at
- * @property string $updated_by
  */
-class KodeDokumen extends CActiveRecord
+class RekapAds extends CActiveRecord
 {
-    /*
-     * Data disimpan sebagai konstanta, agar lebih cepat aksesnya
-     * Tapi sudah disediakan tabel jika akan disimpan di DB (jika ingin lebih fleksibel)
-     */
 
-    const PEMBELIAN = '01';
-    const RETUR_PEMBELIAN = '02';
-    const PENJUALAN = '03';
-    const RETUR_PENJUALAN = '04';
-    const SO = '05';
-    const HUTANG = '06';
-    const PIUTANG = '07';
-    const PENGELUARAN = '08';
-    const PENERIMAAN = '09';
+    public $namaBarang;
+    public $barcode;
 
     /**
      * @return string the associated database table name
      */
     public function tableName()
     {
-        return 'kode_dokumen';
+        return 'rekap_ads';
     }
 
     /**
@@ -43,16 +32,15 @@ class KodeDokumen extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('kode, nama, updated_at, updated_by', 'required'),
-            array('kode', 'length', 'max' => 2),
-            array('nama', 'length', 'max' => 45),
-            array('updated_by', 'length', 'max' => 10),
-            array('created_at', 'safe'),
+        return [
+            ['barang_id, updated_at', 'required'],
+            ['qty, stok', 'numerical', 'integerOnly' => true],
+            ['ads, sisa_hari', 'numerical'],
+            ['barang_id', 'length', 'max' => 10],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, kode, nama, created_at, updated_at, updated_by', 'safe', 'on' => 'search'),
-        );
+            ['barang_id, qty, ads, stok, sisa_hari, updated_at', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -62,8 +50,9 @@ class KodeDokumen extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-        );
+        return [
+            'barang' => [self::BELONGS_TO, 'Barang', 'barang_id'],
+        ];
     }
 
     /**
@@ -71,14 +60,14 @@ class KodeDokumen extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'kode' => 'Kode',
-            'nama' => 'Nama',
-            'created_at' => 'Created At',
+        return [
+            'barang_id' => 'Barang',
+            'qty' => 'Penjualan (qty)',
+            'ads' => 'Penjualan/Hari',
+            'stok' => 'Stok',
+            'sisa_hari' => 'Estimasi Sisa Hari',
             'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-        );
+        ];
     }
 
     /**
@@ -99,23 +88,39 @@ class KodeDokumen extends CActiveRecord
 
         $criteria = new CDbCriteria;
 
-        $criteria->compare('id', $this->id);
-        $criteria->compare('kode', $this->kode, true);
-        $criteria->compare('nama', $this->nama, true);
-        $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('barang_id', $this->barang_id, true);
+        $criteria->compare('qty', $this->qty);
+        $criteria->compare('ads', $this->ads);
+        $criteria->compare('stok', $this->stok);
+        $criteria->compare('sisa_hari', $this->sisa_hari);
         $criteria->compare('updated_at', $this->updated_at, true);
-        $criteria->compare('updated_by', $this->updated_by, true);
 
-        return new CActiveDataProvider($this, array(
+        $criteria->with = ['barang'];
+
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-        ));
+            'sort' => [
+                'defaultOrder' => 'sisa_hari',
+                'attributes' => [
+                    '*',
+                    'namaBarang' => [
+                        'asc' => 'barang.nama',
+                        'desc' => 'barang.nama desc'
+                    ],
+                    'barcode' => [
+                        'asc' => 'barang.barcode',
+                        'desc' => 'barang.barcode desc'
+                    ]
+                ]
+            ]
+        ]);
     }
 
     /**
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return KodeDokumen the static model class
+     * @return RekapAds the static model class
      */
     public static function model($className = __CLASS__)
     {
@@ -128,25 +133,9 @@ class KodeDokumen extends CActiveRecord
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = null; // Trigger current timestamp
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
-    }
-
-    public function listKodeNamaDokumen()
-    {
-        return [
-            self::PEMBELIAN => 'Pembelian',
-            self::RETUR_PEMBELIAN => 'Retur Pembelian',
-            self::PENJUALAN => 'Penjualan',
-            self::RETUR_PENJUALAN => 'Retur Penjualan',
-            self::SO => 'Stock Opname'
-        ];
-    }
-
-    public function getNamaDokumen($kode)
-    {
-        return $this->listKodeNamaDokumen()[$kode];
     }
 
 }

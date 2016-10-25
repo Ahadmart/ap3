@@ -599,4 +599,58 @@ class Pembelian extends CActiveRecord
                         ->queryAll();
     }
 
+    /**
+     * Retur Current Nota
+     * @param int $id Pembelian ID
+     */
+    public function retur()
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+            $returBeli = new ReturPembelian;
+            $returBeli->profil_id = $this->profil_id;
+            if (!$returBeli->save()) {
+                throw new Exception("Gagal simpan Retur Pembelian");
+            }
+
+            /* Insert semua yang ada di pembelian_detail ke retur_pembelian_detail */
+            $sql = "
+            INSERT INTO retur_pembelian_detail 
+                (retur_pembelian_id, inventory_balance_id, qty, updated_by, created_at)
+            SELECT 
+                :returPembelianId, ib.id, detail.qty, :user, now()
+            FROM
+                pembelian_detail detail
+                    JOIN
+                inventory_balance ib ON detail.id = ib.pembelian_detail_id
+            WHERE
+                pembelian_id = :pembelianId                  
+                    ";
+            $command = Yii::app()->db->createCommand($sql);
+            $command->bindValues([
+                ':returPembelianId' => $returBeli->id,
+                ':pembelianId' => $this->id,
+                ':user' => Yii::app()->user->id
+            ]);
+            $rows = $command->execute();
+
+            $transaction->commit();
+            return [
+                'sukses' => true,
+                'data' => [
+                    'returPembelianId' => $returBeli->id,
+                    'rows' => $rows
+                ]
+            ];
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return [
+                'sukses' => false,
+                'error' => [
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
+        }
+    }
+
 }

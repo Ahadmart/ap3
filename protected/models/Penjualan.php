@@ -216,7 +216,15 @@ class Penjualan extends CActiveRecord
         return $detail['qty'];
     }
 
-    public function transferBarang($barcode, $qty)
+    /**
+     * Tambah barang dengan harga modal
+     * @param text $barcode
+     * @param int $qty
+     * @param boolean $cekLimit default FALSE
+     * @return array
+     * @throws Exception
+     */
+    public function transferBarang($barcode, $qty, $cekLimit = false)
     {
         $transaction = $this->dbConnection->beginTransaction();
         try {
@@ -236,6 +244,10 @@ class Penjualan extends CActiveRecord
                 ));
             }
             $this->tambahBarangTransferDetail($barang, $qty);
+
+            if ($cekLimit && $this->lewatLimit()) {
+                throw new Exception('Gagal!! Melebihi limit penjualan!', 500);
+            }
 
             $transaction->commit();
             return array(
@@ -350,7 +362,15 @@ class Penjualan extends CActiveRecord
         $this->tambahBarangDetail($barang, $qty);
     }
 
-    public function tambahBarang($barcode, $qty)
+    /**
+     * Tambah barang ke penjualan
+     * @param string $barcode
+     * @param int $qty
+     * @param boolean $cekLimit default false
+     * @return array
+     * @throws Exception
+     */
+    public function tambahBarang($barcode, $qty, $cekLimit = false)
     {
         $transaction = $this->dbConnection->beginTransaction();
         try {
@@ -361,6 +381,11 @@ class Penjualan extends CActiveRecord
                 throw new Exception('Barang tidak ditemukan', 500);
             }
             $this->tambahBarangProc($barang, $qty);
+
+            if ($cekLimit && $this->lewatLimit()) {
+                throw new Exception('Gagal!! Melebihi limit penjualan!', 500);
+            }
+            
             $transaction->commit();
             return array(
                 'sukses' => true
@@ -1392,7 +1417,7 @@ class Penjualan extends CActiveRecord
                             ->from(PenjualanMember::model()->tableName() . ' tpm')
                             ->where('profil_id=:profilId');
                     $curMonth = date('n');
-                    if ($curMonth >= $periodePoinL->akhir){
+                    if ($curMonth >= $periodePoinL->akhir) {
                         $queryPoin->andWhere('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND :akhir');
                         $queryPoin->bindValues([]);
                     }
@@ -1501,6 +1526,17 @@ class Penjualan extends CActiveRecord
                     'code' => $ex->getCode(),
             ));
         }
+    }
+
+    /**
+     * Cek total penjualan, apakah sudah lewat limit
+     * @return boolean true jika lewat limit
+     */
+    public function lewatLimit()
+    {
+        $limitPenjualan = Config::model()->find("nama='penjualan.limit'");
+        $limit = $limitPenjualan->nilai;
+        return $limit > 0 && $this->ambilTotal() > $limit;
     }
 
 }

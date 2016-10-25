@@ -109,12 +109,19 @@ class StockopnameController extends Controller
             }
         }
 
+        $scanBarcode = null;
+        /* Ada scan dari aplikasi barcode scanner (android) */
+        if (isset($_GET['barcodescan'])) {
+            $scanBarcode = $_GET['barcodescan'];
+        }
+
         $this->render('ubah', array(
             'model' => $model,
             'soDetail' => $soDetail,
             'barang' => $barang,
             'manualMode' => $manualMode,
-            'barangBelumSO' => $manualMode ? $barangBelumSO : NULL
+            'barangBelumSO' => $manualMode ? $barangBelumSO : NULL,
+            'scanBarcode' => $scanBarcode
         ));
     }
 
