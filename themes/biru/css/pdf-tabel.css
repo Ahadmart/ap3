@@ -1,0 +1,71 @@
+body{
+    font-family: OpenSans;
+    font-size: 12px;
+}
+
+.clear{
+    clear: both;
+}
+
+
+#header1{
+    /*float:left;*/
+    text-align: center;
+    font-size: 1.25em;
+    width: 100%;
+    /*    border-top: thin solid black;
+        border-bottom: thin solid black;*/
+    /*border-right: thin solid black;*/
+    /*padding-bottom: 30px;*/
+    /*border: thin solid black;*/
+}
+
+table{
+    width: 100%;
+}
+
+th, tfoot tr td{
+    text-transform: uppercase;
+    padding: 5px;
+}
+
+td{
+    padding: 2px;
+}
+
+.table-bordered{     
+    border-collapse: collapse;
+}
+
+.table-bordered tr td{
+    border-bottom:1px solid gray;
+    border-top:1px solid gray;
+}
+
+.bordered{
+    border-collapse: collapse;
+}
+
+.bordered th, .bordered td{
+    border: 1px solid gray;
+}
+
+.bordered td{
+    padding: 2px 5px;
+}
+
+.rata-kanan{
+    text-align: right;
+}
+
+.rata-tengah{
+    text-align: center;
+}
+
+tr.alt{
+    background-color: #E0E0E0;
+}
+
+tfoot tr td{
+    font-weight: bold;
+}
