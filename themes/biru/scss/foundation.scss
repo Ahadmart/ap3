@@ -1,0 +1,88 @@
+/* 
+    Created on : Jan 5, 2014, 7:15:15 PM
+    Author     : abumuhammad
+*/
+
+@charset "UTF-8";
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300;
+  src: url('fonts/OpenSans-Light.ttf');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/OpenSans.ttf');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: url('fonts/OpenSans-Bold.ttf');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 300;
+  src: url('fonts/OpenSans-LightItalic.ttf');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 400;
+  src: url('fonts/OpenSans-Italic.ttf');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: italic;
+  font-weight: 700;
+  src: url('fonts/OpenSans-BoldItalic.ttf');
+}
+
+// Foundation by ZURB
+// foundation.zurb.com
+// Licensed under MIT Open Source
+
+@import '../scsslib/foundation/_settings';
+
+// Behold, here are all the Foundation components.
+@import '../scsslib/foundation/components/grid';
+@import '../scsslib/foundation/components/accordion';
+@import '../scsslib/foundation/components/alert-boxes';
+@import '../scsslib/foundation/components/block-grid';
+@import '../scsslib/foundation/components/breadcrumbs';
+@import '../scsslib/foundation/components/button-groups';
+@import '../scsslib/foundation/components/buttons';
+@import '../scsslib/foundation/components/clearing';
+@import '../scsslib/foundation/components/dropdown';
+@import '../scsslib/foundation/components/dropdown-buttons';
+@import '../scsslib/foundation/components/flex-video';
+@import '../scsslib/foundation/components/forms';
+@import '../scsslib/foundation/components/icon-bar';
+@import '../scsslib/foundation/components/inline-lists';
+@import '../scsslib/foundation/components/joyride';
+@import '../scsslib/foundation/components/keystrokes';
+@import '../scsslib/foundation/components/labels';
+@import '../scsslib/foundation/components/magellan';
+@import '../scsslib/foundation/components/orbit';
+@import '../scsslib/foundation/components/pagination';
+@import '../scsslib/foundation/components/panels';
+@import '../scsslib/foundation/components/pricing-tables';
+@import '../scsslib/foundation/components/progress-bars';
+@import '../scsslib/foundation/components/range-slider';
+@import '../scsslib/foundation/components/reveal';
+@import '../scsslib/foundation/components/side-nav';
+@import '../scsslib/foundation/components/split-buttons';
+@import '../scsslib/foundation/components/sub-nav';
+@import '../scsslib/foundation/components/switches';
+@import '../scsslib/foundation/components/tables';
+@import '../scsslib/foundation/components/tabs';
+@import '../scsslib/foundation/components/thumbs';
+@import '../scsslib/foundation/components/tooltips';
+@import '../scsslib/foundation/components/top-bar';
+@import '../scsslib/foundation/components/type';
+@import '../scsslib/foundation/components/offcanvas';
+@import '../scsslib/foundation/components/visibility';
