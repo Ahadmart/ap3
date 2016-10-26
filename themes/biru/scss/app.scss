@@ -3,9 +3,15 @@
     Author     : abumuhammad
 */
 
-$biru: #0b62a4;
-$biru-muda: #7A92A3;
-$hijau: #4da74d;
+/* Samakan dengan setting foundation */
+ $primary-color: #0874bc; 
+ $secondary-color: #0da1df;
+ $alert-color: #f55c57;
+ $success-color: #5bab54; 
+ $warning-color: #ffcc9f;
+ $info-color: #e8f0fd;
+ /* ================================ */
+ 
 $toska: #00BCD4;
 $oranye: #edc240;
 $merah: #f74a4c;
@@ -102,10 +108,10 @@ option{
         }
     }
     tr.baru{
-        background-color: #F57C00;
+        background-color: $warning-color;
         font-weight: bold;
         td{
-            color: #fff;
+            color: #000;
             a.editable{
                 color: #0d53a8;     
                 border-bottom-color: #fff;
@@ -113,7 +119,7 @@ option{
         }
     }
     tr.hj-berubah{
-        background-color: #388E3C;
+        background-color: $success-color;
         font-weight: bold;
         td{
             color: #fff;
@@ -482,7 +488,7 @@ textarea:focus {
 tr{
     transition: background-color 0.5s ease;
     &.pilih{
-        background-color: $toska !important;
+        //background-color: $toska !important;
     }
 }
 
