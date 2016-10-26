@@ -63,7 +63,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                         title: 'Error ' + data.error.code,
                         text: data.error.msg,
                         time: 3000,
-                        class_name: 'alert-box warning'
                     });
                 }
                 updateTotal();
