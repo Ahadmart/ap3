@@ -130,12 +130,31 @@ class Theme extends CActiveRecord
     public function listTheme()
     {
         $list = Yii::app()->db->createCommand()->
-                select("id, concat(nama, ' (', deskripsi,')') nama_theme")->
+                //select("id, concat(nama, ' (', deskripsi,')') nama_theme")->
+                select("id, deskripsi nama_theme")->
                 from($this->tableName())->
                 where("nama != 'default'")->
                 order('nama')->
                 queryAll();
         return CHtml::listData($list, 'id', 'nama_theme');
+    }
+
+    /**
+     * Menyimpan theme saat ini ke cookies. Agar ketika login, menampilkan
+     * theme terakhir
+     */
+    public function toCookies()
+    {
+        Yii::app()->request->cookies['theme'] = new CHttpCookie('theme', $this->id, ['expire' => time() + 60 * 60 * 24 * 30]);
+    }
+
+    /**
+     * Get Theme ID from cookies
+     * @return int Theme ID
+     */
+    public function getCookies()
+    {
+        return !empty(Yii::app()->request->cookies['theme']->value) ? (string) Yii::app()->request->cookies['theme'] : null;
     }
 
 }

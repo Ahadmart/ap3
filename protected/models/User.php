@@ -151,6 +151,13 @@ class User extends CActiveRecord
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
+    
+    public function afterSave()
+    {
+        $theme = Theme::model()->findByPk($this->theme_id);
+        $theme->toCookies();
+        return parent::afterSave();
+    }
 
     public function validatePassword($password)
     {
