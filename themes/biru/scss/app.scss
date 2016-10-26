@@ -19,6 +19,7 @@ $warna-background-menu-hover: #0172c2;
 $warna-text-menu-hover: #fff;
 $warna-menu-border: #eaeaea;
 $input-shadow: #3685c0;
+$warna-header-panel: #546e7a;
 
 @mixin animasi($param){
     -webkit-animation: $param;
@@ -235,15 +236,10 @@ a.button.micro.bigfont {
 
 // Add box shadow to panel
 .panel{
-    //box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(0, 0, 0, 0.15), inset 1px 0 2px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.15);
-    //background-color: #505F69;
-    //border-color: #515356;
-    background: $bg; //rgba(#000,0.3);
-
     h1, h2, h3, h4, h5, h6, p, li, dl{
-        color: #546e7a;
+        color: $warna-header-panel;
         small{
-            color: #546e7a;
+            color: $warna-header-panel;
         }
     }
     .detail-view{
@@ -318,7 +314,7 @@ tr{
 
 footer{
     text-align: right;
-    background-color: #warna-background-menu;
+    background-color: $warna-background-menu;
     color: $warna-text;
     line-height: 20px;
     font-size: 10px;
@@ -405,25 +401,25 @@ label{
 
 .datepicker table{
     th{
-        background-color: #cfd8dc;
+        background-color: $bg;
     }
     td{        
-        background-color: #cfd8dc; 
+        background-color: $bg; 
         &.day{
-            color: #ffffff;
+            color: $warna-header-panel;
         }
         &.old, &.new{
             color: #999
         }
         span.hour{
-            color: #ffffff;
+            color: $warna-header-panel;
         }
         span.minute{
-            color: #ffffff;
+            color: $warna-header-panel;
         }
         &.active.day, span.active{
-            background-color: #e73700;
-            color: #fff;
+            background-color: $warna-background-menu-hover;
+            color: $warna-text-menu-hover;
         }
     }
 }
@@ -521,7 +517,7 @@ select {
 
 .ui-menu-item{
     a{
-        color: #ffffff;    
+        color: $warna-text;    
         font-size: 0.9rem;
         small{
             font-size: 0.75rem;
@@ -531,7 +527,10 @@ select {
         box-shadow: 0px 0px 15px #AFD8F8;
         border: 1px solid $warna-menu-border;
         margin: 0;
-        background-color: #00B7F3;
+        background-color: $warna-background-menu-hover;
+        a{
+            color: $warna-text-menu-hover;
+        }
     }
 }
 

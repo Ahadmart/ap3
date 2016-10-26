@@ -1,33 +1,15 @@
-/* 
-    Created on : Mar 11, 2014, 10:07:14 AM
-    Author     : abumuhammad
-*/
-
-$biru: #0b62a4;
-$biru-muda: #7A92A3;
-$hijau: #4da74d;
-$toska: #afd8f8;
-$oranye: #ff5722;
-$merah: #cb4b4b;
-$violet: #9440ed;
+$bg: #f0f4ff;
+$warna-text: #6b8ed0;
+$warna-text-menu: #126cb8;
+$warna-background-menu: #fff;
+$warna-background-menu-aktif: #f2f6ff;
+$warna-background-menu-hover: #0172c2;
+$warna-text-menu-hover: #fff;
+$warna-menu-border: #eaeaea;
+$input-shadow: #3685c0;
 
 body, html {
     height: 100%;
-}
-body{
-    color: #546e7a;
-    background: #eceff1;
-    padding: 0;
-    margin: 0;
-    font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
-    font-style: normal;
-    font-weight: 300;
-    line-height: 1;
-    position: relative;
-    cursor: default;
-}
-a{
-    color: #00e5ff;
 }
 .prefix .fa-2x{
     padding-top:4px;
@@ -37,7 +19,7 @@ a{
 }
 
 .sidebar {
-    background-color: #263238;
+    //background-color: #263238;
     padding-top: 15px;	
     .huruf{
         font-size: 1.5rem;
@@ -62,7 +44,7 @@ a{
 }
 #total-belanja{
     font-size: 3.5rem;
-    color: #FFF;
+    //color: #FFF;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
@@ -71,7 +53,7 @@ a{
 }
 #surcharge{
     font-size: 2rem;
-    color: #F00;
+    //color: #F00;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
@@ -79,7 +61,7 @@ a{
 }
 #kembali{
     font-size: 2.5rem;
-    color: #FFF;
+    //color: #FFF;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
@@ -148,7 +130,7 @@ a{
 }
 .tabel-index {
     th a{
-        color: #263238;
+        //color: #263238;
     }
     tr td{
         font-family: "Open Sans";
@@ -163,7 +145,7 @@ a{
 }
 
 tr.pilih, tr.selected {
-    background-color: rgba(0, 0, 0, 0.5) !important;
+    //background-color: rgba(0, 0, 0, 0.5) !important;
 }
 /* ============== */
 
@@ -176,28 +158,28 @@ tr.pilih, tr.selected {
 }
 
 table, table thead{
-    background: #cfd8dc;
+    //background: #cfd8dc;
 }
 
 table thead tr th, table thead tr td {
-    color: #546e7a;
+    //color: #546e7a;
     font-size: 0.9rem;
     font-weight: normal;
     padding: 0.5rem 0.625rem 0.625rem;
-    background-color: #cfd8dc;
+    //background-color: #cfd8dc;
 }
 
 table tr.even, table tr.alt, table tr:nth-of-type(even) {
-    background-color: #455a64;
+    //background-color: #455a64;
 
 }
 
 table tr.odd{
-    background-color: #37474f;
+    //background-color: #37474f;
 }
 
 table tr th, table tr td {
-    color: #FFF;
+    //color: #FFF;
 }
 
 #label-customer{
@@ -209,16 +191,16 @@ table tr th, table tr td {
 }
 
 #data-customer{
-    color: #fff;
+    //color: #fff;
     margin-top: 10px;
     margin-bottom: 15px;
     padding: 10px 0;
     font-size: 0.9rem;
-    border-top: 1px solid $biru-muda;
-    border-bottom: 1px solid $biru-muda;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
     nomor{
         font-weight: bold;
-        color: $hijau;
+        //color: $hijau;
         display: block;
     }   
     nama{
@@ -232,7 +214,7 @@ table tr th, table tr td {
     width: 45%;
 }
 .ac-harga{
-    color: #fff;
+    //color: #fff;
     font-weight: bold;
     float:left;
     width: 15%;
@@ -244,7 +226,7 @@ table tr th, table tr td {
     padding-left: 5px;
 }
 .ac-stok{
-    color: #fff;
+    //color: #fff;
     font-weight: bold;
     float:left;
     width: 10%;
@@ -259,21 +241,21 @@ table tr th, table tr td {
 }
 
 #scan, #uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password{
-    background-color: #eff1f3;
-    color: 546e7a;
+    //background-color: #eff1f3;
+    //color: 546e7a;
     border-color: transparent;
 }
 
 #scan:focus, #uang-dibayar:focus, #account:focus,
 #jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus{
-    border-top-color: #ff5722;
-    border-bottom-color: #ff5722;
-    box-shadow: 0px 0px 15px #ff5722;
+    border-top-color: $warna-menu-border;
+    border-bottom-color: $warna-menu-border;
+    box-shadow: 0px 0px 15px $input-shadow;
 }
 
 #scan-icon, span.prefix, span.postfix{
     //background-color: rgba(0, 0, 0, 0.5);
-    color: #546e7a;
+    //color: #546e7a;
     border-color: transparent;
 }
 
@@ -283,7 +265,7 @@ table tr th, table tr td {
 }
 
 .ui-menu-item a {
-    color: #FFF;
+    //color: #FFF;
 }
 
 .ui-menu .ui-menu-item {
@@ -291,25 +273,25 @@ table tr th, table tr td {
 }
 
 .ui-menu-item.ui-state-focus{
-    background-color: #263238;
+    //background-color: #263238;
 }
 button.warning, .button.warning {
-    color: #263238;
+    //color: #263238;
 }
 
 .panel{
-    background: #263238;
+    //background: #263238;
     h1, h2, h3, h4, h5, h6, p, li, dl{
-        color: #FFF;
+        //color: #FFF;
 
     }
     h1{
         font-weight: 700;
         font-size: 48pt; 
-        color: #fff
+        //color: #fff
     }
     h4{
         font-weight: 400;
-        color: #fff
+        //color: #fff
     }
 }
