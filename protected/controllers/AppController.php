@@ -79,6 +79,11 @@ class AppController extends PublicController
      */
     public function actionLogout()
     {
+        /* Simpan theme ke cookies */
+        $user = User::model()->findByPk(Yii::app()->user->id);        
+        $theme = Theme::model()->findByPk($user->theme_id);
+        $theme->toCookies();
+        
         Yii::app()->user->logout();
         $this->redirect(Yii::app()->homeUrl);
     }
