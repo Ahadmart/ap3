@@ -115,20 +115,12 @@ $include-html-global-classes: $include-html-classes;
  $jet         : #222222;
  $black       : #000000;
  
- 
-$warna-text: #6b8ed0;
-$warna-text-menu: #126cb8;
-$warna-text-menu-aktif: $warna-text-menu;
-$warna-background-menu: #fff;
-$warna-background-menu-aktif: #f2f6ff;
-$warna-background-menu-hover: #0172c2;
-$warna-text-menu-hover: #fff;
 
 // We use these as default colors throughout
  //$primary-color: #008CBA; 
  $primary-color: #0874bc; 
  
- $secondary-color: #47b23e;
+ $secondary-color: #0da1df;
  //$alert-color: #f04124;
  $alert-color: #f55c57;
  //$success-color: #43AC6A;
@@ -137,6 +129,16 @@ $warna-text-menu-hover: #fff;
  $warning-color: #ffcc9f;
  //$info-color: #a0d3e8;
  $info-color: #e8f0fd;
+ 
+$bg: #f0f4ff;
+$warna-text: #6b8ed0;
+$warna-text-menu: #126cb8;
+$warna-text-menu-aktif: $warna-text-menu;
+$warna-background-menu: #fff;
+$warna-background-menu-aktif: #f2f6ff;
+$warna-background-menu-hover: #0172c2;
+$warna-text-menu-hover: #fff;
+$warna-table-baris-alt: $info-color;
 
 // We use these to control various global styles
 // $body-bg: $white;
@@ -1006,13 +1008,13 @@ $warna-text-menu-hover: #fff;
 // $include-html-panel-classes: $include-html-classes;
 
 // We use these to control the background and border styles
-// $panel-bg: scale-color($white, $lightness: -5%);
+ $panel-bg: scale-color($warna-background-menu, $lightness: -5%);
 // $panel-border-style: solid;
 // $panel-border-size: 1px;
 // $callout-panel-bg: scale-color($primary-color, $lightness: 94%);
 
 // We use this % to control how much we darken things on hover
-// $panel-border-color: scale-color($panel-bg, $lightness: -11%);
+ $panel-border-color: scale-color($panel-bg, $lightness: -11%);
 
 // We use these to set default inner padding and bottom margin
 // $panel-margin-bottom: rem-calc(20);
@@ -1312,8 +1314,8 @@ $warna-text-menu-hover: #fff;
 // $include-html-table-classes: $include-html-classes;
 
 // These control the background color for the table and even rows
-// $table-bg: $white;
-// $table-even-row-bg: $snow;
+ $table-bg: $white;
+ $table-even-row-bg: $warna-table-baris-alt;
 
 // These control the table cell border style
 // $table-border-style: solid;
