@@ -1,0 +1,596 @@
+/* 
+    Created on : Jan 3, 2014, 10:32:29 AM
+    Author     : abumuhammad
+*/
+
+/* Samakan dengan setting foundation */
+ $primary-color: #0874bc; 
+ $secondary-color: #0da1df;
+ $alert-color: #f55c57;
+ $success-color: #5bab54; 
+ $warning-color: #ffcc9f;
+ $info-color: #e8f0fd;
+ /* ================================ */
+ 
+$toska: #00BCD4;
+$oranye: #edc240;
+$merah: #f74a4c;
+$violet: #9440ed;
+$bg: #f0f4ff;
+$warna-text: #6b8ed0;
+$warna-text-menu: #126cb8;
+$warna-background-menu: #fff;
+$warna-background-menu-aktif: #f2f6ff;
+$warna-background-menu-hover: #0172c2;
+$warna-text-menu-hover: #fff;
+$warna-menu-border: #eaeaea;
+$input-shadow: #3685c0;
+$warna-header-panel: #546e7a;
+
+@mixin animasi($param){
+    -webkit-animation: $param;
+    -moz-animation: $param;
+    -ms-animation: $param;
+    animation: $param;
+}
+
+body{
+    color: $warna-text;
+    background: $bg;// #f3f7ff;
+    padding: 0;
+    margin: 0;
+    font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
+    font-style: normal;
+    /*font-weight: 300;*/
+    line-height: 1;
+    position: relative;
+    cursor: default;
+}
+a{
+    color: #0d53a8;  
+}
+.delete{
+    color: $merah;
+}
+
+// Tambahin garis di bawah 
+nav.top-bar{
+    box-shadow: 0 1px $warna-menu-border;
+    background: #ffffff;
+}
+
+hr{
+    border: solid $warna-menu-border;
+    border-width: 1px 0 0;
+}
+
+select{
+    color: $warna-text;
+    font-family: Ubuntu, "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;	
+}
+
+option{
+    &.option-head{
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+}
+/*------------------*/
+
+#content{
+    margin: 0px 0px 30px;
+    padding-top: 15px;
+}
+.getar{
+    @include animasi(tada 1s infinite);
+}
+
+.tabel-index{
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 0;
+    input, select{
+        margin-bottom: 0px;
+    }
+    th{
+        //text-align: center;
+    }
+    td{
+        font-size: 0.825em;
+    }
+    tr{
+        td{
+            a.editable{
+                color: #0d53a8;     
+                //border-bottom-color: #fff;
+            }
+        }
+    }
+    tr.baru{
+        background-color: $warning-color;
+        font-weight: bold;
+        td{
+            color: #000;
+            a.editable{
+                color: #0d53a8;     
+                border-bottom-color: #fff;
+            }
+        }
+    }
+    tr.hj-berubah{
+        background-color: $success-color;
+        font-weight: bold;
+        td{
+            color: #fff;
+            a.editable{
+                color: #fff;     
+                border-bottom-color: #fff;           
+            }
+        }
+    }
+}
+input, select {
+    &.error{
+        margin-bottom: 0px;
+    }
+}
+
+nav{
+    .title-area{
+        img{
+            margin-top: -5px;
+        }
+    }
+}
+
+.summary{
+    font-size: 0.85em;
+    margin-bottom: 10px;
+    text-align: right;
+    color: #0f398d;
+}
+
+span.required{
+    color: $merah;
+}
+
+/*li.active>a{
+    background-color: $biru;
+    color: #fff;
+}*/
+
+.row{
+    max-width: 100%;
+}
+.block{
+    margin-bottom: 10px;
+    //background: url(../img/bg-av.png) top fixed; //rgba(#000, 0.5) 
+    background-color: #eceff1; //rgba(#000, 0.5);//rgba(34, 45, 45, 0.7);//rgba(14, 39, 40, 0.7);//rgba(0,0,0,0.7);
+}
+.block-header{
+    overflow: visible;
+    background: #ffffff url(../img/bg3.png) repeat-y left;
+    //border-bottom: 1px solid #222;
+    ul{
+        &.title-area{
+            width: auto;
+            float: left;
+        }
+        &.right{		
+            width: auto;
+        }
+    }
+    li{
+        &.name>h1{
+            color: $warna-text;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+        &.name>h6{
+            color: #fff;
+            margin-left: 15px;
+            margin-right: 15px;
+            margin-top: 10px;
+        }
+    }
+    .has-form{
+        padding: 0px 15px;
+        //border-bottom: 1px solid #222;
+    }
+    .button{
+        font-size: 0.875rem;
+        position: relative;
+        top: 7px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+.button.tiny.bigfont{
+    font-size: 0.875rem;
+}
+a.button.micro.bigfont {
+    font-size: 0.875rem;
+    padding: 0.3rem;
+    margin-bottom: 0;
+}
+
+.block-content	{
+    padding: 15px 0 1px;   
+    background: #fff;
+    border-top: 1px solid $warna-menu-border;
+    &>table{
+        //margin: 0;
+        tr td{
+            font-size: 0.75rem;
+        }
+    }
+    div.panel{
+        // padding override
+        padding: 0.75rem;
+        padding-bottom: 0;
+        //margin: 0 15px 15px;
+        form{
+            margin: 0 -15px;
+        }
+    }
+    .prefix .fa-2x{
+        padding-top:4px;
+    }
+}
+
+// Add box shadow to panel
+.panel{
+    h1, h2, h3, h4, h5, h6, p, li, dl{
+        color: $warna-header-panel;
+        small{
+            color: $warna-header-panel;
+        }
+    }
+    .detail-view{
+        margin-bottom: 20px;
+    }
+}
+
+
+// tombol disebelah kanan input
+.postfix.button{
+    margin-bottom: 0;
+    .fa-2x {
+        padding-top: 4px;
+    }
+}
+
+div.error{
+    display: block;
+    padding: 0.33333rem 0.5rem 0.5rem;
+    margin-top: -1px;
+    margin-bottom: 0.88889rem;
+    font-size: 0.66667rem;
+    font-weight: normal;
+    font-style: italic;
+    background: #f04124;
+    color: white;
+    &.alone{
+        font-size: 0.875rem;
+        margin: 0 15px;
+        margin-top: -1px;
+        margin-bottom: 0.88889rem;
+    }
+}
+
+#input-pemb-detail{
+    input{
+        text-align: right;
+    }
+}
+
+th.rata-kanan, td.rata-kanan, .rata-kanan{
+    text-align: right;
+}
+th.rata-tengah, td.rata-tengah, .rata-tengah{
+    text-align: center;
+}
+
+/* Style untuk accesskey */
+.ak{
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+tr{
+    transition: background-color 0.5s ease;
+    &.pilih, &.selected{
+        background-color: $warna-background-menu-hover !important;
+        a{
+            //color: $oranye;
+            &.delete{
+                color: $alert-color;
+            }
+        }		
+    }
+}
+
+.total{
+    float: right;
+    /*font-weight: bold;*/
+    /*font-size: 1.125rem;*/
+}
+
+footer{
+    text-align: right;
+    background-color: $warna-background-menu;
+    color: $warna-text;
+    line-height: 20px;
+    font-size: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    //padding: 0 15px;
+    z-index: 3;
+    box-shadow: 0 -1px $warna-menu-border;
+    span{
+        padding: 0 15px;
+        &.left{
+            border-right: 1px solid $warna-menu-border;
+        }
+        &.right{
+            border-left: 1px solid $warna-menu-border;
+        }
+    }
+}
+
+
+.jqstooltip-ovr{
+    position: absolute; 
+    left: 0px; 
+    top: 0px; 
+    visibility: hidden; 
+    background: rgb(0, 0, 0) transparent; 
+    background-color: rgba(0,0,0,0.6); 
+    color: white; 
+    font-size: 10px; 
+    text-align: left; 
+    white-space: nowrap; 
+    padding: 3px 0; 
+    height: 30px;
+    width: auto;
+    border: 1px solid $warna-menu-border; 
+} 
+.jqsfield {  
+    color: #fff; 
+    font: 10px; 
+    text-align: left; 
+}
+
+.input-toogle{
+    cursor: pointer;
+}
+
+.detail-view{
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 1px;
+    border: 0;
+    tr{
+        th{
+            text-align: right;
+        }
+    }
+}
+
+.f-dropdown{
+    &.box-menu{
+        a{
+            top: 0;
+        }
+    }
+    &.content{
+        padding: 0;
+        span{
+            display: block;
+            padding: 0.5rem;
+            color: #555;
+        }
+    }
+}
+
+label{
+    color: #546e7a;
+}
+
+.datepicker.dropdown-menu{    
+    //background-color: #34383b;
+    border-color: $warna-menu-border;
+}
+
+.datepicker table{
+    th{
+        background-color: $bg;
+    }
+    td{        
+        background-color: $bg; 
+        &.day{
+            color: $warna-header-panel;
+        }
+        &.old, &.new{
+            color: #999
+        }
+        span.hour{
+            color: $warna-header-panel;
+        }
+        span.minute{
+            color: $warna-header-panel;
+        }
+        &.active.day, span.active{
+            background-color: $warna-background-menu-hover;
+            color: $warna-text-menu-hover;
+        }
+    }
+}
+
+.header{
+    .label{
+        font-size: 0.85rem;
+        margin-bottom: 3px;
+    }
+}
+
+.top-bar-section {
+    .dropdown{
+        border: 1px solid $warna-menu-border;
+    }
+    .divider{
+        //border-top: 0;
+    }
+}
+
+input:not([type]), 
+input[type="text"], 
+input[type="password"], 
+input[type="date"], 
+input[type="datetime"], 
+input[type="datetime-local"], 
+input[type="month"], 
+input[type="week"], 
+input[type="email"], 
+input[type="number"], 
+input[type="search"], 
+input[type="tel"], 
+input[type="time"], 
+input[type="url"], 
+input[type="color"], 
+textarea {
+    color: $warna-text;
+}
+
+input[type="text"]:focus, 
+input[type="password"]:focus, 
+input[type="date"]:focus, 
+input[type="datetime"]:focus, 
+input[type="datetime-local"]:focus, 
+input[type="month"]:focus, 
+input[type="week"]:focus, 
+input[type="email"]:focus, 
+input[type="number"]:focus, 
+input[type="search"]:focus, 
+input[type="tel"]:focus, 
+input[type="time"]:focus, 
+input[type="url"]:focus, 
+input[type="color"]:focus, 
+textarea:focus {
+    //glow effect on focus
+    box-shadow: 0px 0px 15px $input-shadow;
+    border: 1px solid $warna-menu-border;
+}
+
+tr{
+    transition: background-color 0.5s ease;
+    &.pilih{
+        //background-color: $toska !important;
+    }
+}
+
+.alert-box.warning {
+    background-color: $warna-menu-border;
+    border-color: darken($warna-menu-border,10);
+}
+
+select {
+    -moz-appearance: none;
+    text-indent: 0.01px;
+    text-overflow: '';
+}
+
+.grid-loading{
+    background:url(3.gif) no-repeat;
+}
+
+//jquery-editable overwrite
+.editable-clear-x{
+    margin-top: -15px;    
+}
+
+.ui-autocomplete{
+    background-color: #fff;
+    border: 1px solid $warna-menu-border; 
+    max-height: 400px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+
+.ui-menu-item{
+    a{
+        color: $warna-text;    
+        font-size: 0.9rem;
+        small{
+            font-size: 0.75rem;
+        }
+    }
+    &.ui-state-focus{
+        box-shadow: 0px 0px 15px #AFD8F8;
+        border: 1px solid $warna-menu-border;
+        margin: 0;
+        background-color: $warna-background-menu-hover;
+        a{
+            color: $warna-text-menu-hover;
+        }
+    }
+}
+
+.file-upload {
+    position: relative;
+    overflow: hidden;
+    margin: 10px; 
+}
+
+.file-upload input.file-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0); 
+}
+/*.top-bar-section ul li > a{
+    color: $warna-text-menu;    
+}
+
+.top-bar-section li.active:not(.has-form) a:not(.button) {
+    background: $warna-background-menu-aktif;
+    color: $warna-text-menu;
+    line-height: 2.8125rem;
+    padding: 0 .9375rem;
+}
+.top-bar-section .has-dropdown > a::after {
+    border-color: rgba(1, 114, 194, 0.4) transparent transparent transparent;
+}
+
+.top-bar-section li.active:not(.has-form) a:hover:not(.button){
+    background: $warna-background-menu-hover;
+    color: $warna-text-menu-hover;
+}
+
+.top-bar-section .dropdown {
+    li:not(.has-form):not(.active) > a:not(.button){
+        color: $warna-text-menu;
+    }
+    li:hover:not(.has-form):not(.active) > a:not(.button){
+        background: $warna-background-menu-hover;
+    }
+}
+
+.top-bar-section li:not(.has-form) a:hover:not(.button){
+    background: $warna-background-menu-hover;
+}
+.top-bar-section ul li:hover:not(.has-form) > a{
+    color: $warna-text-menu-hover;
+}
+.top-bar-section ul li{
+    background: $warna-background-menu;
+}*/

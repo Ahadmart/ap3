@@ -1,0 +1,297 @@
+$bg: #f0f4ff;
+$warna-text: #6b8ed0;
+$warna-text-menu: #126cb8;
+$warna-background-menu: #fff;
+$warna-background-menu-aktif: #f2f6ff;
+$warna-background-menu-hover: #0172c2;
+$warna-text-menu-hover: #fff;
+$warna-menu-border: #eaeaea;
+$input-shadow: #3685c0;
+
+body, html {
+    height: 100%;
+}
+.prefix .fa-2x{
+    padding-top:4px;
+}
+.postfix .fa-2x{
+    padding-top:4px;
+}
+
+.sidebar {
+    background-color: $warna-background-menu;
+    padding-top: 15px;	
+    .huruf{
+        font-size: 1.5rem;
+    }    
+}
+#info-tabel{
+    width: 100%;
+    .key{
+        font-weight: bold;
+        text-align: right;
+    }
+    td{
+        font-size: 0.825rem;
+        padding: 2px;
+    }
+}
+#transaksi{
+    padding-bottom: 30px;
+}
+.tabel-detail-jual{
+    width: 100%;
+}
+#total-belanja{
+    font-size: 3.5rem;
+    //color: #FFF;
+    text-align: right;
+    padding: 5px 0px;
+    width: 100%;
+    text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
+
+}
+#surcharge{
+    font-size: 2rem;
+    //color: #F00;
+    text-align: right;
+    padding: 5px 0px;
+    width: 100%;
+    text-shadow: 1px 1px black;
+}
+#kembali{
+    font-size: 2.5rem;
+    //color: #FFF;
+    text-align: right;
+    padding: 5px 0px;
+    width: 100%;
+    text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+    margin-bottom: 15px;
+
+}
+
+#logo{
+    /*background-color: #fff;*/
+    /*padding: 10px;*/
+    margin-bottom: 35px;
+}
+
+#tombol-simpan{
+    float: right;
+}
+
+#tombol-batal{
+    float: left;
+}
+
+.off-canvas-wrap, .main-section, .inner-wrap{
+    height: 100%;
+}
+
+#gritter-notice-wrapper{
+    left:33%;
+    right:33%;
+    top:3px;
+}
+/* Custom editable untuk POS */
+.editable-input{
+    width: 50px;
+    &.input-editable-harga-p{
+        width: 75px;
+    }
+}
+
+.editable-buttons {
+    button{
+        height: 25px;
+        line-height: 12px;
+        text-transform: capitalize;
+        width: 30px;
+        &.editable-cancel{
+            top: -25px;
+            left: 31px;
+            width: 30px;
+        }
+    }   
+}
+
+.editable-container{
+    height: 20px;
+    margin-top: -10px;
+}
+
+.tabel-index input.edit-input, .tabel-index .editable-input input{
+    height: 25px;
+    padding: 2px 2px;
+}
+.editable-clear-x {
+    margin-top: -7px;
+}
+.tabel-index {
+    th a{
+        //color: #263238;
+    }
+    tr td{
+        font-family: "Open Sans";
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
+        &.barcode{
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+    }
+}
+
+tr.pilih, tr.selected {
+    //background-color: rgba(0, 0, 0, 0.5) !important;
+}
+/* ============== */
+
+.stack {
+    margin-bottom: 15px;
+}
+
+.main-section{
+    margin: 15px;
+}
+
+table, table thead{
+    //background: #cfd8dc;
+}
+
+table thead tr th, table thead tr td {
+    //color: #546e7a;
+    font-size: 0.9rem;
+    font-weight: normal;
+    padding: 0.5rem 0.625rem 0.625rem;
+    //background-color: #cfd8dc;
+}
+
+table tr.even, table tr.alt, table tr:nth-of-type(even) {
+    //background-color: #455a64;
+
+}
+
+table tr.odd{
+    //background-color: #37474f;
+}
+
+table tr th, table tr td {
+    //color: #FFF;
+}
+
+#label-customer{
+    cursor: pointer;
+}
+
+#ganti-customer{
+    margin-top: 10px;
+}
+
+#data-customer{
+    //color: #fff;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+    nomor{
+        font-weight: bold;
+        //color: $hijau;
+        display: block;
+    }   
+    nama{
+        font-weight: bold;
+        display: block;
+        margin: 10px 0;
+    }
+}
+.ac-nama{
+    float:left;
+    width: 45%;
+}
+.ac-harga{
+    //color: #fff;
+    font-weight: bold;
+    float:left;
+    width: 15%;
+    text-align: right;
+}
+.ac-barcode{
+    float:left;
+    width: 30%;
+    padding-left: 5px;
+}
+.ac-stok{
+    //color: #fff;
+    font-weight: bold;
+    float:left;
+    width: 10%;
+    text-align: right;
+}
+
+.geleng {
+    -webkit-animation: shake 1s infinite;
+    -moz-animation: shake 1s infinite;
+    -ms-animation: shake 1s infinite;
+    animation: flash 2s infinite;
+}
+
+#scan, #uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password{
+    //background-color: #eff1f3;
+    //color: 546e7a;
+    border-color: transparent;
+}
+
+#scan:focus, #uang-dibayar:focus, #account:focus,
+#jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus{
+    border-top-color: $warna-menu-border;
+    border-bottom-color: $warna-menu-border;
+    box-shadow: 0px 0px 15px $input-shadow;
+}
+
+#scan-icon, span.prefix, span.postfix{
+    //background-color: rgba(0, 0, 0, 0.5);
+    //color: #546e7a;
+    border-color: transparent;
+}
+
+.ui-autocomplete{
+    background-color: rgba(55, 71, 79, 0.95);
+    border-color: transparent;
+}
+
+.ui-menu-item a {
+    //color: #FFF;
+}
+
+.ui-menu .ui-menu-item {
+    border-bottom: 1px solid;
+}
+
+.ui-menu-item.ui-state-focus{
+    //background-color: #263238;
+}
+button.warning, .button.warning {
+    //color: #263238;
+}
+
+.panel{
+    //background: #263238;
+    h1, h2, h3, h4, h5, h6, p, li, dl{
+        //color: #FFF;
+
+    }
+    h1{
+        font-weight: 700;
+        font-size: 48pt; 
+        //color: #fff
+    }
+    h4{
+        font-weight: 400;
+        //color: #fff
+    }
+}

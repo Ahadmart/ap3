@@ -67,8 +67,13 @@ class AppController extends PublicController
         if (isset($_POST['LoginForm'])) {
             $model->attributes = $_POST['LoginForm'];
             // validate user input and redirect to the previous page if valid
-            if ($model->validate() && $model->login())
+            if ($model->validate() && $model->login()) {
+                /* Simpan theme ke cookies */
+                $user = User::model()->findByPk(Yii::app()->user->id);
+                $theme = Theme::model()->findByPk($user->theme_id);
+                $theme->toCookies();
                 $this->redirect(Yii::app()->user->returnUrl);
+            }
         }
         // display the login form
         $this->render('login', array('model' => $model));

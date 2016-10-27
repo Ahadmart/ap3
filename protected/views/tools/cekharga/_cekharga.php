@@ -24,7 +24,7 @@
     <div class="medium-5 large-4 columns">
         <div class="row" style="margin-bottom: 20px">
             <div class="small-12 columns">
-                <input id="scan" type="text" placeholder="Scan Barcode" style="background-color: rgba(0, 0, 0, 0.9);color:#4da74d" autofocus="autofocus" autocomplete="off"/>
+                <input id="scan" type="text" placeholder="Scan Barcode" autofocus="autofocus" autocomplete="off"/>
             </div>
         </div>
         <div class="row">
