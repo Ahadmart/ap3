@@ -302,11 +302,11 @@ th.rata-tengah, td.rata-tengah, .rata-tengah{
 tr{
     transition: background-color 0.5s ease;
     &.pilih, &.selected{
-        background-color: $warna-background-menu-aktif !important;
+        background-color: $warna-background-menu-hover !important;
         a{
             //color: $oranye;
             &.delete{
-                color: $violet;
+                color: $alert-color;
             }
         }		
     }
