@@ -864,7 +864,7 @@ class LaporanHarian extends CActiveRecord
          join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPenerimaan
-         union
+         union all
          select profil.nama, item.nama, pd.keterangan, pd.jumlah
          from pengeluaran_detail pd
          join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
@@ -882,7 +882,7 @@ class LaporanHarian extends CActiveRecord
             join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPenerimaan
-            union
+            union all
             select sum(pd.jumlah) jumlah
             from pengeluaran_detail pd
             join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
@@ -934,7 +934,7 @@ class LaporanHarian extends CActiveRecord
          join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPenerimaan
-         union
+         union all
          select profil.nama, item.nama, pd.keterangan, pd.jumlah
          from pengeluaran_detail pd
          join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
@@ -952,7 +952,7 @@ class LaporanHarian extends CActiveRecord
             join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPenerimaan
-            union
+            union all
             select sum(pd.jumlah) jumlah
             from pengeluaran_detail pd
             join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
