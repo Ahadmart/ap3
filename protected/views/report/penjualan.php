@@ -29,7 +29,16 @@ $this->renderPartial('_form_penjualan', array('model' => $model));
 if (isset($report['rekap']) && $report['rekap']) {
     ?>
     <div class="row">
-        <div class="small-12 columns rata-kanan">
+        <div class="small-6 columns">
+            <?php
+            $this->renderPartial('_form_penjualan_cetak', array(
+                'model' => $model,
+                'printers' => $printers,
+                    //'kertasPdf' => $kertasPdf
+            ));
+            ?>
+        </div>
+        <div class="small-6 columns rata-kanan">
             <h6>Total : <?php echo number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
             <h6>Margin : <?php echo number_format($report['rekap']['margin'], 0, ',', '.'); ?></h6>
             <?php if ($report['rekap']['total'] != 0) {
@@ -73,7 +82,7 @@ if (!empty($report['detail'])):
                         <tr>
                             <td class="rata-kanan"><?= $i ?></td>
                             <td><?php echo $barisReport['tanggal']; ?></td>
-                            <td><a href="<?php echo Yii::app()->createUrl('penjualan/view', array('id' => $barisReport['id'])); ?>"><?php echo $barisReport['nomor']; ?></a></td>
+                            <td><a href="<?php echo Yii::app()->createUrl('penjualan/view', array('id' => $barisReport['penjualan_id'])); ?>"><?php echo $barisReport['nomor']; ?></a></td>
                             <td><?= $barisReport['nama']; ?> </td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['margin'], 0, ',', '.'); ?></td>
