@@ -2,7 +2,7 @@
 /* @var $this AppController */
 /* @var $model RekapAds */
 ?>
-<h4>Notifikasi Potensi Lost Sales <small>[Analisa 30 hari penjualan terakhir] [Periode Supplier: 7 hari]</small></h4>
+<h4>Notifikasi Potensi Lost Sales <small>[Analisa 30 hari penjualan terakhir] [Estimasi Sisa Stok < 7 hari]</small></h4>
 <hr />
 <?php
 $this->widget('BGridView', array(
