@@ -22,6 +22,11 @@ class AppController extends PublicController
                 $rekapAds->setAttribute('sisa_hari', '< 7');
             }
         }
+        $configs = Config::model()->findAll("nama like 'toko.%'");
+        $configToko = [];
+        foreach ($configs as $config) {
+            $configToko[$config->nama] = $config->nilai;
+        }
 
         if (Yii::app()->user->isGuest) {
             $this->redirect($this->createUrl('/app/login'));
@@ -29,6 +34,7 @@ class AppController extends PublicController
             $roles = AuthAssignment::model()->assignedList(Yii::app()->user->id);
             $this->render('index', array(
                 'roles' => $roles,
+                'configToko' => $configToko,
                 'rekapAds' => $rekapAds
             ));
         }
