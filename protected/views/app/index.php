@@ -7,7 +7,7 @@ $this->boxHeader['small'] = $this->pageTitle;
 $this->boxHeader['normal'] = $this->pageTitle;
 ?>
 <div class="row">
-    <div class="large-6 columns">
+    <div class="medium-8 columns">
         <div class="panel">
             <h4>Login Details</h4>
             <hr />
@@ -44,6 +44,15 @@ $this->boxHeader['normal'] = $this->pageTitle;
                 <span class="secondary label">Sponsored by</span><span class="warning label">Ahadmart</span>
             </p>
         </div>
+    </div>
+    <div class="medium-4 columns">
+        <ul class="vcard right">
+            <li class="fn"><?= $configToko['toko.nama']; ?></li>
+            <li class="street-address"><?= $configToko['toko.alamat1']; ?></li>
+            <li class="extended-address"><?= $configToko['toko.alamat2']; ?></li>
+            <li><span class="region"><?= $configToko['toko.alamat3']; ?></span>. <span class="tel"><?= $configToko['toko.telp']; ?></span></li>
+            <li class="email"><a href="#"><?= $configToko['toko.email']; ?></a></li>
+        </ul>
     </div>
     <?php
     /* Tampilkan npls jika ada */
