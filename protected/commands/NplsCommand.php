@@ -19,7 +19,8 @@ class NplsCommand extends CConsoleCommand
             'stok' => "INT(11) NOT NULL DEFAULT '0'",
             'sisa_hari' => "FLOAT DEFAULT '0'",
             'updated_at' => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-            'PRIMARY KEY (`barang_id`)'
+            'PRIMARY KEY (`barang_id`)',
+            'KEY `sisa_hari_idx` (`sisa_hari`)'
                 ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
 
         $intervalHari = 30;
