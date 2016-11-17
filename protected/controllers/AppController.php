@@ -19,7 +19,7 @@ class AppController extends PublicController
                 $rekapAds = new RekapAds('search');
                 $rekapAds->unsetAttributes();
                 /* Tampilkan yang sisa hari < 7 hari */
-                $rekapAds->setAttribute('sisa_hari', '< 7');
+                $rekapAds->sisa_hari = '<7';
             }
         }
         $configs = Config::model()->findAll("nama like 'toko.%'");
