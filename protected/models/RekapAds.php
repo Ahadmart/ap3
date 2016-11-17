@@ -100,7 +100,7 @@ class RekapAds extends CActiveRecord
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
             'sort' => [
-                'defaultOrder' => 'sisa_hari, barang_id',
+                'defaultOrder' => 'sisa_hari, qty desc, barang.nama',
                 'attributes' => [
                     '*',
                     'namaBarang' => [
