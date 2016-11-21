@@ -385,7 +385,7 @@ class Penjualan extends CActiveRecord
             if ($cekLimit && $this->lewatLimit()) {
                 throw new Exception('Gagal!! Melebihi limit penjualan!', 500);
             }
-            
+
             $transaction->commit();
             return array(
                 'sukses' => true
@@ -1410,21 +1410,33 @@ class Penjualan extends CActiveRecord
                         ->queryRow();
             } else {
                 /* Berarti periode lintas tahun (awal > akhir ) */
-                $periodePoinL = MemberPeriodePoin::model()->find('awal <= month(now()) OR month(now()) <= akhir AND awal > akhir');
+                $periodePoinL = MemberPeriodePoin::model()->find('(awal <= month(now()) OR month(now()) <= akhir) AND awal > akhir');
                 if (!is_null($periodePoinL)) {
                     $queryPoin = Yii::app()->db->createCommand()
                             ->select('sum(poin) total')
                             ->from(PenjualanMember::model()->tableName() . ' tpm')
                             ->where('profil_id=:profilId');
+                    
                     $curMonth = date('n');
-                    if ($curMonth >= $periodePoinL->akhir) {
-                        $queryPoin->andWhere('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND :akhir');
-                        $queryPoin->bindValues([]);
+                    
+                    /* Jika sekarang berada diantara awal periode dengan desember */
+                    if ($curMonth >= $periodePoinL->awal) {
+                        $queryPoin->andWhere('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND MONTH(NOW())');
+                        $queryPoin->bindValues([
+                            ':awal' => $periodePoinL->awal
+                        ]);
                     }
+                    
+                    /* Jika sekarang berada diantara januari dengan akhir periode */
+                    if ($curMonth <= $periodePoinL->akhir) {
+                        $queryPoin->andWhere('(YEAR(t.updated_at)=YEAR(NOW()) AND MONTH(t.updated_at) <= MONTH(NOW()) OR '
+                                . '(YEAR(t.updated_at)=YEAR(NOW())-1 AND MONTH(t.updated_at) >= :awal');
+                        $queryPoin->bindValues([
+                            ':awal' => $periodePoinL->awal
+                        ]);
+                    }
+                    
                     $queryPoin->bindValues(array(
-                        //':tahun' => 'year(' . $this->tanggal . ')',
-                        ':awal' => $periodePoinL->awal,
-                        ':akhir' => $periodePoinL->akhir,
                         ':profilId' => $profil->id
                     ));
                     $poin = $queryPoin->queryRow();
