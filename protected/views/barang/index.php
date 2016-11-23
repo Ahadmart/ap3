@@ -19,7 +19,7 @@ Yii::app()->clientScript->registerScript('editableQty', ''
         . '$("input[name=\'Barang[barcode]\'").select();'
         . '});');
 ?>
-<div class="row">
+<div class="row" style="overflow: auto">
     <div class="small-12 columns">
         <?php
         $this->widget('BGridView', array(

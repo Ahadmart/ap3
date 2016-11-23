@@ -10,16 +10,14 @@ $this->breadcrumbs = array(
 $this->boxHeader['small'] = 'Penjualan';
 $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjualan';
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 ?>
-<div class="row">
+<div class="row" style="overflow: auto">
     <div class="small-12 columns">
         <?php
         $this->widget('BGridView', ['id' => 'penjualan-grid',
             'dataProvider' => $model->search(),
             'filter' => $model,
-            'itemsCssClass' => 'tabel-index responsive',
+            'itemsCssClass' => 'tabel-index',
             'columns' => array(
                 array(
                     'class' => 'BDataColumn',
