@@ -10,17 +10,15 @@ $this->breadcrumbs = array(
 $this->boxHeader['small'] = 'Stock Opname';
 $this->boxHeader['normal'] = 'Stock Opname';
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 ?>
-<div class="row">
+<div class="row" style="overflow: auto">
     <div class="small-12 columns">
         <?php
         $this->widget('BGridView', array(
             'id' => 'stock-opname-grid',
             'dataProvider' => $model->search(),
             'filter' => $model,
-            'itemsCssClass' => 'tabel-index responsive',
+            'itemsCssClass' => 'tabel-index',
             'columns' => array(
                 array(
                     'class' => 'BDataColumn',
