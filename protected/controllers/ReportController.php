@@ -863,4 +863,38 @@ class ReportController extends Controller
         $this->renderJSON($r);
     }
 
+    public function actionRekapPenjualan()
+    {
+        $model = new ReportRekapPenjualanForm;
+        $report = array();
+        if (isset($_POST['ReportRekapPenjualanForm'])) {
+            $model->attributes = $_POST['ReportRekapPenjualanForm'];
+            if ($model->validate()) {
+                $report = $model->reportRekapPenjualan();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes();  // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $this->render('rekappenjualan', array(
+            'model' => $model,
+            'profil' => $profil,
+            'user' => $user,
+            'report' => $report,
+            'printers' => $printers
+        ));
+    }
+
 }
