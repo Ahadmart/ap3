@@ -602,7 +602,7 @@ class Penjualan extends CActiveRecord
         $tahunBulan = date('ym');
         $data = $this->find(array(
             'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,4)='{$tahunBulan}' and updated_at > '2016-12-05 16:00:00'")
+            'condition' => "substring(nomor,5,4)='{$tahunBulan}' and updated_at >= '2016-12-05 16:00:00'")
         );
 
         $value = is_null($data) ? 0 : $data->max;
