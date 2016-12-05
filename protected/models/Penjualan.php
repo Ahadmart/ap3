@@ -579,36 +579,35 @@ class Penjualan extends CActiveRecord
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
      */
-    public function cariNomor()
-    {
-        $tahun = date('y');
-        $data = $this->find(array(
-            'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,2)='{$tahun}'")
-        );
-
-        $value = is_null($data) ? 0 : $data->max;
-        return $value + 1;
-    }
-
-    /**
-     * Mencari nomor untuk penomoran surat
-     * @return int maksimum+1 atau 1 jika belum ada nomor untuk bulan ini
-     */
     /*
       public function cariNomor()
       {
-      $tahunBulan = date('ym');
+      $tahun = date('y');
       $data = $this->find(array(
       'select' => 'max(substring(nomor,9)*1) as max',
-      'condition' => "substring(nomor,5,4)='{$tahunBulan}'")
+      'condition' => "substring(nomor,5,2)='{$tahun}'")
       );
 
       $value = is_null($data) ? 0 : $data->max;
       return $value + 1;
       }
-     * 
      */
+
+    /**
+     * Mencari nomor untuk penomoran surat
+     * @return int maksimum+1 atau 1 jika belum ada nomor untuk bulan ini
+     */
+    public function cariNomor()
+    {
+        $tahunBulan = date('ym');
+        $data = $this->find(array(
+            'select' => 'max(substring(nomor,9)*1) as max',
+            'condition' => "substring(nomor,5,4)='{$tahunBulan}' and tanggal > '2016-12-05 16:00:00")
+        );
+
+        $value = is_null($data) ? 0 : $data->max;
+        return $value + 1;
+    }
 
     /**
      * Membuat nomor surat
@@ -1416,9 +1415,9 @@ class Penjualan extends CActiveRecord
                             ->select('sum(poin) total')
                             ->from(PenjualanMember::model()->tableName() . ' tpm')
                             ->where('profil_id=:profilId');
-                    
+
                     $curMonth = date('n');
-                    
+
                     /* Jika sekarang berada diantara awal periode dengan desember */
                     if ($curMonth >= $periodePoinL->awal) {
                         $queryPoin->andWhere('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND MONTH(NOW())');
@@ -1426,7 +1425,7 @@ class Penjualan extends CActiveRecord
                             ':awal' => $periodePoinL->awal
                         ]);
                     }
-                    
+
                     /* Jika sekarang berada diantara januari dengan akhir periode */
                     if ($curMonth <= $periodePoinL->akhir) {
                         $queryPoin->andWhere('(YEAR(t.updated_at)=YEAR(NOW()) AND MONTH(t.updated_at) <= MONTH(NOW()) OR '
@@ -1435,7 +1434,7 @@ class Penjualan extends CActiveRecord
                             ':awal' => $periodePoinL->awal
                         ]);
                     }
-                    
+
                     $queryPoin->bindValues(array(
                         ':profilId' => $profil->id
                     ));
