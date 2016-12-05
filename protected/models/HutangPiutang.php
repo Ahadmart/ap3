@@ -219,12 +219,27 @@ class HutangPiutang extends CActiveRecord
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
      */
+    /*
+      public function cariNomor()
+      {
+      $tahun = date('y');
+      $data = $this->find(array(
+      'select' => 'max(substring(nomor,9)*1) as max',
+      'condition' => "substring(nomor,5,2)='{$tahun}' and tipe={$this->tipe}")
+      );
+
+      $value = is_null($data) ? 0 : $data->max;
+      return $value + 1;
+      }
+     * 
+     */
+
     public function cariNomor()
     {
-        $tahun = date('y');
+        $tahunBulan = date('ym');
         $data = $this->find(array(
             'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,2)='{$tahun}' and tipe={$this->tipe}")
+            'condition' => "substring(nomor,5,4)='{$tahunBulan}' and tipe={$this->tipe} and updated_at >= '2016-12-05 20:30:00'")
         );
 
         $value = is_null($data) ? 0 : $data->max;
@@ -367,7 +382,7 @@ class HutangPiutang extends CActiveRecord
     public function bayar()
     {
         if ($this->sisa < 1 && $this->sisa >= 0) {
-            /* Jika masih ada selisih/sisa dibelakang koma, maka dianggap lunas*/
+            /* Jika masih ada selisih/sisa dibelakang koma, maka dianggap lunas */
             $this->status = HutangPiutang::STATUS_LUNAS;
             $this->updateStatusDokumenAsal(HutangPiutang::STATUS_LUNAS);
             return true;
