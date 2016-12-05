@@ -279,6 +279,7 @@ class Penerimaan extends CActiveRecord
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
      */
+    /*
     public function cariNomor()
     {
         $tahun = date('y');
@@ -290,7 +291,22 @@ class Penerimaan extends CActiveRecord
         $value = is_null($data) ? 0 : $data->max;
         return $value + 1;
     }
+    */
+    /**
+     * Mencari nomor untuk penomoran surat
+     * @return int maksimum+1 atau 1 jika belum ada nomor untuk bulan ini
+     */
+    public function cariNomor()
+    {
+        $tahunBulan = date('ym');
+        $data = $this->find(array(
+            'select' => 'max(substring(nomor,9)*1) as max',
+            'condition' => "substring(nomor,5,4)='{$tahunBulan}' and tanggal > '2016-12-05 16:00:00")
+        );
 
+        $value = is_null($data) ? 0 : $data->max;
+        return $value + 1;
+    }
     /**
      * Membuat nomor surat
      * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
