@@ -239,7 +239,7 @@ class HutangPiutang extends CActiveRecord
         $tahunBulan = date('ym');
         $data = $this->find(array(
             'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,4)='{$tahunBulan}' and tipe={$this->tipe} and updated_at >= '2016-12-05 20:30:00'")
+            'condition' => "substring(nomor,5,4)='{$tahunBulan}' and tipe={$this->tipe} and created_at >= '2016-12-05 20:30:00'")
         );
 
         $value = is_null($data) ? 0 : $data->max;
