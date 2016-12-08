@@ -1,20 +1,21 @@
 <?php
 
-class CekhargaController extends PublicController
+class AkmController extends PublicController
 {
 
     public $layout = '//layouts/full_tanpalogin';
-    public $titleText = '<i class="fa fa-search fa-fw"></i> Cek Harga';
+    public $titleText = '<i class="fa fa-shopping-basket fa-fw"></i> Anjungan Kasir Mandiri';
 
     public function actionIndex()
     {
         $this->render('index');
     }
+
     public function actionScreensaver()
     {
         $this->layout = '//layouts/screensaver';
         $config = Config::model()->find("nama = 'toko.nama'");
-        $this->render('screensaver',['namaToko'=>$config->nilai]);
+        $this->render('screensaver', ['namaToko' => $config->nilai]);
     }
 
     public function actionCekBarcode()
