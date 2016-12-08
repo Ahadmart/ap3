@@ -28,7 +28,7 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->textField($model, 'sampaiBulan', array('class' => 'tanggalan', 'value' => empty($model->sampaiBulan) ? date('m/Y') : $model->sampai, 'data-start-view' => 'year', 'data-min-view' => 'year')); ?>
         <?php echo $form->error($model, 'sampaiBulan', array('class' => 'error')); ?>
     </div>
-    <div class="medium-6 large-3 columns">
+    <div class="medium-6 large-5 columns">
         <div class="row collapse">
             <label>Profil</label>
             <div class="small-9 columns">
