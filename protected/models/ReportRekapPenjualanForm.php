@@ -78,7 +78,8 @@ class ReportRekapPenjualanForm extends CFormModel
             t_penjualan.bulan,
             t_penjualan.total,
             t_hpp.total_hpp,
-            (t_penjualan.total - t_hpp.total_hpp) margin
+            (t_penjualan.total - t_hpp.total_hpp) margin,
+            {$userId} user_id
         FROM
             (SELECT 
                 DATE_FORMAT(pj.tanggal, '%Y/%m') bulan,
@@ -86,8 +87,9 @@ class ReportRekapPenjualanForm extends CFormModel
             FROM
                 penjualan_detail detail
             JOIN penjualan pj ON pj.id = detail.penjualan_id
-                AND DATE_FORMAT(pj.tanggal, '%Y-%m') BETWEEN '2016-01' AND '2016-10'
-                AND pj.status > 0
+                AND DATE_FORMAT(pj.tanggal, '%Y-%m') BETWEEN :dari AND :sampai
+                AND pj.status > :statusDraft 
+                {$whereSub}
             GROUP BY DATE_FORMAT(pj.tanggal, '%Y/%m')) AS t_penjualan
                 JOIN
             (SELECT 
@@ -97,8 +99,9 @@ class ReportRekapPenjualanForm extends CFormModel
                 harga_pokok_penjualan hpp
             JOIN penjualan_detail pjd ON hpp.penjualan_detail_id = pjd.id
             JOIN penjualan pj ON pj.id = pjd.penjualan_id
-                AND DATE_FORMAT(pj.tanggal, '%Y-%m') BETWEEN '2016-01' AND '2016-10'
-                AND pj.status > 0
+                AND DATE_FORMAT(pj.tanggal, '%Y-%m') BETWEEN :dari AND :sampai
+                AND pj.status > :statusDraft
+                {$whereSub}
             GROUP BY DATE_FORMAT(pj.tanggal, '%Y/%m')) AS t_hpp ON t_hpp.bulan = t_penjualan.bulan
         ORDER BY t_penjualan.bulan
                 ";
@@ -123,24 +126,23 @@ class ReportRekapPenjualanForm extends CFormModel
         if (!empty($this->userId)) {
             $command->bindValue(":userId", $this->userId);
         }
-        if (!empty($this->kategoriId)) {
-            $command->bindValue(':kategoriId', $this->kategoriId);
-        }
 
         $command->execute();
 
         $com = Yii::app()->db->createCommand()
                         ->from($tableName)->where('user_id=:userId', [':userId' => $userId]);
 
+        /*
         $commandRekap = Yii::app()->db->createCommand()
                         ->select('sum(total) total, sum(total_modal) totalmodal, sum(margin) margin')
                         ->from($tableName)->where('user_id=:userId', [':userId' => $userId]);
-
+        */
+        
         $penjualan = $com->queryAll();
-        $rekap = $commandRekap->queryRow();
+        //$rekap = $commandRekap->queryRow();
         return array(
             'detail' => $penjualan,
-            'rekap' => $rekap
+            //'rekap' => $rekap
         );
     }
 
