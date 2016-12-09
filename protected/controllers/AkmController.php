@@ -3,7 +3,7 @@
 class AkmController extends PublicController
 {
 
-    public $layout = '//layouts/full_tanpalogin';
+    public $layout = '//layouts/nonavbar';
     public $titleText = '<i class="fa fa-shopping-basket fa-fw"></i> Anjungan Kasir Mandiri';
 
     public function actionIndex()
@@ -41,6 +41,11 @@ class AkmController extends PublicController
             }
             $this->renderJSON($return);
         }
+    }
+
+    public function actionTambahbarang()
+    {
+        print_r(Yii::app()->request->getUserHostAddress());
     }
 
 }
