@@ -1,15 +1,9 @@
 <div class="row">
     <div class="medium-6 large-8 columns">
         <div class="row">
-            <div class="small-2 columns">
-                <a href="#" id="tombol-batal" class="secondary large button expand">BATAL</a>
-            </div>
-            <div class="small-2 columns">
-                <a href="#" class="success large button expand" id="tombol-selesai">SELESAI</a> 
-            </div>
-            <div class="small-8 columns">
+            <div class="small-12 columns">
                 <div class="panel">
-                    <h4 style="font-weight: 400;color: #fff">Total <span id="total" class="rata-kanan"><?php echo number_format(0, 0, ',', '.'); ?></span>
+                    <h4 style="font-weight: 400;color: #fff">Total: <span id="total" class="rata-kanan"><?php echo number_format(0, 0, ',', '.'); ?></span>
                     </h4>
                 </div>
             </div>
@@ -34,7 +28,7 @@
     <div class="medium-6 large-4 columns"> 
         <div class="row collapse">
             <div class="small-12 columns" style="text-align: center; background-color: rgba(255, 255, 255, 0.875);">
-                <img style=" padding: 10px" src="img/logo.png" />
+                <img style=" padding: 10px" src="<?= Yii::app()->theme->baseUrl; ?>/img/logo_akm.png" />
             </div>
         </div>
         <div class="row" style="margin-top: 20px;margin-bottom: 20px">
@@ -43,7 +37,7 @@
             </div>
         </div>
         <!--<span class="label sc-nomor">Self Checkout # 98374</span>-->
-        <div class="panel" style="background-color: rgba(0,0,0,0.4); padding-bottom: 0px">
+        <div class="panel" style="padding-bottom: 0px">
             <div class="row">
                 <div class="small-3 columns">
                     <a href="#" class="large button expand keynum">7</a>
@@ -91,8 +85,16 @@
                     <a href="#" class="large button expand keynum">0</a>
                 </div>
                 <div class="small-6 columns">
-                    <a href="#" class="warning large button expand keynum" id="enter">ENTER</a>
+                    <a href="#" class="success large button expand keynum" id="enter">ENTER</a>
                 </div>
+            </div>
+        </div>
+        <div class="row">            
+            <div class="small-6 columns">
+                <a href="#" id="tombol-batal" class="warning large button expand">BATAL</a>
+            </div>
+            <div class="small-6 columns">
+                <a href="#" class="success large button expand" id="tombol-selesai">SELESAI</a> 
             </div>
         </div>
     </div>
