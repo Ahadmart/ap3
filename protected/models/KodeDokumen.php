@@ -27,6 +27,7 @@ class KodeDokumen extends CActiveRecord
     const PIUTANG = '07';
     const PENGELUARAN = '08';
     const PENERIMAAN = '09';
+    const AKM = '10';
 
     /**
      * @return string the associated database table name
