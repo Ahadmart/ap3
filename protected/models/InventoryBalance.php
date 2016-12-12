@@ -545,7 +545,7 @@ class InventoryBalance extends CActiveRecord
             $layerTerakhir = $this->layerTerakhir($barangId);
             /* Jika kosong juga, berarti belum ada proses pembelian ?? */
             if (is_null($layerTerakhir)) {
-                throw new Exception('Inventory barang tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
+                throw new Exception('[SO-]Inventory barang ID#'.$barangId.' tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
             }
             /* Variabel $inventories diisi hanya dengan layer terakhir */
             $inventories = array($layerTerakhir);
@@ -613,7 +613,7 @@ class InventoryBalance extends CActiveRecord
             $layerTerakhir = $this->layerTerakhir($barangId);
             /* Jika kosong juga, berarti belum ada proses pembelian ?? */
             if (is_null($layerTerakhir)) {
-                throw new Exception('Inventory barang tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
+                throw new Exception('[SO+] Inventory barang ID#'.$barangId.' tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
             }
             /* Variabel $inventory diisi dengan layer terakhir */
             $inventory = $layerTerakhir;
