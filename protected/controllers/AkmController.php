@@ -18,9 +18,10 @@ class AkmController extends PublicController
         $this->render('screensaver', ['namaToko' => $config->nilai]);
     }
 
-    public function actionCekBarcode()
+    public function actionTambahbarang()
     {
-        if ($_POST['cekharga'] && isset($_POST['barcode'])) {
+        print_r(Yii::app()->request->getUserHostAddress());
+        if ($_POST['tambah'] && isset($_POST['barcode'])) {
             $barang = Barang::model()->find('barcode=:barcode', array(
                 ':barcode' => $_POST['barcode']
             ));
@@ -31,6 +32,8 @@ class AkmController extends PublicController
                     'msg' => 'Barang tidak ditemukan'
                 ]
             ];
+            
+            //$return = 
             if (!is_null($barang)) {
                 $return = [
                     'sukses' => true,
@@ -41,11 +44,6 @@ class AkmController extends PublicController
             }
             $this->renderJSON($return);
         }
-    }
-
-    public function actionTambahbarang()
-    {
-        print_r(Yii::app()->request->getUserHostAddress());
     }
 
 }
