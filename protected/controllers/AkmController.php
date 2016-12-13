@@ -8,7 +8,16 @@ class AkmController extends PublicController
 
     public function actionIndex()
     {
-        $this->render('index');
+        $configNamaToko = Config::model()->find('nama=\'toko.nama\'');
+        $namaToko = $configNamaToko->nilai;
+        $this->render('index', [
+            'namaToko' => $namaToko
+        ]);
+    }
+
+    public function actionInput()
+    {
+        $this->render('input');
     }
 
     public function actionScreensaver()
@@ -20,7 +29,7 @@ class AkmController extends PublicController
 
     public function actionTambahbarang()
     {
-        print_r(Yii::app()->request->getUserHostAddress());
+        //print_r(Yii::app()->request->getUserHostAddress());
         if ($_POST['tambah'] && isset($_POST['barcode'])) {
             $barang = Barang::model()->find('barcode=:barcode', array(
                 ':barcode' => $_POST['barcode']
@@ -32,7 +41,7 @@ class AkmController extends PublicController
                     'msg' => 'Barang tidak ditemukan'
                 ]
             ];
-            
+
             //$return = 
             if (!is_null($barang)) {
                 $return = [
