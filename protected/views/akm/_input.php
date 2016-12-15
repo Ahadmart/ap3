@@ -3,27 +3,17 @@
         <div class="row">
             <div class="small-12 columns">
                 <div class="panel">
-                    <h4 style="font-weight: 400;color: #fff">Total: <span id="total" class="rata-kanan"><?php echo number_format(0, 0, ',', '.'); ?></span>
+                    <h4 style="font-weight: 400;color: #fff">Total: <span id="total" class="rata-kanan"><?= $model->total ?></span>
                     </h4>
                 </div>
             </div>
         </div>
-        <table width="100%" style="background-color: rgba(255,255,255,0.9);border-collapse: separate;border-spacing: 2px;">
-            <thead>
-                <tr>
-                    <th>Barcode</th>
-                    <th class="tengah">Hapus</th>
-                    <th>Nama Barang</th>
-                    <th class="kanan">Harga @</th>
-                    <th class="kanan">Diskon @</th>
-                    <th class="kanan">Qty</th>
-                    <th class="kanan">Sub Total</th>
-                </tr>
-            </thead>
-            <tbody id="detail">
-
-            </tbody>
-        </table>
+        <?php
+        $this->renderPartial('_detail', [
+            'akm' => $model,
+            'akmDetail' => $akmDetail
+        ]);
+        ?>
     </div>
     <div class="medium-6 large-4 columns"> 
         <div class="row collapse">
@@ -102,11 +92,11 @@
 <script>
 
     function updateTotal() {
-        $("#total").load("aksi.php?gettotal=1");
+        $("#total").load("<?php echo $this->createUrl('total', array('id' => $model->id)); ?>");
     }
 
     function kirimBarcode(barcode) {
-        var dataUrl = '<?php echo $this->createUrl('tambahbarang'); ?>';
+        var dataUrl = '<?php echo $this->createUrl('tambahbarang', ['id' => $model->id]); ?>';
         var dataKirim = {
             tambah: true,
             barcode: barcode
@@ -118,7 +108,7 @@
             dataType: "json",
             success: function (data) {
                 if (data.sukses) {
-                    updateTabelDetail();
+                    $.fn.yiiGridView.update('akm-detail-grid');
                     updateTotal();
                     $("#scan").val("");
                     $("#scan").focus();

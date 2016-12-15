@@ -8,6 +8,7 @@ class AkmController extends PublicController
 
     public function actionIndex()
     {
+//        echo sprintf('%u', ip2long(Yii::app()->getRequest()->getUserHostAddress()));// Yii::app()->request->getUserHostAddress();
         $configNamaToko = Config::model()->find('nama=\'toko.nama\'');
         $namaToko = $configNamaToko->nilai;
         $this->render('index', [
@@ -15,9 +16,30 @@ class AkmController extends PublicController
         ]);
     }
 
-    public function actionInput()
+    public function actionInput($id = null)
     {
-        $this->render('input');
+        /* Jika belum ada ID */
+        if (is_null($id)) {
+            /* Cek apakah sudah ada yang statusnya draft untuk komputer ini */
+            $akm = $this->loadDraftModel();
+            /* Jika belum ada yang draft, buat baru */
+            if (is_null($akm)) {
+                $akm = new Akm;
+                $akm->save();
+            }
+            /* Redirect dengan parameter akm ID */
+            $this->redirect(['input', 'id' => $akm->id]);
+        }
+        $akm = $this->loadModel($id);
+        //$akmDetail = AkmDetail::model()->findAll('akm_id=:akmId', [':akmId' => $id]);
+        $akmDetail = new AkmDetail('search');
+        $akmDetail->unsetAttributes();
+        $akmDetail->setAttribute('akm_id', '=' . $id);
+
+        $this->render('input', [
+            'model' => $akm,
+            'akmDetail' => $akmDetail
+        ]);
     }
 
     public function actionScreensaver()
@@ -27,7 +49,7 @@ class AkmController extends PublicController
         $this->render('screensaver', ['namaToko' => $config->nilai]);
     }
 
-    public function actionTambahbarang()
+    public function actionTambahbarang($id)
     {
         //print_r(Yii::app()->request->getUserHostAddress());
         if ($_POST['tambah'] && isset($_POST['barcode'])) {
@@ -42,17 +64,56 @@ class AkmController extends PublicController
                 ]
             ];
 
-            //$return = 
-            if (!is_null($barang)) {
-                $return = [
-                    'sukses' => true,
-                    'barcode' => $barang->barcode,
-                    'nama' => $barang->nama,
-                    'harga' => $barang->getHargaJual()
-                ];
-            }
+            $model = $this->loadModel($id);
+
+            $return = $model->tambahBarang($barang->barcode, 1);
+
             $this->renderJSON($return);
         }
+    }
+
+    /**
+     * Returns the data model based on the primary key given in the GET variable.
+     * If the data model is not found, an HTTP exception will be raised.
+     * @param integer $id the ID of the model to be loaded
+     * @return Akm the loaded model
+     * @throws CHttpException
+     */
+    public function loadModel($id)
+    {
+        $model = Akm::model()->findByPk($id);
+        if ($model === null)
+            throw new CHttpException(404, 'The requested page does not exist.');
+        return $model;
+    }
+
+    public function loadDraftModel()
+    {
+        return Akm::model()->find('updated_by=:updatedBy and status=:statusDraft', [
+                    ':updatedBy' => ip2long(Yii::app()->request->getUserHostAddress()),
+                    ':statusDraft' => Akm::STATUS_DRAFT]);
+    }
+
+    public function actionTotal($id)
+    {
+        $model = $this->loadModel($id);
+        echo $model->getTotal();
+    }
+
+    public function actionQtyPlus($id)
+    {
+        $model = AkmDetail::model()->findByPk($id);
+        $model->qty = $model->qty + 1; 
+        $model->update(['qty']);
+        $this->renderJSON(['sukses' => true]);
+    }
+
+    public function actionQtyMin($id)
+    {
+        $model = AkmDetail::model()->findByPk($id);
+        $model->qty = $model->qty - 1; 
+        $model->update(['qty']);
+        $this->renderJSON(['sukses' => true]);
     }
 
 }
