@@ -45,7 +45,7 @@ class Akm extends Penjualan
             array('profil_id', 'required'),
             array('status', 'numerical', 'integerOnly' => true),
             array('nomor', 'length', 'max' => 45),
-            array('profil_id, updated_by', 'length', 'max' => 10),
+            array('profil_id', 'length', 'max' => 10),
             array('created_at, updated_at, updated_by, tanggal', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
@@ -145,6 +145,7 @@ class Akm extends Penjualan
     public function beforeValidate()
     {
         $this->profil_id = empty($this->profil_id) ? Profil::PROFIL_UMUM : $this->profil_id;
+//        $this->updated_by = sprintf('%u', ip2long(Yii::app()->getRequest()->getUserHostAddress()));
         return parent::beforeValidate();
     }
 
@@ -159,7 +160,7 @@ class Akm extends Penjualan
             $this->tanggal = date('Y-m-d H:i:s');
         }
         $this->updated_at = date("Y-m-d H:i:s");
-        $this->updated_by = Yii::app()->user->id;
+        $this->updated_by = sprintf('%u', ip2long(Yii::app()->getRequest()->getUserHostAddress()));
         // Jika disimpan melalui proses simpan penjualan
         if ($this->scenario === 'simpanAkm') {
             // Status diubah jadi penjualan belum bayar (piutang)
@@ -168,7 +169,7 @@ class Akm extends Penjualan
             $this->tanggal = date('Y-m-d H:i:s');
             $this->nomor = $this->generateNomor();
         }
-        return parent::beforeSave();
+        return CActiveRecord::beforeSave();
     }
 
     /**
@@ -296,7 +297,7 @@ class Akm extends Penjualan
     }
 
     /**
-     * Total Penjualan
+     * Total Akm
      * @return int total dalam bentuk raw (belum terformat)
      */
     public function ambilTotal()
@@ -307,6 +308,15 @@ class Akm extends Penjualan
                 ->where('akm_id=:akmId', array(':akmId' => $this->id))
                 ->queryRow();
         return $detail['total'];
+    }
+
+    /**
+     * Total Akm
+     * @return string Total dalam format 0.000
+     */
+    public function getTotal()
+    {
+        return number_format($this->ambilTotal(), 0, ',', '.');
     }
 
     /**

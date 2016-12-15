@@ -18,3 +18,9 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/akm
     <h4>Touch to start</h4>
     <h6><?= $namaToko ?></h6>
 </div>
+<script>
+    $("body").click(function () {
+        $('.content.akm.index').html('<h4>Loading..</h4>');
+        window.location = "<?php echo $this->createUrl('input'); ?>";
+    });
+</script>
