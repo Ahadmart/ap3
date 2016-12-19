@@ -110,11 +110,23 @@
                 if (data.sukses) {
                     $.fn.yiiGridView.update('akm-detail-grid');
                     updateTotal();
-                    $("#scan").val("");
-                    $("#scan").focus();
+                    $("#enter").removeClass('warning');
+                    $("#enter").addClass('success');
+                    $("#enter").html('<i class="fa fa-level-down fa-rotate-90"></i> ENTER');
+                } else {
+                    $("#enter").removeClass('success');
+                    $("#enter").addClass('warning');
+                    $("#enter").html('<i class="fa fa-exclamation-circle"></i> GAGAL');
+                    setTimeout(function () {
+                        $("#enter").removeClass('warning');
+                        $("#enter").addClass('success');
+                        $("#enter").html('<i class="fa fa-level-down fa-rotate-90"></i> ENTER');
+                    }, 2000);
+
                 }
-                $("#enter").html('ENTER');
                 $("#enter").removeClass('disable');
+                $("#scan").val("");
+                $("#scan").focus();
             }
         });
     }
