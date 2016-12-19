@@ -75,16 +75,16 @@
                     <a href="#" class="large button expand keynum">0</a>
                 </div>
                 <div class="small-6 columns">
-                    <a href="#" class="success large button expand keynum" id="enter">ENTER</a>
+                    <a href="#" class="success large button expand keynum" id="enter"><i class="fa fa-level-down fa-rotate-90"></i> ENTER</a>
                 </div>
             </div>
         </div>
         <div class="row">            
             <div class="small-6 columns">
-                <a href="#" id="tombol-batal" class="warning large button expand">BATAL</a>
+                <a href="<?= $this->createUrl('batal', ['id' => $model->id]) ?>" id="tombol-batal" class="warning large button expand"><i class="fa fa-times"></i> BATAL</a>
             </div>
             <div class="small-6 columns">
-                <a href="#" class="success large button expand" id="tombol-selesai">SELESAI</a> 
+                <a href="<?= $this->createUrl('selesai', ['id' => $model->id]) ?>" class="success large button expand" id="tombol-selesai"><i class="fa fa-print"></i> SELESAI</a> 
             </div>
         </div>
     </div>

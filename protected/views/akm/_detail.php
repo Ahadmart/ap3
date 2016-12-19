@@ -15,7 +15,7 @@ $this->widget('BGridView', array(
         array(
             'type' => 'raw',
             'value' => function($data) {
-                $tombol = '<a class="hapusdetail" href="' . $this->createUrl('hapusdetail', ['id' => $data->id]) . '"><i class="fa fa-times fa-4x"></i></a>';
+                $tombol = '<a class="hapusdetail" href="' . $this->createUrl('hapusdetail', ['id' => $data->id]) . '"><i class="fa fa-times fa-2x"></i></a>';
                 return $tombol;
             },
                     //'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
@@ -46,7 +46,7 @@ $this->widget('BGridView', array(
                 //<a class="button" href="/ahadpos3/barang/tambah"><i class="fa fa-plus"></i></a>
                 array(
                     'name' => 'qty',
-                    'header' => '<span class="ak">Q</span>ty',
+                    //'header' => '<span class="ak">Q</span>ty',
                     'type' => 'raw',
                     //'value' => array($this, 'renderQtyWButton'),
                     'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
@@ -62,16 +62,16 @@ $this->widget('BGridView', array(
                     'type' => 'raw',
                     'value' => function($data) {
                         $tombolMin = '<a class="button tombol ubahqty" href="' . $this->createUrl('qtymin', ['id' => $data->id]) . '"><i class="fa fa-minus"></i></a>';
-                        $tombolPlus = '<a class="warning button tombol ubahqty" href="' . $this->createUrl('qtyplus', ['id' => $data->id]) . '"><i class="fa fa-plus"></i></a>';
+                        $tombolPlus = '<a class="info button tombol ubahqty" href="' . $this->createUrl('qtyplus', ['id' => $data->id]) . '"><i class="fa fa-plus"></i></a>';
                         return $tombolPlus . $tombolMin;
                     },
-                            'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
+                            //'headerHtmlOptions' => array('style' => 'width:75px;', 'class' => 'rata-kanan'),
                             'htmlOptions' => array('style' => 'padding-left:0'),
                         ),
                         array(
                             'name' => 'subTotal',
                             'header' => 'Total',
-                            'value' => '$data->harga_jual * $data->qty',
+                            'value' => 'number_format($data->harga_jual * $data->qty, 0 , \',\',\'.\')',
                             'headerHtmlOptions' => array('class' => 'rata-kanan'),
                             'htmlOptions' => array('class' => 'rata-kanan'),
                             'filter' => false

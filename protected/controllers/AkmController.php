@@ -133,4 +133,17 @@ class AkmController extends PublicController
         $this->renderJSON($return);
     }
 
+    public function actionBatal($id)
+    {
+        AkmDetail::model()->deleteAll('akm_id=:akmId', [':akmId' => $id]);
+        $this->redirect(['index']);
+    }
+    
+    public function actionSelesai($id){
+        $model = $this->loadModel($id);
+        $model->simpan();//Simpan langsung print
+        $this->redirect(['index']);
+        
+    }
+
 }
