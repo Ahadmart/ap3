@@ -65,9 +65,9 @@ class AkmController extends PublicController
             ];
 
             $model = $this->loadModel($id);
-
-            $return = $model->tambahBarang($barang->barcode, 1);
-
+            if (!is_null($barang)) {
+                $return = $model->tambahBarang($barang->barcode, 1);
+            }
             $this->renderJSON($return);
         }
     }
@@ -138,12 +138,12 @@ class AkmController extends PublicController
         AkmDetail::model()->deleteAll('akm_id=:akmId', [':akmId' => $id]);
         $this->redirect(['index']);
     }
-    
-    public function actionSelesai($id){
+
+    public function actionSelesai($id)
+    {
         $model = $this->loadModel($id);
-        $model->simpan();//Simpan langsung print
+        $model->simpan(); //Simpan langsung print
         $this->redirect(['index']);
-        
     }
 
 }
