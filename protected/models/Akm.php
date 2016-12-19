@@ -163,7 +163,6 @@ class Akm extends Penjualan
         $this->updated_by = sprintf('%u', ip2long(Yii::app()->getRequest()->getUserHostAddress()));
         // Jika disimpan melalui proses simpan penjualan
         if ($this->scenario === 'simpanAkm') {
-            // Status diubah jadi penjualan belum bayar (piutang)
             $this->status = self::STATUS_OK;
             // Dapat nomor dan tanggal baru
             $this->tanggal = date('Y-m-d H:i:s');
@@ -292,7 +291,7 @@ class Akm extends Penjualan
         $kodeCabang = $config->nilai;
         $kodeDokumen = KodeDokumen::AKM;
         $kodeTahunBulan = date('ym');
-        $sequence = substr('00000' . $this->cariNomor(), -5);
+        $sequence = substr('00000' . $this->cariNomor(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
