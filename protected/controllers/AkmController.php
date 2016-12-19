@@ -94,6 +94,15 @@ class AkmController extends PublicController
                     ':statusDraft' => Akm::STATUS_DRAFT]);
     }
 
+    public function loadModelDetail($id)
+    {
+        $model = AkmDetail::model()->findByPk($id);
+        if ($model === null) {
+            throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        return $model;
+    }
+
     public function actionTotal($id)
     {
         $model = $this->loadModel($id);
@@ -103,7 +112,7 @@ class AkmController extends PublicController
     public function actionQtyPlus($id)
     {
         $model = AkmDetail::model()->findByPk($id);
-        $model->qty = $model->qty + 1; 
+        $model->qty = $model->qty + 1;
         $model->update(['qty']);
         $this->renderJSON(['sukses' => true]);
     }
@@ -111,9 +120,17 @@ class AkmController extends PublicController
     public function actionQtyMin($id)
     {
         $model = AkmDetail::model()->findByPk($id);
-        $model->qty = $model->qty - 1; 
+        $model->qty = $model->qty > 1 ? $model->qty - 1 : 1;
         $model->update(['qty']);
         $this->renderJSON(['sukses' => true]);
+    }
+
+    public function actionHapusDetail($id)
+    {
+        $return = [
+            'sukses' => $this->loadModelDetail($id)->delete()
+        ];
+        $this->renderJSON($return);
     }
 
 }
