@@ -65,7 +65,7 @@ class AkmController extends PublicController
             ];
 
             $model = $this->loadModel($id);
-            if (!is_null($barang)) {
+            if (!is_null($barang) && $model->status == Akm::STATUS_DRAFT) {
                 $return = $model->tambahBarang($barang->barcode, 1);
             }
             $this->renderJSON($return);
@@ -111,18 +111,19 @@ class AkmController extends PublicController
 
     public function actionQtyPlus($id)
     {
-        $model = AkmDetail::model()->findByPk($id);
-        $model->qty = $model->qty + 1;
-        $model->update(['qty']);
-        $this->renderJSON(['sukses' => true]);
+        $modelDetail = AkmDetail::model()->findByPk($id);
+        $model = Akm::model()->findByPk($modelDetail->akm_id);
+        $return = $model->tambahBarang($modelDetail->barang->barcode, 1);
+        $this->renderJSON($return);
     }
 
     public function actionQtyMin($id)
     {
-        $model = AkmDetail::model()->findByPk($id);
-        $model->qty = $model->qty > 1 ? $model->qty - 1 : 1;
-        $model->update(['qty']);
-        $this->renderJSON(['sukses' => true]);
+        $modelDetail = AkmDetail::model()->findByPk($id);
+        $model = Akm::model()->findByPk($modelDetail->akm_id);
+        $qty = $modelDetail->qty > 1 ? -1 : 0;
+        $return = $model->tambahBarang($modelDetail->barang->barcode, $qty);
+        $this->renderJSON($return);
     }
 
     public function actionHapusDetail($id)
