@@ -2,7 +2,8 @@
 $this->widget('BGridView', array(
     'id' => 'akm-detail-grid',
     'dataProvider' => $akmDetail->search(),
-    'summaryText' => 'Poin struk ini: ' . $akm->getCurPoin() . ' | Poin sebelumnya: ' . $akm->getTotalPoinPeriodeBerjalan() . ' | {start}-{end} dari {count}',
+    'summaryText' => '{start}-{end} dari {count}',
+    //'summaryText' => 'Poin struk ini: ' . $akm->getCurPoin() . ' | Poin sebelumnya: ' . $akm->getTotalPoinPeriodeBerjalan() . ' | {start}-{end} dari {count}',
     'itemsCssClass' => 'tabel-index responsive',
     'template' => '{summary}{items}{pager}',
     'enableSorting' => false,

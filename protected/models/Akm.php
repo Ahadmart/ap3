@@ -267,7 +267,7 @@ class Akm extends Penjualan
 
     /**
      * Mencari nomor untuk penomoran surat
-     * @return int maksimum+1 atau 1 jika belum ada nomor untuk bulan ini
+     * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
      */
     public function cariNomor()
     {
@@ -384,104 +384,8 @@ class Akm extends Penjualan
 
         $user = User::model()->findByPk($this->updated_by);
         $profil = Profil::model()->findByPk($this->profil_id);
-
-        $details = Yii::app()->db->createCommand("
-            select barang.barcode, barang.nama, satuan.nama namasatuan, pd.qty, pd.harga_jual, pd.diskon, pd.harga_jual_rekomendasi
-            from penjualan_detail pd
-            join barang on pd.barang_id = barang.id
-            join barang_satuan satuan on satuan.id = barang.satuan_id
-            where pd.penjualan_id = :penjualanId
-            ")
-                ->bindValue(':penjualanId', $this->id)
-                ->queryAll();
-
-        $penerimaan = Yii::app()->db->createCommand("
-            select penerimaan.uang_dibayar
-            from penerimaan
-            join penerimaan_detail pd on pd.penerimaan_id = penerimaan.id
-            join penjualan on penjualan.hutang_piutang_id = pd.hutang_piutang_id
-            where penjualan.id = :penjualanId
-            ")
-                ->bindValue(':penjualanId', $this->id)
-                ->queryRow();
-
+        
         $struk = '';
-        $struk .= str_pad($branchConfig['toko.nama'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
-        $struk .=!empty($branchConfig['struk.header1']) ? str_pad($branchConfig['struk.header1'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
-        $struk .=!empty($branchConfig['struk.header2']) ? str_pad($branchConfig['struk.header2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
-        $struk .= str_pad($this->nomor . ' ' . date_format(date_create_from_format('d-m-Y H:i:s', $this->tanggal), 'dmy H:i') . ' ' . substr($user->nama_lengkap, 0, 13), $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
-
-        $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
-
-        $total = 0;
-        $totalDiskon = 0;
-        foreach ($details as $detail) {
-            $txtHarga = $detail['qty'] . ' ' . $detail['namasatuan'] . '  @ ' . number_format($detail['harga_jual']) . ' : ';
-
-            /* Jika ada diskon, maka tampilkan terlebih dahulu harga sebelum didiskon */
-            if (!is_null($detail['diskon'])) {
-                $txtHarga = $detail['qty'] . ' ' . $detail['namasatuan'] . '  @ ' . number_format($detail['harga_jual'] + $detail['diskon']) . ' : ';
-            }
-            $netSubTotal = $detail['qty'] * $detail['harga_jual'];
-            $txtSubTotal = str_pad(number_format($netSubTotal, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-
-            /* Jika ada diskon, maka tampilkan sub total sebelum diskon */
-            if (!is_null($detail['diskon'])) {
-                $subTotal = $detail['qty'] * ($detail['harga_jual'] + $detail['diskon']);
-                $txtSubTotal = str_pad(number_format($subTotal, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-            }
-
-            $struk .= str_pad(' ' . $detail['nama'], $jumlahKolom, ' ') . PHP_EOL;
-            $struk .= str_pad($txtHarga . $txtSubTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
-
-            /* Jika ada diskon, maka tampilkan total diskon */
-            if (!is_null($detail['diskon'])) {
-                $diskonText = rtrim(rtrim(number_format($detail['diskon'], 2, ',', '.'), '0'), ',');
-                $subTotalDiskon = $detail['qty'] * $detail['diskon'];
-                $txtSubTotalDiskon = str_pad('(' . number_format($subTotalDiskon, 0, ',', '.') . ')', 12, ' ', STR_PAD_LEFT);
-                $struk .= str_pad('(@ ' . $diskonText . ') : ' . $txtSubTotalDiskon, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL;
-                $totalDiskon += $subTotalDiskon;
-            }
-
-            $total += $netSubTotal;
-        }
-
-        $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
-
-        $txtTotal = 'Total      : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-
-        $dibayar = is_null($penerimaan['uang_dibayar']) ? NULL : $penerimaan['uang_dibayar'];
-        if (!is_null($dibayar)) {
-            $txtBayar = 'Dibayar    : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-            $txtKbali = 'Kembali    : ' . str_pad(number_format($dibayar - $total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-        }
-
-        $struk .= str_pad($txtTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
-        if (!is_null($dibayar)) {
-            $struk .= str_pad($txtBayar, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
-            $struk .= str_pad($txtKbali, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
-        }
-
-        if ($totalDiskon > 0) {
-            $txtDiskon = 'Anda Hemat : ' . str_pad(number_format($totalDiskon, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-            $struk .= str_pad($txtDiskon, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
-        }
-
-        if ($this->getCurPoin() > 0) {
-            $txtPoin = 'Poin       : ' . str_pad(number_format($this->getCurPoin(), 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-            $struk .= str_pad($txtPoin, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
-        }
-
-        if ($profil->isMember()) {
-            $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
-            $nomorNama = $profil->nomor . ' ' . $profil->nama;
-            $struk .= ' ' . substr($nomorNama, 0, 38) . PHP_EOL;
-            $struk .= ' Total Poin: ' . $this->getTotalPoinPeriodeBerjalan() . PHP_EOL;
-        }
-
-        $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
-        $struk .=!empty($branchConfig['struk.footer1']) ? str_pad($branchConfig['struk.footer1'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
-        $struk .=!empty($branchConfig['struk.footer2']) ? str_pad($branchConfig['struk.footer2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
         $struk .= PHP_EOL;
 
         return $struk;
