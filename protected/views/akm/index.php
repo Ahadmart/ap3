@@ -13,7 +13,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/akm
 ?>
 
 <div class="content akm index">
-    <h1>Self Checkout</h1>
+    <h1>Anjungan Kasir Mandiri</h1>
     <h2>Open</h2>
     <h4>Touch to start</h4>
     <h6><?= $namaToko ?></h6>
