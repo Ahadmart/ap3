@@ -161,7 +161,7 @@ class Akm extends Penjualan
         }
         $this->updated_at = date("Y-m-d H:i:s");
         $this->updated_by = sprintf('%u', ip2long(Yii::app()->getRequest()->getUserHostAddress()));
-        // Jika disimpan melalui proses simpan penjualan
+        // Jika disimpan melalui proses simpan akm
         if ($this->scenario === 'simpanAkm') {
             $this->status = self::STATUS_OK;
             // Dapat nomor dan tanggal baru
@@ -310,15 +310,6 @@ class Akm extends Penjualan
     }
 
     /**
-     * Total Akm
-     * @return string Total dalam format 0.000
-     */
-    public function getTotal()
-    {
-        return number_format($this->ambilTotal(), 0, ',', '.');
-    }
-
-    /**
      * Proses simpan AKM.
      * Simpan, Print Struk
      *
@@ -337,26 +328,26 @@ class Akm extends Penjualan
         try {
             $this->simpanAkm();
             $transaction->commit();
-            return array(
+            return [
                 'sukses' => true
-            );
+            ];
         } catch (Exception $ex) {
             $transaction->rollback();
-            return array(
+            return [
                 'sukses' => false,
-                'error' => array(
+                'error' => [
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+            ]];
         }
     }
 
     public function listStatus()
     {
-        return array(
+        return [
             self::STATUS_DRAFT => 'Draft',
             self::STATUS_OK => 'OK',
-        );
+        ];
     }
 
     public function getNamaStatus()
@@ -369,24 +360,49 @@ class Akm extends Penjualan
      * Struk AKM
      * @return text
      */
-    public function strukAkmText()
+    public function strukText()
     {
-        $jumlahKolom = 40;
+        $configToko = Config::model()->find('nama=:key', [':key' => 'toko.nama']);
+        $total = $this->getTotal();
+        $nomor = substr($this->nomor, -6) * 1;
 
-        $configs = Config::model()->findAll();
-        /*
-         * Ubah config (object) jadi array
-         */
-        $branchConfig = array();
-        foreach ($configs as $config) {
-            $branchConfig[$config->nama] = $config->nilai;
-        }
+        $struk = chr(27) . "@"; //Init Printer
+        //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        $struk .= chr(27) . "!" . chr(1); //font B / normal
+        //$struk .= chr(27) . chr(101) . chr(2); //1 reverse lf
+        $struk .= chr(27) . "a" . chr(48); //0 left
+        //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        $struk .= strtoupper($configToko->nilai) . "\n";
+        $struk .= "Self Check Out\n";
 
-        $user = User::model()->findByPk($this->updated_by);
-        $profil = Profil::model()->findByPk($this->profil_id);
-        
-        $struk = '';
-        $struk .= PHP_EOL;
+
+        $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        $struk .= chr(27) . "!" . chr(16); //font double width
+        $struk .= chr(27) . "a" . chr(2); //2 right
+        $struk .= "Rp. {$total}\n\n";
+
+        $struk .= chr(27) . "!" . chr(48); //font besar
+        $struk .= chr(27) . "a" . chr(1); //0 center
+        $struk .="{$nomor}\n\n";
+        $struk .= chr(27) . "!" . chr(1); //font Normal
+        //$struk .= chr(27) . '@' . chr(29) . 'k' . chr(107) . chr(3) . $nomor . chr(0);
+        $struk .= chr(27) . "a" . chr(48); //0 left
+
+        $struk .= "Ketentuan:\n";
+        $struk .= "Struk ini ";
+
+        //    $struk .= chr(27) . "!" . chr(8); //font tebal
+        $struk .= "BUKAN bukti pembayaran\n";
+        $struk .= chr(27) . "!" . chr(1); //font normal
+        $struk .= "Silahkan melakukan pembayaran di kasir\n"
+                . "Jika ada perbedaan perhitungan,\n"
+                . "Yang benar adalah ";
+        //    $struk .= chr(27) . "!" . chr(8); //font tebal
+        $struk .= "perhitungan kasir\n";
+        $struk .= chr(27) . "!" . chr(1); //font normal
+        $struk .= chr(29) . "V" . chr(66) . chr(48); //Feed paper & cut
 
         return $struk;
     }

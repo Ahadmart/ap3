@@ -3,6 +3,8 @@
 class AkmController extends PublicController
 {
 
+    const PRINT_STRUK = 0;
+
     public $layout = '//layouts/nonavbar';
     public $titleText = '<i class="fa fa-shopping-basket fa-fw"></i> Anjungan Kasir Mandiri';
 
@@ -143,8 +145,25 @@ class AkmController extends PublicController
     public function actionSelesai($id)
     {
         $model = $this->loadModel($id);
-        $model->simpan(); //Simpan langsung print
+        $model->simpan(); //Simpan kemudian print
+        $device = Device::model()->findByPk(10);// FIX ME: (HARCODED)
+        $this->printLpr($id, $device);
         $this->redirect(['index']);
+    }
+
+    public function printLpr($id, $device, $print = 0)
+    {
+        $model = $this->loadModel($id);
+        $text = $this->getText($model, $print);
+        $device->printLpr($text);
+    }
+
+    public function getText($model, $print)
+    {
+        switch ($print) {
+            case self::PRINT_STRUK:
+                return $model->strukText();
+        }
     }
 
 }
