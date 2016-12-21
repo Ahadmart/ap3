@@ -4,6 +4,7 @@ class CekhargaController extends PublicController
 {
 
     public $layout = '//layouts/full_tanpalogin';
+    public $titleText = '<i class="fa fa-search fa-fw"></i> Cek Harga';
 
     public function actionIndex()
     {
