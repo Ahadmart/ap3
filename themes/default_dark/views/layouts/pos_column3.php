@@ -149,6 +149,10 @@
                 if (e.keyCode === 13) {
                     $("#form-admin-login").submit();
                 }
+            });         
+
+            $("#tombol-akm-ok").click(function () {
+                $("#form-akm").submit();
             });
 
             $("#form-nomor-customer").submit(function () {
@@ -208,6 +212,35 @@
                         $("#admin-user").val("");
                         $("#admin-password").val("");
                         $(".admin-input").hide(500);
+                        $("#scan").focus();
+                    }
+                });
+                return false;
+            });
+
+            $("#form-akm").submit(function () {
+                dataUrl = '<?php echo $this->createUrl('inputakm',['id'=>$this->penjualanId]); ?>';
+                dataKirim = {
+                    nomor: $("#akm-no").val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: dataUrl,
+                    data: dataKirim,
+                    success: function (data) {
+                        if (data.sukses) {                            
+                            $.fn.yiiGridView.update('penjualan-detail-grid');
+                            updateTotal();
+                        } else {
+                            $.gritter.add({
+                                title: 'Error ' + data.error.code,
+                                text: data.error.msg,
+                                time: 3000,
+                            });
+                        }
+                        $("#akm-no").val("");
+                        $(".akm-input").hide(500);
                         $("#scan").focus();
                     }
                 });
