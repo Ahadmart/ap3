@@ -75,7 +75,7 @@
                     <a href="#" class="large button expand keynum">0</a>
                 </div>
                 <div class="small-6 columns">
-                    <a href="#" class="success large button expand keynum" id="enter"><i class="fa fa-level-down fa-rotate-90"></i> ENTER</a>
+                    <a href="#" class="success large button expand keynum" id="enter">ENTER</a>
                 </div>
             </div>
         </div>
@@ -112,7 +112,7 @@
                     updateTotal();
                     $("#enter").removeClass('warning');
                     $("#enter").addClass('success');
-                    $("#enter").html('<i class="fa fa-level-down fa-rotate-90"></i> ENTER');
+                    $("#enter").html('ENTER');
                 } else {
                     $("#enter").removeClass('success');
                     $("#enter").addClass('warning');
@@ -120,7 +120,7 @@
                     setTimeout(function () {
                         $("#enter").removeClass('warning');
                         $("#enter").addClass('success');
-                        $("#enter").html('<i class="fa fa-level-down fa-rotate-90"></i> ENTER');
+                        $("#enter").html('ENTER');
                     }, 2000);
 
                 }
