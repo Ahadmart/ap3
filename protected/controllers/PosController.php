@@ -177,7 +177,7 @@ class PosController extends Controller
      */
     public function loadModel($id)
     {
-        $model = Penjualan::model()->findByPk($id);
+        $model = Pos::model('Pos')->findByPk($id);
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
@@ -633,6 +633,28 @@ class PosController extends Controller
         foreach ($details as $detail) {
             $this->simpanHapusDetail($detail, PenjualanDetailHapus::JENIS_PER_NOTA);
         }
+    }
+
+    /**
+     * Input data dari AKM (Anjungan Kasir Mandiri)
+     * @param int $id Penjualan ID
+     * @return JSON boolean sukses, array error[code, msg]
+     */
+    public function actionInputAkm($id)
+    {
+        $return = [
+            'sukses' => false,
+            'error' => array(
+                'code' => '500',
+                'msg' => 'Sempurnakan input!',
+            )
+        ];
+        if (isset($_POST['nomor']) && trim($_POST['nomor']) != '') {
+            $nomor = trim($_POST['nomor']);
+            $model = $this->loadModel($id);
+            $return = $model->inputAkm($nomor);
+        }
+        $this->renderJSON($return);
     }
 
 }

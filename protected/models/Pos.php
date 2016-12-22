@@ -72,4 +72,40 @@ class Pos extends Penjualan
         }
     }
 
+    public function inputAkm($nomor)
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+
+            $tahun = date('y');
+            $akm = Akm::model()->find('substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun', [
+                ':nomor' => $nomor,
+                ':tahun' => $tahun
+            ]);
+            if (is_null($akm)) {
+                throw new Exception('AKM tidak ditemukan', 500);
+            }
+
+            $akmDetails = AkmDetail::model()->findAll('akm_id=:akmId', [':akmId' => $akm->id]);
+            foreach ($akmDetails as $detail) {
+                $barang = Barang::model()->findByPk($detail->barang_id);
+                $this->tambahBarangProc($barang, $detail->qty);
+            }
+
+            $transaction->commit();
+            return [
+                'sukses' => true,
+            ];
+        } catch (Exception $ex) {
+//            echo $exc->getTraceAsString();
+            $transaction->rollback();
+            return [
+                'sukses' => false,
+                'error' => [
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
+        }
+    }
+
 }
