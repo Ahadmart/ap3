@@ -8,23 +8,27 @@ $this->breadcrumbs = array(
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Item Keuangan: '.$model->nama;
+$this->boxHeader['normal'] = 'Item Keuangan: ' . $model->nama;
 ?>
 <div class="row">
-   <div class="small-12 columns">
-      <?php
-      $this->widget('BDetailView', array(
-          'data' => $model,
-          'attributes' => array(
-              array(
-                  'name' => 'parent.nama',
-                  'label' => 'Parent'
-              ),
-              'nama',
-          ),
-      ));
-      ?>
-   </div>
+    <div class="small-12 columns">
+        <?php
+        $this->widget('BDetailView', array(
+            'data' => $model,
+            'attributes' => array(
+                array(
+                    'name' => 'parent.nama',
+                    'label' => 'Parent'
+                ),
+                'nama',
+                array(
+                    'label' => 'Status',
+                    'value' => $model->namaStatus
+                )
+            ),
+        ));
+        ?>
+    </div>
 </div>
 <?php
 $this->menu = array(
