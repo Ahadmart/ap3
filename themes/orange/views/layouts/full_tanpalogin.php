@@ -65,8 +65,8 @@
 
                     <section class="top-bar-section">
                         <ul class="left" id="">
-                            <li class="divider" style="margin: 0 10px;"><span></span></li>
-                            <li class="name"><h1><i class="fa fa-search fa-fw"></i> Cek Harga </h1></li>
+                            <li class="divider" style="margin: 0 10px;"><span></span></li> <?php //<i class="fa fa-search fa-fw"></i> Cek Harga ?>
+                            <li class="name"><h1><?php echo $this->titleText; ?></h1></li>
                         </ul>
                     </section>
                 </nav>
