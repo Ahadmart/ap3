@@ -101,6 +101,7 @@ class ItempengeluaranController extends Controller {
 		$model = new ItemKeuangan('search');
 		$model->unsetAttributes();  // clear any default values
 
+                $model->setAttribute('status', ItemKeuangan::STATUS_AKTIF);
 		if (isset($_GET['ItemKeuangan'])) {
 			$model->attributes = $_GET['ItemKeuangan'];
 		}
