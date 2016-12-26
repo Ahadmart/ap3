@@ -1,0 +1,44 @@
+/* Samakan dengan setting foundation */
+ $primary-color: #0874bc; 
+ $secondary-color: #0da1df;
+ $alert-color: #f55c57;
+ $success-color: #5bab54; 
+ $warning-color: #ffcc9f;
+ $info-color: #e8f0fd;
+ /* ================================ */
+
+.content.akm.index{
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    padding-top: 5rem;
+    h1, h2, h4, h6{
+        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-style: normal;
+        font-weight: 300;
+    }
+    h1{
+        font-size: 3.5rem;
+        color: $primary-color;
+    }
+    h2{
+        font-size: 10rem;
+        color: $success-color;
+    }
+    h4{
+        font-size: 3.9rem;
+        color: $alert-color;
+    }
+    h6{
+        margin-top: 5rem;
+        font-size: 2rem;
+        font-weight: 400;
+        color: $secondary-color;
+    }
+}
+
+.tombol.ubahqty{
+    margin-bottom: 0;
+    padding: 0.4125rem;
+    width: 40px;
+}
