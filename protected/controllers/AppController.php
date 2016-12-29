@@ -77,7 +77,9 @@ class AppController extends PublicController
                 /* Simpan theme ke cookies */
                 $user = User::model()->findByPk(Yii::app()->user->id);
                 $theme = Theme::model()->findByPk($user->theme_id);
-                $theme->toCookies();
+                if (!is_null($theme)) {
+                    $theme->toCookies();
+                }
                 $this->redirect(Yii::app()->user->returnUrl);
             }
         }
