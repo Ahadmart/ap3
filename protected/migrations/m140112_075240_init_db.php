@@ -99,6 +99,7 @@ class m140112_075240_init_db extends CDbMigration
             'nama_lengkap' => 'Administrator',
             'password' => 'JDJ5JDEwJGVSU29DMUlkWERMQTl3VVhPRTg0d2VISjB6WWJvclBuNkhHQlptY3Jza0FUUGl4TVVBUTlH',
             'salt' => 'eRSoC1IdXDLA9wUXOE84wjTPy3VVFg==',
+            'theme_id' => 2, //'default dark'
             'created_at' => '2000-01-01 00:00:00',
             'updated_at' => '2000-01-01 00:00:00',
             'updated_by' => 1
