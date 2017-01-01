@@ -171,7 +171,8 @@ class StockOpname extends CActiveRecord
             $this->status = StockOpname::STATUS_SO;
             // Dapat nomor dan tanggal baru
             $this->tanggal = date('Y-m-d H:i:s');
-            $this->nomor = $this->generateNomor();
+            /* Solusi temporer migrasi ke 6 digit seq num untuk ahadmart */
+            $this->nomor = date('Y') >= '2017' ? $this->generateNomor6Seq() : $this->generateNomor();
         }
         return parent::beforeSave();
     }
@@ -248,6 +249,36 @@ class StockOpname extends CActiveRecord
         $kodeDokumen = KodeDokumen::SO;
         $kodeTahunBulan = date('ym');
         $sequence = substr('0000' . $this->cariNomor(), -5);
+        return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
+    }
+
+    /**
+     * Mencari nomor untuk penomoran surat
+     * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
+     */
+    public function cariNomorTahunan()
+    {
+        $tahun = date('y');
+        $data = $this->find(array(
+            'select' => 'max(substring(nomor,9)*1) as max',
+            'condition' => "substring(nomor,5,2)='{$tahun}'")
+        );
+
+        $value = is_null($data) ? 0 : $data->max;
+        return $value + 1;
+    }
+
+    /**
+     * Membuat nomor surat, 6 digit sequence number
+     * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
+     */
+    public function generateNomor6Seq()
+    {
+        $config = Config::model()->find("nama='toko.kode'");
+        $kodeCabang = $config->nilai;
+        $kodeDokumen = KodeDokumen::SO;
+        $kodeTahunBulan = date('ym');
+        $sequence = substr('00000' . $this->cariNomorTahunan(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
