@@ -208,7 +208,8 @@ class HutangPiutang extends CActiveRecord
 
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
-            $this->nomor = $this->generateNomor();
+            /* Solusi temporer migrasi ke 6 digit seq num untuk ahadmart */
+            $this->nomor = date('Y') >= '2017' ? $this->generateNomor6Seq() : $this->generateNomor();
         }
         $this->updated_at = date("Y-m-d H:i:s");
         $this->updated_by = Yii::app()->user->id;
@@ -259,6 +260,37 @@ class HutangPiutang extends CActiveRecord
         $sequence = substr('0000' . $this->cariNomor(), -5);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
+
+    /**
+     * Mencari nomor untuk penomoran surat
+     * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
+     */
+    public function cariNomorTahunan()
+    {
+        $tahun = date('y');
+        $data = $this->find(array(
+            'select' => 'max(substring(nomor,9)*1) as max',
+            'condition' => "substring(nomor,5,2)='{$tahun}' and tipe={$this->tipe} ")
+        );
+
+        $value = is_null($data) ? 0 : $data->max;
+        return $value + 1;
+    }
+
+    /**
+     * Membuat nomor surat, 6 digit sequence number
+     * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
+     */
+    public function generateNomor6Seq()
+    {
+        $config = Config::model()->find("nama='toko.kode'");
+        $kodeCabang = $config->nilai;
+        $kodeDokumen = $this->tipe == HutangPiutang::TIPE_HUTANG ? KodeDokumen::HUTANG : KodeDokumen::PIUTANG;
+        $kodeTahunBulan = date('ym');
+        $sequence = substr('00000' . $this->cariNomorTahunan(), -6);
+        return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
+    }
+
 
     public function listNamaAsal()
     {
