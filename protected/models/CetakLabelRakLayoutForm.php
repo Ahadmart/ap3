@@ -54,7 +54,7 @@ class CetakLabelRakLayoutForm extends CFormModel
         );
     }
 
-    public function listLayout()
+    public static function listLayout()
     {
         return array(
             self::LAYOUT_NORMAL_3 => 'Normal, Tinggi 3 cm',
@@ -62,7 +62,7 @@ class CetakLabelRakLayoutForm extends CFormModel
         );
     }
 
-    public function listNamaKertas()
+    public static function listNamaKertas()
     {
         return array(
             self::KERTAS_A4 => self::KERTAS_A4_NAMA,
@@ -74,7 +74,7 @@ class CetakLabelRakLayoutForm extends CFormModel
         );
     }
 
-    public function listKertas()
+    public static function listKertas()
     {
         return array(
             self::KERTAS_A4 => 'A4',
