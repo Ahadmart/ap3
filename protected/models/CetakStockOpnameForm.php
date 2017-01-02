@@ -63,7 +63,7 @@ class CetakStockOpnameForm extends CFormModel
         return is_null($kategori) ? NULL : $kategori->nama;
     }
 
-    public function getKategoriRak($id)
+    public static function getKategoriRak($id)
     {
         $kategori = Yii::app()->db->createCommand()
                 ->selectDistinct('kategori_id, kat.nama')
@@ -80,7 +80,7 @@ class CetakStockOpnameForm extends CFormModel
         return $arr;
     }
 
-    public function listOfSortBy()
+    public static function listOfSortBy()
     {
         return [
             self::SORT_BY_NAMA_ASC => 'Nama Barang [a-z]',
@@ -90,7 +90,7 @@ class CetakStockOpnameForm extends CFormModel
         ];
     }
 
-    public function listKertas()
+    public static function listKertas()
     {
         return [
             self::KERTAS_A4 => self::KERTAS_A4_NAMA,
@@ -128,7 +128,7 @@ class CetakStockOpnameForm extends CFormModel
         return Barang::model()->findAll($cr);
     }
 
-    public function listNamaKertas()
+    public static function listNamaKertas()
     {
         return array(
             self::KERTAS_A4 => self::KERTAS_A4_NAMA,

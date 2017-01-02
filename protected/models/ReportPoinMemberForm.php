@@ -158,7 +158,7 @@ class ReportPoinMemberForm extends CFormModel
         return $periode->awal <= $periode->akhir ? $this->dataPoinMember1($periode) : $this->dataPoinMember2($periode);
     }
 
-    public function listNamaKertas()
+    public static function listNamaKertas()
     {
         return array(
             self::KERTAS_A4_LANDSCAPE => self::KERTAS_A4_LANDSCAPE_NAMA,
@@ -167,7 +167,7 @@ class ReportPoinMemberForm extends CFormModel
         );
     }
 
-    public function listKertas()
+    public static function listKertas()
     {
         return array(
             self::KERTAS_A4_LANDSCAPE => 'A4 Landscape',
