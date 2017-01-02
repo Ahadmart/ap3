@@ -205,7 +205,7 @@ class Penerimaan extends CActiveRecord
                 throw new Exception("Jumlah tidak boleh < 0", 500);
             }
             $this->status = Penerimaan::STATUS_BAYAR;
-            $this->nomor = $this->generateNomor();
+            $this->nomor = $this->generateNomor6Seq();
             // $this->tanggal = date('Y-m-d H:i:s');
         }
         return parent::beforeSave();
@@ -279,7 +279,7 @@ class Penerimaan extends CActiveRecord
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
      */
-    public function cariNomor()
+    public function cariNomorTahunan()
     {
         $tahun = date('y');
         $data = $this->find(array(
@@ -292,16 +292,16 @@ class Penerimaan extends CActiveRecord
     }
 
     /**
-     * Membuat nomor surat
+     * Membuat nomor surat, 6 digit sequence number
      * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
      */
-    public function generateNomor()
+    public function generateNomor6Seq()
     {
         $config = Config::model()->find("nama='toko.kode'");
         $kodeCabang = $config->nilai;
         $kodeDokumen = KodeDokumen::PENERIMAAN;
         $kodeTahunBulan = date('ym');
-        $sequence = substr('0000' . $this->cariNomor(), -5);
+        $sequence = substr('00000' . $this->cariNomorTahunan(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 

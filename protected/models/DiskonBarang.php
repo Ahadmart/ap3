@@ -255,6 +255,7 @@ class DiskonBarang extends CActiveRecord
                 if (empty($this->qty)) {
                     return false;
                 }
+                break;
             case self::TIPE_PROMO_MEMBER:
                 if (empty($this->qty_max)) {
                     return false;

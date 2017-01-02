@@ -180,7 +180,8 @@ class ReturPembelian extends CActiveRecord
             // Status diubah jadi pembelian belum terima (piutang)
             $this->status = ReturPembelian::STATUS_PIUTANG;
             // Dapat nomor dan tanggal
-            $this->nomor = $this->generateNomor();
+            /* Solusi temporer migrasi ke 6 digit seq num untuk ahadmart */
+            $this->nomor = $this->generateNomor6Seq();
             $this->tanggal = date('Y-m-d H:i:s');
         }
         return parent::beforeSave();
@@ -190,7 +191,7 @@ class ReturPembelian extends CActiveRecord
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
      */
-    public function cariNomor()
+    public function cariNomorTahunan()
     {
         $tahun = date('y');
         $data = $this->find(array(
@@ -203,16 +204,16 @@ class ReturPembelian extends CActiveRecord
     }
 
     /**
-     * Membuat nomor surat
+     * Membuat nomor surat, 6 digit sequence number
      * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
      */
-    public function generateNomor()
+    public function generateNomor6Seq()
     {
         $config = Config::model()->find("nama='toko.kode'");
         $kodeCabang = $config->nilai;
         $kodeDokumen = KodeDokumen::RETUR_PEMBELIAN;
         $kodeTahunBulan = date('ym');
-        $sequence = substr('0000' . $this->cariNomor(), -5);
+        $sequence = substr('00000' . $this->cariNomorTahunan(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 

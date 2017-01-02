@@ -10,8 +10,8 @@ $this->breadcrumbs = array(
 $this->boxHeader['small'] = 'Barang';
 $this->boxHeader['normal'] = 'Barang';
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
+//Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
+//Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 
 // Agar focus tetap di input cari barcode setelah pencarian
 Yii::app()->clientScript->registerScript('editableQty', ''
@@ -19,14 +19,14 @@ Yii::app()->clientScript->registerScript('editableQty', ''
         . '$("input[name=\'Barang[barcode]\'").select();'
         . '});');
 ?>
-<div class="row">
+<div class="row" style="overflow: auto">
     <div class="small-12 columns">
         <?php
         $this->widget('BGridView', array(
             'id' => 'barang-grid',
             'dataProvider' => $model->search(),
             'filter' => $model,
-            'itemsCssClass' => 'tabel-index responsive',
+            'itemsCssClass' => 'tabel-index',
             'columns' => array(
                 array(
                     'class' => 'BDataColumn',

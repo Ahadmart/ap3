@@ -77,7 +77,7 @@ class CetakLabelRakForm extends CFormModel
                 }
             }
         }
-        if (!empty($this->profilId || !empty($this->rakId) || !empty($this->dari))) {
+        if (!empty($this->profilId) || !empty($this->rakId) || !empty($this->dari)) {
             $sqlProfil = '';
             $sqlRak = '';
             $sqlDari = '';

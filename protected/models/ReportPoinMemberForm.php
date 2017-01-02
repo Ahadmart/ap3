@@ -98,9 +98,13 @@ class ReportPoinMemberForm extends CFormModel
         ];
     }
 
-    public function ambilDataPoinMember()
+    /**
+     * Data Poin Member untuk periode biasa (tidak lintas tahun)
+     * @param ActiveRecord $periode
+     * @return array Data Member dan Poin
+     */
+    public function dataPoinMember1($periode)
     {
-        $periode = MemberPeriodePoin::model()->findByPk($this->periodeId);
         $command = Yii::app()->db->createCommand()
                 ->select('profil_id, p.nomor, p.nama, sum(poin) poin, p.alamat1, p.alamat2, p.alamat3, p.telp, p.hp, p.surel, p.identitas, p.tanggal_lahir')
                 ->from(PenjualanMember::model()->tableName() . ' t')
@@ -118,7 +122,43 @@ class ReportPoinMemberForm extends CFormModel
         return $command->queryAll();
     }
 
-    public function listNamaKertas()
+    /**
+     * Data Poin Member untuk periode lintas tahun (misal: juli - juni tahun berikutnya)
+     * @param ActiveRecord $periode
+     * @return array
+     */
+    public function dataPoinMember2($periode)
+    {
+        $command = Yii::app()->db->createCommand()
+                ->select('profil_id, p.nomor, p.nama, sum(poin) poin, p.alamat1, p.alamat2, p.alamat3, p.telp, p.hp, p.surel, p.identitas, p.tanggal_lahir')
+                ->from(PenjualanMember::model()->tableName() . ' t')
+                ->join(Profil::model()->tableName() . ' p', 't.profil_id = p.id')
+                ->where('(year(t.updated_at)=:tahun1 AND month(t.updated_at) between :awal AND 12) OR '
+                        . '(year(t.updated_at)=:tahun2 AND month(t.updated_at) between 1 AND :akhir)')
+                ->group('profil_id');
+
+        if ($this->sortBy == self::SORT_BY_POIN_ASC) {
+            $command->order('sum(poin), p.nama');
+        } elseif ($this->sortBy == self::SORT_BY_POIN_DSC) {
+            $command->order('sum(poin) desc, p.nama');
+        }
+
+        $command->bindValues([
+            ':tahun1' => $this->tahun,
+            ':tahun2' => $this->tahun + 1,
+            ':awal' => $periode->awal,
+            ':akhir' => $periode->akhir
+        ]);
+        return $command->queryAll();
+    }
+
+    public function ambilDataPoinMember()
+    {
+        $periode = MemberPeriodePoin::model()->findByPk($this->periodeId);
+        return $periode->awal <= $periode->akhir ? $this->dataPoinMember1($periode) : $this->dataPoinMember2($periode);
+    }
+
+    public static function listNamaKertas()
     {
         return array(
             self::KERTAS_A4_LANDSCAPE => self::KERTAS_A4_LANDSCAPE_NAMA,
@@ -127,7 +167,7 @@ class ReportPoinMemberForm extends CFormModel
         );
     }
 
-    public function listKertas()
+    public static function listKertas()
     {
         return array(
             self::KERTAS_A4_LANDSCAPE => 'A4 Landscape',

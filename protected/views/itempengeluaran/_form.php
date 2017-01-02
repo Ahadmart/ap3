@@ -37,6 +37,11 @@
             <?php echo $form->textField($model, 'nama', array('size' => 45, 'maxlength' => 45)); ?>
             <?php echo $form->error($model, 'nama', array('class' => 'error')); ?>
         </div>
+        <div class="small-12 columns">
+            <?php echo $form->labelEx($model, 'status'); ?>
+            <?php echo $form->dropDownList($model, 'status', $model->listStatus()); ?>
+            <?php echo $form->error($model, 'status', array('class' => 'error')); ?>
+        </div>
     </div>
 
     <div class="row">

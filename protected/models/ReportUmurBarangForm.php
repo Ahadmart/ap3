@@ -170,7 +170,7 @@ class ReportUmurBarangForm extends CFormModel
         ];
     }
 
-    public function listKertas()
+    public static function listKertas()
     {
         return [
             self::KERTAS_A4 => self::KERTAS_A4_NAMA,

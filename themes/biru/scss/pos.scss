@@ -1,3 +1,13 @@
+
+/* Samakan dengan setting foundation */
+ $primary-color: #0874bc; 
+ $secondary-color: #0da1df;
+ $alert-color: #f55c57;
+ $success-color: #5bab54; 
+ $warning-color: #ffcc9f;
+ $info-color: #e8f0fd;
+ /* ================================ */
+ 
 $bg: #f0f4ff;
 $warna-text: #6b8ed0;
 $warna-text-menu: #126cb8;
@@ -44,11 +54,11 @@ body, html {
 }
 #total-belanja{
     font-size: 3.5rem;
-    //color: #FFF;
+    color: $primary-color;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
+    //text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
 
 }
 #surcharge{
@@ -61,12 +71,12 @@ body, html {
 }
 #kembali{
     font-size: 2.5rem;
-    //color: #FFF;
+    color: $secondary-color;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
-    border-bottom: 1px solid rgba(255,255,255,0.5);
+    //text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
+    border-bottom: 1px solid rgba(0,0,0,0.5);
     margin-bottom: 15px;
 
 }
@@ -136,7 +146,7 @@ body, html {
         font-family: "Open Sans";
         font-size: 0.875rem;
         font-weight: 700;
-        text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
+        //text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
         &.barcode{
             font-size: 0.7rem;
             font-weight: 700;

@@ -5,6 +5,10 @@
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.poshytip.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery-editable-poshytip.min.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-editable.css');
+
 $this->breadcrumbs = array(
     'Diskon Barang' => array('index'),
     'Index',
@@ -83,14 +87,29 @@ $this->boxHeader['normal'] = 'Diskon Barang';
                     'htmlOptions' => array('class' => 'rata-kanan'),
                     'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
                 ),
-                array(
+                /*
+                  array(
+                  'name' => 'status',
+                  'filter' => $model->listStatus(),
+                  'value' => '$data->namaStatus'
+                  ),
+                 */
+                [
+                    //'header' => 'Rak=NULL',
                     'name' => 'status',
                     'filter' => $model->listStatus(),
-                    'value' => '$data->namaStatus'
-                ),
-                array(
-                    'class' => 'BButtonColumn',
-                ),
+                    'value' => function($data) {
+                        return '<a href="#" class="editable-status" data-type="select" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updatestatus') . '">' . $data->namaStatus . '</a>';
+                    },
+                    'type' => 'raw',
+                    'headerHtmlOptions' => array('class' => 'rata-tengah'),
+                    'htmlOptions' => array('class' => 'rata-tengah'),
+                ],
+            /*
+              array(
+              'class' => 'BButtonColumn',
+              ),
+             */
             ),
         ));
         ?>
@@ -101,6 +120,42 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 ?>
 <script>
+
+    function enableEditable() {
+        $(".editable-status").editable({
+        mode: "inline",
+                //inputclass: "input-editable-qty",
+                success: function (response, newValue) {
+                    if (response.sukses) {
+                        $.fn.yiiGridView.update("diskon-barang-grid");
+                    }
+                },
+                source: [
+<?php
+$listStatus = $model->listStatus();
+$firstRow = TRUE;
+foreach ($listStatus as $key => $value):
+    ?>
+    <?php
+    if (!$firstRow) {
+        echo ',';
+    }
+    $firstRow = false;
+    ?>
+                    {value : <?php echo $key; ?>, text : '<?php echo $value; ?>'}
+    <?php
+endforeach;
+?>
+                ]
+        });
+    }
+    $(function () {
+        enableEditable();
+    });
+    $(document).ajaxComplete(function () {
+        enableEditable();
+    });
+
     $("#tombol-autoexpire").click(function (e) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -116,7 +171,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                     $.gritter.add({
                         title: 'Sukses',
                         text: data.rowAffected + ' diskon dinonaktifkan',
-                        time: 3000
+                        time: 5000
                     });
                     $.fn.yiiGridView.update('diskon-barang-grid');
                 } else {
@@ -130,7 +185,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         });
         return false;
     });
-
 </script>
 <?php
 $this->menu = array(

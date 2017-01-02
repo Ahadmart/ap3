@@ -106,6 +106,7 @@ class PengeluaranController extends Controller
         $itemKeuangan->scenario = 'hanyaDetail';
         if (isset($_GET['ItemKeuangan'])) {
             $itemKeuangan->attributes = $_GET['ItemKeuangan'];
+            $itemKeuangan->aktif();
             //print_r($_GET['ItemKeuangan']);
         }
         $itemKeuangan->id = '>=' . ItemKeuangan::ITEM_TRX_SAJA;

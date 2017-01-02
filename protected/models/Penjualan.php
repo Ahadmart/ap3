@@ -189,13 +189,13 @@ class Penjualan extends CActiveRecord
         }
         $this->updated_at = date("Y-m-d H:i:s");
         $this->updated_by = Yii::app()->user->id;
-// Jika disimpan melalui proses simpan penjualan
+        // Jika disimpan melalui proses simpan penjualan
         if ($this->scenario === 'simpanPenjualan') {
-// Status diubah jadi penjualan belum bayar (piutang)
+        // Status diubah jadi penjualan belum bayar (piutang)
             $this->status = Penjualan::STATUS_PIUTANG;
-// Dapat nomor dan tanggal baru
+            // Dapat nomor dan tanggal baru
             $this->tanggal = date('Y-m-d H:i:s');
-            $this->nomor = $this->generateNomor();
+            $this->nomor = $this->generateNomor6Seq();
         }
         return parent::beforeSave();
     }
@@ -385,7 +385,7 @@ class Penjualan extends CActiveRecord
             if ($cekLimit && $this->lewatLimit()) {
                 throw new Exception('Gagal!! Melebihi limit penjualan!', 500);
             }
-            
+
             $transaction->commit();
             return array(
                 'sukses' => true
@@ -579,7 +579,7 @@ class Penjualan extends CActiveRecord
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
      */
-    public function cariNomor()
+    public function cariNomorTahunan()
     {
         $tahun = date('y');
         $data = $this->find(array(
@@ -592,35 +592,16 @@ class Penjualan extends CActiveRecord
     }
 
     /**
-     * Mencari nomor untuk penomoran surat
-     * @return int maksimum+1 atau 1 jika belum ada nomor untuk bulan ini
-     */
-    /*
-      public function cariNomor()
-      {
-      $tahunBulan = date('ym');
-      $data = $this->find(array(
-      'select' => 'max(substring(nomor,9)*1) as max',
-      'condition' => "substring(nomor,5,4)='{$tahunBulan}'")
-      );
-
-      $value = is_null($data) ? 0 : $data->max;
-      return $value + 1;
-      }
-     * 
-     */
-
-    /**
-     * Membuat nomor surat
+     * Membuat nomor surat, 6 digit sequence number
      * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
      */
-    public function generateNomor()
+    public function generateNomor6Seq()
     {
         $config = Config::model()->find("nama='toko.kode'");
         $kodeCabang = $config->nilai;
         $kodeDokumen = KodeDokumen::PENJUALAN;
         $kodeTahunBulan = date('ym');
-        $sequence = substr('0000' . $this->cariNomor(), -5);
+        $sequence = substr('00000' . $this->cariNomorTahunan(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
@@ -1410,21 +1391,33 @@ class Penjualan extends CActiveRecord
                         ->queryRow();
             } else {
                 /* Berarti periode lintas tahun (awal > akhir ) */
-                $periodePoinL = MemberPeriodePoin::model()->find('awal <= month(now()) OR month(now()) <= akhir AND awal > akhir');
+                $periodePoinL = MemberPeriodePoin::model()->find('(awal <= month(now()) OR month(now()) <= akhir) AND awal > akhir');
                 if (!is_null($periodePoinL)) {
                     $queryPoin = Yii::app()->db->createCommand()
                             ->select('sum(poin) total')
                             ->from(PenjualanMember::model()->tableName() . ' tpm')
                             ->where('profil_id=:profilId');
+
                     $curMonth = date('n');
-                    if ($curMonth >= $periodePoinL->akhir) {
-                        $queryPoin->andWhere('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND :akhir');
-                        $queryPoin->bindValues([]);
+
+                    /* Jika sekarang berada diantara awal periode dengan desember */
+                    if ($curMonth >= $periodePoinL->awal) {
+                        $queryPoin->andWhere('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND MONTH(NOW())');
+                        $queryPoin->bindValues([
+                            ':awal' => $periodePoinL->awal
+                        ]);
                     }
+
+                    /* Jika sekarang berada diantara januari dengan akhir periode */
+                    if ($curMonth <= $periodePoinL->akhir) {
+                        $queryPoin->andWhere('(YEAR(t.updated_at)=YEAR(NOW()) AND MONTH(t.updated_at) <= MONTH(NOW()) OR '
+                                . '(YEAR(t.updated_at)=YEAR(NOW())-1 AND MONTH(t.updated_at) >= :awal');
+                        $queryPoin->bindValues([
+                            ':awal' => $periodePoinL->awal
+                        ]);
+                    }
+
                     $queryPoin->bindValues(array(
-                        //':tahun' => 'year(' . $this->tanggal . ')',
-                        ':awal' => $periodePoinL->awal,
-                        ':akhir' => $periodePoinL->akhir,
                         ':profilId' => $profil->id
                     ));
                     $poin = $queryPoin->queryRow();

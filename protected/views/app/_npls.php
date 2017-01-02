@@ -1,12 +1,15 @@
 <?php
 /* @var $this AppController */
 /* @var $model RekapAds */
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 ?>
-<h4>Notifikasi Potensi Lost Sales <small>[Analisa 30 hari penjualan terakhir] [Periode Supplier: 7 hari]</small></h4>
+<h4>Notifikasi Potensi Lost Sales <small>[Analisa 30 hari penjualan terakhir] [Estimasi Sisa Stok < 7 hari]</small></h4>
 <hr />
 <?php
 $this->widget('BGridView', array(
     'id' => 'rekap-ads-grid',
+    'itemsCssClass' => 'tabel-index responsive',
     'dataProvider' => $model->search(),
     'filter' => null,
     'columns' => array(

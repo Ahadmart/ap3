@@ -208,7 +208,8 @@ class HutangPiutang extends CActiveRecord
 
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
-            $this->nomor = $this->generateNomor();
+            /* Solusi temporer migrasi ke 6 digit seq num untuk ahadmart */
+            $this->nomor = $this->generateNomor6Seq();
         }
         $this->updated_at = date("Y-m-d H:i:s");
         $this->updated_by = Yii::app()->user->id;
@@ -219,12 +220,12 @@ class HutangPiutang extends CActiveRecord
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
      */
-    public function cariNomor()
+    public function cariNomorTahunan()
     {
         $tahun = date('y');
         $data = $this->find(array(
             'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,2)='{$tahun}' and tipe={$this->tipe}")
+            'condition' => "substring(nomor,5,2)='{$tahun}' and tipe={$this->tipe} ")
         );
 
         $value = is_null($data) ? 0 : $data->max;
@@ -232,18 +233,19 @@ class HutangPiutang extends CActiveRecord
     }
 
     /**
-     * Membuat nomor surat
+     * Membuat nomor surat, 6 digit sequence number
      * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
      */
-    public function generateNomor()
+    public function generateNomor6Seq()
     {
         $config = Config::model()->find("nama='toko.kode'");
         $kodeCabang = $config->nilai;
         $kodeDokumen = $this->tipe == HutangPiutang::TIPE_HUTANG ? KodeDokumen::HUTANG : KodeDokumen::PIUTANG;
         $kodeTahunBulan = date('ym');
-        $sequence = substr('0000' . $this->cariNomor(), -5);
+        $sequence = substr('00000' . $this->cariNomorTahunan(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
+
 
     public function listNamaAsal()
     {
@@ -367,7 +369,7 @@ class HutangPiutang extends CActiveRecord
     public function bayar()
     {
         if ($this->sisa < 1 && $this->sisa >= 0) {
-            /* Jika masih ada selisih/sisa dibelakang koma, maka dianggap lunas*/
+            /* Jika masih ada selisih/sisa dibelakang koma, maka dianggap lunas */
             $this->status = HutangPiutang::STATUS_LUNAS;
             $this->updateStatusDokumenAsal(HutangPiutang::STATUS_LUNAS);
             return true;

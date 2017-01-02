@@ -11,32 +11,37 @@ $this->boxHeader['small'] = 'Item Pengeluaran';
 $this->boxHeader['normal'] = 'Item Pengeluaran';
 ?>
 <div class="row">
-   <div class="small-12 columns">
-      <?php
-      $this->widget('BGridView', array(
-          'id' => 'item-keuangan-grid',
-          'dataProvider' => $model->search(),
-          'filter' => $model,
-          'columns' => array(
-              array(
-                  'name' => 'namaParent',
-                  'value' => 'is_null($data->parent) ? "": $data->parent->nama'
-              ),
-              array(
-                  'class' => 'BDataColumn',
-                  'name' => 'nama',
-                  'header' => '<span class="ak">N</span>ama',
-                  'accesskey' => 'n',
-                  'type' => 'raw',
-                  'value' => array($this, 'renderLinkToView')
-              ),
-              array(
-                  'class' => 'BButtonColumn',
-              ),
-          ),
-      ));
-      ?>
-   </div>
+    <div class="small-12 columns">
+        <?php
+        $this->widget('BGridView', array(
+            'id' => 'item-keuangan-grid',
+            'dataProvider' => $model->search(),
+            'filter' => $model,
+            'columns' => array(
+                array(
+                    'name' => 'namaParent',
+                    'value' => 'is_null($data->parent) ? "": $data->parent->nama'
+                ),
+                array(
+                    'class' => 'BDataColumn',
+                    'name' => 'nama',
+                    'header' => '<span class="ak">N</span>ama',
+                    'accesskey' => 'n',
+                    'type' => 'raw',
+                    'value' => array($this, 'renderLinkToView')
+                ),
+                array(
+                    'name' => 'status',
+                    'value' => '$data->namaStatus',
+                    'filter' => $model->listStatus()
+                ),
+                array(
+                    'class' => 'BButtonColumn',
+                ),
+            ),
+        ));
+        ?>
+    </div>
 </div>
 <?php
 $this->menu = array(

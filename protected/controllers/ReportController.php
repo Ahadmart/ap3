@@ -70,11 +70,50 @@ class ReportController extends Controller
             $user->attributes = $_GET['User'];
         }
 
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        //$kertasUntukPdf = ReportPenjualanForm::listKertas();
         $this->render('penjualan', array(
             'model' => $model,
             'profil' => $profil,
             'user' => $user,
             'report' => $report,
+            'printers' => $printers
+        ));
+    }
+
+    public function actionPrintPenjualan()
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    /* Ada tambahan parameter kertas untuk tipe pdf */
+                    $this->hutangPiutangPdf($_GET['kertas']);
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    $this->penjualanCsv();
+                    break;
+            }
+        }
+    }
+
+    public function penjualanCsv()
+    {
+        $reportPenjualan = new ReportPenjualanForm;
+        $csv = $reportPenjualan->toCsv();
+
+        if (is_null($csv)) {
+            throw new Exception("Tidak ada data", 500);
+        }
+
+        $namaToko = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp = date("Y-m-d-H-i");
+        $namaFile = "Penjualan {$namaToko->nilai} {$timeStamp}";
+
+        $this->renderPartial('_csv', array(
+            'namaFile' => $namaFile,
+            'csv' => $csv
         ));
     }
 
@@ -822,6 +861,40 @@ class ReportController extends Controller
         }
 
         $this->renderJSON($r);
+    }
+
+    public function actionRekapPenjualan()
+    {
+        $model = new ReportRekapPenjualanForm;
+        $report = array();
+        if (isset($_POST['ReportRekapPenjualanForm'])) {
+            $model->attributes = $_POST['ReportRekapPenjualanForm'];
+            if ($model->validate()) {
+                $report = $model->reportRekapPenjualan();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes();  // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $this->render('rekappenjualan', array(
+            'model' => $model,
+            'profil' => $profil,
+            'user' => $user,
+            'report' => $report,
+            'printers' => $printers
+        ));
     }
 
 }

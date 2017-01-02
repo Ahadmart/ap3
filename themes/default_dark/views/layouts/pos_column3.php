@@ -49,6 +49,19 @@
         <ul class="stack button-group">
             <li><a href="" class="expand bigfont tiny <?php echo Yii::app()->user->getState('kasirOtorisasiAdmin') == $this->penjualanId ? 'warning' : ''; ?> button" id="tombol-admin-mode" accesskey="m">Mode Ad<span class="ak">m</span>in</a></li>
         </ul>
+        <form id="form-akm">
+            <div class="row collapse akm-input" style="display: none">
+                <div class="small-9 large-10 columns">
+                    <input type="text"  name="akm-no" id="akm-no" placeholder="No AKM" autocomplete="off"/>
+                </div>
+                <div class="small-3 large-2 columns">
+                    <a href="#" class="button postfix" id="tombol-akm-ok"><i class="fa fa-check"></i></a>
+                </div>
+            </div>
+        </form>
+        <ul class="stack button-group">
+            <li><a href="" class="expand bigfont tiny button" id="tombol-akm" accesskey="k">Input A<span class="ak">K</span>M</a></li>
+        </ul>
         <script>
 
             $(function () {
@@ -111,6 +124,16 @@
         <?php
     }
     ?>
+                    $(document).on('click', "#tombol-akm", function () {
+                        $(".akm-input").toggle(500, function () {
+                            if ($(".akm-input").is(':visible')) {
+                                $("#akm-no").focus();
+                            } else {
+                                $("#scan").focus();
+                            }
+                        });
+                        return false;
+                    });
 
             });
 
@@ -126,6 +149,10 @@
                 if (e.keyCode === 13) {
                     $("#form-admin-login").submit();
                 }
+            });         
+
+            $("#tombol-akm-ok").click(function () {
+                $("#form-akm").submit();
             });
 
             $("#form-nomor-customer").submit(function () {
@@ -185,6 +212,35 @@
                         $("#admin-user").val("");
                         $("#admin-password").val("");
                         $(".admin-input").hide(500);
+                        $("#scan").focus();
+                    }
+                });
+                return false;
+            });
+
+            $("#form-akm").submit(function () {
+                dataUrl = '<?php echo $this->createUrl('inputakm',['id'=>$this->penjualanId]); ?>';
+                dataKirim = {
+                    nomor: $("#akm-no").val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: dataUrl,
+                    data: dataKirim,
+                    success: function (data) {
+                        if (data.sukses) {                            
+                            $.fn.yiiGridView.update('penjualan-detail-grid');
+                            updateTotal();
+                        } else {
+                            $.gritter.add({
+                                title: 'Error ' + data.error.code,
+                                text: data.error.msg,
+                                time: 3000,
+                            });
+                        }
+                        $("#akm-no").val("");
+                        $(".akm-input").hide(500);
                         $("#scan").focus();
                     }
                 });
