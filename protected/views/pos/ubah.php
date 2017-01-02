@@ -182,7 +182,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         $(document).on('click', "#tombol-cari-tabel", function () {
             var datakirim = {
                 'cariBarang': true,
-                'namaBarang': $("#scan").val()
+                'namaBarang': $("#scan").val(),
+                'Barang_page': 1
             };
             $('#barang-grid').yiiGridView('update', {
                 data: datakirim
