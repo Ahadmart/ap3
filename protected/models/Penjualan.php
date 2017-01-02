@@ -1410,8 +1410,8 @@ class Penjualan extends CActiveRecord
 
                     /* Jika sekarang berada diantara januari dengan akhir periode */
                     if ($curMonth <= $periodePoinL->akhir) {
-                        $queryPoin->andWhere('(YEAR(t.updated_at)=YEAR(NOW()) AND MONTH(t.updated_at) <= MONTH(NOW()) OR '
-                                . '(YEAR(t.updated_at)=YEAR(NOW())-1 AND MONTH(t.updated_at) >= :awal');
+                        $queryPoin->andWhere('((YEAR(tpm.updated_at)=YEAR(NOW()) AND MONTH(tpm.updated_at) <= MONTH(NOW())) OR '
+                                . '(YEAR(tpm.updated_at)=YEAR(NOW())-1 AND MONTH(tpm.updated_at) >= :awal))');
                         $queryPoin->bindValues([
                             ':awal' => $periodePoinL->awal
                         ]);
