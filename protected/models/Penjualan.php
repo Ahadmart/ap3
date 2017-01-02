@@ -189,14 +189,13 @@ class Penjualan extends CActiveRecord
         }
         $this->updated_at = date("Y-m-d H:i:s");
         $this->updated_by = Yii::app()->user->id;
-// Jika disimpan melalui proses simpan penjualan
+        // Jika disimpan melalui proses simpan penjualan
         if ($this->scenario === 'simpanPenjualan') {
-// Status diubah jadi penjualan belum bayar (piutang)
+        // Status diubah jadi penjualan belum bayar (piutang)
             $this->status = Penjualan::STATUS_PIUTANG;
-// Dapat nomor dan tanggal baru
+            // Dapat nomor dan tanggal baru
             $this->tanggal = date('Y-m-d H:i:s');
-            /* Solusi temporer migrasi ke 6 digit seq num untuk ahadmart */
-            $this->nomor = date('Y') >= '2017' ? $this->generateNomor6Seq() : $this->generateNomor();
+            $this->nomor = $this->generateNomor6Seq();
         }
         return parent::beforeSave();
     }
@@ -574,54 +573,6 @@ class Penjualan extends CActiveRecord
                         'status' => DiskonBarang::STATUS_AKTIF,
                         'tipeDiskon' => $tipeDiskonId]
         ]);
-    }
-
-    /**
-     * Mencari nomor untuk penomoran surat
-     * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
-     */
-    /*
-      public function cariNomor()
-      {
-      $tahun = date('y');
-      $data = $this->find(array(
-      'select' => 'max(substring(nomor,9)*1) as max',
-      'condition' => "substring(nomor,5,2)='{$tahun}'")
-      );
-
-      $value = is_null($data) ? 0 : $data->max;
-      return $value + 1;
-      }
-     */
-
-    /**
-     * Mencari nomor untuk penomoran surat
-     * @return int maksimum+1 atau 1 jika belum ada nomor untuk bulan ini
-     */
-    public function cariNomor()
-    {
-        $tahunBulan = date('ym');
-        $data = $this->find(array(
-            'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,4)='{$tahunBulan}' and updated_at >= '2016-12-05 16:00:00'")
-        );
-
-        $value = is_null($data) ? 0 : $data->max;
-        return $value + 1;
-    }
-
-    /**
-     * Membuat nomor surat
-     * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
-     */
-    public function generateNomor()
-    {
-        $config = Config::model()->find("nama='toko.kode'");
-        $kodeCabang = $config->nilai;
-        $kodeDokumen = KodeDokumen::PENJUALAN;
-        $kodeTahunBulan = date('ym');
-        $sequence = substr('0000' . $this->cariNomor(), -5);
-        return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
     /**
