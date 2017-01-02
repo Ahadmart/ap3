@@ -96,8 +96,10 @@ class PosController extends Controller
 
         $barang = new Barang('search');
         $barang->unsetAttributes();
+        $barang->setAttribute('id', '0');
 
         if (isset($_GET['cariBarang'])) {
+            $barang->unsetAttributes(['id']);
             $barang->setAttribute('nama', $_GET['namaBarang']);
             $criteria = new CDbCriteria;
             $criteria->order = 'nama ASC';
