@@ -41,7 +41,7 @@
                     <th>Barcode</th>
                     <th>Nama</th>
                     <th>Harga Jual</th>
-                    <th style="width: 10%">Qty Tercatat</th>
+                    <th style="width: 11%">Qty Tercatat</th>
                     <th>Selisih</th>
                 </tr>
             </thead>
