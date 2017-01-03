@@ -4,6 +4,7 @@ $this->widget('BGridView', array(
     'dataProvider' => $barang->search(20),
     'enableSorting' => false,
     //'filter' => $penjualanDetail,
+    'template' => '{items}{pager}{summary}',
     'columns' => array(
         'barcode',
         'nama',
@@ -48,15 +49,15 @@ $this->widget('BGridView', array(
 
 <?php
 /*
- * Jika dipilih, nilai barcode diambil, cursor ke qty
+ * Jika dipilih, nilai barcode diambil. Tambah barang
  */
 ?>
     $("body").on("click", "a.pilih", function () {
         //console.log($(this).attr("href"));
         var barcode = $(this).attr("href");
 
-        $("#barang-list").hide(100, function () {
-            $("#transaksi").show(100, function () {
+        $("#barang-list").hide(0, function () {
+            $("#transaksi").show(0, function () {
                 $("#scan").val(barcode);
                 kirimBarcode();
             });

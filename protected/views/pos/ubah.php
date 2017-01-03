@@ -188,7 +188,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             $('#barang-grid').yiiGridView('update', {
                 data: datakirim
             });
-            $("#transaksi").hide(100, function () {
+            $("#transaksi").hide(0, function () {
                 $("#barang-list").show(100, function () {
                     $("#scan").val("");
                     $("#tombol-cari-tabel").focus();
