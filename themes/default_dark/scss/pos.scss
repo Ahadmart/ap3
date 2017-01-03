@@ -10,6 +10,12 @@ $toska: #afd8f8;
 $oranye: #edc240;
 $merah: #cb4b4b;
 $violet: #9440ed;
+ $primary-color: #1976D2; 
+ $secondary-color: #e7e7e7;
+ $alert-color: #d32f2f;
+ $success-color: #388E3C; 
+ $warning-color: #F57C00;
+ $info-color: #03A9F4;
 
 body, html {
     height: 100%;
@@ -311,4 +317,26 @@ table tr th, table tr td {
 
 .ui-menu-item.ui-state-focus{
     background-color: #263238;
+}
+
+div.summary{
+    text-align: center;
+}
+
+.grid-loading{        
+    th{
+        animation: bgpulse 0.5s infinite;
+    }
+}
+
+@keyframes bgpulse {
+    0% {
+        background-color: inherit;
+    }
+    50% {
+        background-color: $warning-color;
+    }
+    100% {
+        background-color: inherit;
+    }
 }
