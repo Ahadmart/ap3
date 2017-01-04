@@ -1,12 +1,12 @@
 /* Samakan dengan setting foundation */
- $primary-color: #008cba; 
- $primary-color: #1976D2; 
- $secondary-color: #a8cf45;
- $alert-color: #d32f2f;
- $success-color: #388E3C; 
- $warning-color: #F57C00;
- $info-color: #455a64;
- /* ================================ */
+$primary-color: #008cba; 
+$primary-color: #1976D2; 
+$secondary-color: #a8cf45;
+$alert-color: #d32f2f;
+$success-color: #388E3C; 
+$warning-color: #F57C00;
+$info-color: #455a64;
+/* ================================ */
 
 .content.akm.index{
     text-align: center;
@@ -42,4 +42,8 @@
     margin-bottom: 0;
     padding: 0.4125rem;
     width: 40px;
+}
+
+div.summary {
+    text-align: right;
 }

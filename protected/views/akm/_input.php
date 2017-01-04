@@ -3,8 +3,7 @@
         <div class="row">
             <div class="small-12 columns">
                 <div class="panel">
-                    <h4 style="font-weight: 400;color: #fff">Total: <span id="total" class="rata-kanan"><?= $model->total ?></span>
-                    </h4>
+                    <h4>Total: <span id="total" class="rata-kanan"><?= $model->total ?></span></h4>
                 </div>
             </div>
         </div>
