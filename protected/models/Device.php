@@ -210,8 +210,8 @@ class Device extends CActiveRecord
 
     public function revisiText($text)
     {
+        $revText = chr(27) . "@"; //Init printer
         // Tambahkan line feed, jika ada
-        $revText = '';
         for ($index = 0; $index < $this->lf_sebelum; $index++) {
             $revText .= PHP_EOL;
         }
@@ -233,25 +233,24 @@ class Device extends CActiveRecord
 
     public function bukaLaciKas()
     {
-        if ($this->cashdrawer_kick == 1) {
-            /**
-             * Init printer, dan buka cash drawer
-             */
-            $command = chr(27) . "@"; //Init printer
-            $command .= chr(27) . chr(112) . chr(48) . chr(60) . chr(120); // buka cash drawer
-            $command .= chr(27) . chr(101) . chr(1); //1 reverse lf
+        /**
+         * Init printer, dan buka cash drawer
+         */
+        $command = chr(27) . "@"; //Init printer
+        $command .= chr(27) . chr(112) . chr(48) . chr(60) . chr(120); // buka cash drawer
+        $command .= chr(27) . chr(101) . chr(1); //1 reverse lf
 
-            $perintahPrinter = "-H {$this->address} -P {$this->nama}";
+        $perintahPrinter = "-H {$this->address} -P {$this->nama}";
 
-            $perintah = "echo \"{$command}\" |lpr {$perintahPrinter} -l";
-            exec($perintah, $output);
-        }
+        $perintah = "echo \"{$command}\" |lpr {$perintahPrinter} -l";
+        exec($perintah, $output);
     }
 
     public function printLpr($text)
     {
-        $this->bukaLaciKas();
-
+        if ($this->cashdrawer_kick == 1) {
+            $this->bukaLaciKas();
+        }
         $perintahPrinter = "-H {$this->address} -P {$this->nama}";
 
         $perintah = "echo \"{$this->revisiText($text)}\" |lpr {$perintahPrinter} -l";
