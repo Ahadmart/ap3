@@ -32,6 +32,7 @@ class Device extends CActiveRecord
     const TIPE_TEXT_PRINTER = 2;
     const TIPE_PDF_PRINTER = 3;
     const TIPE_CSV_PRINTER = 4;
+    const TIPE_QZ_PRINTER = 5;
 
     /**
      * @return string the associated database table name
@@ -174,7 +175,8 @@ class Device extends CActiveRecord
             Device::TIPE_LPR => 'Printer - LPR (Unix/Linux)',
             Device::TIPE_TEXT_PRINTER => 'Printer - Plain Text',
             Device::TIPE_PDF_PRINTER => 'Printer - PDF',
-            Device::TIPE_CSV_PRINTER => 'Printer - CSV'
+            Device::TIPE_CSV_PRINTER => 'Printer - CSV',
+            Device::TIPE_QZ_PRINTER => 'Printer - QZ'
         );
     }
 
@@ -210,7 +212,10 @@ class Device extends CActiveRecord
 
     public function revisiText($text)
     {
-        $revText = chr(27) . "@"; //Init printer
+        $revText = '';
+        if ($this->tipe_id == self::TIPE_LPR) {
+            $revText = chr(27) . "@"; //Init printer
+        }
         // Tambahkan line feed, jika ada
         for ($index = 0; $index < $this->lf_sebelum; $index++) {
             $revText .= PHP_EOL;
