@@ -553,7 +553,7 @@ class Pembelian extends CActiveRecord
         return $nota;
     }
 
-    public function listNamaKertas()
+    public static function listNamaKertas()
     {
         return array(
             self::KERTAS_A4 => self::KERTAS_A4_NAMA,
