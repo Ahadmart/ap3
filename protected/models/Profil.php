@@ -97,6 +97,9 @@ class Profil extends CActiveRecord
             'tipeSupplier' => [
                 'condition' => 'tipe_id=' . self::TIPE_SUPPLIER
             ],
+            'tipeCustomer' => [
+                'condition' => 'tipe_id=' . self::TIPE_CUSTOMER
+            ],
             'orderByNama' => [
                 'order' => 'nama'
             ]
