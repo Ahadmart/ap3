@@ -14,6 +14,7 @@ $this->boxHeader['normal'] = 'Retur Penjualan: ' . $model->nomor;
     <div class="small-12 columns header">
         <span class="secondary label">Customer</span><span class="label"><?php echo $model->profil->nama; ?></span>
         <span class="secondary label">Tanggal</span><span class="label"><?php echo $model->tanggal; ?></span>
+        <span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span>
         <span class="secondary label">Total</span><span class="alert label"><?php echo $model->total; ?></span>
         <span class="secondary label">Status</span><span class="warning label"><?php echo $model->getNamaStatus(); ?></span>
 
