@@ -60,7 +60,7 @@ class CetaklabelrakController extends Controller
         if (Yii::app()->user->hasState('labelKategoriId')) {
             $filterKategori = Yii::app()->user->getState('labelKategoriId');
         }
-        $barang = is_null($filterKategori) ? LabelRakCetak::model()->findAll() : LabelRakCetak::model()->with('barang', 'barang.kategori')->findAll('barang.kategori_id=' . $filterKategori);
+        $barang = is_null($filterKategori) || empty($filterKategori) ? LabelRakCetak::model()->findAll() : LabelRakCetak::model()->with('barang', 'barang.kategori')->findAll('barang.kategori_id=' . $filterKategori);
 
 
         $listNamaKertas = CetakLabelRakLayoutForm::listNamaKertas();

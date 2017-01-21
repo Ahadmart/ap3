@@ -429,4 +429,26 @@ class ReturpenjualanController extends Controller
         }
     }
 
+    public function actionImport()
+    {
+        $modelCsvForm = new UploadCsvReturPenjualanForm;
+        $customerList = Profil::model()->profilTrx()->tipeCustomer()->orderByNama()->findAll(array(
+            'select' => 'id, nama'
+        ));
+        if (isset($_POST['UploadCsvReturPenjualanForm'])) {
+            $modelCsvForm->attributes = $_POST['UploadCsvReturPenjualanForm'];
+            if (!empty($_FILES['UploadCsvReturPenjualanForm']['tmp_name']['csvFile'])) {
+                $modelCsvForm->csvFile = CUploadedFile::getInstance($modelCsvForm, 'csvFile');
+                $return = $modelCsvForm->simpanCsvKeReturPenjualan();
+                if ($return['sukses']) {
+                    $this->redirect($this->createUrl('ubah', ['id' => $return['returPenjualanId']]));
+                }
+            }
+        }
+        $this->render('import', [
+            'modelCsvForm' => $modelCsvForm,
+            'customerList' => $customerList
+        ]);
+    }
+
 }

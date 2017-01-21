@@ -12,7 +12,7 @@ $this->widget('BGridView', array(
     //'filter' => $penjualanDetail,
     'summaryText' => 'Poin struk ini: ' . $penjualan->getCurPoin() . ' | Poin sebelumnya: ' . $penjualan->getTotalPoinPeriodeBerjalan() . ' | {start}-{end} dari {count}',
     'itemsCssClass' => 'tabel-index responsive',
-    'template' => '{items}{summary}{pager}',
+    'template' => '{items}{pager}{summary}',
     'enableSorting' => false,
     'columns' => array(
         array(

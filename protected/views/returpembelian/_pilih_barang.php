@@ -88,6 +88,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
     $("#scan").keydown(function (e) {
         if (e.keyCode === 13) {
             $("#tombol-pilih").click();
+            return false;
         }
     });
 

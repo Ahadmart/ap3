@@ -11,6 +11,13 @@ $oranye: #ff5722;
 $merah: #cb4b4b;
 $violet: #9440ed;
 
+$primary-color: #ff5722; 
+$secondary-color: #37474f; 
+$alert-color: #d32f2f;
+$success-color: #11a861; 
+$warning-color: #ffcf63;
+$info-color: #455a64;
+
 body, html {
     height: 100%;
 }
@@ -311,5 +318,27 @@ button.warning, .button.warning {
     h4{
         font-weight: 400;
         color: #fff
+    }
+}
+
+div.summary{
+    text-align: center;
+}
+
+.grid-loading{        
+    th{
+        animation: bgpulse 0.5s infinite;
+    }
+}
+
+@keyframes bgpulse {
+    0% {
+        background-color: inherit;
+    }
+    50% {
+        background-color: $primary-color;
+    }
+    100% {
+        background-color: inherit;
     }
 }

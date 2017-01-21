@@ -465,13 +465,57 @@ class ReturPembelian extends CActiveRecord
         return $nota;
     }
 
-    public function listNamaKertas()
+    public static function listNamaKertas()
     {
         return array(
             self::KERTAS_A4 => self::KERTAS_A4_NAMA,
             self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA,
             self::KERTAS_FOLIO => self::KERTAS_FOLIO_NAMA,
         );
+    }
+
+    public function keCsv()
+    {
+        $csv = '"barcode", "nama","inv_id","ref","tgl_ref","harga_beli","qty"' . PHP_EOL;
+
+        /*
+         * Ambil data retur pembelian detail, untuk diexport ke csv
+         */
+        $details = Yii::app()->db->createCommand("
+            SELECT 
+                barang.barcode, 
+                barang.nama, 
+                inv.id inv_id, 
+                p.referensi, 
+                p.tanggal_referensi,
+                inv.harga_beli, 
+                pd.qty
+            FROM
+                retur_pembelian_detail pd
+                    JOIN
+                inventory_balance inv ON pd.inventory_balance_id = inv.id
+                    JOIN
+                barang ON inv.barang_id = barang.id
+                    JOIN
+                pembelian_detail d ON d.id = inv.pembelian_detail_id
+                    JOIN
+                pembelian p ON p.id = d.pembelian_id
+            WHERE
+                pd.retur_pembelian_id = :returPembelianId")
+                ->bindValue(':returPembelianId', $this->id)
+                ->queryAll();
+
+        foreach ($details as $detail):
+            $csv.= "\"{$detail['barcode']}\","
+                    . "\"{$detail['nama']}\","
+                    . "\"{$detail['inv_id']}\","
+                    . "\"{$detail['referensi']}\","
+                    . "\"{$detail['tanggal_referensi']}\","
+                    . "\"{$detail['harga_beli']}\","
+                    . "\"{$detail['qty']}\""
+                    . PHP_EOL;
+        endforeach;
+        return $csv;
     }
 
 }

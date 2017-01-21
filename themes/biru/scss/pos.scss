@@ -305,3 +305,25 @@ button.warning, .button.warning {
         //color: #fff
     }
 }
+
+div.summary{
+    text-align: center;
+}
+
+.grid-loading{        
+    th{
+        animation: bgpulse 0.5s infinite;
+    }
+}
+
+@keyframes bgpulse {
+    0% {
+        background-color: inherit;
+    }
+    50% {
+        background-color: $warning-color;
+    }
+    100% {
+        background-color: inherit;
+    }
+}

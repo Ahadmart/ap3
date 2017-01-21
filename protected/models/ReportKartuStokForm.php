@@ -90,10 +90,11 @@ class ReportKartuStokForm extends CFormModel
                     so.tanggal
             FROM
                 stock_opname_detail sd
-            JOIN stock_opname so ON sd.stock_opname_id = so.id AND DATE_FORMAT(so.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+            JOIN stock_opname so ON sd.stock_opname_id = so.id AND so.status != :draftSo AND DATE_FORMAT(so.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             WHERE
                 sd.barang_id = :barangId
-                    AND sd.qty_sebenarnya != sd.qty_tercatat UNION SELECT 
+                    /* AND sd.qty_sebenarnya != sd.qty_tercatat (Yang selisih 0 tetap ditampilkan agar terlihat proses SO telah dilakukan) */
+                    UNION SELECT 
                     pd.id,
                     :kodePembelian kode,
                     pd.qty,
@@ -102,7 +103,7 @@ class ReportKartuStokForm extends CFormModel
                     pembelian.tanggal
             FROM
                 pembelian_detail pd
-            JOIN pembelian ON pd.pembelian_id = pembelian.id AND DATE_FORMAT(pembelian.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+            JOIN pembelian ON pd.pembelian_id = pembelian.id AND pembelian.status != :draftPembelian AND DATE_FORMAT(pembelian.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             WHERE
                 pd.barang_id = :barangId UNION SELECT 
                 rd.id, :kodeReturPembelian kode, rd.qty, ib.harga_beli, retur.nomor, retur.tanggal
@@ -110,7 +111,7 @@ class ReportKartuStokForm extends CFormModel
                 retur_pembelian_detail rd
             JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
                 AND ib.barang_id = :barangId
-            JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id 
+            JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status != :draftReturPembelian 
                 AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             UNION SELECT 
                     hpp.id,
@@ -123,7 +124,7 @@ class ReportKartuStokForm extends CFormModel
                 harga_pokok_penjualan hpp
             JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
-            JOIN penjualan ON pd.penjualan_id = penjualan.id 
+            JOIN penjualan ON pd.penjualan_id = penjualan.id AND penjualan.status != :draftPenjualan 
                 AND DATE_FORMAT(penjualan.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             UNION SELECT 
                 rd.id, :kodeReturPenjualan tipe, rd.qty, 0 harga_beli, retur.nomor, retur.tanggal
@@ -131,7 +132,7 @@ class ReportKartuStokForm extends CFormModel
                 retur_penjualan_detail rd
             JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
-            JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id
+            JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id AND retur.status != :draftReturPenjualan
                 AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai) t1
             ORDER BY tanggal            
                 ";
@@ -159,7 +160,12 @@ class ReportKartuStokForm extends CFormModel
             ':kodePenjualan' => KodeDokumen::PENJUALAN,
             ':kodeReturPenjualan' => KodeDokumen::RETUR_PENJUALAN,
             ':dari' => $dari,
-            ':sampai' => $sampai
+            ':sampai' => $sampai,
+            ':draftSo' => StockOpname::STATUS_DRAFT,
+            ':draftPembelian' => Pembelian::STATUS_DRAFT,
+            ':draftReturPembelian' => ReturPembelian::STATUS_DRAFT,
+            ':draftPenjualan' => Penjualan::STATUS_DRAFT,
+            ':draftReturPenjualan' => ReturPenjualan::STATUS_DRAFT
         ]);
 
         $com = Yii::app()->db->createCommand()
@@ -173,14 +179,14 @@ class ReportKartuStokForm extends CFormModel
                     5 tipe, SUM(sd.qty_sebenarnya - sd.qty_tercatat) qty
                 FROM
                     stock_opname_detail sd
-                JOIN stock_opname so ON sd.stock_opname_id = so.id AND DATE_FORMAT(so.tanggal, '%Y-%m-%d') < :dari
+                JOIN stock_opname so ON sd.stock_opname_id = so.id AND so.status != :draftSo AND DATE_FORMAT(so.tanggal, '%Y-%m-%d') < :dari
                 WHERE
                     sd.barang_id = :barangId
                         AND sd.qty_sebenarnya != sd.qty_tercatat UNION SELECT 
                     1 tipe, SUM(pd.qty)
                 FROM
                     pembelian_detail pd
-                JOIN pembelian ON pd.pembelian_id = pembelian.id AND DATE_FORMAT(pembelian.tanggal, '%Y-%m-%d') < :dari
+                JOIN pembelian ON pd.pembelian_id = pembelian.id AND pembelian.status != :draftPembelian AND DATE_FORMAT(pembelian.tanggal, '%Y-%m-%d') < :dari
                 WHERE
                     pd.barang_id = :barangId UNION SELECT 
                     2 tipe, 0-SUM(rd.qty) qty
@@ -188,7 +194,7 @@ class ReportKartuStokForm extends CFormModel
                     retur_pembelian_detail rd
                 JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
                     AND ib.barang_id = :barangId
-                JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id 
+                JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status != :draftReturPembelian 
                     AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') < :dari
                 UNION SELECT 
                     3 tipe, 0-SUM(hpp.qty) qty
@@ -196,7 +202,7 @@ class ReportKartuStokForm extends CFormModel
                     harga_pokok_penjualan hpp
                 JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                     AND pd.barang_id = :barangId
-                JOIN penjualan ON pd.penjualan_id = penjualan.id 
+                JOIN penjualan ON pd.penjualan_id = penjualan.id AND penjualan.status != :draftPenjualan 
                     AND DATE_FORMAT(penjualan.tanggal, '%Y-%m-%d') < :dari
                 UNION SELECT 
                     4 tipe, SUM(rd.qty) qty
@@ -204,9 +210,17 @@ class ReportKartuStokForm extends CFormModel
                     retur_penjualan_detail rd
                 JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
                     AND pd.barang_id = :barangId
-                JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id
+                JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id AND retur.status != :draftReturPenjualan
                     AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') < :dari) AS t1
-                 ")->queryRow(true, [':dari' => $dari, 'barangId' => $this->barangId]);
+                 ")->queryRow(true, [
+            ':dari' => $dari,
+            ':barangId' => $this->barangId,
+            ':draftSo' => StockOpname::STATUS_DRAFT,
+            ':draftPembelian' => Pembelian::STATUS_DRAFT,
+            ':draftReturPembelian' => ReturPembelian::STATUS_DRAFT,
+            ':draftPenjualan' => Penjualan::STATUS_DRAFT,
+            ':draftReturPenjualan' => ReturPenjualan::STATUS_DRAFT
+        ]);
 
         $report = [
             'balance' => $comBalance['total'],

@@ -8,6 +8,8 @@
  * @property string $nomor
  * @property string $tanggal
  * @property string $profil_id
+ * @property string $referensi
+ * @property string $tanggal_referensi
  * @property string $hutang_piutang_id
  * @property integer $status
  * @property string $updated_at
@@ -58,12 +60,12 @@ class ReturPenjualan extends CActiveRecord
         return array(
             array('profil_id', 'required'),
             array('status', 'numerical', 'integerOnly' => true),
-            array('nomor', 'length', 'max' => 45),
+            array('nomor, referensi', 'length', 'max' => 45),
             array('profil_id, hutang_piutang_id, updated_by', 'length', 'max' => 10),
-            array('tanggal, created_at, updated_at, updated_by', 'safe'),
+            array('tanggal_referensi, tanggal, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, tanggal, profil_id, hutang_piutang_id, status, updated_at, updated_by, created_at, namaUpdatedBy', 'safe', 'on' => 'search'),
+            array('id, nomor, tanggal, profil_id, referensi, tanggal_referensi, hutang_piutang_id, status, updated_at, updated_by, created_at, namaUpdatedBy, namaProfil, nomorHutangPiutang', 'safe', 'on' => 'search'),
         );
     }
 
@@ -92,6 +94,8 @@ class ReturPenjualan extends CActiveRecord
             'nomor' => 'Nomor',
             'tanggal' => 'Tanggal',
             'profil_id' => 'Profil',
+            'referensi' => 'Referensi',
+            'tanggal_referensi' => 'Tanggal Referensi',
             'hutang_piutang_id' => 'Hutang Piutang',
             'status' => 'Status',
             'updated_at' => 'Updated At',
@@ -120,17 +124,21 @@ class ReturPenjualan extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id, true);
-        $criteria->compare('nomor', $this->nomor, true);
+        $criteria->compare('t.nomor', $this->nomor, true);
         $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('profil_id', $this->profil_id, true);
-        $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
+        $criteria->compare('referensi', $this->referensi, true);
+        $criteria->compare("DATE_FORMAT(tanggal_referensi, '%d-%m-%Y')", $this->tanggal_referensi, true);
+        $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id);
         $criteria->compare('status', $this->status);
-        $criteria->compare('updated_at', $this->updated_at, true);
-        $criteria->compare('updated_by', $this->updated_by, true);
-        $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('updated_at', $this->updated_at);
+        $criteria->compare('updated_by', $this->updated_by);
+        $criteria->compare('created_at', $this->created_at);
 
-        $criteria->with = ['updatedBy'];
+        $criteria->with = ['updatedBy', 'profil', 'hutangPiutang'];
         $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
+        $criteria->compare('profil.nama', $this->namaProfil, true);
+        $criteria->compare('hutangPiutang.nomor', $this->nomorHutangPiutang, true);
 
         $sort = [
             'defaultOrder' => 't.status, t.tanggal desc',
@@ -140,6 +148,14 @@ class ReturPenjualan extends CActiveRecord
                     'asc' => 'updatedBy.nama_lengkap',
                     'desc' => 'updatedBy.nama_lengkap desc'
                 ],
+                'namaProfil' => [
+                    'asc' => 'profil.nama',
+                    'desc' => 'profil.nama desc'
+                ],
+                'nomorHutangPiutang' => [
+                    'asc' => 'hutangPiutang.nomor',
+                    'desc' => 'hutangPiutang.nomor desc'
+                ]
             ]
         ];
 
@@ -232,6 +248,7 @@ class ReturPenjualan extends CActiveRecord
     public function afterFind()
     {
         $this->tanggal = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
+        $this->tanggal_referensi = !is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
         return parent::afterFind();
     }
 
@@ -347,6 +364,7 @@ class ReturPenjualan extends CActiveRecord
     public function beforeValidate()
     {
         $this->profil_id = empty($this->profil_id) ? Profil::PROFIL_UMUM : $this->profil_id;
+        $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : NULL;
         return parent::beforeValidate();
     }
 
@@ -467,7 +485,7 @@ class ReturPenjualan extends CActiveRecord
         return $nota;
     }
 
-    public function listNamaKertas()
+    public static function listNamaKertas()
     {
         return array(
             self::KERTAS_A4 => self::KERTAS_A4_NAMA,

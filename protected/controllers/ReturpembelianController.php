@@ -44,7 +44,7 @@ class ReturpembelianController extends Controller
         $returPembelianDetail->unsetAttributes();
         $returPembelianDetail->setAttribute('retur_pembelian_id', '=' . $id);
 
-        $tipePrinterAvailable = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
+        $tipePrinterAvailable = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER, Device::TIPE_CSV_PRINTER);
 
         $printerReturPembelian = Device::model()->listDevices($tipePrinterAvailable);
 
@@ -478,6 +478,22 @@ class ReturpembelianController extends Controller
         Yii::app()->end();
     }
 
+    public function exportCsv($id, $device)
+    {
+        
+        $model = $this->loadModel($id);
+        $csv = $model->keCsv();
+
+        $timeStamp = date("Ymd His");
+        $namaFile = "{$model->nomor}_{$model->profil->nama}_{$timeStamp}";
+
+        $this->renderPartial('_csv', array(
+            'namaFile' => $namaFile,
+            'csv' => $csv
+        ));
+        
+    }
+
     public function actionPrintReturPembelian($id)
     {
         if (isset($_GET['printId'])) {
@@ -492,6 +508,9 @@ class ReturpembelianController extends Controller
                     break;
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device);
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    $this->exportCsv($id, $device);
                     break;
             }
         }

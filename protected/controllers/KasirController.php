@@ -121,8 +121,11 @@ class KasirController extends Controller
             $model->attributes = $_GET['Kasir'];
         //$model->waktu_tutup = 'isnull';
 
+        $printerLpr = Device::model()->listDevices([Device::TIPE_LPR]);
+
         $this->render('index', array(
             'model' => $model,
+            'printerLpr' => $printerLpr
         ));
     }
 
@@ -151,6 +154,30 @@ class KasirController extends Controller
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
+    }
+
+    /**
+     * Buka cash drawer yang terhubung ke printer lpr
+     * @param int $id LPR Printer ID
+     */
+    public function actionOpenCashDrawer($id)
+    {
+        $printerLpr = Device::model()->findByPk($id);
+        if (!is_null($printerLpr)) {
+            $printerLpr->bukaLaciKas();
+            $return = [
+                'sukses' => true
+            ];
+        } else {
+            $return = [
+                'sukses' => false,
+                'error' => [
+                    'code' => 500,
+                    'msg' => 'Device tidak ditemukan!'
+                ]
+            ];
+        }
+        $this->renderJSON($return);
     }
 
 }

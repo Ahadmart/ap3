@@ -32,6 +32,7 @@ class Device extends CActiveRecord
     const TIPE_TEXT_PRINTER = 2;
     const TIPE_PDF_PRINTER = 3;
     const TIPE_CSV_PRINTER = 4;
+    const TIPE_QZ_PRINTER = 5;
 
     /**
      * @return string the associated database table name
@@ -174,7 +175,8 @@ class Device extends CActiveRecord
             Device::TIPE_LPR => 'Printer - LPR (Unix/Linux)',
             Device::TIPE_TEXT_PRINTER => 'Printer - Plain Text',
             Device::TIPE_PDF_PRINTER => 'Printer - PDF',
-            Device::TIPE_CSV_PRINTER => 'Printer - CSV'
+            Device::TIPE_CSV_PRINTER => 'Printer - CSV',
+            Device::TIPE_QZ_PRINTER => 'Printer - QZ'
         );
     }
 
@@ -210,8 +212,11 @@ class Device extends CActiveRecord
 
     public function revisiText($text)
     {
-        // Tambahkan line feed, jika ada
         $revText = '';
+        if ($this->tipe_id == self::TIPE_LPR) {
+            $revText = chr(27) . "@"; //Init printer
+        }
+        // Tambahkan line feed, jika ada
         for ($index = 0; $index < $this->lf_sebelum; $index++) {
             $revText .= PHP_EOL;
         }
@@ -233,25 +238,24 @@ class Device extends CActiveRecord
 
     public function bukaLaciKas()
     {
-        if ($this->cashdrawer_kick == 1) {
-            /**
-             * Init printer, dan buka cash drawer
-             */
-            $command = chr(27) . "@"; //Init printer
-            $command .= chr(27) . chr(112) . chr(48) . chr(60) . chr(120); // buka cash drawer
-            $command .= chr(27) . chr(101) . chr(1); //1 reverse lf
+        /**
+         * Init printer, dan buka cash drawer
+         */
+        $command = chr(27) . "@"; //Init printer
+        $command .= chr(27) . chr(112) . chr(48) . chr(60) . chr(120); // buka cash drawer
+        $command .= chr(27) . chr(101) . chr(1); //1 reverse lf
 
-            $perintahPrinter = "-H {$this->address} -P {$this->nama}";
+        $perintahPrinter = "-H {$this->address} -P {$this->nama}";
 
-            $perintah = "echo \"{$command}\" |lpr {$perintahPrinter} -l";
-            exec($perintah, $output);
-        }
+        $perintah = "echo \"{$command}\" |lpr {$perintahPrinter} -l";
+        exec($perintah, $output);
     }
 
     public function printLpr($text)
     {
-        $this->bukaLaciKas();
-
+        if ($this->cashdrawer_kick == 1) {
+            $this->bukaLaciKas();
+        }
         $perintahPrinter = "-H {$this->address} -P {$this->nama}";
 
         $perintah = "echo \"{$this->revisiText($text)}\" |lpr {$perintahPrinter} -l";
