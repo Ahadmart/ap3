@@ -897,4 +897,26 @@ class ReportController extends Controller
         ));
     }
 
+    public function actionDaftarBarang()
+    {
+        $model = new ReportDaftarBarangForm;
+        $report = null;
+        if (isset($_POST['ReportDaftarBarangForm'])) {
+            $model->attributes = $_POST['ReportDaftarBarangForm'];
+            if ($model->validate()) {
+                $report = $model->reportDaftarBarang();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+        $this->render('daftarbarang', [
+            'model' => $model,
+            'profil' => $profil
+        ]);
+    }
+
 }
