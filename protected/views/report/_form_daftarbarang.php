@@ -16,7 +16,7 @@ $form = $this->beginWidget('CActiveForm', [
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
 <?php echo $form->hiddenField($model, 'profilId'); ?>
 <div class="row">
-    <div class="medium-4 large-3 columns">
+    <div class="medium-6 columns">
         <div class="row">
             <div class="small-12 columns">
                 <div class="row collapse">
@@ -36,16 +36,16 @@ $form = $this->beginWidget('CActiveForm', [
         </div>
 
     </div>   
-    <div class="medium-4 large-3 end columns">
+<!--    <div class="medium-4 large-3 end columns">
         <div class="row collapse">
             <div class="small-12 columns">
-                <?php echo $form->labelEx($model, 'kategoriId'); ?>
-                <?php echo $form->dropDownList($model, 'kategoriId', $model->filterKategori()); ?>
-                <?php echo $form->error($model, 'kategoriId', array('class' => 'error')); ?>
+                <?php // echo $form->labelEx($model, 'kategoriId'); ?>
+                <?php // echo $form->dropDownList($model, 'kategoriId', $model->filterKategori()); ?>
+                <?php // echo $form->error($model, 'kategoriId', array('class' => 'error')); ?>
             </div>
         </div>
-    </div>
-    <div class="medium-4 large-3 columns">
+    </div>-->
+    <div class="medium-6 columns">
         <div class="row collapse">
             <div class="small-12 columns">
                 <?php echo $form->labelEx($model, 'sortBy0'); ?>
@@ -69,9 +69,9 @@ $form = $this->beginWidget('CActiveForm', [
                 ?>
                 <?php echo $form->error($model, 'sortBy1', array('class' => 'error')); ?>
             </div>
-            <div class="small-12 columns">
-                <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
-            </div>
+<!--            <div class="small-12 columns">
+                <?php // echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
+            </div>-->
         </div>
     </div>
 </div>
@@ -79,6 +79,3 @@ $form = $this->beginWidget('CActiveForm', [
 
 <?php
 $this->endWidget();
-?>
-<script>
-</script>
