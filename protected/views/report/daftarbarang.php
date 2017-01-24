@@ -50,11 +50,16 @@ $this->renderPartial('_form_daftarbarang', ['model' => $model]);
     });
 </script>
 <?php
+$this->renderPartial('_form_daftarbarang_cetak', [
+    'model' => $model,
+    'printers' => $printers,
+        //'kertasPdf' => $kertasPdf
+]);
 if (isset($report)) {
 
     $this->renderPartial('_form_daftarbarang_cetak', [
         'model' => $model,
-            //'printers' => $printers,
+        'printers' => $printers,
             //'kertasPdf' => $kertasPdf
     ]);
     ?>
@@ -63,18 +68,15 @@ if (isset($report)) {
             <table class="tabel-index responsive">
                 <thead>
                     <tr>
-                        <th rowspan="2" class="rata-kanan">No</th>
-                        <th rowspan="2">Barcode</th>
-                        <th rowspan="2">Nama</th>
-                        <th rowspan="2" class="rata-kanan">Stok</th>
-                        <th rowspan="2" class="rata-kanan">Nilai Stok</th>
-                        <th colspan="2" class='rata-tengah'>Daftar Stok dalam</th>
-                        <th rowspan="2" class="rata-kanan">Total Stok</th>
+                        <th class="rata-kanan">No</th>
+                        <th>Barcode</th>
+                        <th>Nama</th>
+                        <th class="rata-kanan">Kategori</th>
+                        <th class="rata-kanan">HPP</th>
+                        <th class="rata-kanan">Harga Jual</th>
+                        <th class="rata-kanan">RRP</th>
                     </tr>
-                    <tr>
-                        <th class="rata-kanan">Hari</th>
-                        <th class="rata-kanan">Bulan</th>
-                    </tr>
+
                 </thead>
                 <tbody>
                     <?php
@@ -85,11 +87,10 @@ if (isset($report)) {
                             <td class="rata-kanan"><?php echo $i; ?></td>
                             <td><?php echo $baris['barcode']; ?></td>
                             <td><?php echo $baris['nama']; ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['qty'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['nominal'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['daftar_hari'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['daftar_bulan'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['total_stok'], 0, ',', '.'); ?></td>
+                            <td><?php echo $baris['nama_kategori']; ?></td>
+                            <td class="rata-kanan"><?php echo number_format($baris['hpp'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?php echo number_format($baris['harga_jual'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?php echo number_format($baris['rrp'], 0, ',', '.'); ?></td>
                         </tr>
                         <?php
                         $i++;
