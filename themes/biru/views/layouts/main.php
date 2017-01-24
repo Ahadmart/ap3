@@ -176,6 +176,7 @@
                                             array('label' => '<i class="fa fa-bar-chart fa-fw"></i>' . ' Umur Barang (Aging of Inventory)', 'url' => array('/report/umurbarang')),
                                             array('label' => '<i class="fa fa-bar-chart fa-fw"></i>' . ' Potensi Lost Sales', 'url' => array('/report/pls')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Kartu Stok', 'url' => array('/report/kartustok')),
+                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Daftar Barang', 'url' => array('/report/daftarbarang')),
                                         //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
                                         ),
                                         'itemOptions' => array('class' => 'has-dropdown'),
