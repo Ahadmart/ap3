@@ -98,13 +98,13 @@ class ReportDaftarBarangForm extends CFormModel
                 JOIN
             barang_kategori kat ON kat.id = barang.kategori_id
             {$sqlSup}
+        WHERE
+            barang.status = :statusBarang
             {$sqlOrder}
                 ";
         $command = Yii::app()->db->createCommand($sql);
-        //$command->order([$this->listSortBy2()[$this->sortBy0], $this->listSortBy2()[$this->sortBy1]]);
-
-        //$command->sq($sql);
-
+        $command->bindValue(':statusBarang', Barang::STATUS_AKTIF);
+        
         if (!empty($this->profilId)) {
             $command->bindValue(':supplierId', $this->profilId);
         }
