@@ -565,7 +565,7 @@ class Penjualan extends CActiveRecord
     public function cekDiskon($barangId, $tipeDiskonId)
     {
         return DiskonBarang::model()->find([
-                    'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
+                    'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
                     'order' => 'id desc',
                     'params' => [
                         'barangId' => $barangId,
