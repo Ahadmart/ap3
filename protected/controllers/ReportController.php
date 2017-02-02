@@ -897,4 +897,70 @@ class ReportController extends Controller
         ));
     }
 
+    public function actionDaftarBarang()
+    {
+        $this->layout = '//layouts/box_kecil';
+
+        $model = new ReportDaftarBarangForm;
+        $report = null;
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $this->render('daftarbarang', [
+            'model' => $model,
+            'profil' => $profil,
+            'report' => $report,
+            'printers' => $printers
+        ]);
+    }
+
+    public function actionPrintDaftarBarang($printId, $profilId, $hanyaDefault, $sortBy0, $sortBy1)
+    {
+        $model = new ReportDaftarBarangForm;
+        $model->attributes = [
+            'profilId' => $profilId,
+            'hanyaDefault' => $hanyaDefault,
+            'sortBy0' => $sortBy0,
+            'sortBy1' => $sortBy1
+        ];
+
+        if ($model->validate()) {
+            $report = $model->reportDaftarBarang();
+
+            $device = Device::model()->findByPk($printId);
+            switch ($device->tipe_id) {
+                case Device::TIPE_CSV_PRINTER:
+                    $this->daftarBarangCsv($model, $report, $profilId);
+                    break;
+            }
+        } else {
+            $msg = [];
+            foreach ($model->errors as $error) {
+                $msg[] = $error[0];
+            }
+            /* Tampillkan error validasi yang paling atas dahulu */
+            $this->layout = '//layouts/box_kecil';
+            $this->render('../app/error', ['code' => 500, 'message' => $msg[0]]);
+        }
+    }
+
+    public function daftarBarangCsv($model, $report, $profilId)
+    {
+        $profil = Profil::model()->findByPk($profilId);
+        $namaToko = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp = date("Y-m-d-H-i");
+        $namaFile = "Daftar Barang_{$profil->nama}_{$namaToko->nilai}_{$timeStamp}";
+
+        $this->renderPartial('_csv', array(
+            'namaFile' => $namaFile,
+            'csv' => $model->reportKeCsv($report)
+        ));
+    }
+
 }

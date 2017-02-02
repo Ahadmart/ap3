@@ -447,7 +447,7 @@ class Penjualan extends CActiveRecord
     {
 
         $diskonPromo = DiskonBarang::model()->find(array(
-            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
+            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
             'order' => 'id desc',
             'params' => array(
                 'barangId' => $barangId,
@@ -472,7 +472,7 @@ class Penjualan extends CActiveRecord
     {
 
         $diskonPromo = DiskonBarang::model()->find(array(
-            'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
+            'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
             'order' => 'id desc',
             'params' => array(
                 'barangId' => $barangId,
@@ -498,7 +498,7 @@ class Penjualan extends CActiveRecord
     public function aksiDiskonBanded($barangId, $qty, $hargaJualNormal)
     {
         $diskons = DiskonBarang::model()->findAll(array(
-            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
+            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
             'order' => 'qty desc',
             'params' => array(
                 'barangId' => $barangId,
@@ -565,7 +565,7 @@ class Penjualan extends CActiveRecord
     public function cekDiskon($barangId, $tipeDiskonId)
     {
         return DiskonBarang::model()->find([
-                    'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and (sampai >= now() or sampai is null)',
+                    'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
                     'order' => 'id desc',
                     'params' => [
                         'barangId' => $barangId,
