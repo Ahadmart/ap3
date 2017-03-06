@@ -57,6 +57,10 @@ class PengeluaranController extends Controller
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
+        /* Default value */
+        $model->kas_bank_id = !empty($model->kas_bank_id) ? NULL : KasBank::model()->find('nama=:kas', [':kas' => 'Kas'])->id;
+        $model->jenis_transaksi_id = !empty($model->jenis_transaksi_id) ? NULL : JenisTransaksi::model()->find('nama=:tunai', [':tunai' => 'Tunai'])->id;
+
         if (isset($_POST['Pengeluaran'])) {
             $model->attributes = $_POST['Pengeluaran'];
             if ($model->save())
