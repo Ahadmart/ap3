@@ -54,7 +54,7 @@ class Pengeluaran extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('tanggal, profil_id, kas_bank_id, kategori_id', 'required'),
+            array('tanggal, profil_id, kas_bank_id, kategori_id', 'required', 'message' => '{attribute} tidak boleh kosong'),
             array('status', 'numerical', 'integerOnly' => true),
             array('nomor, referensi', 'length', 'max' => 45),
             array('uang_dibayar', 'length', 'max' => 18),
@@ -133,9 +133,9 @@ class Pengeluaran extends CActiveRecord
         $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('t.keterangan', $this->keterangan, true);
         $criteria->compare('profil_id', $this->profil_id, true);
-        $criteria->compare('kas_bank_id', $this->kas_bank_id, true);
-        $criteria->compare('kategori_id', $this->kategori_id, true);
-        $criteria->compare('jenis_transaksi_id', $this->jenis_transaksi_id, true);
+        $criteria->compare('kas_bank_id', $this->kas_bank_id);
+        $criteria->compare('kategori_id', $this->kategori_id);
+        $criteria->compare('jenis_transaksi_id', $this->jenis_transaksi_id);
         $criteria->compare('referensi', $this->referensi, true);
         $criteria->compare("DATE_FORMAT(tanggal_referensi, '%d-%m-%Y')", $this->tanggal_referensi, true);
         $criteria->compare('uang_dibayar', $this->uang_dibayar, true);
