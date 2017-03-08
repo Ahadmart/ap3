@@ -4,7 +4,7 @@
  * CetakLabelRakForm class.
  * CetakLabelRakForm is the data structure for keeping
  * Cetak Label Rak form data. It is used by the 'index' action of 'CetaklabelrakController'.
- * 
+ *
  * The followings are the available model relations:
  * @property Profil $profil
  */
@@ -32,7 +32,7 @@ class CetakLabelRakForm extends CFormModel
     public function attributeLabels()
     {
         return array(
-            'barcode' => 'Barcode',
+            'barcode' => 'Scan Barcode / Input nama',
             'profilId' => 'Profil Supplier',
             'rakId' => 'User',
             'dari' => 'Harga jual berubah dari',
@@ -98,7 +98,7 @@ class CetakLabelRakForm extends CFormModel
             $tabelCetak = LabelRakCetak::model()->tableName();
             $userId = Yii::app()->user->id;
             $sql = "INSERT IGNORE INTO {$tabelCetak} (barang_id, updated_by)
-                SELECT 
+                SELECT
                     barang.id, {$userId}
                 FROM
                     barang

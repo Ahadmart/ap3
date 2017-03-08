@@ -49,7 +49,7 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->labelEx($model, 'barcode'); ?>
         <?php echo $form->textField($model, 'barcode', array('autofocus' => 'autofocus')); ?>
         <?php echo $form->error($model, 'barcode', array('class' => 'error')); ?>
-    </div> 
+    </div>
 </div>
 
 <div class="row">
@@ -115,4 +115,29 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
             return false;
         });
     });
+    //CetakLabelRakForm_barcode
+
+    $("#CetakLabelRakForm_barcode").autocomplete({
+        source: "<?php echo $this->createUrl('/pos/caribarang'); ?>",
+        minLength: 3,
+        delay: 1000,
+        search: function (event, ui) {
+            $("#scan-icon").html('<img src="<?php echo Yii::app()->theme->baseUrl; ?>/css/3.gif" />');
+        },
+        response: function (event, ui) {
+            $("#scan-icon").html('<i class="fa fa-barcode fa-2x"></i>');
+        },
+        select: function (event, ui) {
+            console.log(ui.item ?
+                    "Nama: " + ui.item.label + "; Barcode " + ui.item.value :
+                    "Nothing selected, input was " + this.value);
+            if (ui.item) {
+                $("#scan").val(ui.item.value);
+            }
+        }
+    }).autocomplete("instance")._renderItem = function (ul, item) {
+        return $("<li style='clear:both'>")
+                .append("<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-barcode'><i>" + item.value + "</i></span></a>")
+                .appendTo(ul);
+    };
 </script>
