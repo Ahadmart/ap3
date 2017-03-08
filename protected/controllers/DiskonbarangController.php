@@ -103,7 +103,7 @@ class DiskonbarangController extends Controller
       $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
       }
      * Update: Diskon tidak bisa dihapus, hanya bisa dinonaktifkan
-     * 
+     *
      */
 
     /**
@@ -174,6 +174,7 @@ class DiskonbarangController extends Controller
             'satuan' => $barang->satuan->nama,
             'hargaJual' => $barang->getHargaJual(),
             'hargaJualRaw' => $barang->getHargaJualRaw(),
+            'hargaBeli' => $barang->getHargaBeli(),
             'stok' => $barang->getStok()
         );
 
