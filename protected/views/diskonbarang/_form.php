@@ -168,9 +168,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     });
 
     function enDisScan(enable) {
-        if (enable) {     
+        if (enable) {
             $("#input-perbarang").hide(500);
-        } else {   
+        } else {
             $("#input-perbarang").show(500);
             $("#scan").focus();
         }
@@ -272,7 +272,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                         var hasil = "<h5>" + data.barcode +
                                 " " + data.nama + "</h5>" +
                                 "<h6><small>Stok</small> " + data.stok + " " + data.satuan +
-                                " <small>Harga</small> " + data.hargaJual + " / " + data.satuan + "</h6>";
+                                " <small>Harga</small> " + data.hargaJual + " / " + data.satuan +
+                                " <small>Harga Beli</small> " + data.hargaBeli + "</h6>";
                         $("#info-barang").html(hasil);
                         $("#info-barang").show();
                         $("#harga-jual-raw").val(data.hargaJualRaw);
