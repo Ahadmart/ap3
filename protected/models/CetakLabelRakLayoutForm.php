@@ -4,15 +4,15 @@
  * CetakLabelRakLayoutForm class.
  * CetakLabelRakLayoutForm is the data structure for keeping
  * Cetak Label Rak form data. It is used by the 'index' action of 'CetaklabelrakController'.
- * 
+ *
  * The followings are the available model relations:
  * @property Profil $profil
  */
 class CetakLabelRakLayoutForm extends CFormModel
 {
 
-    const LAYOUT_NORMAL_3 = 10;
-    const LAYOUT_NORMAL_33 = 11;
+    const LAYOUT_DEFAULT_3 = 10;
+    const LAYOUT_DEFAULT_33 = 11;
     const LAYOUT_BANDED = 20;
     /* ===================== */
     const KERTAS_LETTER = 10;
@@ -57,9 +57,16 @@ class CetakLabelRakLayoutForm extends CFormModel
     public static function listLayout()
     {
         return array(
-            self::LAYOUT_NORMAL_3 => 'Normal, Tinggi 3 cm',
-//            self::LAYOUT_NORMAL_33 => 'Normal, Tinggi 3,3 cm'
+            self::LAYOUT_DEFAULT_3 => 'Default, Tinggi 3 cm',
+//            self::LAYOUT_DEFAULT_33 => 'Default, Tinggi 3,3 cm'
         );
+    }
+
+    public static function listView()
+    {
+        return [
+            self::LAYOUT_DEFAULT_3 => '_label_rak_default_3_pdf'
+        ];
     }
 
     public static function listNamaKertas()

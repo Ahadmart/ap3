@@ -66,7 +66,9 @@ class CetaklabelrakController extends Controller
         $listNamaKertas = CetakLabelRakLayoutForm::listNamaKertas();
 
         $mPDF1 = Yii::app()->ePdf->mpdf('utf-8', $listNamaKertas[$layout['kertasId']], 0, '', 7, 7, 7, 7, 9, 9);
-        $mPDF1->WriteHTML($this->renderPartial('_label_rak_pdf', array(
+
+        $labelRakView = CetakLabelRakLayoutForm::listView();
+        $mPDF1->WriteHTML($this->renderPartial($labelRakView[$layout['layoutId']], array(
                     'barang' => $barang,
                     'namaToko' => $this->namaToko(),
                     'tanggalCetak' => $tanggalCetak
