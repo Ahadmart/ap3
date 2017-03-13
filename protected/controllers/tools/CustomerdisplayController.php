@@ -17,7 +17,7 @@ class CustomerdisplayController extends Controller
         $criteria->alias = 'detail';
         $criteria->join = 'JOIN penjualan pj on detail.penjualan_id = pj.id and pj.status=' . Penjualan::STATUS_DRAFT;
         $criteria->order = 'detail.id desc';
-        $criteria->condition = 'detail.updated_by =' . Yii::app()->user->id;
+        $criteria->condition = 'detail.updated_by =' . Yii::app()->user->id. ' AND TIMESTAMPDIFF(MINUTE, detail.updated_at, NOW()) <= 2'; //detail.updated_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
         return PenjualanDetail::model()->find($criteria);
     }
 
