@@ -14,6 +14,7 @@ class CetakLabelRakLayoutForm extends CFormModel
     const LAYOUT_DEFAULT_3 = 10;
     const LAYOUT_DEFAULT_33 = 11;
     const LAYOUT_BANDED = 20;
+    const LAYOUT_AHAD_WARNA = 30;
     /* ===================== */
     const KERTAS_LETTER = 10;
     const KERTAS_LETTER_LANDSCAPE = 11;
@@ -59,13 +60,15 @@ class CetakLabelRakLayoutForm extends CFormModel
         return array(
             self::LAYOUT_DEFAULT_3 => 'Default, Tinggi 3 cm',
 //            self::LAYOUT_DEFAULT_33 => 'Default, Tinggi 3,3 cm'
+            self::LAYOUT_AHAD_WARNA => 'Ahadmart Warna (Tinggi 3cm)'
         );
     }
 
     public static function listView()
     {
         return [
-            self::LAYOUT_DEFAULT_3 => '_label_rak_default_3_pdf'
+            self::LAYOUT_DEFAULT_3 => '_label_rak_default_3_pdf',
+            self::LAYOUT_AHAD_WARNA => '_label_rak_ahad_warna_pdf'
         ];
     }
 
