@@ -569,6 +569,7 @@ class PembelianController extends Controller
                 if ($return['sukses']) {
                     $this->redirect($this->createUrl('ubah', array('id' => $return['pembelianId'], 'pilihb' => FALSE)));
                 }
+                //print_r($return);
             }
         }
         $this->render('import', array(
