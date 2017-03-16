@@ -277,6 +277,8 @@ class DiskonBarang extends CActiveRecord
                 break;
             case self::TIPE_QTY_GET_BARANG:
                 $this->nominal = 0;
+                // SEMENTARA: Bonus untuk barang yang sama
+                $this->barang_bonus_id = $this->barang_id;
                 break;
         }
         return parent::beforeValidate();
