@@ -15,6 +15,8 @@
  * @property string $qty
  * @property string $qty_min
  * @property string $qty_max
+ * @property string $barang_bonus_id
+ * @property string $barang_bonus_qty
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
@@ -22,6 +24,7 @@
  *
  * The followings are the available model relations:
  * @property Barang $barang
+ * @property Barang $barangBonus
  * @property User $updatedBy
  */
 class DiskonBarang extends CActiveRecord
@@ -62,12 +65,12 @@ class DiskonBarang extends CActiveRecord
             array('tipe_diskon_id, nominal, dari', 'required', 'message' => '{attribute} harus diisi'),
             array('semua_barang, tipe_diskon_id, status', 'numerical', 'integerOnly' => true),
             array('persen', 'numerical'),
-            array('barang_id, qty, qty_min, qty_max, updated_by', 'length', 'max' => 10),
+            array('barang_id, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_qty, updated_by', 'length', 'max' => 10),
             array('nominal', 'length', 'max' => 18),
             array('sampai, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, semua_barang, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, status, barcode, namaBarang', 'safe', 'on' => 'search'),
+            array('id, semua_barang, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_qty, status, barcode, namaBarang', 'safe', 'on' => 'search'),
         );
     }
 
@@ -80,6 +83,7 @@ class DiskonBarang extends CActiveRecord
         // class name for the relations automatically generated below.
         return array(
             'barang' => array(self::BELONGS_TO, 'Barang', 'barang_id'),
+            'barangBonus' => array(self::BELONGS_TO, 'Barang', 'barang_bonus_id'),
             'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
         );
     }
@@ -101,6 +105,8 @@ class DiskonBarang extends CActiveRecord
             'qty' => 'Qty',
             'qty_min' => 'Qty Min',
             'qty_max' => 'Qty Max',
+            'barang_bonus_id' => 'Barang Bonus',
+            'barang_bonus_qty' => 'Barang Bonus Qty',
             'status' => 'Status',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
@@ -137,6 +143,8 @@ class DiskonBarang extends CActiveRecord
         $criteria->compare('qty', $this->qty, true);
         $criteria->compare('qty_min', $this->qty_min, true);
         $criteria->compare('qty_max', $this->qty_max, true);
+        $criteria->compare('barang_bonus_id', $this->barang_bonus_id);
+        $criteria->compare('barang_bonus_qty', $this->barang_bonus_qty, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
@@ -196,8 +204,8 @@ class DiskonBarang extends CActiveRecord
             self::TIPE_PROMO_MEMBER => 'Promo Member',
             self::TIPE_GROSIR => 'Grosir (beli banyak harga turun)',
             self::TIPE_BANDED => 'Banded (beli qty tertentu harga turun)',
-            //self::TIPE_QTY_GET_BARANG => 'Beli x dapat y (Quantity tertentu dapat barang)',
-            //self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y (Nominal tertentu dapat barang)'
+            self::TIPE_QTY_GET_BARANG => 'Beli x dapat y (Quantity tertentu dapat barang)',
+                //self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y (Nominal tertentu dapat barang)'
         ];
     }
 
@@ -208,8 +216,8 @@ class DiskonBarang extends CActiveRecord
             self::TIPE_PROMO_MEMBER => 'Promo Member',
             self::TIPE_GROSIR => 'Grosir',
             self::TIPE_BANDED => 'Banded',
-            //self::TIPE_QTY_GET_BARANG => 'Beli x dapat y',
-            //self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y'
+            self::TIPE_QTY_GET_BARANG => 'Beli x dapat y',
+                //self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y'
         ];
     }
 
@@ -266,6 +274,9 @@ class DiskonBarang extends CActiveRecord
                 if (empty($this->qty_max)) {
                     return false;
                 }
+                break;
+            case self::TIPE_QTY_GET_BARANG:
+                $this->nominal = 0;
                 break;
         }
         return parent::beforeValidate();
