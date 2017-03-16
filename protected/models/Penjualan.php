@@ -191,7 +191,7 @@ class Penjualan extends CActiveRecord
         $this->updated_by = Yii::app()->user->id;
         // Jika disimpan melalui proses simpan penjualan
         if ($this->scenario === 'simpanPenjualan') {
-        // Status diubah jadi penjualan belum bayar (piutang)
+            // Status diubah jadi penjualan belum bayar (piutang)
             $this->status = Penjualan::STATUS_PIUTANG;
             // Dapat nomor dan tanggal baru
             $this->tanggal = date('Y-m-d H:i:s');
@@ -433,6 +433,10 @@ class Penjualan extends CActiveRecord
             //terapkan diskon banded
             //ambil sisanya (yang tidak didiskon)
             $sisa = $this->aksiDiskonBanded($barang->id, $qty, $hargaJualNormal);
+        } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_QTY_GET_BARANG))) {
+            //terapkan diskon beli x dapat y
+            //ambil sisanya (yang tidak didiskon)
+            $sisa = $this->aksiDiskonQtyDapatBarang($barang->id, $qty, $hargaJualNormal);
         }
 
         /* Jika masih ada sisa, insert ke penjulan dg harga jual normal */
@@ -519,6 +523,43 @@ class Penjualan extends CActiveRecord
             }
         }
         return $sisa;
+    }
+
+    public function aksiDiskonQtyDapatBarang($barangId, $qty, $hargaJualNormal)
+    {
+
+        $diskonModel = DiskonBarang::model()->find(array(
+            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
+            'order' => 'id desc',
+            'params' => array(
+                'barangId' => $barangId,
+                'status' => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon' => DiskonBarang::TIPE_QTY_GET_BARANG
+            )
+        ));
+        $sisa = $qty;
+        $min = $diskonModel->qty + $diskonModel->barang_bonus_qty; // qty asli + bonus minimum
+        $max = ($diskonModel->qty_max / $diskonModel->qty * $diskonModel->barang_bonus_qty) + $diskonModel->qty_max; // qty asli + bonus maksimum
+
+        if ($qty >= $min) {
+            /* Jika lebih besar dari $max, ambil sisanya */
+            $sisaMax = 0;
+            if ($qty > $max) {
+                $sisaMax = $qty - $max;
+                $qtyBagi = $max;
+            } else {
+                $qtyBagi = $qty;
+            }
+            $qtyDiskon = $this->div0($qtyBagi, $min) * $diskonModel->barang_bonus_qty;
+            $sisa = $qtyBagi - $qtyDiskon + $sisaMax;
+            $this->insertBarang($barangId, $qtyDiskon, 0, $hargaJualNormal, DiskonBarang::TIPE_QTY_GET_BARANG);
+        }
+        return $sisa;
+    }
+
+    public function div0($a, $b)
+    {
+        return ($a - $a % $b) / $b;
     }
 
     /**

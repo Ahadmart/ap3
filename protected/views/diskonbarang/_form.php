@@ -118,7 +118,9 @@
             </div>
         </div>
     </div>
-    <div  id="input-barang-bonus">
+    <div  id="input-barang-bonus" style="display: none">
+        <?php
+        /* SEMENTARA untuk barang yang sama. Ini inputan untuk barang berbeda
         <div class="row">
             <div class="small-12 columns">
                 <label for="scan" class="required">Barang Bonus<span class="required">*</span></label>
@@ -138,18 +140,23 @@
                 </div>
             </div>
         </div>
+         *
+         */
+        ?>
 
         <div class="row">
             <div class="panel" id="info-barang-bonus" style="display: none; padding-bottom: 15px; margin-left: none; margin-right: none">
 
             </div>
         </div>
-        <div class="small-6 columns">
+        <div class="row">
+            <div class="small-6 right columns">
             <div  id="row-qty-bonus">
                 <?php echo $form->labelEx($model, 'barang_bonus_qty'); ?>
                 <?php echo $form->textField($model, 'barang_bonus_qty', array('size' => 10, 'maxlength' => 10, 'autocomplete' => 'off')); ?>
                 <?php echo $form->error($model, 'barang_bonus_qty', array('class' => 'error')); ?>
             </div>
+        </div>
         </div>
     </div>
 
