@@ -411,7 +411,7 @@ class Penjualan extends CActiveRecord
         $sisa = $qty;
         $hargaJualNormal = HargaJual::model()->terkini($barang->id);
         /*
-         * Cek Diskon, dengan prioritas PROMO MEMBER, PROMO, GROSIR, BANDED
+         * Cek Diskon, dengan prioritas PROMO MEMBER, PROMO, GROSIR, BANDED, QTY DAPAT BARANG
          * Hanya bisa salah satu
          */
 
@@ -445,6 +445,8 @@ class Penjualan extends CActiveRecord
             $this->insertBarang($barang->id, $sisa, $hargaJualNormal);
             /* -------------- */
         }
+
+        /* Cek Diskon Nominal dapat Barang */
     }
 
     public function aksiDiskonPromo($barangId, $qty, $hargaJualNormal)
@@ -557,9 +559,36 @@ class Penjualan extends CActiveRecord
         return $sisa;
     }
 
+    /* intdiv() di php 7 ?
+     * Untuk di php 5.6
+     */
+
     public function div0($a, $b)
     {
         return ($a - $a % $b) / $b;
+    }
+
+    public function aksiDiskonNominalGetBarang($barangId, $qty, $hargaJualNormal)
+    {
+
+        $diskon = DiskonBarang::model()->find(array(
+            'condition' => 'barang_bonus_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
+            'order' => 'id desc',
+            'params' => array(
+                'barangId' => $barangId,
+                'semuaBarang' => DiskonBarang::SEMUA_BARANG,
+                'status' => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG
+            )
+        ));
+
+        $total = $this->ambilTotal();
+        if ($total - $hargaJualNormal * $diskon->barang_bonus_qty >= 100) {
+            //Dapat bonus barang ini
+        }
+
+        $this->insertBarang($barangId, $qtyPromo, 0, $hargaJualNormal, DiskonBarang::TIPE_NOMINAL_GET_BARANG);
+        return true;
     }
 
     /**
