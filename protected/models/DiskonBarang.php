@@ -205,7 +205,7 @@ class DiskonBarang extends CActiveRecord
             self::TIPE_GROSIR => 'Grosir (beli banyak harga turun)',
             self::TIPE_BANDED => 'Banded (beli qty tertentu harga turun)',
             self::TIPE_QTY_GET_BARANG => 'Beli x dapat y (Quantity tertentu dapat barang)',
-                //self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y (Nominal tertentu dapat barang)'
+            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y (Nominal tertentu dapat barang)'
         ];
     }
 
@@ -217,7 +217,7 @@ class DiskonBarang extends CActiveRecord
             self::TIPE_GROSIR => 'Grosir',
             self::TIPE_BANDED => 'Banded',
             self::TIPE_QTY_GET_BARANG => 'Beli x dapat y',
-                //self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y'
+            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y'
         ];
     }
 
@@ -252,6 +252,7 @@ class DiskonBarang extends CActiveRecord
         $this->qty = empty($this->qty) ? NULL : $this->qty;
         $this->qty_max = empty($this->qty_max) ? NULL : $this->qty_max;
         $this->qty_min = empty($this->qty_min) ? NULL : $this->qty_min;
+        $this->persen = $this->persen == 'Infinity' ? 0 : $this->persen;
 
         /* Fixme: Pindahkan cek validasi di bawah ini ke tempat yang seharusnya */
         switch ($this->tipe_diskon_id) {
