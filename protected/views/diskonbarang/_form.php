@@ -78,7 +78,7 @@
 
     <div class="row">
         <div class="small-6 columns">
-            <div class="row-nilai-diskon" style="display: none">
+            <div class="row-nilai-diskon" id="nominal-diskon" style="display: none">
                 <?php echo $form->labelEx($model, 'nominal'); ?>
                 <?php echo $form->textField($model, 'nominal', array('size' => 18, 'maxlength' => 18, 'autocomplete' => 'off')); ?>
                 <?php echo $form->error($model, 'nominal', array('class' => 'error')); ?>
@@ -119,9 +119,8 @@
         </div>
     </div>
     <div  id="input-barang-bonus" style="display: none">
-        <?php
-        /* SEMENTARA untuk barang yang sama. Ini inputan untuk barang berbeda
-        <div class="row">
+
+        <div class="row" id="row-barang-bonus">
             <div class="small-12 columns">
                 <label for="scan" class="required">Barang Bonus<span class="required">*</span></label>
                 <div class="row collapse">
@@ -140,9 +139,6 @@
                 </div>
             </div>
         </div>
-         *
-         */
-        ?>
 
         <div class="row">
             <div class="panel" id="info-barang-bonus" style="display: none; padding-bottom: 15px; margin-left: none; margin-right: none">
@@ -151,12 +147,12 @@
         </div>
         <div class="row">
             <div class="small-6 right columns">
-            <div  id="row-qty-bonus">
-                <?php echo $form->labelEx($model, 'barang_bonus_qty'); ?>
-                <?php echo $form->textField($model, 'barang_bonus_qty', array('size' => 10, 'maxlength' => 10, 'autocomplete' => 'off')); ?>
-                <?php echo $form->error($model, 'barang_bonus_qty', array('class' => 'error')); ?>
+                <div  id="row-qty-bonus">
+                    <?php echo $form->labelEx($model, 'barang_bonus_qty'); ?>
+                    <?php echo $form->textField($model, 'barang_bonus_qty', array('size' => 10, 'maxlength' => 10, 'autocomplete' => 'off')); ?>
+                    <?php echo $form->error($model, 'barang_bonus_qty', array('class' => 'error')); ?>
+                </div>
             </div>
-        </div>
         </div>
     </div>
 
@@ -240,6 +236,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
             case '<?= DiskonBarang::TIPE_QTY_GET_BARANG; ?>':
                 qtyGetBarangFields();
                 break;
+            case '<?= DiskonBarang::TIPE_NOMINAL_GET_BARANG; ?>':
+                nominalGetBarangFields();
+                break;
         }
     }
 
@@ -250,6 +249,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty-max").show(500);
         $(".row-nilai-diskon").show(500);
         $("#input-barang-bonus").hide(500);
+        enDisScan(false);
     }
 
     function promoMemberFields() {
@@ -257,8 +257,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty-min").hide(500);
         $("#row-qty-max").show(500);
         $("#cb_semua_barang").show(500);
+        $("#DiskonBarang_semua_barang").prop("checked", false);
         $(".row-nilai-diskon").show(500);
         $("#input-barang-bonus").hide(500);
+        enDisScan(false);
     }
 
     function grosirFields() {
@@ -268,6 +270,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty-min").show(500);
         $(".row-nilai-diskon").show(500);
         $("#input-barang-bonus").hide(500);
+        enDisScan(false);
     }
 
     function bandedFields() {
@@ -277,6 +280,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty").show(500);
         $(".row-nilai-diskon").show(500);
         $("#input-barang-bonus").hide(500);
+        enDisScan(false);
     }
 
     function qtyGetBarangFields() {
@@ -286,6 +290,23 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty").show(500);
         $(".row-nilai-diskon").hide(500);
         $("#input-barang-bonus").show(500);
+        enDisScan(false);
+//        $("#row-barang-bonus").hide(0);
+    }
+
+    function nominalGetBarangFields() {
+        $("#row-qty-min").hide(500);
+        $("#row-qty-max").hide(500);
+        $("#row-qty").hide(500);
+        $(".row-nilai-diskon").hide(100);
+        $("#nominal-diskon").show(400, function () {
+            $("#DiskonBarang_nominal").focus();
+        });
+        $("#cb_semua_barang").show(500);
+        $("#DiskonBarang_semua_barang").prop("checked", true);
+        $("#input-barang-bonus").show(500);
+        $("#row-barang-bonus").show(500);
+        enDisScan(true);
     }
 
     $("#scan").autocomplete({
