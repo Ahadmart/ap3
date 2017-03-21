@@ -437,6 +437,8 @@ class Penjualan extends CActiveRecord
             //terapkan diskon beli x dapat y
             //ambil sisanya (yang tidak didiskon)
             $sisa = $this->aksiDiskonQtyDapatBarang($barang->id, $qty, $hargaJualNormal);
+        } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_NOMINAL_GET_BARANG))) {
+            $sisa = $this->aksiDiskonNominalGetBarang($barang->id, $qty, $hargaJualNormal);
         }
 
         /* Jika masih ada sisa, insert ke penjulan dg harga jual normal */
@@ -570,25 +572,35 @@ class Penjualan extends CActiveRecord
 
     public function aksiDiskonNominalGetBarang($barangId, $qty, $hargaJualNormal)
     {
-
         $diskon = DiskonBarang::model()->find(array(
             'condition' => 'barang_bonus_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
             'order' => 'id desc',
             'params' => array(
                 'barangId' => $barangId,
-                'semuaBarang' => DiskonBarang::SEMUA_BARANG,
                 'status' => DiskonBarang::STATUS_AKTIF,
                 'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG
             )
         ));
-
+        $sisa = $qty;
         $total = $this->ambilTotal();
-        if ($total - $hargaJualNormal * $diskon->barang_bonus_qty >= 100) {
-            //Dapat bonus barang ini
+        $qtyBonus = $diskon->barang_bonus_qty > $qty ? $qty : $diskon->barang_bonus_qty;
+        //echo $total . ' ' . ($hargaJualNormal * ($qty - $qtyBonus)) . ' ' . ($hargaJualNormal * $qtyBonus) . ' ' . $qtyBonus . ' ' . $total . ' ' . $qty;
+
+
+        $i = 1;
+        $dapatBonus = false;
+        while ($i <= $qtyBonus && ($total + ($hargaJualNormal * ($qty - $i)) >= $diskon->nominal)) {
+            $i++;
+            $dapatBonus = true;
         }
 
-        $this->insertBarang($barangId, $qtyPromo, 0, $hargaJualNormal, DiskonBarang::TIPE_NOMINAL_GET_BARANG);
-        return true;
+        if ($dapatBonus) {
+            //Dapat bonus barang ini
+            $this->insertBarang($barangId, $i - 1, 0, $hargaJualNormal, DiskonBarang::TIPE_NOMINAL_GET_BARANG);
+            $sisa = $qty - ($i - 1);
+        }
+
+        return $sisa;
     }
 
     /**
