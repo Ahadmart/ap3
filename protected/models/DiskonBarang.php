@@ -204,7 +204,7 @@ class DiskonBarang extends CActiveRecord
             self::TIPE_PROMO_MEMBER => 'Promo Member',
             self::TIPE_GROSIR => 'Grosir (beli banyak harga turun)',
             self::TIPE_BANDED => 'Banded (beli qty tertentu harga turun)',
-            self::TIPE_QTY_GET_BARANG => 'Beli x dapat y (Quantity tertentu dapat barang)',
+            self::TIPE_QTY_GET_BARANG => 'Beli x dapat y (Quantity tertentu dapat barang (yang SAMA))',
             self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y (Nominal tertentu dapat barang)'
         ];
     }
@@ -216,7 +216,7 @@ class DiskonBarang extends CActiveRecord
             self::TIPE_PROMO_MEMBER => 'Promo Member',
             self::TIPE_GROSIR => 'Grosir',
             self::TIPE_BANDED => 'Banded',
-            self::TIPE_QTY_GET_BARANG => 'Beli x dapat y',
+            self::TIPE_QTY_GET_BARANG => 'Beli x dapat y (barang sama)',
             self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y'
         ];
     }
