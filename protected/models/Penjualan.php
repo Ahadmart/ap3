@@ -386,10 +386,10 @@ class Penjualan extends CActiveRecord
                 throw new Exception('Gagal!! Melebihi limit penjualan!', 500);
             }
 
+            $this->cekDiskonNominalSetelahScan();
+            
             $transaction->commit();
-            return array(
-                'sukses' => true
-            );
+            return ['sukses' => true];
         } catch (Exception $ex) {
             $transaction->rollback();
             return array(
@@ -665,6 +665,46 @@ class Penjualan extends CActiveRecord
                         'status' => DiskonBarang::STATUS_AKTIF,
                         'tipeDiskon' => $tipeDiskonId]
         ]);
+    }
+
+    public function cekDiskonNominalSetelahScan()
+    {
+        $diskon = DiskonBarang::model()->find([
+            'condition' => 'status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
+            'order' => 'id desc',
+            'params' => [
+                'status' => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG]
+        ]);
+        if ($this->ambilTotal() >= $diskon->nominal) {
+            $detail = PenjualanDetail::model()->findAll('penjualan_id = :penjualanId and barang_id = :barangId', [
+                'penjualanId' => $this->id,
+                'barangId' => $diskon->barang_bonus_id
+            ]);
+            if (!empty($detail)) {
+                // Periksa harga jual apakah sudah ada yang nol (0)
+                $ketemu = false;
+                foreach ($detail as $row) {
+                    if ($row->harga_jual == 0) {
+                        $ketemu = true;
+                    }
+                }
+                // Jika tidak ada yang nol (0)
+                if (!$ketemu) {
+                    // Berarti $detail masih satu row (belum kena diskon)
+                    /* Cari Sub Total yang kena diskon */
+                    //print_r($detail);
+                    $subTotal = $detail[0]->qty <= $diskon->barang_bonus_qty ? $detail[0]->harga_jual * $detail[0]->qty : $detail[0]->harga_jual * $diskon->barang_bonus_qty;
+                    if ($this->ambilTotal() - $subTotal >= $diskon->nominal) {
+                        /* Berarti kena diskon
+                         * Reinsert barang (pakai tambah barang)
+                         */
+                        $barang = Barang::model()->findByPk($diskon->barang_bonus_id);
+                        $this->tambahBarangProc($barang, 0);
+                    }
+                }
+            }
+        }
     }
 
     /**
