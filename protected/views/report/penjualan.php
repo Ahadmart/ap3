@@ -86,7 +86,7 @@ if (!empty($report['detail'])):
                             <td><?= $barisReport['nama']; ?> </td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['margin'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['margin'] / $barisReport['total'] * 100, 2, ',', '.') . '%'; ?></td>
+                            <td class="rata-kanan"><?php echo $barisReport['total'] == 0 ? '' : number_format($barisReport['margin'] / $barisReport['total'] * 100, 2, ',', '.') . '%'; ?></td>
                         </tr>
                         <?php
                         $i++;
