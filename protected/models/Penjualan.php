@@ -387,7 +387,7 @@ class Penjualan extends CActiveRecord
             }
 
             $this->cekDiskonNominalSetelahScan();
-            
+
             $transaction->commit();
             return ['sukses' => true];
         } catch (Exception $ex) {
@@ -676,7 +676,8 @@ class Penjualan extends CActiveRecord
                 'status' => DiskonBarang::STATUS_AKTIF,
                 'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG]
         ]);
-        if ($this->ambilTotal() >= $diskon->nominal) {
+
+        if (!is_null($diskon) && $this->ambilTotal() >= $diskon->nominal) {
             $detail = PenjualanDetail::model()->findAll('penjualan_id = :penjualanId and barang_id = :barangId', [
                 'penjualanId' => $this->id,
                 'barangId' => $diskon->barang_bonus_id
