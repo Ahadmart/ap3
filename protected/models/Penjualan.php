@@ -533,7 +533,7 @@ class Penjualan extends CActiveRecord
     {
 
         $diskonModel = DiskonBarang::model()->find(array(
-            'condition' => 'barang_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
+            'condition' => '(barang_id=:barangId or barang_bonus_id=:barangId) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
             'order' => 'id desc',
             'params' => array(
                 'barangId' => $barangId,
@@ -542,21 +542,69 @@ class Penjualan extends CActiveRecord
             )
         ));
         $sisa = $qty;
-        $min = $diskonModel->qty + $diskonModel->barang_bonus_qty; // qty asli + bonus minimum
-        $max = ($diskonModel->qty_max / $diskonModel->qty * $diskonModel->barang_bonus_qty) + $diskonModel->qty_max; // qty asli + bonus maksimum
+        if ($diskonModel->barang_id == $diskonModel->barang_bonus_id) {
+            $min = $diskonModel->qty + $diskonModel->barang_bonus_qty; // qty asli + bonus minimum
+            $max = ($diskonModel->qty_max / $diskonModel->qty * $diskonModel->barang_bonus_qty) + $diskonModel->qty_max; // qty asli + bonus maksimum
 
-        if ($qty >= $min) {
-            /* Jika lebih besar dari $max, ambil sisanya */
-            $sisaMax = 0;
-            if ($qty > $max) {
-                $sisaMax = $qty - $max;
-                $qtyBagi = $max;
-            } else {
-                $qtyBagi = $qty;
+            if ($qty >= $min) {
+                /* Jika lebih besar dari $max, ambil sisanya */
+                $sisaMax = 0;
+                if ($qty > $max) {
+                    $sisaMax = $qty - $max;
+                    $qtyBagi = $max;
+                } else {
+                    $qtyBagi = $qty;
+                }
+                $qtyDiskon = $this->div0($qtyBagi, $min) * $diskonModel->barang_bonus_qty;
+                $sisa = $qtyBagi - $qtyDiskon + $sisaMax;
+                $this->insertBarang($barangId, $qtyDiskon, 0, $hargaJualNormal, DiskonBarang::TIPE_QTY_GET_BARANG);
             }
-            $qtyDiskon = $this->div0($qtyBagi, $min) * $diskonModel->barang_bonus_qty;
-            $sisa = $qtyBagi - $qtyDiskon + $sisaMax;
-            $this->insertBarang($barangId, $qtyDiskon, 0, $hargaJualNormal, DiskonBarang::TIPE_QTY_GET_BARANG);
+        } else {
+            $sisa = $this->aksiDiskonQtyDapatBarangBeda($barangId, $qty, $hargaJualNormal, $diskonModel);
+        }
+        return $sisa;
+    }
+
+    public function aksiDiskonQtyDapatBarangBeda($barangId, $qty, $hargaJualNormal, $diskonModel)
+    {
+        $sisa = $qty;
+        if ($barangId == $diskonModel->barang_id) {
+            /* Barang bonus sudah discan (yang discan adalah barang utama/penyebab bonus) */
+
+            $detail = PenjualanDetail::model()->find('penjualan_id = :penjualanId and barang_id = :barangId', [
+                'penjualanId' => $this->id,
+                'barangId' => $diskonModel->barang_bonus_id
+            ]);
+            if ($qty >= $diskonModel->qty && !is_null($detail)) {
+                // insert barang secara normal
+                $this->insertBarang($barangId, $qty, $hargaJualNormal);
+                $sisa = 0;
+                
+                /* Reinsert barang bonus, untuk men-trigger cek diskon */
+                $barang = Barang::model()->findByPk($diskonModel->barang_bonus_id);
+                $this->tambahBarangProc($barang, 0);
+            }
+        } else
+        if ($barangId == $diskonModel->barang_bonus_id) {
+            /* Barang bonus discan belakangan (yang discan adalah barang bonus) */
+            $detail = PenjualanDetail::model()->find('penjualan_id = :penjualanId and barang_id = :barangId', [
+                'penjualanId' => $this->id,
+                'barangId' => $diskonModel->barang_id
+            ]);
+            if (!is_null($detail)) {
+                $qtyDiskon = 0;
+                if ($detail->qty >= $diskonModel->qty) {
+                    if ($detail->qty <= $diskonModel->qty_max) {
+                        $kelipatanDiskon = $this->div0($detail->qty, $diskonModel->qty);
+                    } else {
+                        $kelipatanDiskon = $this->div0($diskonModel->qty_max, $diskonModel->qty);
+                    }
+                    $qtyKenaDiskon = $diskonModel->barang_bonus_qty * $kelipatanDiskon;
+                    $qtyDiskon = $qty < $qtyKenaDiskon ? $qty : $qtyKenaDiskon;
+                    $sisa = $qty - $qtyDiskon;
+                    $this->insertBarang($barangId, $qtyDiskon, 0, $hargaJualNormal, DiskonBarang::TIPE_QTY_GET_BARANG);
+                }
+            }
         }
         return $sisa;
     }
@@ -656,6 +704,19 @@ class Penjualan extends CActiveRecord
                             'tipeDiskon' => $tipeDiskonId]
             ]);
         }
+
+        if ($tipeDiskonId == DiskonBarang::TIPE_QTY_GET_BARANG) {
+            return DiskonBarang::model()->find([
+                        'condition' => '(barang_id=:barangId or barang_bonus_id=:barangId) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
+                        'order' => 'id desc',
+                        'params' => [
+                            'barangId' => $barangId,
+                            'status' => DiskonBarang::STATUS_AKTIF,
+                            'tipeDiskon' => $tipeDiskonId]
+            ]);
+        }
+
+        /* Diskon lainnya */
         return DiskonBarang::model()->find([
                     'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
                     'order' => 'id desc',
