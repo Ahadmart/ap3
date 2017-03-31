@@ -282,7 +282,7 @@ class DiskonBarang extends CActiveRecord
                 $this->nominal = 0;
 
                 if (is_null($this->barang_bonus_id)) {
-                    $this->barang_id;
+                    $this->barang_bonus_id = $this->barang_id;
                 }
                 break;
             case self::TIPE_NOMINAL_GET_BARANG:
