@@ -579,7 +579,7 @@ class Penjualan extends CActiveRecord
                 // insert barang secara normal
                 $this->insertBarang($barangId, $qty, $hargaJualNormal);
                 $sisa = 0;
-                
+
                 /* Reinsert barang bonus, untuk men-trigger cek diskon */
                 $barang = Barang::model()->findByPk($diskonModel->barang_bonus_id);
                 $this->tambahBarangProc($barang, 0);

@@ -253,6 +253,8 @@ class DiskonBarang extends CActiveRecord
         $this->qty_max = empty($this->qty_max) ? NULL : $this->qty_max;
         $this->qty_min = empty($this->qty_min) ? NULL : $this->qty_min;
         $this->persen = $this->persen == 'Infinity' ? 0 : $this->persen;
+        $this->barang_bonus_id = empty($this->barang_bonus_id) ? NULL : $this->barang_bonus_id;
+        $this->barang_bonus_qty = empty($this->barang_bonus_qty) ? NULL : $this->barang_bonus_qty;
 
         /* Fixme: Pindahkan cek validasi di bawah ini ke tempat yang seharusnya */
         switch ($this->tipe_diskon_id) {
@@ -279,7 +281,7 @@ class DiskonBarang extends CActiveRecord
             case self::TIPE_QTY_GET_BARANG:
                 $this->nominal = 0;
 
-                if (empty($this->barang_bonus_id)) {
+                if (is_null($this->barang_bonus_id)) {
                     $this->barang_id;
                 }
                 break;
