@@ -51,6 +51,14 @@ $this->boxHeader['normal'] = $headerBoxSmall;
                 'qty',
                 'qty_min',
                 'qty_max',
+                [
+                    'name' => 'barangBonus.nama',
+                    'label' => 'Barang Bonus'
+                ],
+                [
+                    'name' => 'barangBonus.barcode',
+                    'label' => 'Barcode Barang Bonus'
+                ],
                 array(
                     'label' => 'Status',
                     'value' => $model->namaStatus

@@ -35,7 +35,7 @@
                     }
                 }
             } else {
-                /* Jika tidak panjang, tetap jadikan 2 baris, agar tampilannya tidak kosong 
+                /* Jika tidak panjang, tetap jadikan 2 baris, agar tampilannya tidak kosong
                  * Tapi jika hanya tdd 1 kata, berarti tetap jadi 1 baris
                  */
                 $kataPertama = true;
@@ -51,7 +51,7 @@
             ?>
             <div class="label-container">
                 <div class="label">
-                    <div class="nama-barang"><?php echo $namaBarang1; ?><br /><?php echo $namaBarang2; ?></div> 
+                    <div class="nama-barang"><?php echo $namaBarang1; ?><br /><?php echo $namaBarang2; ?></div>
                     <div class="harga-jual"><?php echo $labelBarang->barang->hargaJual; ?></div>
                     <div class="barcode">
                         <barcode style="margin-left: -9px;" code="<?php echo trim($labelBarang->barang->barcode); ?>" type="C128A" size="0.65" height="0.5" />

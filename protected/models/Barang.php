@@ -238,6 +238,23 @@ class Barang extends CActiveRecord
         return number_format($this->getHargaJualRaw(), 0, ',', '.');
     }
 
+    public function getHargaBeliRaw()
+    {
+        $hasil = Yii::app()->db->createCommand("
+					select harga_beli
+					from " . InventoryBalance::model()->tableName() . "
+					where barang_id = {$this->id}
+					order by id desc
+					limit 1
+			  ")->queryRow();
+        return $hasil['harga_beli'];
+    }
+
+    public function getHargaBeli()
+    {
+        return number_format($this->getHargaBeliRaw(), 0, ',', '.');
+    }
+
     public function filterStatus()
     {
         return array(

@@ -18,8 +18,8 @@ $this->boxHeader['small'] = 'Diskon Barang';
 $this->boxHeader['normal'] = 'Diskon Barang';
 ?>
 <div class="row">
-    <div class="small-12 columns">   
-        <ul class="button-group">	
+    <div class="small-12 columns">
+        <ul class="button-group">
             <li><a href="#" class="tiny bigfont button" accesskey="x" id="tombol-autoexpire">Auto E<span class="ak">x</span>pire</a></li>
         </ul>
     </div>
@@ -64,11 +64,13 @@ $this->boxHeader['normal'] = 'Diskon Barang';
                     'name' => 'nominal',
                     'htmlOptions' => array('class' => 'rata-kanan'),
                     'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                    'filter' => false
                 ),
                 array(
                     'name' => 'persen',
                     'htmlOptions' => array('class' => 'rata-kanan'),
                     'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                    'filter' => false
                 ),
                 'dari',
                 'sampai',
@@ -76,24 +78,24 @@ $this->boxHeader['normal'] = 'Diskon Barang';
                     'name' => 'qty',
                     'htmlOptions' => array('class' => 'rata-kanan'),
                     'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                    'filter' => false
                 ),
                 array(
                     'name' => 'qty_min',
                     'htmlOptions' => array('class' => 'rata-kanan'),
                     'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                    'filter' => false
                 ),
                 array(
                     'name' => 'qty_max',
                     'htmlOptions' => array('class' => 'rata-kanan'),
                     'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
+                    'filter' => false
                 ),
-                /*
-                  array(
-                  'name' => 'status',
-                  'filter' => $model->listStatus(),
-                  'value' => '$data->namaStatus'
-                  ),
-                 */
+                [
+                    'header' => 'Barang Bonus',
+                    'value' => '!is_null($data->barang_bonus_id) ? $data->barangBonus->nama." (".$data->barangBonus->barcode.") ".$data->barang_bonus_qty."x" : ""',
+                ],
                 [
                     //'header' => 'Rak=NULL',
                     'name' => 'status',

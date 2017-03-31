@@ -127,8 +127,8 @@ class Profil extends CActiveRecord
         return array(
             'id' => 'ID',
             'tipe_id' => 'Tipe',
-            'nomor' => 'Nomor',
-            'identitas' => '(Nomor) Identitas',
+            'nomor' => 'Nomor (Member)',
+            'identitas' => 'Identitas (KTP/SIM/..)',
             'nama' => 'Nama',
             'alamat1' => 'Alamat1',
             'alamat2' => 'Alamat2',

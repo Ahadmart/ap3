@@ -124,16 +124,16 @@
         <?php
     }
     ?>
-                    $(document).on('click', "#tombol-akm", function () {
-                        $(".akm-input").toggle(500, function () {
-                            if ($(".akm-input").is(':visible')) {
-                                $("#akm-no").focus();
-                            } else {
-                                $("#scan").focus();
-                            }
-                        });
-                        return false;
+                $(document).on('click', "#tombol-akm", function () {
+                    $(".akm-input").toggle(500, function () {
+                        if ($(".akm-input").is(':visible')) {
+                            $("#akm-no").focus();
+                        } else {
+                            $("#scan").focus();
+                        }
                     });
+                    return false;
+                });
 
             });
 
@@ -149,7 +149,7 @@
                 if (e.keyCode === 13) {
                     $("#form-admin-login").submit();
                 }
-            });         
+            });
 
             $("#tombol-akm-ok").click(function () {
                 $("#form-akm").submit();
@@ -219,7 +219,7 @@
             });
 
             $("#form-akm").submit(function () {
-                dataUrl = '<?php echo $this->createUrl('inputakm',['id'=>$this->penjualanId]); ?>';
+                dataUrl = '<?php echo $this->createUrl('inputakm', ['id' => $this->penjualanId]); ?>';
                 dataKirim = {
                     nomor: $("#akm-no").val()
                 };
@@ -229,7 +229,7 @@
                     url: dataUrl,
                     data: dataKirim,
                     success: function (data) {
-                        if (data.sukses) {                            
+                        if (data.sukses) {
                             $.fn.yiiGridView.update('penjualan-detail-grid');
                             updateTotal();
                         } else {

@@ -22,11 +22,21 @@
         </div>
     </div>
     <div class="medium-5 large-4 columns">
-        <div class="row" style="margin-bottom: 20px">
-            <div class="small-12 columns">
-                <input id="scan" type="text" placeholder="Scan Barcode" autofocus="autofocus" autocomplete="off"/>
+        <!--        <div class="row" style="margin-bottom: 20px">
+                    <div class="small-12 columns">
+                        <input id="scan" type="text" placeholder="Scan Barcode" autofocus="autofocus" autocomplete="off"/>
+                    </div>
+                </div>-->
+
+        <div class="row collapse">
+            <div class="small-3 medium-2 columns">
+                <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+            </div>
+            <div class="small-9 medium-10 columns">
+                <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>
             </div>
         </div>
+
         <div class="row">
             <div class="small-3 columns">
                 <a href="#" class="large button expand keynum">7</a>
@@ -79,6 +89,10 @@
         </div>
     </div>
 </div>
+<?php
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-ui-ac.min.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/jquery-ui.min-ac.js', CClientScript::POS_HEAD);
+?>
 <script>
 
     function isiView(data) {
@@ -137,4 +151,34 @@
         }
         return false;
     });
+
+    $("#scan").autocomplete({
+        source: "<?php echo $this->createUrl('/pos/caribarang'); ?>",
+        minLength: 3,
+        delay: 1000,
+        search: function (event, ui) {
+            $("#scan-icon").html('<img src="<?php echo Yii::app()->theme->baseUrl; ?>/css/3.gif" />');
+        },
+        response: function (event, ui) {
+            $("#scan-icon").html('<i class="fa fa-barcode fa-2x"></i>');
+        },
+        select: function (event, ui) {
+            console.log(ui.item ?
+                    "Nama: " + ui.item.label + "; Barcode " + ui.item.value :
+                    "Nothing selected, input was " + this.value);
+            if (ui.item) {
+                $("#scan").val(ui.item.value);
+            }
+        }
+    }).autocomplete("instance")._renderItem = function (ul, item) {
+        return $("<li style='clear:both'>")
+                .append("<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item.stok + "</stok></a>")
+                .appendTo(ul);
+    };
 </script>
+<style>
+    <?php /* Override Width */ ?>
+    .ac-stok {
+        width: 25%;
+    }
+</style>

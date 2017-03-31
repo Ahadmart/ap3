@@ -128,7 +128,7 @@ class UploadCsvPembelianForm extends CFormModel
                         $detail->harga_beli = $line[5];
                         $detail->harga_jual = $line[6];
                         if (!$detail->save()) {
-                            throw new Exception('Gagal simpan detail pembelian', 500);
+                            throw new Exception('Gagal simpan detail pembelian'. serialize($detail->errors), 500);
                         }
                     } while (($line = fgetcsv($fp, 2000)) != FALSE);
                 }
