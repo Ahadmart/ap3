@@ -284,6 +284,9 @@ class DiskonBarang extends CActiveRecord
                 if (is_null($this->barang_bonus_id)) {
                     $this->barang_bonus_id = $this->barang_id;
                 }
+                if (is_null($this->qty_max)){
+                    $this->qty_max = $this->qty;
+                }
                 break;
             case self::TIPE_NOMINAL_GET_BARANG:
                 $this->semua_barang = 1;
