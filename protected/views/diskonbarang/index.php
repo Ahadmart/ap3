@@ -94,7 +94,9 @@ $this->boxHeader['normal'] = 'Diskon Barang';
                 ),
                 [
                     'header' => 'Barang Bonus',
-                    'value' => '!is_null($data->barang_bonus_id) ? $data->barangBonus->nama." (".$data->barangBonus->barcode.") ".$data->barang_bonus_qty."x" : ""',
+                    //'value' => '!is_null($data->barang_bonus_id) ? $data->barangBonus->nama." (".$data->barangBonus->barcode.") ".$data->barang_bonus_qty."x (".$data->barangBonus->hargaJualRaw - $data->barang_bonus_diskon_nominal.")" : ""',
+                    'value' => [$this, 'renderBarangBonus'],
+                    'type' => 'raw',
                 ],
                 [
                     //'header' => 'Rak=NULL',

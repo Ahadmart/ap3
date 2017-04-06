@@ -238,6 +238,21 @@ class DiskonbarangController extends Controller
         return $return;
     }
 
+    public function renderBarangBonus($data)
+    {
+        $text = '';
+        if (!is_null($data->barangBonus)) {
+            $text = $data->barangBonus->nama . ' (' . $data->barangBonus->barcode . ') ' . $data->barang_bonus_qty . ' x';
+            if (!is_null($data->barang_bonus_diskon_nominal)) {
+                $hargaJual = number_format($data->barangBonus->hargaJualRaw, 0, ',', '.');
+                $diskonNominal = number_format($data->barang_bonus_diskon_nominal, 0, ',', '.');
+                $net = number_format($data->barangBonus->hargaJualRaw - $data->barang_bonus_diskon_nominal, 0, ',', '.');
+                $text .= "<br />" . $hargaJual . ' - ' . $diskonNominal . ' = ' . $net;
+            }
+        }
+        return $text;
+    }
+
     public function actionAutoExpire()
     {
         $this->renderJSON(DiskonBarang::model()->autoExpire());
