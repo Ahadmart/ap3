@@ -37,10 +37,12 @@
             <?php
             if (!$model->isNewRecord) {
                 $hargaJualRaw = is_null($model->barang) ? 0 : $model->barang->getHargaJualRaw();
+                $barangBonusHargaJualRaw = is_null($model->barangBonus) ? 0 : $model->barangBonus->getHargaJualRaw();
             }
             ?>
             <input type="hidden" id="harga-jual-raw" <?php echo $model->isNewRecord ? '' : 'value="' . $hargaJualRaw . '"' ?>/>
             <?php echo $form->hiddenField($model, 'barang_bonus_id'); ?>
+            <input type="hidden" id="barang-bonus-harga-jual-raw" <?php echo $model->isNewRecord ? '' : 'value="' . $barangBonusHargaJualRaw . '"' ?>/>
         </div>
     </div>
 
@@ -146,7 +148,29 @@
             </div>
         </div>
         <div class="row">
-            <div class="small-6 right columns">
+            <div class="small-6 columns">
+                <div class="row-bonus-nilai" id="bonus-nominal-diskon" style="display: none">
+                    <?php echo $form->labelEx($model, 'barang_bonus_diskon_nominal'); ?>
+                    <?php echo $form->textField($model, 'barang_bonus_diskon_nominal', array('size' => 18, 'maxlength' => 18, 'autocomplete' => 'off')); ?>
+                    <?php echo $form->error($model, 'barang_bonus_diskon_nominal', array('class' => 'error')); ?>
+                </div>
+            </div>
+            <div class="small-6 columns">
+                <div class="row-bonus-nilai" style="display: none">
+                    <label for="bonus_harga_net">Harga Net</label>
+                    <input size="18" maxlength="18" id="bonus_harga_net" type="text" disabled="disabled">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="small-6 columns">
+                <div class="row-bonus-nilai" style="display: none">
+                    <?php echo $form->labelEx($model, 'barang_bonus_diskon_persen'); ?>
+                    <?php echo $form->textField($model, 'barang_bonus_diskon_persen', ['autocomplete' => 'off']); ?>
+                    <?php echo $form->error($model, 'barang_bonus_diskon_persen', array('class' => 'error')); ?>
+                </div>
+            </div>
+            <div class="small-6 columns">
                 <div  id="row-qty-bonus">
                     <?php echo $form->labelEx($model, 'barang_bonus_qty'); ?>
                     <?php echo $form->textField($model, 'barang_bonus_qty', array('size' => 10, 'maxlength' => 10, 'autocomplete' => 'off')); ?>
@@ -290,8 +314,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty").show(500);
         $(".row-nilai-diskon").hide(500);
         $("#input-barang-bonus").show(500);
+        $(".row-bonus-nilai").hide(500);
         enDisScan(false);
-//        $("#row-barang-bonus").hide(0);
     }
 
     function nominalGetBarangFields() {
@@ -306,6 +330,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#DiskonBarang_semua_barang").prop("checked", true);
         $("#input-barang-bonus").show(500);
         $("#row-barang-bonus").show(500);
+        $(".row-bonus-nilai").show(500);
         enDisScan(true);
     }
 
@@ -431,6 +456,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                                 " <small>Harga Beli</small> " + data.hargaBeli + "</h6>";
                         $("#info-barang-bonus").html(hasil);
                         $("#info-barang-bonus").show();
+                        $("#barang-bonus-harga-jual-raw").val(data.hargaJualRaw);
                         $("#DiskonBarang_barang_bonus_id").val(data.barangId);
                     } else {
                         $.gritter.add({
@@ -440,8 +466,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                             //class_name: 'gritter-center'
                         });
                     }
-                    if ($("#DiskonBarang_barang_bonus_qty").is(":visible")) {
-                        $("#DiskonBarang_barang_bonus_qty").focus();
+                    if ($("#DiskonBarang_barang_bonus_diskon_nominal").is(":visible")) {
+                        $("#DiskonBarang_barang_bonus_diskon_nominal").focus();
                     }
                 }
             });
@@ -484,6 +510,28 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     $("#DiskonBarang_persen").change(function () {
         kalkulasiDiskonDariPersen();
         tampilkanHargaBanded();// Jalan jika qty > 0
+    });
+
+    function bonusKalkulasiDiskonDariNominal() {
+        var hargaNet = $("#barang-bonus-harga-jual-raw").val() - $("#DiskonBarang_barang_bonus_diskon_nominal").val();
+        var persen = $("#DiskonBarang_barang_bonus_diskon_nominal").val() / $("#barang-bonus-harga-jual-raw").val() * 100;
+        $("#bonus_harga_net").val(number_format(hargaNet, 2, ',', '.'));
+        $("#DiskonBarang_barang_bonus_diskon_persen").val(persen);
+    }
+
+    function bonusKalkulasiDiskonDariPersen() {
+        var hargaNet = $("#barang-bonus-harga-jual-raw").val() - $("#DiskonBarang_barang_bonus_diskon_persen").val() / 100 * $("#barang-bonus-harga-jual-raw").val();
+        var nominal = $("#DiskonBarang_barang_bonus_diskon_persen").val() / 100 * $("#barang-bonus-harga-jual-raw").val();
+        $("#bonus_harga_net").val(number_format(hargaNet, 2, ',', '.'));
+        $("#DiskonBarang_barang_bonus_diskon_nominal").val(nominal);
+    }
+
+    $("#DiskonBarang_barang_bonus_diskon_nominal").change(function () {
+        bonusKalkulasiDiskonDariNominal();
+    });
+
+    $("#DiskonBarang_barang_bonus_diskon_persen").change(function () {
+        bonusKalkulasiDiskonDariPersen();
     });
 
     $(function () {

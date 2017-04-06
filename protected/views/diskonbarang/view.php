@@ -59,6 +59,14 @@ $this->boxHeader['normal'] = $headerBoxSmall;
                     'name' => 'barangBonus.barcode',
                     'label' => 'Barcode Barang Bonus'
                 ],
+                [
+                    'name' => 'barang_bonus_diskon_nominal',
+                    'value' => number_format($model->barang_bonus_diskon_nominal, 0, ',', '.')
+                ],
+                [
+                    'name' => 'barang_bonus_diskon_persen',
+                    'value' => number_format($model->barang_bonus_diskon_persen, 2, ',', '.')
+                ],
                 array(
                     'label' => 'Status',
                     'value' => $model->namaStatus

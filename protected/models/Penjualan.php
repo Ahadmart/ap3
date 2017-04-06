@@ -644,7 +644,9 @@ class Penjualan extends CActiveRecord
 
         if ($dapatBonus) {
             //Dapat bonus barang ini
-            $this->insertBarang($barangId, $i - 1, 0, $hargaJualNormal, DiskonBarang::TIPE_NOMINAL_GET_BARANG);
+            $diskonNominal = !is_null($diskon->barang_bonus_diskon_nominal) ? $diskon->barang_bonus_diskon_nominal : $hargaJualNormal;
+            $hargaNet = !is_null($diskon->barang_bonus_diskon_nominal) ? $hargaJualNormal - $diskonNominal : 0;
+            $this->insertBarang($barangId, $i - 1, $hargaNet, $diskonNominal, DiskonBarang::TIPE_NOMINAL_GET_BARANG);
             $sisa = $qty - ($i - 1);
         }
 
@@ -744,19 +746,20 @@ class Penjualan extends CActiveRecord
                 'barangId' => $diskon->barang_bonus_id
             ]);
             if (!empty($detail)) {
-                // Periksa harga jual apakah sudah ada yang nol (0)
+                // Periksa harga jual apakah sudah ada yang nol (0) ATAU sudah kena diskon nominal
                 $ketemu = false;
                 foreach ($detail as $row) {
-                    if ($row->harga_jual == 0) {
+                    if ($row->harga_jual == 0 || $row->diskon == $diskon->barang_bonus_diskon_nominal) {
                         $ketemu = true;
                     }
                 }
-                // Jika tidak ada yang nol (0)
+                // Jika tidak ada yang nol (0) ATAU sudah kena diskon nominal
                 if (!$ketemu) {
                     // Berarti $detail masih satu row (belum kena diskon)
                     /* Cari Sub Total yang kena diskon */
                     //print_r($detail);
-                    $subTotal = $detail[0]->qty <= $diskon->barang_bonus_qty ? $detail[0]->harga_jual * $detail[0]->qty : $detail[0]->harga_jual * $diskon->barang_bonus_qty;
+                    $diskonNominal = empty($diskon->barang_bonus_diskon_nominal) ? $detail[0]->harga_jual : $diskon->barang_bonus_diskon_nominal;
+                    $subTotal = $detail[0]->qty <= $diskon->barang_bonus_qty ? $diskonNominal * $detail[0]->qty : $diskonNominal * $diskon->barang_bonus_qty;
                     if ($this->ambilTotal() - $subTotal >= $diskon->nominal) {
                         /* Berarti kena diskon
                          * Reinsert barang (pakai tambah barang)

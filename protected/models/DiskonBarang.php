@@ -16,6 +16,8 @@
  * @property string $qty_min
  * @property string $qty_max
  * @property string $barang_bonus_id
+ * @property string $barang_bonus_diskon_nominal
+ * @property double $barang_bonus_diskon_persen
  * @property string $barang_bonus_qty
  * @property integer $status
  * @property string $updated_at
@@ -64,13 +66,13 @@ class DiskonBarang extends CActiveRecord
         return array(
             array('tipe_diskon_id, nominal, dari', 'required', 'message' => '{attribute} harus diisi'),
             array('semua_barang, tipe_diskon_id, status', 'numerical', 'integerOnly' => true),
-            array('persen', 'numerical'),
+            array('persen, barang_bonus_diskon_persen', 'numerical'),
             array('barang_id, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_qty, updated_by', 'length', 'max' => 10),
-            array('nominal', 'length', 'max' => 18),
+            array('nominal, barang_bonus_diskon_nominal', 'length', 'max' => 18),
             array('sampai, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, semua_barang, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_qty, status, barcode, namaBarang', 'safe', 'on' => 'search'),
+            array('id, semua_barang, barang_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_diskon_nominal, barang_bonus_diskon_persen, barang_bonus_qty, status, barcode, namaBarang', 'safe', 'on' => 'search'),
         );
     }
 
@@ -106,6 +108,8 @@ class DiskonBarang extends CActiveRecord
             'qty_min' => 'Qty Min',
             'qty_max' => 'Qty Max',
             'barang_bonus_id' => 'Barang Bonus',
+            'barang_bonus_diskon_nominal' => 'Barang Bonus Diskon (Nominal)',
+            'barang_bonus_diskon_persen' => 'Barang Bonus Diskon (%)',
             'barang_bonus_qty' => 'Barang Bonus Qty',
             'status' => 'Status',
             'updated_at' => 'Updated At',
@@ -144,6 +148,8 @@ class DiskonBarang extends CActiveRecord
         $criteria->compare('qty_min', $this->qty_min, true);
         $criteria->compare('qty_max', $this->qty_max, true);
         $criteria->compare('barang_bonus_id', $this->barang_bonus_id);
+        $criteria->compare('barang_bonus_diskon_nominal', $this->barang_bonus_diskon_nominal, true);
+        $criteria->compare('barang_bonus_diskon_persen', $this->barang_bonus_diskon_persen);
         $criteria->compare('barang_bonus_qty', $this->barang_bonus_qty, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
@@ -254,6 +260,8 @@ class DiskonBarang extends CActiveRecord
         $this->qty_min = empty($this->qty_min) ? NULL : $this->qty_min;
         $this->persen = $this->persen == 'Infinity' ? 0 : $this->persen;
         $this->barang_bonus_id = empty($this->barang_bonus_id) ? NULL : $this->barang_bonus_id;
+        $this->barang_bonus_diskon_nominal = empty($this->barang_bonus_diskon_nominal) ? NULL : $this->barang_bonus_diskon_nominal;
+        $this->barang_bonus_diskon_persen = empty($this->barang_bonus_diskon_persen) ? NULL : $this->barang_bonus_diskon_persen;
         $this->barang_bonus_qty = empty($this->barang_bonus_qty) ? NULL : $this->barang_bonus_qty;
 
         /* Fixme: Pindahkan cek validasi di bawah ini ke tempat yang seharusnya */
@@ -284,7 +292,7 @@ class DiskonBarang extends CActiveRecord
                 if (is_null($this->barang_bonus_id)) {
                     $this->barang_bonus_id = $this->barang_id;
                 }
-                if (is_null($this->qty_max)){
+                if (is_null($this->qty_max)) {
                     $this->qty_max = $this->qty;
                 }
                 break;
