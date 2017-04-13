@@ -1,12 +1,12 @@
 <?php
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
+//Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
+//Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 
 $this->widget('BGridView', array(
     'id' => 'label-rak-cetak-grid',
     'dataProvider' => $model->search(),
     'filter' => $model,
-    'itemsCssClass' => 'tabel-index responsive',
+    'itemsCssClass' => 'tabel-index',
     'columns' => array(
         array(
             'name' => 'barcode',
