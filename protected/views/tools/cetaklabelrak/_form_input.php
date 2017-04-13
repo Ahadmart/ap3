@@ -47,8 +47,14 @@ $form = $this->beginWidget('CActiveForm', array(
     </div>
     <div class="small-12 large-6 columns">
         <?php echo $form->labelEx($model, 'barcode'); ?>
-        <?php echo $form->textField($model, 'barcode', array('autofocus' => 'autofocus')); ?>
-        <?php echo $form->error($model, 'barcode', array('class' => 'error')); ?>
+        <div class="row collapse">
+            <div class="small-2 columns">
+                <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+            </div>
+            <div class="small-10 columns">
+                <?php echo $form->textField($model, 'barcode', ['autofocus' => 'autofocus', 'accesskey' => 'b']); ?>
+            </div>
+        </div>
     </div>
 </div>
 
