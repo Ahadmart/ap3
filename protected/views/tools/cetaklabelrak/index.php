@@ -17,7 +17,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
         <div class="panel">
             <h4>Filter Barang</h4>
             <hr />
-            <?php $this->renderPartial('_form_input', array('model' => $modelForm)); ?>
+            <?php $this->renderPartial('_form_input', ['model' => $modelForm, 'scanBarcode' => $scanBarcode]); ?>
             <div id="tabel-profil" style="display: none">
                 <?php $this->renderPartial('_profil', array('profil' => $profil)); ?>
             </div>
@@ -37,7 +37,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             ));
             ?>
 
+            <div class="row collapse" style="overflow: auto">
+                <div class="small-12 columns">
             <?php $this->renderPartial('_barang', array('model' => $labelCetak)); ?>
+
+                </div>
+            </div>
         </div>
     </div>
 </div>
