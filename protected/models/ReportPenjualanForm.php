@@ -4,7 +4,7 @@
  * ReportPenjualanForm class.
  * ReportPenjualanForm is the data structure for keeping
  * report penjualan form data. It is used by the 'penjualan' action of 'ReportController'.
- * 
+ *
  * The followings are the available model relations:
  * @property Profil $profil
  */
@@ -72,8 +72,8 @@ class ReportPenjualanForm extends CFormModel
 
     public function reportPenjualan()
     {
-        $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
-        $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
+        $dari = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i');
+        $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i');
 
         $tableName = $this->tableName();
 
@@ -94,9 +94,9 @@ class ReportPenjualanForm extends CFormModel
 
         $userId = Yii::app()->user->id;
         $sqlSelect = "
-        SELECT 
-            t_penjualan.penjualan_id, 
-            t_penjualan.nomor, 
+        SELECT
+            t_penjualan.penjualan_id,
+            t_penjualan.nomor,
             t_penjualan.tanggal,
             t_penjualan.profil_id,
             t_penjualan.updated_by,
@@ -106,7 +106,7 @@ class ReportPenjualanForm extends CFormModel
             (t_penjualan.total - t_modal.total_modal) margin,
             {$userId} user_id
         FROM
-            (SELECT 
+            (SELECT
                 pd.penjualan_id,
                     pj.nomor,
                     pj.tanggal,
@@ -117,20 +117,20 @@ class ReportPenjualanForm extends CFormModel
                 penjualan_detail pd
             JOIN penjualan pj ON pd.penjualan_id = pj.id
                 AND pj.status != :statusDraft
-                AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d %H:%i') BETWEEN :dari AND :sampai
                 {$whereSub}
-            {$kategoriQuery}   
+            {$kategoriQuery}
             GROUP BY pd.penjualan_id) t_penjualan
                 JOIN
-            (SELECT 
+            (SELECT
                 pj.id, SUM(hpp.qty * hpp.harga_beli) total_modal
             FROM
                 harga_pokok_penjualan hpp
             JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
-            {$kategoriQuery}   
+            {$kategoriQuery}
             JOIN penjualan pj ON pd.penjualan_id = pj.id
                 AND pj.status != :statusDraft
-                AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d %H:%i') BETWEEN :dari AND :sampai
                 {$whereSub}
             GROUP BY pj.id) t_modal ON t_penjualan.penjualan_id = t_modal.id
                 JOIN
@@ -140,9 +140,9 @@ class ReportPenjualanForm extends CFormModel
         ORDER BY t_penjualan.nomor
                 ";
 
-        $sql = " 
-            INSERT INTO 
-            {$tableName} 
+        $sql = "
+            INSERT INTO
+            {$tableName}
             {$sqlSelect}
                 ";
 
