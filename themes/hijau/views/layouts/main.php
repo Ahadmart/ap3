@@ -165,6 +165,7 @@
                                         'items' => array(
                                             //array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pembelian', 'url' => array('/report/pembelian')),
                                             array('label' => '<i class="fa fa-line-chart fa-fw"></i>' . ' Penjualan', 'url' => array('/report/penjualan')),
+                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Retur Pembelian', 'url' => array('/report/returpembelian')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Total Stok', 'url' => array('/report/totalstok')),
                                             array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian Detail', 'url' => array('/report/hariandetail')),
                                             array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian Detail (Omzet=Penjualan)', 'url' => array('/report/hariandetail2')),
