@@ -115,11 +115,20 @@ class ReportTopRankForm extends CFormModel
             case self::SORT_BY_QTY_DSC:
                 $command->order('totalqty desc');
                 break;
+            case self::SORT_BY_QTY_ASC:
+                $command->order('totalqty');
+                break;
             case self::SORT_BY_OMZET_DSC:
                 $command->order('total desc');
                 break;
+            case self::SORT_BY_OMZET_ASC:
+                $command->order('total');
+                break;
             case self::SORT_BY_MARGIN_DSC:
                 $command->order('(t_penjualan.total - t_modal.totalModal) desc');
+                break;
+            case self::SORT_BY_MARGIN_ASC:
+                $command->order('(t_penjualan.total - t_modal.totalModal)');
                 break;
         }
 
@@ -153,9 +162,16 @@ class ReportTopRankForm extends CFormModel
     public function listSortBy()
     {
         return [
-            self::SORT_BY_QTY_DSC => 'Jumlah Barang [z-a]',
-            self::SORT_BY_OMZET_DSC => 'Omset [z-a]',
-            self::SORT_BY_MARGIN_DSC => 'Profit [z-a]',
+            'Top Rank' => [
+                self::SORT_BY_QTY_DSC => 'Jumlah Barang [z-a]',
+                self::SORT_BY_OMZET_DSC => 'Omset [z-a]',
+                self::SORT_BY_MARGIN_DSC => 'Profit [z-a]'
+            ],
+            'Slow Moving' => [
+                self::SORT_BY_QTY_ASC => 'Jumlah Barang [a-z]',
+                self::SORT_BY_OMZET_ASC => 'Omset [a-z]',
+                self::SORT_BY_MARGIN_ASC => 'Profit [a-z]'
+            ]
         ];
     }
 
