@@ -47,8 +47,22 @@ $form = $this->beginWidget('CActiveForm', array(
     </div>
     <div class="small-12 large-6 columns">
         <?php echo $form->labelEx($model, 'barcode'); ?>
-        <?php echo $form->textField($model, 'barcode', array('autofocus' => 'autofocus')); ?>
-        <?php echo $form->error($model, 'barcode', array('class' => 'error')); ?>
+        <div class="row collapse">
+            <div class="small-2 columns">
+                <?php
+                /* https://github.com/zxing/zxing/wiki/Scanning-From-Web-Pages */
+                /* http://stackoverflow.com/questions/26356626/using-zxing-barcode-scanner-within-a-web-page */
+                /*
+                  <!--<span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>-->
+                 */
+                ?>
+                <a class="prefix secondary button" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('index', ['barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a>
+
+            </div>
+            <div class="small-10 columns">
+                <?php echo $form->textField($model, 'barcode', ['autofocus' => 'autofocus', 'accesskey' => 'b']); ?>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -133,6 +147,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                     "Nothing selected, input was " + this.value);
             if (ui.item) {
                 $("#scan").val(ui.item.value);
+                setTimeout(function () {
+                    $("#tombol-submit").click();
+                }, 500);
             }
         }
     }).autocomplete("instance")._renderItem = function (ul, item) {
@@ -140,4 +157,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                 .append("<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-barcode'><i>" + item.value + "</i></span></a>")
                 .appendTo(ul);
     };
+<?php
+if (!is_null($scanBarcode)) {
+    ?>
+        $(function () {
+            $("#CetakLabelRakForm_barcode").val(<?= $scanBarcode ?>);
+            setTimeout(function () {
+                $("#cetak-label-rak-form").submit();
+            }, 500);
+        });
+    <?php
+}
+?>
 </script>

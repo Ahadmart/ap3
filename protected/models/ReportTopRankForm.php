@@ -27,6 +27,7 @@ class ReportTopRankForm extends CFormModel
 
     public $dari;
     public $sampai;
+    public $profilId;
     public $kategoriId;
     public $rakId;
     public $limit = 200;
@@ -40,7 +41,7 @@ class ReportTopRankForm extends CFormModel
     {
         return array(
             array('dari, sampai, sortBy', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            array('kategoriId, rakId, limit, kertas', 'safe')
+            array('profilId, kategoriId, rakId, limit, kertas', 'safe')
         );
     }
 
@@ -50,6 +51,7 @@ class ReportTopRankForm extends CFormModel
     public function attributeLabels()
     {
         return array(
+            'profilId' => 'Profil (Supplier)',
             'kategoriId' => 'Kategori',
             'rakId' => 'Rak',
             'limit' => 'Jumlah Item',
@@ -57,6 +59,12 @@ class ReportTopRankForm extends CFormModel
             'dari' => 'Dari',
             'sampai' => 'Sampai'
         );
+    }
+
+    public function getNamaProfil()
+    {
+        $profil = Profil::model()->findByPk($this->profilId);
+        return $profil->nama;
     }
 
     public function getNamaKategori()
@@ -101,6 +109,7 @@ class ReportTopRankForm extends CFormModel
                         FROM
                             inventory_balance
                         GROUP BY barang_id) t_stok', "barang.id = t_stok.barang_id");
+        $command->join('supplier_barang sb', 'sb.barang_id = t_penjualan.barang_id');
         $command->where("barang.id is not null");
 
         if ($this->rakId > 0) {
@@ -111,15 +120,28 @@ class ReportTopRankForm extends CFormModel
             $command->andWhere('barang.kategori_id=:kategoriId');
         }
 
+        if (!empty($this->profilId)) {
+            $command->andWhere('sb.supplier_id=:profilId');
+        }
+
         switch ($this->sortBy) {
             case self::SORT_BY_QTY_DSC:
                 $command->order('totalqty desc');
                 break;
+            case self::SORT_BY_QTY_ASC:
+                $command->order('totalqty');
+                break;
             case self::SORT_BY_OMZET_DSC:
                 $command->order('total desc');
                 break;
+            case self::SORT_BY_OMZET_ASC:
+                $command->order('total');
+                break;
             case self::SORT_BY_MARGIN_DSC:
                 $command->order('(t_penjualan.total - t_modal.totalModal) desc');
+                break;
+            case self::SORT_BY_MARGIN_ASC:
+                $command->order('(t_penjualan.total - t_modal.totalModal)');
                 break;
         }
 
@@ -135,6 +157,10 @@ class ReportTopRankForm extends CFormModel
         }
         if ($this->kategoriId > 0) {
             $command->bindValue(":kategoriId", $this->kategoriId);
+        }
+
+        if (!empty($this->profilId)) {
+            $command->bindValue(":profilId", $this->profilId);
         }
 
         return $command->queryAll();
@@ -153,9 +179,16 @@ class ReportTopRankForm extends CFormModel
     public function listSortBy()
     {
         return [
-            self::SORT_BY_QTY_DSC => 'Jumlah Barang [z-a]',
-            self::SORT_BY_OMZET_DSC => 'Omset [z-a]',
-            self::SORT_BY_MARGIN_DSC => 'Profit [z-a]',
+            'Top Rank' => [
+                self::SORT_BY_QTY_DSC => 'Jumlah Barang [z-a]',
+                self::SORT_BY_OMZET_DSC => 'Omset [z-a]',
+                self::SORT_BY_MARGIN_DSC => 'Profit [z-a]'
+            ],
+            'Slow Moving' => [
+                self::SORT_BY_QTY_ASC => 'Jumlah Barang [a-z]',
+                self::SORT_BY_OMZET_ASC => 'Omset [a-z]',
+                self::SORT_BY_MARGIN_ASC => 'Profit [a-z]'
+            ]
         ];
     }
 

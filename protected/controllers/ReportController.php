@@ -413,9 +413,16 @@ class ReportController extends Controller
             }
         }
 
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
         $kertasUntukPdf = ReportTopRankForm::listKertas();
         $this->render('toprank', [
             'model' => $model,
+            'profil' => $profil,
             'report' => $report,
             'kertasPdf' => $kertasUntukPdf
         ]);
@@ -617,7 +624,7 @@ class ReportController extends Controller
         $itemKeuangan = new ItemKeuangan('search');
         $itemKeuangan->unsetAttributes();  // clear any default values
         $itemKeuangan->parent_id = '>0';
-        /* Uncomment jika ingin trx diluar trx inventory 
+        /* Uncomment jika ingin trx diluar trx inventory
          * fix me: masukkan ke config.
          */
         //$itemKeuangan->id = '>' . ItemKeuangan::ITEM_TRX_SAJA;
@@ -960,6 +967,44 @@ class ReportController extends Controller
         $this->renderPartial('_csv', array(
             'namaFile' => $namaFile,
             'csv' => $model->reportKeCsv($report)
+        ));
+    }
+
+    /**
+     * Report Retur Pembelian Form
+     */
+    public function actionReturPembelian()
+    {
+        $model = new ReportReturPembelianForm;
+        $report = array();
+        if (isset($_POST['ReportReturPembelianForm'])) {
+            $model->attributes = $_POST['ReportReturPembelianForm'];
+            if ($model->validate()) {
+                $report = $model->reportReturPembelian();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes();  // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+
+        $this->render('returpembelian', array(
+            'model' => $model,
+            'profil' => $profil,
+            'user' => $user,
+            'report' => $report,
+            'printers' => $printers
         ));
     }
 

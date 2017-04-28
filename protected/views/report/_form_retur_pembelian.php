@@ -1,11 +1,11 @@
 <?php
 /* @var $this ReportController */
-/* @var $model ReportPenjualanForm */
+/* @var $model ReportReturPembelianForm */
 /* @var $form CActiveForm */
 ?>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
-    'id' => 'report-penjualan-form',
+    'id' => 'report-retur-pembelian-form',
     // Please note: When you enable ajax validation, make sure the corresponding
     // controller action is handling ajax validation correctly.
     // See class documentation of CActiveForm for details on this,
@@ -20,20 +20,15 @@ $form = $this->beginWidget('CActiveForm', array(
 <div class="row">
     <div class="small-12 medium-4 large-2 columns">
         <?php echo $form->labelEx($model, 'dari'); ?>
-        <?php echo $form->textField($model, 'dari', array('class' => 'tanggal-waktu', 'value' => empty($model->dari) ? date('d-m-Y H:i') : $model->dari)); ?>
+        <?php echo $form->textField($model, 'dari', array('class' => 'tanggalan', 'value' => empty($model->dari) ? date('d-m-Y') : $model->dari)); ?>
         <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
     </div>
     <div class="small-12 medium-4 large-2 columns">
         <?php echo $form->labelEx($model, 'sampai'); ?>
-        <?php echo $form->textField($model, 'sampai', array('class' => 'tanggal-waktu', 'value' => empty($model->sampai) ? date('d-m-Y H:i') : $model->sampai)); ?>
+        <?php echo $form->textField($model, 'sampai', array('class' => 'tanggalan', 'value' => empty($model->sampai) ? date('d-m-Y') : $model->sampai)); ?>
         <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
     </div>
-    <div class="small-12 medium-4 large-2 columns">
-        <?php echo $form->labelEx($model, 'kategoriId'); ?>
-        <?php echo $form->dropDownList($model, 'kategoriId', $model->filterKategori()); ?>
-        <?php echo $form->error($model, 'kategoriId', array('class' => 'error')); ?>
-    </div>
-    <div class="medium-6 large-3 columns">
+    <div class="medium-6 large-5 columns">
         <div class="row collapse">
             <label>Profil</label>
             <div class="small-9 columns">
@@ -75,12 +70,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         $('.tanggalan').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
-        });
-        $('.tanggal-waktu').fdatepicker({
-            format: 'dd-mm-yyyy  hh:ii',
-            disableDblClickSelection: true,
-            language: 'id',
-            pickTime: true
         });
     });
 </script>

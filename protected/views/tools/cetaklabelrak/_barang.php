@@ -1,8 +1,12 @@
 <?php
+//Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
+//Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
+
 $this->widget('BGridView', array(
     'id' => 'label-rak-cetak-grid',
     'dataProvider' => $model->search(),
     'filter' => $model,
+    'itemsCssClass' => 'tabel-index',
     'columns' => array(
         array(
             'name' => 'barcode',
@@ -25,11 +29,13 @@ $this->widget('BGridView', array(
         ),
         array(
             'header' => 'Harga Jual',
-            'value' => '$data->barang->hargajual'
+            'value' => '$data->barang->hargajual',
+            'htmlOptions' => array('class' => 'rata-kanan'),
+            'headerHtmlOptions' => array('class' => 'rata-kanan'),
         ),
         array(
             'class' => 'BButtonColumn',
-            'header' => '<a id="tombol-hapus-semua" href="'.$this->createUrl('hapussemua').'"><i class="fa fa-times"></i></a>'
+            'header' => '<a id="tombol-hapus-semua" href="' . $this->createUrl('hapussemua') . '"><i class="fa fa-times"></i></a>'
         ),
     ),
 ));
@@ -40,7 +46,9 @@ $this->widget('BGridView', array(
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
-            success: function(){$.fn.yiiGridView.update('label-rak-cetak-grid')}
+            success: function () {
+                $.fn.yiiGridView.update('label-rak-cetak-grid')
+            }
         });
         return false;
     });

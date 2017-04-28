@@ -33,12 +33,19 @@ class CetaklabelrakController extends Controller
             $this->labelRakPdf($layoutForm);
         }
 
+        $scanBarcode = null;
+        /* Ada scan dari aplikasi barcode scanner (android) */
+        if (isset($_GET['barcodescan'])) {
+            $scanBarcode = $_GET['barcodescan'];
+        }
+
         $this->render('index', array(
             'modelForm' => $modelForm,
             'profil' => $profil,
             'rak' => $rak,
             'labelCetak' => $labelCetak,
             'layoutForm' => $layoutForm,
+            'scanBarcode' => $scanBarcode
         ));
     }
 

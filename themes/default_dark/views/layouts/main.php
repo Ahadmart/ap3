@@ -165,11 +165,12 @@
                                         'items' => array(
                                             //array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pembelian', 'url' => array('/report/pembelian')),
                                             array('label' => '<i class="fa fa-line-chart fa-fw"></i>' . ' Penjualan', 'url' => array('/report/penjualan')),
+                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Retur Pembelian', 'url' => array('/report/returpembelian')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Total Stok', 'url' => array('/report/totalstok')),
                                             array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian Detail', 'url' => array('/report/hariandetail')),
                                             array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian Detail (Omzet=Penjualan)', 'url' => array('/report/hariandetail2')),
                                             array('label' => '<i class="fa fa-bar-chart fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
-                                            array('label' => '<i class="fa fa-bar-chart fa-fw"></i>' . ' Top Rank', 'url' => array('/report/toprank')),
+                                            array('label' => '<i class="fa fa-bar-chart fa-fw"></i>' . ' Top Rank / Slow Moving', 'url' => array('/report/toprank')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Rekap Hutang Piutang', 'url' => array('/report/rekaphutangpiutang')),
                                             array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Hutang Piutang (per Profil)', 'url' => array('/report/hutangpiutang')),
                                             array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pengeluaran/Penerimaan', 'url' => array('/report/pengeluaranpenerimaan')),
