@@ -413,9 +413,16 @@ class ReportController extends Controller
             }
         }
 
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
         $kertasUntukPdf = ReportTopRankForm::listKertas();
         $this->render('toprank', [
             'model' => $model,
+            'profil' => $profil,
             'report' => $report,
             'kertasPdf' => $kertasUntukPdf
         ]);
