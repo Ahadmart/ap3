@@ -47,12 +47,11 @@ $this->boxHeader['normal'] = "Barang: {$model->nama}";
             ?>
         </div>
     </div>
+    <?php
+    /* Disable RRP
     <div class="medium-6 large-4 columns">
         <div class="panel">
             <?php
-            /*
-             * Informasi dan form RRP
-             */
             $this->renderPartial('_harga_jual_rrp', array(
                 'barang' => $model,
                 'rrp' => $rrp
@@ -60,6 +59,9 @@ $this->boxHeader['normal'] = "Barang: {$model->nama}";
             ?>
         </div>
     </div>
+     *
+     */
+    ?>
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
