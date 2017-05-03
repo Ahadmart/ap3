@@ -252,7 +252,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         'curSupplierCr' => $curSupplierCr
     ));
     ?>
-</div> 
+</div>
 <div id="input-barang-baru" class="medium-6 large-7 columns" style="display: none">
     <?php
     $formInputBaru = $this->beginWidget('CActiveForm', array(
@@ -428,20 +428,20 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             </div>
         </div>
         <div class="row">
-            <div class="medium-6 large-3 columns">
+            <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Harga Beli', 'hargabeli', array('id' => 'label-harga-beli')) ?>
                 <?php echo CHtml::textField('hargabeli', '', array('id' => 'harga-beli', 'autocomplete' => 'off')); ?>
             </div>
-            <div class="medium-6 large-3 columns">
+            <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Harga Jual', 'hargajual', array('id' => 'label-harga-jual')) ?>
                 <?php echo CHtml::textField('hargajual', '', array('id' => 'harga-jual', 'style' => 'margin-bottom:0', 'autocomplete' => 'off')); ?>
                 <?php echo CHtml::label('test', '', ['id' => 'harga-jual-raw']); ?>
             </div>
-            <div class="medium-6 large-3 columns">
-                <?php echo CHtml::label('RRP', 'rrp', array('id' => 'label-rrp')) ?>
-                <?php echo CHtml::textField('rrp', '', array('id' => 'rrp', 'autocomplete' => 'off')); ?>
-            </div>
-            <div class="medium-6 large-3 columns">
+<!--            <div class="medium-6 large-4 columns">
+                <?php // echo CHtml::label('RRP', 'rrp', array('id' => 'label-rrp')) ?>
+                <?php // echo CHtml::textField('rrp', '', array('id' => 'rrp', 'autocomplete' => 'off')); ?>
+            </div>-->
+            <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Tanggal Expire', 'tanggal_kadaluwarsa') ?>
                 <?php echo CHtml::textField('tanggal_kadaluwarsa', '', array('placeholder' => 'yyyy-mm-dd')); ?>
             </div>
