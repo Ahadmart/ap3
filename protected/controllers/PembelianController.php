@@ -296,7 +296,7 @@ class PembelianController extends Controller
             $detail->harga_beli = $_POST['hargabeli'];
             $detail->tanggal_kadaluwarsa = $_POST['tanggal_kadaluwarsa'];
             $detail->harga_jual = $_POST['hargajual'];
-            $detail->harga_jual_rekomendasi = $_POST['rrp'];
+            $detail->harga_jual_rekomendasi = empty($_POST['rrp']) ? 0 : $_POST['rrp'];
 
             // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
             // echo terlihat di console
