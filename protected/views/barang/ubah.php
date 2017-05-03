@@ -47,6 +47,16 @@ $this->boxHeader['normal'] = "Barang: {$model->nama}";
             ?>
         </div>
     </div>
+    <div class="medium-6 large-4 columns">
+        <div class="panel">
+            <?php
+            $this->renderPartial('_tag', array(
+                'barang' => $model,
+                'curTags' => $curTags
+            ));
+            ?>
+        </div>
+    </div>
     <?php
     /* Disable RRP
     <div class="medium-6 large-4 columns">
