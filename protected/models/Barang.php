@@ -278,4 +278,13 @@ class Barang extends CActiveRecord
         return ['NULL' => 'NULL'] + CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
     }
 
+    /**
+     *
+     * @return array Daftar Tag
+     */
+    public function getTagList()
+    {
+        return TagBarang::model()->findAll('barang_id=:barangId', [':barangId' => $this->id]);
+    }
+
 }

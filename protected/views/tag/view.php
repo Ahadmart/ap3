@@ -1,57 +1,25 @@
 <?php
-/* @var $this BarangController */
-/* @var $model Barang */
+/* @var $this TagController */
+/* @var $model Tag */
 
 $this->breadcrumbs = array(
-    'Barang' => array('index'),
+    'Tag' => array('index'),
     $model->id,
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Barang: ' . $model->nama;
+$this->boxHeader['normal'] = 'Tag: ' . $model->nama;
 ?>
 <div class="row">
-    <div class="medium-6 large-4 columns">
-        <div class="panel">
-            <?php
-            $this->renderPartial('_view_barang', array(
-                'model' => $model
-            ))
-            ?>
-        </div>
-    </div>
-    <div class="medium-6 large-5 columns">
-        <div class="panel">
-            <?php
-            $this->renderPartial('_view_inventory_balance', array(
-                'inventoryBalance' => $inventoryBalance
-            ))
-            ?>
-        </div>
-        <div class="panel">
-            <?php
-            $this->renderPartial('_view_supplier_barang', array(
-                'supplierBarang' => $supplierBarang
-            ))
-            ?>
-        </div>
-    </div>
-    <div class="medium-6 large-3 columns end">
-        <div class="panel">
-            <?php
-            $this->renderPartial('_view_harga_jual', array(
-                'hargaJual' => $hargaJual
-            ))
-            ?>
-        </div>
-        <div class="panel">
-            <?php
-//            $this->renderPartial('_view_harga_jual_rekomendasi', array(
-//                'rrp' => $rrp
-//            ))
-            $this->renderPartial('_view_tag', ['curTags'=>$curTags]);
-            ?>
-        </div>
+    <div class="small-12 columns">
+        <?php
+        $this->widget('BDetailView', array(
+            'data' => $model,
+            'attributes' => array(
+                'nama'
+            ),
+        ));
+        ?>
     </div>
 </div>
 <?php

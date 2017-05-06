@@ -93,6 +93,7 @@
                                                     array('label' => '<i class="fa fa-tags fa-fw"></i>' . ' Kategori', 'url' => array('/kategoribarang/index')),
                                                     array('label' => '<i class="fa fa-server fa-fw"></i>' . ' Rak', 'url' => array('/rakbarang/index')),
                                                     array('label' => '<i class="fa fa-barcode fa-fw"></i>' . ' Diskon', 'url' => array('/diskonbarang/index')),
+                                                    array('label' => '<i class="fa fa-tags fa-fw"></i>' . ' Tag', 'url' => array('/tag/index')),
                                                 ),
                                                 'itemOptions' => array('class' => 'has-dropdown'),
                                                 'submenuOptions' => array('class' => 'dropdown'),

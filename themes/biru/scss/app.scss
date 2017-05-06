@@ -594,3 +594,22 @@ select {
 .top-bar-section ul li{
     background: $warna-background-menu;
 }*/
+
+.select2-container {
+    margin-bottom: 20px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: $primary-color;
+    border-color: darken($primary-color, 10%);;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.select2-results__options{
+    color: $warna-text;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: $primary-color;
+}
