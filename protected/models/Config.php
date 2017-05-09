@@ -34,12 +34,12 @@ class Config extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('nama, nilai', 'required'),
+            array('nama', 'required'),
             array('nama', 'length', 'max' => 45),
             array('nilai', 'length', 'max' => 255),
             array('deskripsi', 'length', 'max' => 1000),
             array('updated_by', 'length', 'max' => 10),
-            array('created_at, updated_at, updated_by', 'safe'),
+            array('nilai, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             array('id, nama, nilai, deskripsi, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
