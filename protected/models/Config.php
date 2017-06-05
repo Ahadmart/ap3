@@ -8,6 +8,7 @@
  * @property string $nama
  * @property string $nilai
  * @property string $deskripsi
+ * @property integer $show
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
@@ -17,6 +18,9 @@
  */
 class Config extends CActiveRecord
 {
+
+    const VISIBLE = 1;
+    CONST HIDDEN = 0;
 
     /**
      * @return string the associated database table name
@@ -35,6 +39,7 @@ class Config extends CActiveRecord
         // will receive user inputs.
         return array(
             array('nama', 'required'),
+            array('show', 'numerical', 'integerOnly' => true),
             array('nama', 'length', 'max' => 45),
             array('nilai', 'length', 'max' => 255),
             array('deskripsi', 'length', 'max' => 1000),
@@ -74,6 +79,15 @@ class Config extends CActiveRecord
         );
     }
 
+    public function scopes()
+    {
+        return [
+            'show' => [
+                'condition' => 't.show = ' . self::VISIBLE
+            ]
+        ];
+    }
+
     /**
      * Retrieves a list of models based on the current search/filter conditions.
      *
@@ -96,6 +110,7 @@ class Config extends CActiveRecord
         $criteria->compare('nama', $this->nama, true);
         $criteria->compare('nilai', $this->nilai, true);
         $criteria->compare('deskripsi', $this->deskripsi, true);
+        $criteria->compare('t.show', $this->show);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
