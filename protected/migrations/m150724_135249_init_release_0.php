@@ -571,7 +571,7 @@ class m150724_135249_init_release_0 extends CDbMigration
            PRIMARY KEY (`id`),
            KEY `fk_profil_updatedby_idx` (`updated_by`),
            KEY `fk_profil_tipe_idx` (`tipe_id`)"
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 AUTO_INCREMENT=101');
+                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
 
         $this->insertMultiple('profil', array(
             array('id' => 1, 'tipe_id' => 1, 'nama' => 'Init', 'updated_at' => '2000-01-01 00:00:00', 'updated_by' => 1, 'created_at' => '2000-01-01 00:00:00'),
