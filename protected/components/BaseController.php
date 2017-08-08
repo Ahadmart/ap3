@@ -15,8 +15,8 @@ class BaseController extends CController
 
             $user = User::model()->findByPk(Yii::app()->user->id);
 
-            if (is_null($user->theme_id)) {
-                /* Jika input data benar, blok seharusnya ini tidak perlu 
+            if (is_null($user) || is_null($user->theme_id)) {
+                /* Jika input data benar, blok seharusnya ini tidak perlu
                  * Terjadi error ketika import dari database lain, dengan theme tidak diisi (null)
                  */
                 $theme = NULL;
