@@ -44,7 +44,7 @@ class MenuController extends Controller
     public function actionUbah($id)
     {
         $model = $this->loadModel($id);
-        
+
         $subMenuModel = new Menu;
 
         // Uncomment the following line if AJAX validation is needed
@@ -55,10 +55,17 @@ class MenuController extends Controller
             if ($model->save())
                 $this->redirect(['view', 'id' => $id]);
         }
-        
+
+        $subMenuList = $model->listChild;
+//        echo '<pre>';
+//        echo 'menu:';
+//        print_r($subMenuList);
+//        echo '</pre>';
+
         $this->render('ubah', [
             'model' => $model,
-            'subMenuModel' => $subMenuModel
+            'subMenuModel' => $subMenuModel,
+            'subMenuList' => $subMenuList
         ]);
     }
 
@@ -129,6 +136,25 @@ class MenuController extends Controller
                     $data->nama . '</a>';
         }
         return $return;
+    }
+
+    public function actionTambahSubMenu($id)
+    {
+        $menu = new Menu;
+        $menu->unsetAttributes();  // clear any default values
+        
+        if (isset($_POST['Menu']))
+            $menu->attributes = $_POST['Menu'];
+        if (empty($_POST['Menu']['parent_id'])) {
+            $menu->parent_id = $id;
+        }
+        $return = ['sukses' => false];
+        if ($menu->save()) {
+            $return = ['sukses' => true];
+        } else {
+            $return = ['sukses' => false, 'msg' => serialize($menu->errors)];
+        }
+        $this->renderJSON($return);
     }
 
 }

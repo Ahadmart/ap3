@@ -10,6 +10,7 @@
  * @property string $icon
  * @property string $link
  * @property string $keterangan
+ * @property string $level
  * @property integer $urutan
  * @property integer $status
  * @property string $updated_at
@@ -44,7 +45,7 @@ class Menu extends CActiveRecord
         // will receive user inputs.
         return [
             ['nama', 'required'],
-            ['urutan, status', 'numerical', 'integerOnly' => true],
+            ['level, urutan, status', 'numerical', 'integerOnly' => true],
             ['parent_id, updated_by', 'length', 'max' => 10],
             ['nama', 'length', 'max' => 45],
             ['icon', 'length', 'max' => 100],
@@ -53,7 +54,7 @@ class Menu extends CActiveRecord
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, parent_id, nama, icon, link, keterangan, urutan, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, parent_id, nama, icon, link, keterangan, level, urutan, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -83,6 +84,7 @@ class Menu extends CActiveRecord
             'icon' => 'Icon',
             'link' => 'Link',
             'keterangan' => 'Keterangan',
+            'level' => 'Level',
             'urutan' => 'Urutan',
             'status' => 'Status',
             'updated_at' => 'Updated At',
@@ -115,6 +117,7 @@ class Menu extends CActiveRecord
         $criteria->compare('icon', $this->icon, true);
         $criteria->compare('link', $this->link, true);
         $criteria->compare('keterangan', $this->keterangan, true);
+        $criteria->compare('level', $this->level);
         $criteria->compare('urutan', $this->urutan);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
@@ -154,8 +157,70 @@ class Menu extends CActiveRecord
         $this->icon = empty($this->icon) ? NULL : $this->icon;
         $this->link = empty($this->link) ? NULL : $this->link;
         $this->keterangan = empty($this->keterangan) ? NULL : $this->keterangan;
+        $this->level = empty($this->parent_id) ? 0 : $this->parent->level + 1;
         // $this->urutan = empty($this->urutan) ? NULL : $this->urutan;
         return parent::beforeValidate();
+    }
+
+    public function getListChild()
+    {
+        return $this->getListChildF($this->id);
+    }
+
+    private function _buatNama($nama, $level)
+    {
+        $r = '';
+        for ($i = 1; $i < $level; $i++) {
+            $r .= ':::';
+        }
+        return $r . $nama;
+    }
+
+    /**
+     * Daftar Sub Menu Recursive
+     * @param int $parentId Parent ID dari Sub Menu
+     * @return array Hasil dalam array 1 dimensi (tidak ada level/sub menu)
+     */
+    public function getListChildF($parentId)
+    {
+        $query = "SELECT id, nama, level FROM menu WHERE parent_id=:parentId";
+        $command = Yii::app()->db->createCommand($query);
+        $command->bindValue(':parentId', $parentId);
+        $r = $command->queryAll();
+        $result = [];
+        $sub = NULL;
+        if (!empty($r)) {
+            foreach ($r as $row) {
+                $result[$row['id']] = $this->_buatNama($row['nama'], $row['level']);
+                $sub = $this->getListChildF($row['id']);
+                if (!empty($sub)) {
+                    $result = $result + $sub;
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Daftar Sub Menu Recursive
+     * @param int $parentId Parent ID dari Sub Menu
+     * @return array Hasil dalam array multi dimensi (ada level/sub menu)
+     */
+    public function getListChildR($parentId)
+    {
+        $query = "SELECT id, nama FROM menu WHERE parent_id=:parentId";
+        $command = Yii::app()->db->createCommand($query);
+        $command->bindValue(':parentId', $parentId);
+        $r = $command->queryAll();
+        $result = NULL;
+        foreach ($r as $row) {
+            $result[$row['id']] = [
+                'id' => $row['id'],
+                'nama' => $row['nama'],
+                'items' => $this->getListChildR($row['id'])
+            ];
+        }
+        return $result;
     }
 
 }

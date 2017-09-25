@@ -16,10 +16,17 @@ $this->renderPartial('_form', [
     'model' => $model,
 ]);
 $this->renderPartial('_form_detail', [
-    'model' => $model,
+    'rootMenu' => $model,
     'model' => $subMenuModel,
+    'subMenuList' => $subMenuList
 ]);
-
+?>
+<div class="row">
+    <div class="small-12 columns">
+        <?php //print_r($subMenuList); ?>
+    </div>
+</div>
+<?php
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     ['itemOptions' => ['class' => 'has-form hide-for-small-only'], 'label' => false,
