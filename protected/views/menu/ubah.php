@@ -1,5 +1,4 @@
 <?php
-
 /* @var $this MenuController */
 /* @var $model Menu */
 
@@ -21,10 +20,12 @@ $this->renderPartial('_form_detail', [
     'subMenuList' => $subMenuList
 ]);
 ?>
-<div class="row">
-    <div class="small-12 columns">
-        <?php //print_r($subMenuList); ?>
-    </div>
+<div id="menu-preview">
+    <?php
+    $this->renderPartial('_menu_preview', [
+        'subMenuTreeList' => $subMenuTreeList,
+    ]);
+    ?>
 </div>
 <?php
 $this->menu = [

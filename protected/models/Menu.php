@@ -112,7 +112,13 @@ class Menu extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id, true);
-        $criteria->compare('parent_id', $this->parent_id);
+
+        // Jika parent_id = NULL, maka tambahkan kondisi (WHERE)
+        if (!empty($this->parent_id)) {
+            $criteria->compare('parent_id', $this->parent_id);
+        } else {
+            $criteria->addCondition('parent_id IS NULL');
+        }
         $criteria->compare('nama', $this->nama, true);
         $criteria->compare('icon', $this->icon, true);
         $criteria->compare('link', $this->link, true);
@@ -167,11 +173,16 @@ class Menu extends CActiveRecord
         return $this->getListChildF($this->id);
     }
 
+    public function getTreeListChild()
+    {
+        return $this->getListChildR($this->id);
+    }
+
     private function _buatNama($nama, $level)
     {
         $r = '';
         for ($i = 1; $i < $level; $i++) {
-            $r .= ':::';
+            $r .= '⇥'; // &#8677;
         }
         return $r . $nama;
     }
@@ -208,7 +219,18 @@ class Menu extends CActiveRecord
      */
     public function getListChildR($parentId)
     {
-        $query = "SELECT id, nama FROM menu WHERE parent_id=:parentId";
+        $query = "
+            SELECT 
+                id,
+                nama,
+                link,
+                CONCAT(IFNULL(CONCAT(icon, ' '), ''), nama) label
+            FROM
+                menu
+            WHERE
+                parent_id = :parentId
+            ORDER BY urutan              
+            ";
         $command = Yii::app()->db->createCommand($query);
         $command->bindValue(':parentId', $parentId);
         $r = $command->queryAll();
@@ -216,7 +238,9 @@ class Menu extends CActiveRecord
         foreach ($r as $row) {
             $result[$row['id']] = [
                 'id' => $row['id'],
-                'nama' => $row['nama'],
+                //'nama' => $row['nama'],
+                'label' => $row['label'],
+                'url' => empty($row['link']) ? '' : [$row['link']],
                 'items' => $this->getListChildR($row['id'])
             ];
         }

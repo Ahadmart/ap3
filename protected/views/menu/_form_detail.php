@@ -55,17 +55,20 @@
         <div class="small-12 columns">
             <?php
             //echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', ['class' => 'tiny bigfont button']); 
-            echo CHtml::ajaxSubmitButton('Tambah', $this->createUrl('tambahsubmenu', array(
-                        'id' => $rootMenu->id,)), array(
+            echo CHtml::ajaxSubmitButton('Tambah', $this->createUrl('tambahsubmenu', [
+                        'id' => $rootMenu->id,]), [
                 'type' => 'POST',
-                'success' => "function () {
-                                        
+                'success' => "function (data) {
+                                if (data.sukses){
+                                    window.location.reload();
+                                    //jQuery('#menu-preview').load('" . $this->createUrl('rendermenupreview', ['id' => $rootMenu->id]) . "');
+                                }
                                     }"
-                    ), array(
+                    ], [
                 'id' => 'tombol-tambah',
                 'class' => 'tiny bigfont button',
                     //'accesskey' => 'a'
-            ));
+            ]);
             ?>
         </div>
     </div>

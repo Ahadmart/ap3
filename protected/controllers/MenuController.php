@@ -57,6 +57,7 @@ class MenuController extends Controller
         }
 
         $subMenuList = $model->listChild;
+        $subMenuTreeList = $model->treeListChild;
 //        echo '<pre>';
 //        echo 'menu:';
 //        print_r($subMenuList);
@@ -65,7 +66,8 @@ class MenuController extends Controller
         $this->render('ubah', [
             'model' => $model,
             'subMenuModel' => $subMenuModel,
-            'subMenuList' => $subMenuList
+            'subMenuList' => $subMenuList,
+            'subMenuTreeList' => $subMenuTreeList
         ]);
     }
 
@@ -93,7 +95,7 @@ class MenuController extends Controller
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Menu']))
             $model->attributes = $_GET['Menu'];
-        $model->setAttribute('parent_id', NULL);
+        $model->parent_id = NULL;
 
         $this->render('index', [
             'model' => $model,
@@ -142,7 +144,7 @@ class MenuController extends Controller
     {
         $menu = new Menu;
         $menu->unsetAttributes();  // clear any default values
-        
+
         if (isset($_POST['Menu']))
             $menu->attributes = $_POST['Menu'];
         if (empty($_POST['Menu']['parent_id'])) {
@@ -155,6 +157,15 @@ class MenuController extends Controller
             $return = ['sukses' => false, 'msg' => serialize($menu->errors)];
         }
         $this->renderJSON($return);
+    }
+
+    public function actionRenderMenuPreview($id)
+    {
+        $model = $this->loadModel($id);
+
+        $this->renderPartial('_menu_preview', [
+            'subMenuTreeList' => $model->treeListChild
+        ]);
     }
 
 }
