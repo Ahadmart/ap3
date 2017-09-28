@@ -10,19 +10,37 @@ $this->breadcrumbs = [
 
 $this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = "Menu: {$model->nama}";
-
-$this->renderPartial('_form', [
-    'model' => $model,
-]);
-$this->renderPartial('_form_detail', [
-    'rootMenu' => $model,
-    'model' => $subMenuModel,
-    'subMenuList' => $subMenuList
-]);
 ?>
+<div class="row">
+    <div class="medium-6 large-4 columns">
+        <div class="panel">
+            <h4>Menu</h4>
+            <hr />
+            <?php
+            $this->renderPartial('_form', [
+                'model' => $model,
+            ]);
+            ?>
+        </div>
+    </div>
+    <div class="medium-6 large-8 columns">
+        <div class="panel">
+            <h4>Sub Menu</h4>
+            <hr />
+            <?php
+            $this->renderPartial('_form_detail', [
+                'rootMenu' => $model,
+                'model' => $subMenuModel,
+                'subMenuList' => $subMenuList
+            ]);
+            ?>
+        </div>
+    </div>
+</div>
 <div id="menu-preview">
     <?php
     $this->renderPartial('_menu_preview', [
+        'rootMenu' => $model,
         'subMenuTreeList' => $subMenuTreeList,
     ]);
     ?>

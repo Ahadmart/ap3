@@ -37,7 +37,7 @@
 
     <div class="row">
         <div class="small-12 columns">
-            <?php echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', ['class' => 'tiny bigfont button']); ?>
+            <?php echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', ['class' => 'tiny bigfont expand button']); ?>
         </div>
     </div>
 

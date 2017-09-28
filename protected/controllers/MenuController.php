@@ -41,11 +41,15 @@ class MenuController extends Controller
      * Updates a particular model.
      * @param integer $id the ID of the model to be updated
      */
-    public function actionUbah($id)
+    public function actionUbah($id, $subId = null)
     {
         $model = $this->loadModel($id);
 
-        $subMenuModel = new Menu;
+        if (empty($subId)) {
+            $subMenuModel = new Menu;
+        } else {
+            $subMenuModel = $this->loadModel($subId);
+        }
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
@@ -142,8 +146,12 @@ class MenuController extends Controller
 
     public function actionTambahSubMenu($id)
     {
-        $menu = new Menu;
-        $menu->unsetAttributes();  // clear any default values
+        if (empty($_POST['Menu']['id'])) {
+            $menu = new Menu;
+            $menu->unsetAttributes();  // clear any default values
+        } else {
+            $menu = $this->loadModel($_POST['Menu']['id']);
+        }
 
         if (isset($_POST['Menu']))
             $menu->attributes = $_POST['Menu'];
