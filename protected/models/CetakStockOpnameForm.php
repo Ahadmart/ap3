@@ -14,6 +14,8 @@ class CetakStockOpnameForm extends CFormModel
     const SORT_BY_NAMA_DSC = 2;
     const SORT_BY_BARCODE_ASC = 3;
     const SORT_BY_BARCODE_DSC = 4;
+    const SORT_BY_STOK_ASC = 5;
+    const SORT_BY_STOK_DSC = 6;
     /* ============= */
     const KERTAS_LETTER = 10;
     const KERTAS_A4 = 20;
@@ -27,6 +29,7 @@ class CetakStockOpnameForm extends CFormModel
     public $kategoriId;
     public $sortBy;
     public $kertas;
+    public $kecualiStokNol = 1;
 
     /**
      * Declares the validation rules.
@@ -34,7 +37,9 @@ class CetakStockOpnameForm extends CFormModel
     public function rules()
     {
         return array(
-            array('rakId, kategoriId, sortBy, kertas', 'required', 'message' => '{attribute} tidak boleh kosong')
+            array('rakId, kategoriId, sortBy, kertas', 'required', 'message' => '{attribute} tidak boleh kosong'),
+            ['kecualiStokNol', 'numerical', 'integerOnly' => true],
+            ['kecualiStokNol', 'safe'],
         );
     }
 
@@ -47,7 +52,8 @@ class CetakStockOpnameForm extends CFormModel
             'rakId' => 'Rak',
             'kategoriId' => 'Kategori',
             'sortBy' => 'Sort by',
-            'kertas' => 'Kertas'
+            'kertas' => 'Kertas',
+            'kecualiStokNol' => 'Kecuali Stok 0'
         );
     }
 
@@ -86,7 +92,9 @@ class CetakStockOpnameForm extends CFormModel
             self::SORT_BY_NAMA_ASC => 'Nama Barang [a-z]',
             self::SORT_BY_NAMA_DSC => 'Nama Barang [z-a]',
             self::SORT_BY_BARCODE_ASC => 'Barcode [a-z]',
-            self::SORT_BY_BARCODE_DSC => 'Barcode [z-a]'
+            self::SORT_BY_BARCODE_DSC => 'Barcode [z-a]',
+            self::SORT_BY_STOK_ASC => 'Stok [a-z]',
+            self::SORT_BY_STOK_DSC => 'Stok [z-a]'
         ];
     }
 
@@ -99,33 +107,70 @@ class CetakStockOpnameForm extends CFormModel
         ];
     }
 
-    public function dataForm()
+    public function data()
     {
-        $cr = new CDbCriteria;
-        $cr->condition = 'rak_id = :rakId';
-        $cr->params = [':rakId' => $this->rakId];
+        $where = "
+            WHERE
+                barang.rak_id = :rakId
+            ";
         if ($this->kategoriId > 0) {
-            $cr->addCondition('kategori_id = :kategoriId');
-            $cr->params = [
-                ':kategoriId' => $this->kategoriId,
-                ':rakId' => $this->rakId
-            ];
+            $where .= " AND kategori_id = :kategoriId";
         }
+        if ($this->kecualiStokNol != 0) {
+            $where .= " AND stok != 0";
+        }
+
+        $order = '';
         switch ($this->sortBy) {
             case self::SORT_BY_NAMA_ASC:
-                $cr->order='nama';
+                $order = 'ORDER BY nama';
                 break;
             case self::SORT_BY_NAMA_DSC:
-                $cr->order='nama desc';
+                $order = 'ORDER BY nama desc';
                 break;
             case self::SORT_BY_BARCODE_ASC:
-                $cr->order='barcode';
+                $order = 'ORDER BY barcode';
                 break;
             case self::SORT_BY_BARCODE_DSC:
-                $cr->order='barcode desc';
+                $order = 'ORDER BY barcode desc';
+                break;
+            case self::SORT_BY_STOK_ASC:
+                $order = 'ORDER BY stok';
+                break;
+            case self::SORT_BY_STOK_DSC:
+                $order = 'ORDER BY stok desc';
                 break;
         }
-        return Barang::model()->findAll($cr);
+
+        $sql = "
+            SELECT 
+                barang.barcode, barang.nama, t_stok.stok, hj.harga
+            FROM
+                barang
+                    JOIN
+                (SELECT 
+                    barang_id, SUM(qty) stok
+                FROM
+                    inventory_balance
+                GROUP BY barang_id) t_stok ON t_stok.barang_id = barang.id
+                    JOIN
+                (SELECT 
+                    barang_id, MAX(id) max_id
+                FROM
+                    barang_harga_jual
+                GROUP BY barang_id) t_hj_max ON t_hj_max.barang_id = barang.id
+                    JOIN
+                barang_harga_jual hj ON hj.id = t_hj_max.max_id
+            {$where}
+            {$order}
+            ";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValue(':rakId', $this->rakId);
+        if ($this->kategoriId > 0) {
+            $command->bindValue(':kategoriId', $this->kategoriId);
+        }
+        return $command->queryAll();
     }
 
     public static function listNamaKertas()
