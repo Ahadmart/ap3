@@ -13,17 +13,28 @@
                 $result = NULL;
                 foreach ($menus as $menu) {
                     $options = [];
+                    $item = [];
                     if (!empty($menu['items'])) {
                         $options = [
                             'itemOptions' => ['class' => 'has-dropdown'],
                             'submenuOptions' => ['class' => 'dropdown'],
                         ];
                     }
-                    $result[$menu['id']] = [
+
+                    $item = [
                         'label' => $menu['label'],
                         'url' => Yii::app()->createUrl('menu/ubah', ['id' => $rootMenu->id, 'subId' => $menu['id']]),
-                            ] +
-                            $options;
+                    ];
+                    // Jika divider: override yang di atas
+                    if ($menu['nama'] == '-') {
+                        $options = [
+                            'itemOptions' => ['class' => 'divider'],
+                        ];
+                        $item = [
+                            'label' => ''
+                        ];
+                    }
+                    $result[$menu['id']] = $item + $options;
                     if (!empty($menu['items'])) {
                         $result[$menu['id']]['items'] = markUp($rootMenu, $menu['items']);
                     }

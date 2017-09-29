@@ -238,7 +238,7 @@ class Menu extends CActiveRecord
         foreach ($r as $row) {
             $result[$row['id']] = [
                 'id' => $row['id'],
-                //'nama' => $row['nama'],
+                'nama' => $row['nama'],
                 'label' => $row['label'],
                 'url' => empty($row['link']) ? '' : [$row['link']],
                 'items' => $this->getListChildR($row['id'])
