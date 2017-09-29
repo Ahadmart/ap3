@@ -247,4 +247,12 @@ class Menu extends CActiveRecord
         return $result;
     }
 
+    public static function listStatus()
+    {
+        return [
+            self::STATUS_PUBLISH => 'Aktif',
+            self::STATUS_UNPUBLISH => 'Tidak Aktif'
+        ];
+    }
+
 }

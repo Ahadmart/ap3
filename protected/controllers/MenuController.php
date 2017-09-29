@@ -176,4 +176,9 @@ class MenuController extends Controller
         ]);
     }
 
+    public function actionDeleteSubMenu($id)
+    {
+        $this->renderJSON(['sukses' => $this->loadModel($id)->delete()]);
+    }
+
 }

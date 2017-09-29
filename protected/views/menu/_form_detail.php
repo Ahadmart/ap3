@@ -46,9 +46,14 @@
             <?php echo $form->textField($model, 'urutan'); ?>
             <?php echo $form->error($model, 'urutan', ['class' => 'error']); ?>
             <?php echo $form->labelEx($model, 'status'); ?>
-            <?php echo $form->textField($model, 'status'); ?>
+            <?php echo $form->dropDownList($model, 'status', Menu::model()->listStatus()); ?>
             <?php echo $form->error($model, 'status', ['class' => 'error']); ?>
 
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="small-12 columns">
             <?php
             // echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', ['class' => 'tiny bigfont expand button']); 
             echo CHtml::ajaxSubmitButton($model->isNewRecord ? 'Tambah' : 'Simpan', $this->createUrl('tambahsubmenu', [
@@ -62,15 +67,24 @@
                                     }"
                     ], [
                 'id' => 'tombol-tambah',
-                'class' => 'tiny bigfont expand button',
-                    //'accesskey' => 'a'
+                'class' => 'tiny bigfont right button',
             ]);
+            if (!$model->isNewRecord) {
+                echo CHtml::ajaxLink('Delete', $this->createUrl('deletesubmenu', ['id' => $model->id]), [
+                    'type' => 'POST',
+                    'success' => "function (data) {
+                                if (data.sukses){
+                                    window.location = '" . $this->createUrl('menu/ubah', ['id' => $rootMenu->id]) . "';
+                                }
+                                    }"
+                        ], [
+                    'id' => 'tombol-del',
+                    'class' => 'tiny bigfont warning button',
+                        //'accesskey' => 'a'
+                        ]
+                );
+            }
             ?>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="small-12 columns">
         </div>
     </div>
 
