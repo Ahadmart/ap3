@@ -45,6 +45,14 @@ $this->boxHeader['normal'] = "Menu: {$model->nama}";
     ]);
     ?>
 </div>
+<div id="menu-detail">
+    <?php
+    $this->renderPartial('_menu_detail', [
+        'rootMenu' => $model,
+        'model' => $subMenuGrid,
+    ]);
+    ?>
+</div>
 <?php
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],

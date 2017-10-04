@@ -6,11 +6,12 @@
  * The followings are the available columns in table 'menu':
  * @property string $id
  * @property string $parent_id
+ * @property string $root_id
  * @property string $nama
  * @property string $icon
  * @property string $link
  * @property string $keterangan
- * @property string $level
+ * @property integer $level
  * @property integer $urutan
  * @property integer $status
  * @property string $updated_at
@@ -46,15 +47,13 @@ class Menu extends CActiveRecord
         return [
             ['nama', 'required'],
             ['level, urutan, status', 'numerical', 'integerOnly' => true],
-            ['parent_id, updated_by', 'length', 'max' => 10],
-            ['nama', 'length', 'max' => 45],
-            ['icon', 'length', 'max' => 100],
-            ['link', 'length', 'max' => 512],
-            ['keterangan', 'length', 'max' => 30],
+            ['parent_id, root_id, updated_by', 'length', 'max' => 10],
+            ['nama', 'length', 'max' => 128],
+            ['icon, link, keterangan', 'length', 'max' => 512],
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, parent_id, nama, icon, link, keterangan, level, urutan, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, parent_id, root_id, nama, icon, link, keterangan, level, urutan, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -105,7 +104,7 @@ class Menu extends CActiveRecord
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search()
+    public function search($subMenu = false)
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
@@ -113,12 +112,23 @@ class Menu extends CActiveRecord
 
         $criteria->compare('id', $this->id, true);
 
-        // Jika parent_id = NULL, maka tambahkan kondisi (WHERE)
-        if (!empty($this->parent_id)) {
-            $criteria->compare('parent_id', $this->parent_id);
-        } else {
+        // Jika parent_id = NULL dan bukan $subMenu, maka tambahkan kondisi (WHERE)
+//        if (!empty($this->parent_id)) {
+//            $criteria->compare('parent_id', $this->parent_id);
+//        } else {
+//            if ($subMenu) {
+//                $criteria->compare('parent_id', $this->parent_id);
+//            } else {
+//                $criteria->addCondition('parent_id IS NULL');
+//            }
+//        }
+
+        if (empty($this->parent_id) && !($subMenu)) {
             $criteria->addCondition('parent_id IS NULL');
+        } else {
+            $criteria->compare('parent_id', $this->parent_id);
         }
+        $criteria->compare('root_id', $this->root_id);
         $criteria->compare('nama', $this->nama, true);
         $criteria->compare('icon', $this->icon, true);
         $criteria->compare('link', $this->link, true);
@@ -202,7 +212,9 @@ class Menu extends CActiveRecord
         $sub = NULL;
         if (!empty($r)) {
             foreach ($r as $row) {
-                $result[$row['id']] = $this->_buatNama($row['nama'], $row['level']);
+                if ($row['nama'] != '-') {
+                    $result[$row['id']] = $this->_buatNama($row['nama'], $row['level']);
+                }
                 $sub = $this->getListChildF($row['id']);
                 if (!empty($sub)) {
                     $result = $result + $sub;
@@ -234,7 +246,7 @@ class Menu extends CActiveRecord
         $command = Yii::app()->db->createCommand($query);
         $command->bindValue(':parentId', $parentId);
         $r = $command->queryAll();
-        $result = NULL;
+        $result = [];
         foreach ($r as $row) {
             $result[$row['id']] = [
                 'id' => $row['id'],
@@ -253,6 +265,16 @@ class Menu extends CActiveRecord
             self::STATUS_PUBLISH => 'Aktif',
             self::STATUS_UNPUBLISH => 'Tidak Aktif'
         ];
+    }
+
+    public function getNamaStatus()
+    {
+        return $this->listStatus()[$this->status];
+    }
+
+    public function getNamaParent()
+    {
+        return is_null($this->parent) ? '' : $this->parent->nama;
     }
 
 }

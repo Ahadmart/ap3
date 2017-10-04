@@ -17,6 +17,6 @@ $this->breadcrumbs = array(
     
     $(document).ready(function ()
     {
-        setInterval('updateInfo()', 1000);
+        setInterval('updateInfo()', 1500);
     });
 </script>

@@ -18,14 +18,14 @@ $this->boxHeader['normal'] = 'Menu';
             'dataProvider' => $model->search(),
             'filter' => null,
             'columns' => [
-                array(
+                [
                     'class' => 'BDataColumn',
                     'name' => 'nama',
                     //'header' => '<span class="ak">N</span>ama',
                     //'accesskey' => 'n',
                     'type' => 'raw',
-                    'value' => array($this, 'renderLinkToUbah'),
-                ),
+                    'value' => [$this, 'renderLinkToUbah'],
+                ],
                 'keterangan',
                 [
                     'class' => 'BButtonColumn',

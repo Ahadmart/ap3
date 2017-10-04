@@ -22,7 +22,7 @@
     <div class="row">
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'nama'); ?>
-            <?php echo $form->textField($model, 'nama', ['size' => 45, 'maxlength' => 45]); ?>
+            <?php echo $form->textField($model, 'nama', ['size' => 128, 'maxlength' => 128]); ?>
             <?php echo $form->error($model, 'nama', ['class' => 'error']); ?>
         </div>
     </div>
@@ -30,7 +30,7 @@
     <div class="row">
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'keterangan'); ?>
-            <?php echo $form->textField($model, 'keterangan', ['size' => 30, 'maxlength' => 30]); ?>
+            <?php echo $form->textField($model, 'keterangan', ['size' => 512, 'maxlength' => 512]); ?>
             <?php echo $form->error($model, 'keterangan', ['class' => 'error']); ?>
         </div>
     </div>

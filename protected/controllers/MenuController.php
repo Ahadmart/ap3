@@ -40,6 +40,7 @@ class MenuController extends Controller
     /**
      * Updates a particular model.
      * @param integer $id the ID of the model to be updated
+     * @param integer $subId ID of the model (Sub Menu) to be updated
      */
     public function actionUbah($id, $subId = null)
     {
@@ -54,24 +55,34 @@ class MenuController extends Controller
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if (isset($_POST['Menu'])) {
+        if (isset($_POST['Menu']) && !isset($_GET['ajax'])) {
             $model->attributes = $_POST['Menu'];
-            if ($model->save())
-                $this->redirect(['view', 'id' => $id]);
+            if ($model->save()) {
+                // Kirim pesan sukses
+            }
         }
 
         $subMenuList = $model->listChild;
         $subMenuTreeList = $model->treeListChild;
-//        echo '<pre>';
-//        echo 'menu:';
-//        print_r($subMenuList);
-//        echo '</pre>';
+        /*
+          echo '<pre>';
+          echo 'menu:';
+          print_r($subMenuList);
+          echo '</pre>';
+         */
+        $subMenuGrid = new Menu('search');
+        $subMenuGrid->unsetAttributes();
+        if (isset($_POST['Menu']) && isset($_GET['ajax']) && $_GET['ajax'] == 'menu-grid') {
+            $subMenuGrid->attributes = $_POST['Menu'];
+        }
+        $subMenuGrid->root_id = $id;
 
         $this->render('ubah', [
             'model' => $model,
             'subMenuModel' => $subMenuModel,
             'subMenuList' => $subMenuList,
-            'subMenuTreeList' => $subMenuTreeList
+            'subMenuTreeList' => $subMenuTreeList,
+            'subMenuGrid' => $subMenuGrid
         ]);
     }
 
@@ -144,6 +155,17 @@ class MenuController extends Controller
         return $return;
     }
 
+    public function renderLinkToUbahSub($data)
+    {
+        $return = '';
+        if (isset($data->nama)) {
+            $return = '<a href="' .
+                    $this->createUrl('ubah', ['id' => $data->root_id, 'subId' => $data->id]) . '">' .
+                    $data->nama . '</a>';
+        }
+        return $return;
+    }
+
     public function actionTambahSubMenu($id)
     {
         if (empty($_POST['Menu']['id'])) {
@@ -158,6 +180,7 @@ class MenuController extends Controller
         if (empty($_POST['Menu']['parent_id'])) {
             $menu->parent_id = $id;
         }
+        $menu->root_id = $id;
         $return = ['sukses' => false];
         if ($menu->save()) {
             $return = ['sukses' => true];

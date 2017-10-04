@@ -10,7 +10,7 @@
 
             function markUp($rootMenu, $menus)
             {
-                $result = NULL;
+                $result = [];
                 foreach ($menus as $menu) {
                     $options = [];
                     $item = [];
@@ -31,7 +31,8 @@
                             'itemOptions' => ['class' => 'divider'],
                         ];
                         $item = [
-                            'label' => ''
+                            'label' => '',                        
+                            //'url' => Yii::app()->createUrl('menu/ubah', ['id' => $rootMenu->id, 'subId' => $menu['id']]),
                         ];
                     }
                     $result[$menu['id']] = $item + $options;
