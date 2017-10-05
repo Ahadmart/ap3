@@ -31,7 +31,7 @@ class m171004_135042_init_tabel_menu extends CDbMigration
 
         $now = date('Y-m-d H:i:s');
         $this->insertMultiple('menu', [
-            ['id' => 1, 'parent_id' => NULL, 'root_id' => NULL, 'nama' => 'Main Menu', 'icon' => NULL, 'link' => NULL, 'keterangan' => 'Default (Semua Item, Icon: Fontawesome)', 'level' => 0, 'urutan' => 1, 'status' => 1, 'updated_at' => $now, 'updated_by' => 1, 'created_at' => $now],
+            ['id' => 1, 'parent_id' => NULL, 'root_id' => NULL, 'nama' => 'Default', 'icon' => NULL, 'link' => NULL, 'keterangan' => 'Main Menu (Semua Item, Icon: Fontawesome)', 'level' => 0, 'urutan' => 1, 'status' => 1, 'updated_at' => $now, 'updated_by' => 1, 'created_at' => $now],
             ['id' => 2, 'parent_id' => 1, 'root_id' => 1, 'nama' => '-', 'icon' => NULL, 'link' => NULL, 'keterangan' => 'Divider', 'level' => 1, 'urutan' => 1, 'status' => 1, 'updated_at' => $now, 'updated_by' => 1, 'created_at' => $now],
             ['id' => 3, 'parent_id' => 1, 'root_id' => 1, 'nama' => 'Config', 'icon' => '<i class="fa fa-cogs fa-fw fa-lg"></i>', 'link' => NULL, 'keterangan' => 'Konfigurasi', 'level' => 1, 'urutan' => 2, 'status' => 1, 'updated_at' => $now, 'updated_by' => 1, 'created_at' => $now],
             ['id' => 4, 'parent_id' => 1, 'root_id' => 1, 'nama' => '-', 'icon' => NULL, 'link' => NULL, 'keterangan' => 'Divider', 'level' => 1, 'urutan' => 3, 'status' => 1, 'updated_at' => $now, 'updated_by' => 1, 'created_at' => $now],
