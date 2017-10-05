@@ -40,6 +40,12 @@ $this->boxHeader['normal'] = 'User';
                 array(
                     'class' => 'BButtonColumn',
                 ),
+                [
+                    'class' => 'BDataColumn',
+                    'header' => 'Role',
+                    'value' => [$this, 'renderLinkToAssignment'],
+                    'type' => 'raw',
+                ],
             ),
         ));
         ?>
