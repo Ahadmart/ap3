@@ -90,7 +90,7 @@ class UserController extends Controller
             //$model->unsetAttributes();
             //$model->setAttributes($_POST['User']);
             $model->attributes = $_POST['User'];
-            if ($model->save(true, ['nama', 'nama_lengkap', 'password', 'theme_id'])) {
+            if ($model->save(true, ['nama', 'nama_lengkap', 'password', 'theme_id', 'menu_id'])) {
                 $this->redirect(array('view', 'id' => $id));
             }
         }

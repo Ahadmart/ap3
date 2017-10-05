@@ -27,6 +27,7 @@ class UserIdentity extends CUserIdentity {
             $this->setState('namaLengkap', $user->nama_lengkap);
             $this->setState('lastLogon', isset($user->last_logon) ? date_format(date_create_from_format('Y-m-d H:i:s', $user->last_logon), 'd-m-Y H:i:s') : null );
             $this->setState('lastIpaddress', long2ip($user->last_ipaddress));
+            $this->setState('menuId', $user->menu_id);
             $this->errorCode = self::ERROR_NONE;
         }
         return $this->errorCode == self::ERROR_NONE;
