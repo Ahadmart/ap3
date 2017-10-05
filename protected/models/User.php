@@ -12,12 +12,14 @@
  * @property string $last_logon
  * @property string $last_ipaddress
  * @property integer $theme_id
+ * @property string $menu_id
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
  *
  * The followings are the available model relations:
  * @property Theme $theme
+ * @property Menu $menu
  */
 class User extends CActiveRecord
 {
@@ -50,7 +52,7 @@ class User extends CActiveRecord
             array('nama', 'length', 'max' => 45),
             array('nama_lengkap', 'length', 'max' => 100),
             array('password, salt', 'length', 'max' => 512),
-            array('theme_id, updated_by', 'length', 'max' => 10),
+            array('theme_id, menu_id, updated_by', 'length', 'max' => 10),
             array('last_ipaddress', 'length', 'max' => 15),
             array('last_logon, created_at, updated_at, updated_by, newPasswordRepeat', 'safe'),
             array('last_logon, last_ipaddress', 'safe', 'on' => 'update'),
@@ -69,6 +71,7 @@ class User extends CActiveRecord
         // class name for the relations automatically generated below.
         return array(
             'theme' => array(self::BELONGS_TO, 'Theme', 'theme_id'),
+            'menu' => array(self::BELONGS_TO, 'Menu', 'menu_id'),
         );
     }
 
@@ -86,6 +89,7 @@ class User extends CActiveRecord
             'last_logon' => 'Last Logon',
             'last_ipaddress' => 'Last IP Address',
             'theme_id' => 'Theme',
+            'menu_id' => 'Menu',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
@@ -116,6 +120,7 @@ class User extends CActiveRecord
         $criteria->compare('password', $this->password, true);
         $criteria->compare('salt', $this->salt, true);
         $criteria->compare('theme_id', $this->theme_id, true);
+        $criteria->compare('menu_id', $this->menu_id, true);
         $criteria->compare('created_at', $this->created_at, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by);
@@ -151,7 +156,7 @@ class User extends CActiveRecord
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
-    
+
     public function afterSave()
     {
         $theme = Theme::model()->findByPk($this->theme_id);
@@ -168,7 +173,7 @@ class User extends CActiveRecord
     {
         $options = array(
             'cost' => $this->findCost(),
-            //'salt' => $salt,
+                //'salt' => $salt,
         );
 
         return password_hash($password, PASSWORD_BCRYPT, $options);
@@ -196,7 +201,7 @@ class User extends CActiveRecord
           $end = microtime(true);
           } while (($end - $start) < $timeTarget);
          */
-         
+
         return $cost;
     }
 
@@ -207,6 +212,16 @@ class User extends CActiveRecord
     {
         AuthAssignment::model()->deleteAll('userid=' . $this->id);
         return parent::afterDelete();
+    }
+
+    public function getNamaMenu()
+    {
+        return $this->menu->nama;
+    }
+
+    public function getnamaTheme()
+    {
+        return $this->theme->deskripsi;
     }
 
 }

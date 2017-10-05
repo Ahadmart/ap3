@@ -277,4 +277,20 @@ class Menu extends CActiveRecord
         return is_null($this->parent) ? '' : $this->parent->nama;
     }
 
+    public function listMenuRoot()
+    {
+        $list = Yii::app()->db->createCommand()->
+                select("id, concat(nama, ' | ',keterangan) nama_menu")->
+                from($this->tableName())->
+                where("parent_id is null")->
+                order('nama')->
+                queryAll();
+        return CHtml::listData($list, 'id', 'nama_menu');
+    }
+
+    public function getDeskripsi()
+    {
+        return $this->nama . ' | ' . $this->keterangan;
+    }
+
 }

@@ -29,6 +29,14 @@ $this->boxHeader['normal'] = 'User';
                     }
                 ),
                 'nama_lengkap',
+                [
+                    'name' => 'theme_id',
+                    'value' => '$data->namatheme'
+                ],
+                [
+                    'name' => 'menu_id',
+                    'value' => '$data->namaMenu'
+                ],
                 array(
                     'class' => 'BButtonColumn',
                 ),
