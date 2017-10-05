@@ -174,10 +174,12 @@ class MenuController extends Controller
         } else {
             $menu = $this->loadModel($_POST['Menu']['id']);
         }
-
-        if (isset($_POST['Menu']))
-            $menu->attributes = $_POST['Menu'];
-        if (empty($_POST['Menu']['parent_id'])) {
+        if (isset($_POST['Menu'])) {
+            $postData = $_POST['Menu'];
+            unset($postData['id']); // Tidak perlu (lagi), dihilangkan saja
+            $menu->attributes = $postData;
+        }
+        if (empty($postData['parent_id'])) {
             $menu->parent_id = $id;
         }
         $menu->root_id = $id;

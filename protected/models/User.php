@@ -26,7 +26,6 @@ class User extends CActiveRecord
 
     public $newPassword;
     public $newPasswordRepeat;
-    public $namaTheme;
 
     /**
      * @return string the associated database table name
@@ -219,7 +218,7 @@ class User extends CActiveRecord
         return $this->menu->nama;
     }
 
-    public function getnamaTheme()
+    public function getNamaTheme()
     {
         return $this->theme->deskripsi;
     }

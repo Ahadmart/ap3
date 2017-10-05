@@ -293,4 +293,15 @@ class Menu extends CActiveRecord
         return $this->nama . ' | ' . $this->keterangan;
     }
 
+    public function listMenuRootSimple()
+    {
+        $list = Yii::app()->db->createCommand()->
+                select("id, nama nama_menu")->
+                from($this->tableName())->
+                where("parent_id is null")->
+                order('nama')->
+                queryAll();
+        return CHtml::listData($list, 'id', 'nama_menu');
+    }
+
 }

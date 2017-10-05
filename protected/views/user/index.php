@@ -31,11 +31,13 @@ $this->boxHeader['normal'] = 'User';
                 'nama_lengkap',
                 [
                     'name' => 'theme_id',
-                    'value' => '$data->namatheme'
+                    'value' => '$data->namaTheme',
+                    'filter'=> Theme::model()->listTheme()
                 ],
                 [
                     'name' => 'menu_id',
-                    'value' => '$data->namaMenu'
+                    'value' => '$data->namaMenu',
+                    'filter'=> Menu::model()->listMenuRootSimple()
                 ],
                 array(
                     'class' => 'BButtonColumn',
