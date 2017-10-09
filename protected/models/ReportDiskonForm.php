@@ -58,8 +58,11 @@ class ReportDiskonForm extends CFormModel
 
     public function reportDiskon()
     {
-        $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
-        $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
+        $dari = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i');
+        $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i');
+        
+        
+        return [];
     }
 
 }

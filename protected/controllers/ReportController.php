@@ -1007,5 +1007,40 @@ class ReportController extends Controller
             'printers' => $printers
         ));
     }
+    
+    public function actionDiskon()
+    {
+        $model = new ReportDiskonForm();
+        $report = [];
+        if (isset($_POST['ReportDiskonForm'])) {
+            $model->attributes = $_POST['ReportDiskonForm'];
+            if ($model->validate()) {
+                $report = $model->reportDiskon();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes();  // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+
+        $this->render('diskon', array(
+            'model' => $model,
+            'profil' => $profil,
+            'user' => $user,
+            'report' => $report,
+            'printers' => $printers
+        ));
+    }
 
 }
