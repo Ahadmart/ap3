@@ -29,6 +29,8 @@ class Menu extends CActiveRecord
     const STATUS_UNPUBLISH = 0;
     const STATUS_PUBLISH = 1;
 
+    public $parentNama;
+
     /**
      * @return string the associated database table name
      */
@@ -53,7 +55,7 @@ class Menu extends CActiveRecord
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, parent_id, root_id, nama, icon, link, keterangan, level, urutan, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, parent_id, root_id, nama, icon, link, keterangan, level, urutan, status, updated_at, updated_by, created_at, parentNama', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -89,6 +91,7 @@ class Menu extends CActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
+            'parentNama' => 'Parent'
         ];
     }
 
@@ -126,22 +129,36 @@ class Menu extends CActiveRecord
         if (empty($this->parent_id) && !($subMenu)) {
             $criteria->addCondition('parent_id IS NULL');
         } else {
-            $criteria->compare('parent_id', $this->parent_id);
+            $criteria->compare('t.parent_id', $this->parent_id);
         }
-        $criteria->compare('root_id', $this->root_id);
-        $criteria->compare('nama', $this->nama, true);
-        $criteria->compare('icon', $this->icon, true);
-        $criteria->compare('link', $this->link, true);
-        $criteria->compare('keterangan', $this->keterangan, true);
-        $criteria->compare('level', $this->level);
-        $criteria->compare('urutan', $this->urutan);
-        $criteria->compare('status', $this->status);
+        $criteria->compare('t.root_id', $this->root_id);
+        $criteria->compare('t.nama', $this->nama, true);
+        $criteria->compare('t.icon', $this->icon, true);
+        $criteria->compare('t.link', $this->link, true);
+        $criteria->compare('t.keterangan', $this->keterangan, true);
+        $criteria->compare('t.level', $this->level);
+        $criteria->compare('t.urutan', $this->urutan);
+        $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $criteria->with = ['parent'];
+        $criteria->compare('parent.nama', $this->parentNama, true);
+
+        $sort = [
+            'attributes' => [
+                '*',
+                'parentNama' => [
+                    'asc' => 'parent.nama',
+                    'desc' => 'parent.nama desc'
+                ]
+            ]
+        ];
+
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
+            'sort' => $sort
         ]);
     }
 
@@ -240,11 +257,11 @@ class Menu extends CActiveRecord
             FROM
                 menu
             WHERE
-                parent_id = :parentId
+                parent_id = :parentId AND status = :status
             ORDER BY urutan              
             ";
         $command = Yii::app()->db->createCommand($query);
-        $command->bindValue(':parentId', $parentId);
+        $command->bindValues([':parentId' => $parentId, ':status' => self::STATUS_PUBLISH]);
         $r = $command->queryAll();
         $result = [];
         foreach ($r as $row) {

@@ -20,7 +20,7 @@
                     ],
                     'keterangan',
                     [
-                        'name' => 'parent_id',
+                        'name' => 'parentNama',
                         'value' => '$data->namaParent'
                     ],
                     'link',
@@ -35,7 +35,8 @@
                     ],
                     [
                         'name' => 'status',
-                        'value' => '$data->namaStatus'
+                        'value' => '$data->namaStatus',
+                        'filter' => Menu::listStatus()
                     ],
                 ],
             ]);

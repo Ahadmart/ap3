@@ -72,8 +72,8 @@ class MenuController extends Controller
          */
         $subMenuGrid = new Menu('search');
         $subMenuGrid->unsetAttributes();
-        if (isset($_POST['Menu']) && isset($_GET['ajax']) && $_GET['ajax'] == 'menu-grid') {
-            $subMenuGrid->attributes = $_POST['Menu'];
+        if (isset($_GET['Menu']) && isset($_GET['ajax']) && $_GET['ajax'] == 'menu-grid') {
+            $subMenuGrid->attributes = $_GET['Menu'];
         }
         $subMenuGrid->root_id = $id;
 
