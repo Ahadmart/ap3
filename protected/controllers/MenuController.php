@@ -111,6 +111,7 @@ class MenuController extends Controller
         if (isset($_GET['Menu']))
             $model->attributes = $_GET['Menu'];
         $model->parent_id = NULL;
+        $model->status = Menu::STATUS_PUBLISH;
 
         $this->render('index', [
             'model' => $model,

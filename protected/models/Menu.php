@@ -28,6 +28,7 @@ class Menu extends CActiveRecord
 
     const STATUS_UNPUBLISH = 0;
     const STATUS_PUBLISH = 1;
+    const STATUS_RESERVE = 2;
 
     public $parentNama;
 
@@ -127,7 +128,7 @@ class Menu extends CActiveRecord
 //        }
 
         if (empty($this->parent_id) && !($subMenu)) {
-            $criteria->addCondition('parent_id IS NULL');
+            $criteria->addCondition('t.parent_id IS NULL');
         } else {
             $criteria->compare('t.parent_id', $this->parent_id);
         }
