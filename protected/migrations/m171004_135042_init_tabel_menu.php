@@ -17,7 +17,7 @@ class m171004_135042_init_tabel_menu extends CDbMigration
             `keterangan` varchar(1024) CHARACTER SET utf8 DEFAULT NULL,
             `level` tinyint(4) NOT NULL DEFAULT '0',
             `urutan` tinyint(1) NOT NULL DEFAULT '1',
-            `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0=not publish; 1=publish;',
+            `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0=not publish; 1=publish; 2=reserved',
             `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             `updated_by` int(10) unsigned NOT NULL,
             `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
@@ -108,6 +108,16 @@ class m171004_135042_init_tabel_menu extends CDbMigration
             ['id' => 75, 'parent_id' => 71, 'root_id' => 71, 'nama' => 'Customer Display', 'icon' => '<i class="fa fa-television fa-fw"></i>', 'link' => 'tools/customerdisplay/index', 'keterangan' => 'Layar untuk customer', 'level' => 1, 'urutan' => 4, 'status' => 1, 'updated_at' => $now, 'updated_by' => 1, 'created_at' => $now],
             ['id' => 76, 'parent_id' => 71, 'root_id' => 71, 'nama' => '-', 'icon' => NULL, 'link' => NULL, 'keterangan' => 'Divider', 'level' => 1, 'urutan' => 5, 'status' => 1, 'updated_at' => $now, 'updated_by' => 1, 'created_at' => $now],
         ]);
+
+        /* Reserve Row untuk Menu yang akan dibuat/diupdate oleh sistem 
+         * Sampai 1000 Rows
+         */
+        $r = [];
+        for ($i = 1; $i < 925; $i++) {
+            $r[] = ['parent_id' => NULL, 'root_id' => NULL, 'nama' => 'R', 'icon' => NULL, 'link' => NULL, 'keterangan' => 'Reserved (Untuk Auto Update)', 'level' => 0, 'urutan' => 1, 'status' => 2, 'updated_at' => $now, 'updated_by' => 1, 'created_at' => $now];
+        }
+
+        $this->insertMultiple('menu', $r);
     }
 
     public function safeDown()
