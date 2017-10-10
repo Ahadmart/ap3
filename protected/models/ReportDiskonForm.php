@@ -63,7 +63,7 @@ class ReportDiskonForm extends CFormModel
         $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i');
 
         $tipeDiskonCond = '';
-        if (isset($this->tipeDiskonId)) {
+        if ($this->tipeDiskonId != '') {
             $tipeDiskonCond = "WHERE dis.tipe_diskon_id = :tipeDiskonId";
         }
 
@@ -114,7 +114,7 @@ class ReportDiskonForm extends CFormModel
         $command->bindValue(":dari", $dari);
         $command->bindValue(":sampai", $sampai);
 
-        if (isset($this->tipeDiskonId)) {
+        if ($this->tipeDiskonId != '') {
             $command->bindValue(':tipeDiskonId', $this->tipeDiskonId);
         }
 

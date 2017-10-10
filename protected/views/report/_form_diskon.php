@@ -30,7 +30,7 @@ $form = $this->beginWidget('CActiveForm', [
     </div>
     <div class="small-12 medium-4 large-2 columns">
         <?php echo $form->labelEx($model, 'tipeDiskonId'); ?>
-        <?php echo $form->dropDownList($model, 'tipeDiskonId', DiskonBarang::model()->listTipe(),['prompt'=>'[SEMUA]']); ?>
+        <?php echo $form->dropDownList($model, 'tipeDiskonId', DiskonBarang::listNamaTipe(),['prompt'=>'[SEMUA]']); ?>
         <?php echo $form->error($model, 'tipeDiskonId', ['class' => 'error']); ?>
     </div>
     <div class="medium-6 large-3 columns">

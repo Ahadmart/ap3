@@ -1007,7 +1007,7 @@ class ReportController extends Controller
             'printers' => $printers
         ));
     }
-    
+
     public function actionDiskon()
     {
         $model = new ReportDiskonForm();
@@ -1034,13 +1034,34 @@ class ReportController extends Controller
         $tipePrinterAvailable = [];
         $printers = Device::model()->listDevices($tipePrinterAvailable);
 
-        $this->render('diskon', array(
+        $this->render('diskon', [
             'model' => $model,
             'profil' => $profil,
             'user' => $user,
             'report' => $report,
             'printers' => $printers
-        ));
+        ]);
+    }
+
+    public function actionRekapDiskon()
+    {
+        $model = new ReportRekapDiskonForm();
+        $report = [];
+        if (isset($_POST['ReportRekapDiskonForm'])) {
+            $model->attributes = $_POST['ReportRekapDiskonForm'];
+            if ($model->validate()) {
+                $report = $model->reportRekapDiskon();
+            }
+        }
+
+        $tipePrinterAvailable = [];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+
+        $this->render('rekapdiskon', [
+            'model' => $model,
+            'report' => $report,
+            'printers' => $printers
+        ]);
     }
 
 }
