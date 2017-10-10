@@ -62,13 +62,18 @@ class ReportDiskonForm extends CFormModel
         $dari = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i');
         $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i');
 
-        $whereSub = '';
+        $tipeDiskonCond = '';
+        if (isset($this->tipeDiskonId)) {
+            $tipeDiskonCond = "WHERE dis.tipe_diskon_id = :tipeDiskonId";
+        }
+
+        $penjualanCond = '';
         if (!empty($this->profilId)) {
-            $whereSub .= " AND p.profil_id = :profilId";
+            $penjualanCond .= " AND p.profil_id = :profilId";
         }
 
         if (!empty($this->userId)) {
-            $whereSub .= " AND p.updated_by = :userId";
+            $penjualanCond .= " AND p.updated_by = :userId";
         }
 
         $sql = "
@@ -96,9 +101,10 @@ class ReportDiskonForm extends CFormModel
                 penjualan p ON p.id = dis.penjualan_id
                     AND p.status != :penjualanDraft
                     AND DATE_FORMAT(p.tanggal, '%Y-%m-%d %H:%i') BETWEEN :dari AND :sampai
-                    {$whereSub}
+                    {$penjualanCond}
                     JOIN
                 barang ON barang.id = detail.barang_id
+            {$tipeDiskonCond}
             ORDER BY p.nomor , barang.nama
             ";
 
@@ -107,6 +113,11 @@ class ReportDiskonForm extends CFormModel
         $command->bindValue(":penjualanDraft", Penjualan::STATUS_DRAFT);
         $command->bindValue(":dari", $dari);
         $command->bindValue(":sampai", $sampai);
+
+        if (isset($this->tipeDiskonId)) {
+            $command->bindValue(':tipeDiskonId', $this->tipeDiskonId);
+        }
+
         if (!empty($this->profilId)) {
             $command->bindValue(":profilId", $this->profilId);
         }
