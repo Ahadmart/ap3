@@ -51,8 +51,9 @@ class ReportDiskonForm extends CFormModel
         $user = User::model()->findByPk($this->userId);
         return $user->nama;
     }
-    
-    public function listTipeDiskon(){
+
+    public function listTipeDiskon()
+    {
         return DiskonBarang::model()->listTipe();
     }
 
@@ -60,9 +61,62 @@ class ReportDiskonForm extends CFormModel
     {
         $dari = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i');
         $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i');
-        
-        
-        return [];
+
+        $whereSub = '';
+        if (!empty($this->profilId)) {
+            $whereSub .= " AND p.profil_id = :profilId";
+        }
+
+        if (!empty($this->userId)) {
+            $whereSub .= " AND p.updated_by = :userId";
+        }
+
+        $sql = "
+            SELECT 
+                dis.penjualan_id,
+                p.nomor,
+                barang.barcode,
+                barang.nama,
+                dis.harga_normal,
+                detail.harga_jual,
+                detail.qty,
+                (detail.qty * detail.harga_jual) total,
+                (SELECT 
+                        SUM(qty * harga_beli)
+                    FROM
+                        harga_pokok_penjualan
+                    WHERE
+                        penjualan_detail_id = detail.id) hpp,
+                dis.tipe_diskon_id
+            FROM
+                penjualan_diskon dis
+                    JOIN
+                penjualan_detail detail ON detail.id = dis.penjualan_detail_id
+                    JOIN
+                penjualan p ON p.id = dis.penjualan_id
+                    AND p.status != :penjualanDraft
+                    AND DATE_FORMAT(p.tanggal, '%Y-%m-%d %H:%i') BETWEEN :dari AND :sampai
+                    {$whereSub}
+                    JOIN
+                barang ON barang.id = detail.barang_id
+            ORDER BY p.nomor , barang.nama
+            ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValue(":penjualanDraft", Penjualan::STATUS_DRAFT);
+        $command->bindValue(":dari", $dari);
+        $command->bindValue(":sampai", $sampai);
+        if (!empty($this->profilId)) {
+            $command->bindValue(":profilId", $this->profilId);
+        }
+        if (!empty($this->userId)) {
+            $command->bindValue(":userId", $this->userId);
+        }
+
+        return [
+            'detail' => $command->queryAll()
+        ];
     }
 
 }

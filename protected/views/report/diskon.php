@@ -30,7 +30,7 @@ if (isset($report['rekap']) && $report['rekap']) {
     ?>
     <div class="row">
         <div class="small-12 columns rata-kanan">
-            <h6>Total : <?php echo number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
+            <h6>Total : <?= number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
             <?php
             if (!empty($report['detail'])):
                 ?>
@@ -49,31 +49,60 @@ if (!empty($report['detail'])):
             <table class="tabel-index responsive">
                 <thead>
                     <tr>
-                        <th class="rata-kanan">No</th>
-                        <th>Tanggal</th>
-                        <th>Nomor</th>
-                        <th>Profil</th>
-                        <th class="rata-kanan">Total</th>
-                        <th>User</th>
+                        <th rowspan="2" class="rata-kanan">No</th>
+                        <th rowspan="2">No Penjualan</th>
+                        <th rowspan="2">Barcode</th>
+                        <th rowspan="2">Nama</th>
+                        <th rowspan="2" class="rata-kanan">Harga Normal</th>
+                        <th rowspan="2" class="rata-kanan">Harga Jual</th>
+                        <th rowspan="2" class="rata-kanan">Qty</th>
+                        <th colspan="3" class="rata-tengah">Total</th>
+                        <th rowspan="2">Jenis Diskon</th>
+                        <!--<th>User</th>-->
+                    </tr>
+                    <tr>                        
+                        <th class="rata-kanan">Harga Jual</th>
+                        <th class="rata-kanan">HPP</th>
+                        <th class="rata-kanan">Margin</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
                     $i = 1;
+                    $tipeDiskon = DiskonBarang::listNamaTipe();
+                    $totalPenjualan = 0;
+                    $totalHPP = 0;
+                    $totalMargin = 0;
                     foreach ($report['detail'] as $barisReport):
                         ?>
                         <tr>
                             <td class="rata-kanan"><?= $i ?></td>
-                            <td><?php echo $barisReport['tanggal']; ?></td>
-                            <td><a href="<?php echo Yii::app()->createUrl('penjualan/view', ['id' => $barisReport['id']]); ?>"><?php echo $barisReport['nomor']; ?></a></td>
-                            <td><?= $barisReport['nama_profil']; ?> </td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
-                            <td><?= $barisReport['nama_user']; ?> </td>
+                            <td><a href="<?= Yii::app()->createUrl('penjualan/view', ['id' => $barisReport['penjualan_id']]); ?>"><?= $barisReport['nomor']; ?></a></td>
+                            <td><?= $barisReport['barcode']; ?> </td>
+                            <td><?= $barisReport['nama']; ?> </td>
+                            <td class="rata-kanan"><?= number_format($barisReport['harga_normal'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?= number_format($barisReport['harga_jual'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?= number_format($barisReport['qty'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?= number_format($barisReport['total'], 0, ',', '.'); ?></td>
+                            <td class="rata-kanan"><?= number_format($barisReport['hpp'], 0, ',', '.'); ?></td>
+                            <?php $margin = $barisReport['total'] - $barisReport['hpp']; ?>
+                            <td class="rata-kanan<?= $margin < 0 ? ' angka-negatif' : '' ?>"><?= number_format($margin, 0, ',', '.'); ?></td>
+                            <td><?= $tipeDiskon[$barisReport['tipe_diskon_id']]; ?> </td>
                         </tr>
                         <?php
+                        $totalPenjualan += $barisReport['total'];
+                        $totalHPP += $barisReport['hpp'];
                         $i++;
                     endforeach;
+                    $totalMargin = $totalPenjualan - $totalHPP;
                     ?>
+                    <tr>
+                        <td colspan="7" class="rata-tengah text-total">TOTAL</td>
+                        <td class="rata-kanan text-total"><?= number_format($totalPenjualan, 0, ',', '.'); ?></td>
+                        <td class="rata-kanan text-total"><?= number_format($totalHPP, 0, ',', '.'); ?></td>
+                        <td class="rata-kanan text-total<?= $totalMargin < 0 ? ' angka-negatif' : '' ?>"><?= number_format($totalMargin, 0, ',', '.'); ?></td>
+                        <td></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
