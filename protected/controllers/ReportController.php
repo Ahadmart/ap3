@@ -1008,4 +1008,60 @@ class ReportController extends Controller
         ));
     }
 
+    public function actionDiskon()
+    {
+        $model = new ReportDiskonForm();
+        $report = [];
+        if (isset($_POST['ReportDiskonForm'])) {
+            $model->attributes = $_POST['ReportDiskonForm'];
+            if ($model->validate()) {
+                $report = $model->reportDiskon();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes();  // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+
+        $this->render('diskon', [
+            'model' => $model,
+            'profil' => $profil,
+            'user' => $user,
+            'report' => $report,
+            'printers' => $printers
+        ]);
+    }
+
+    public function actionRekapDiskon()
+    {
+        $model = new ReportRekapDiskonForm();
+        $report = [];
+        if (isset($_POST['ReportRekapDiskonForm'])) {
+            $model->attributes = $_POST['ReportRekapDiskonForm'];
+            if ($model->validate()) {
+                $report = $model->reportRekapDiskon();
+            }
+        }
+
+        $tipePrinterAvailable = [];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+
+        $this->render('rekapdiskon', [
+            'model' => $model,
+            'report' => $report,
+            'printers' => $printers
+        ]);
+    }
+
 }

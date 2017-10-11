@@ -327,5 +327,22 @@ class DiskonBarang extends CActiveRecord
             ]];
         }
     }
+    
+    /**
+     * List SEMUA Nama Tipe Diskon
+     * @return array Nama Jenis Tipe Diskon
+     */
+    public static function listNamaTipe()
+    {
+        return [
+            self::TIPE_PROMO => 'Promo',
+            self::TIPE_PROMO_MEMBER => 'Promo Member',
+            self::TIPE_MANUAL => 'Manual/Admin',
+            self::TIPE_GROSIR => 'Grosir',
+            self::TIPE_BANDED => 'Banded',
+            self::TIPE_QTY_GET_BARANG => 'Beli x dapat y',
+            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y'
+        ];
+    }
 
 }
