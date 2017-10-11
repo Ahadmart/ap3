@@ -24,11 +24,23 @@ $this->widget('BGridView', array(
             'class' => 'BButtonColumn',
             'htmlOptions' => array('style' => 'text-align:center'),
             // Pakai template delete untuk pilih :) biar gampang
+            'template' => '{nonaktif} {delete}',
             'deleteButtonUrl' => '$data->barcode',
             'deleteButtonImageUrl' => false,
             'deleteButtonLabel' => '<i class="fa fa-check"></i> Pilih',
             'deleteButtonOptions' => array('title' => 'Pilih', 'class' => 'pilih'),
             'deleteConfirmation' => false,
+            'buttons' => array(
+                'delete' => array(
+                    'visible' => '$data->status', // Visible jika barang aktif
+                ),
+                'nonaktif' => [
+                    'visible' => '!$data->status', // Visible jika barang non aktif
+                    'label' => 'Non Aktif',
+                    'url' => '"#"',
+                    'options' => ['class'=>'delete']
+                ]
+            ),
         ),
     ),
 ));

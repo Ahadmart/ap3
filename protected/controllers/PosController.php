@@ -102,7 +102,7 @@ class PosController extends Controller
             $barang->unsetAttributes(['id']);
             $barang->setAttribute('nama', $_GET['namaBarang']);
             $criteria = new CDbCriteria;
-            $criteria->order = 'nama ASC';
+            $criteria->order = 'status DESC, nama';
             $barang->setDbCriteria($criteria);
         }
 
