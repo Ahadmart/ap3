@@ -4,40 +4,40 @@
 /* @var $form CActiveForm */
 ?>
 <?php
-$form = $this->beginWidget('CActiveForm', array(
+$form = $this->beginWidget('CActiveForm', [
     'id' => 'report-penjualan-form',
     // Please note: When you enable ajax validation, make sure the corresponding
     // controller action is handling ajax validation correctly.
     // See class documentation of CActiveForm for details on this,
     // you need to use the performAjaxValidation()-method described there.
     'enableAjaxValidation' => false,
-        ));
+        ]);
 ?>
-<?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
+<?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, ['class' => 'panel callout']); ?>
 
 <?php echo $form->hiddenField($model, 'profilId'); ?>
 <?php echo $form->hiddenField($model, 'userId'); ?>
 <div class="row">
     <div class="small-12 medium-4 large-2 columns">
         <?php echo $form->labelEx($model, 'dari'); ?>
-        <?php echo $form->textField($model, 'dari', array('class' => 'tanggal-waktu', 'value' => empty($model->dari) ? date('d-m-Y') . ' 00:00' : $model->dari)); ?>
-        <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
+        <?php echo $form->textField($model, 'dari', ['class' => 'tanggal-waktu', 'value' => empty($model->dari) ? date('d-m-Y') . ' 00:00' : $model->dari]); ?>
+        <?php echo $form->error($model, 'dari', ['class' => 'error']); ?>
     </div>
     <div class="small-12 medium-4 large-2 columns">
         <?php echo $form->labelEx($model, 'sampai'); ?>
-        <?php echo $form->textField($model, 'sampai', array('class' => 'tanggal-waktu', 'value' => empty($model->sampai) ? date('d-m-Y') . ' 23:59' : $model->sampai)); ?>
-        <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
+        <?php echo $form->textField($model, 'sampai', ['class' => 'tanggal-waktu', 'value' => empty($model->sampai) ? date('d-m-Y') . ' 23:59' : $model->sampai]); ?>
+        <?php echo $form->error($model, 'sampai', ['class' => 'error']); ?>
     </div>
     <div class="small-12 medium-4 large-2 columns">
-        <?php echo $form->labelEx($model, 'kategoriId'); ?>
-        <?php echo $form->dropDownList($model, 'kategoriId', $model->filterKategori()); ?>
-        <?php echo $form->error($model, 'kategoriId', array('class' => 'error')); ?>
+        <?php echo $form->labelEx($model, 'tipeDiskonId'); ?>
+        <?php echo $form->dropDownList($model, 'tipeDiskonId', DiskonBarang::listNamaTipe(),['prompt'=>'[SEMUA]']); ?>
+        <?php echo $form->error($model, 'tipeDiskonId', ['class' => 'error']); ?>
     </div>
     <div class="medium-6 large-3 columns">
         <div class="row collapse">
             <label>Profil</label>
             <div class="small-9 columns">
-                <?php echo CHtml::textField('profil', empty($model->profilId) ? '' : $model->namaProfil, array('size' => 60, 'maxlength' => 500, 'disabled' => 'disabled')); ?>
+                <?php echo CHtml::textField('profil', empty($model->profilId) ? '' : $model->namaProfil, ['size' => 60, 'maxlength' => 500, 'disabled' => 'disabled']); ?>
             </div>
             <div class="small-3 columns">
                 <a class="tiny bigfont button postfix" id="tombol-browse-profil" accesskey="p"><span class="ak">P</span>ilih..</a>
@@ -48,7 +48,7 @@ $form = $this->beginWidget('CActiveForm', array(
         <div class="row collapse">
             <label>User</label>
             <div class="small-9 columns">
-                <?php echo CHtml::textField('user', empty($model->userId) ? '' : $model->namaUser, array('size' => 60, 'maxlength' => 500, 'disabled' => 'disabled')); ?>
+                <?php echo CHtml::textField('user', empty($model->userId) ? '' : $model->namaUser, ['size' => 60, 'maxlength' => 500, 'disabled' => 'disabled']); ?>
             </div>
             <div class="small-3 columns">
                 <a class="tiny bigfont button postfix" id="tombol-browse-user" accesskey="h">Pili<span class="ak">h</span>..</a>
@@ -59,7 +59,7 @@ $form = $this->beginWidget('CActiveForm', array(
 
 <div class="row">
     <div class="small-12 columns">
-        <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
+        <?php echo CHtml::submitButton('Submit', ['class' => 'tiny bigfont button right']); ?>
     </div>
 </div>
 

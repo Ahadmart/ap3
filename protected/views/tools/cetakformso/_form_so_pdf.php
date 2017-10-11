@@ -23,13 +23,13 @@
           mpdf-->
         <div id="header1">
             <div><?php echo $toko['nama']; ?><br />Form Stock Opname, Rak: <?php echo $modelForm->namaRak; ?>
-            <?php 
-            if ($modelForm->kategoriId > 0):
-                ?>
-                <br />Kategori: <?php echo $modelForm->namaKategori; ?>
                 <?php
-            endif;
-            ?>
+                if ($modelForm->kategoriId > 0):
+                    ?>
+                    <br />Kategori: <?php echo $modelForm->namaKategori; ?>
+                    <?php
+                endif;
+                ?>
             </div>
         </div>
         <br />
@@ -45,23 +45,23 @@
                     <th>Selisih</th>
                 </tr>
             </thead>
-                <?php
-                $i = 1;
-                foreach ($data as $barang):
-                    ?>
-                    <tr class="<?php echo $i % 2 === 0 ? '' : 'alt'; ?>">
-                        <td class="rata-kanan"><?= $i; ?></td>
-                        <td><?= $barang->barcode; ?></td>
-                        <td><?= $barang->nama; ?></td>
-                        <td class="rata-kanan"><?= $barang->hargaJual; ?></td>
-                        <td class="rata-kanan"><?= $barang->stok; ?></td>
-                        <td></td>
-                    </tr>
-
-                    <?php
-                    $i++;
-                endforeach;
+            <?php
+            $i = 1;
+            foreach ($data as $barang):
                 ?>
+                <tr class="<?php echo $i % 2 === 0 ? '' : 'alt'; ?>">
+                    <td class="rata-kanan"><?= $i; ?></td>
+                    <td><?= $barang['barcode']; ?></td>
+                    <td><?= $barang['nama']; ?></td>
+                    <td class="rata-kanan"><?= number_format($barang['harga'], 0, ',', '.') ?></td>
+                    <td class="rata-kanan"><?= $barang['stok']; ?></td>
+                    <td></td>
+                </tr>
+
+                <?php
+                $i++;
+            endforeach;
+            ?>
         </table>
     </body>
 </html>

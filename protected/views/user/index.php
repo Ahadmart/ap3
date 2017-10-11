@@ -29,9 +29,25 @@ $this->boxHeader['normal'] = 'User';
                     }
                 ),
                 'nama_lengkap',
+                [
+                    'name' => 'theme_id',
+                    'value' => '$data->namaTheme',
+                    'filter'=> Theme::model()->listTheme()
+                ],
+                [
+                    'name' => 'menu_id',
+                    'value' => '$data->namaMenu',
+                    'filter'=> Menu::model()->listMenuRootSimple()
+                ],
                 array(
                     'class' => 'BButtonColumn',
                 ),
+                [
+                    'class' => 'BDataColumn',
+                    'header' => 'Role',
+                    'value' => [$this, 'renderLinkToAssignment'],
+                    'type' => 'raw',
+                ],
             ),
         ));
         ?>

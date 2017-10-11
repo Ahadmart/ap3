@@ -68,173 +68,112 @@
                     </ul>
 
                     <section class="top-bar-section">
-
                         <?php
                         if (!Yii::app()->user->isGuest) {
+
                             // Jika sudah login, tampilkan menu
-                            $this->widget('zii.widgets.CMenu', array(
-                                'htmlOptions' => array('class' => 'left'),
+                            /*
+                             * Fungsi Rekursif render Menu dari DB
+                             */
+                            function markUpMenu($menus)
+                            {
+                                $result = [];
+                                foreach ($menus as $menu) {
+                                    $options = [];
+                                    $item = [];
+
+                                    /* Jika tidak punya 'items' berarti render DropDown */
+                                    if (!empty($menu['items'])) {
+                                        $options = [
+                                            'itemOptions' => ['class' => 'has-dropdown'],
+                                            'submenuOptions' => ['class' => 'dropdown'],
+                                        ];
+                                    }
+
+                                    /* Render label (icon + nama) dan url */
+                                    $item = [
+                                        'label' => $menu['label'],
+                                        'url' => $menu['url'],
+                                    ];
+
+                                    /* Jika divider: override yang di atas */
+                                    if ($menu['nama'] == '-') {
+                                        $options = [
+                                            'itemOptions' => ['class' => 'divider'],
+                                        ];
+                                        $item = [
+                                            'label' => '',
+                                        ];
+                                    }
+                                    /* Masukkan ke array result */
+                                    $result[$menu['id']] = $item + $options;
+                                    if (!empty($menu['items'])) {
+                                        /* Jika ada subMenu, render dahulu sebelum ke item berikutnya */
+                                        $result[$menu['id']]['items'] = markUpMenu($menu['items']);
+                                    }
+                                }
+                                return $result;
+                            }
+
+                            /* Ambil data Menu dari DB */
+                            $menu = Menu::model()->findByPk(Yii::app()->user->menuId);
+                            $mainMenu = $menu->treeListChild;
+
+                            /* Tampilkan main menu */
+                            $this->widget('zii.widgets.CMenu', [
                                 'activateParents' => true,
                                 'encodeLabel' => false,
                                 'id' => '',
-                                'items' => array(
-                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    /*
-                                      array('label' => '<i class="fa fa-bar-chart-o fa-fw"></i>'.' Dashboard', 'url' => array('/dashboard/index'),),
-                                      array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                     *
-                                     */
-                                    array('label' => '<i class="fa fa-cogs fa-fw fa-lg"></i>' . ' Config', 'url' => '',
-                                        'items' => array(
-                                            array('label' => 'Barang', 'url' => '',
-                                                'items' => array(
-                                                    array('label' => '<i class="fa fa-barcode fa-fw"></i>' . ' Barang', 'url' => array('/barang/index')),
-                                                    array('label' => '<i class="fa fa-tag fa-fw"></i>' . ' Satuan', 'url' => array('/satuanbarang/index')),
-                                                    array('label' => '<i class="fa fa-tags fa-fw"></i>' . ' Kategori', 'url' => array('/kategoribarang/index')),
-                                                    array('label' => '<i class="fa fa-server fa-fw"></i>' . ' Rak', 'url' => array('/rakbarang/index')),
-                                                    array('label' => '<i class="fa fa-barcode fa-fw"></i>' . ' Diskon', 'url' => array('/diskonbarang/index')),
-                                                    array('label' => '<i class="fa fa-tags fa-fw"></i>' . ' Tag', 'url' => array('/tag/index')),
-                                                ),
-                                                'itemOptions' => array('class' => 'has-dropdown'),
-                                                'submenuOptions' => array('class' => 'dropdown'),
-                                            ),
-                                            array('label' => 'Keuangan', 'url' => '',
-                                                'items' => array(
-                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Kas/Bank', 'url' => array('/kasbank/index')),
-                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Jenis Transaksi', 'url' => array('/jenistransaksi/index')),
-                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Kategori Pengeluaran', 'url' => array('/kategoripengeluaran/index')),
-                                                    array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Kategori Penerimaan', 'url' => array('/kategoripenerimaan/index')),
-                                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                                    array('label' => '<i class="fa fa-book fa-fw"></i>' . ' Item Pengeluaran', 'url' => array('/itempengeluaran/index')),
-                                                    array('label' => '<i class="fa fa-book fa-fw"></i>' . ' Item Penerimaan', 'url' => array('/itempenerimaan/index')),
-                                                // array('label' => '<i class="fa fa-book fa-fw"></i>'.' Kode Akun', 'url' => ''),
-                                                ),
-                                                'itemOptions' => array('class' => 'has-dropdown'),
-                                                'submenuOptions' => array('class' => 'dropdown'),
-                                            ),
-                                            array('label' => 'Akses', 'url' => '',
-                                                'items' => array(
-                                                    array('label' => '<i class="fa fa-user fa-fw"></i>' . ' User', 'url' => array('/user/index')),
-                                                    array('label' => '<i class="fa fa-shield fa-fw"></i>' . ' Otorisasi Item', 'url' => array('/auth/item/index')),
-                                                    array('label' => '<i class="fa fa-user-plus fa-fw"></i>' . ' User Assignment', 'url' => array('/auth/assignment/index')),
-                                                ),
-                                                'itemOptions' => array('class' => 'has-dropdown'),
-                                                'submenuOptions' => array('class' => 'dropdown'),
-                                            ),
-                                            array('label' => '<i class="fa fa-sliders fa-fw"></i>' . ' Aplikasi', 'url' => array('/config/index')),
-                                            array('label' => '<i class="fa fa-cog fa-fw"></i>' . ' Devices', 'url' => array('/device/index')),
-                                            array('label' => '<i class="fa fa-user fa-fw"></i>' . ' Profil', 'url' => array('/profil/index'),
-                                            /*
-                                              'items' => array(
-                                              array('label' => '<i class="fa fa-user fa-fw"></i>'.' Profil', 'url' => array('/profil/index')),
-                                              array('label' => '<i class="fa fa-truck fa-fw"></i>'.' Supplier', 'url' => array('/supplier/index')),
-                                              array('label' => '<i class="fa fa-users fa-fw"></i>'.' Customer', 'url' => array('/customer/index')),
-                                              array('label' => '<i class="fa fa-tty fa-fw"></i>'.' Karyawan', 'url' => array('/karyawan/index')),
-                                              ),
-                                              'itemOptions' => array('class' => 'has-dropdown'),
-                                              'submenuOptions' => array('class' => 'dropdown'),
-                                             *
-                                             */
-                                            ),
-                                            array('label' => '<i class="fa fa-ticket fa-fw"></i>' . ' Member', 'url' => array('/member/index')),
-                                        ),
-                                        'itemOptions' => array('class' => 'has-dropdown'),
-                                        'submenuOptions' => array('class' => 'dropdown'),
-                                    ),
-                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-calculator fa-fw fa-lg"></i>' . ' Transaksi', 'url' => '',
-                                        'items' => array(
-                                            array('label' => '<i class="fa fa-truck fa-fw"></i>' . ' Pembelian', 'url' => array('/pembelian/index')),
-                                            array('label' => '<i class="fa fa-truck fa-flip-horizontal fa-fw"></i>' . ' Retur Pembelian', 'url' => array('/returpembelian/index')),
-                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>' . ' Penjualan', 'url' => array('/penjualan/index')),
-                                            array('label' => '<i class="fa fa-shopping-cart fa-flip-horizontal fa-fw"></i>' . ' Retur Penjualan', 'url' => array('/returpenjualan/index')),
-                                            array('label' => '<i class="fa fa-check-square-o fa-fw"></i>' . ' Stock Opname', 'url' => array('/stockopname/index')),
-                                            array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>' . ' POS', 'url' => array('/pos/index')),
-                                            array('label' => '<i class="fa fa-shopping-cart fa-fw"></i>' . ' Kasir', 'url' => array('/kasir/index')),
-                                            array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                            array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Pengeluaran', 'url' => array('/pengeluaran/index')),
-                                            array('label' => '<i class="fa fa-credit-card fa-fw"></i>' . ' Penerimaan', 'url' => array('/penerimaan/index')),
-                                            array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                            array('label' => '<i class="fa fa-list fa-fw"></i>' . ' Data Harian', 'url' => array('/laporanharian/index')),
-                                        ),
-                                        'itemOptions' => array('class' => 'has-dropdown'),
-                                        'submenuOptions' => array('class' => 'dropdown'),
-                                    ),
-                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-pie-chart fa-fw fa-lg"></i>' . ' Laporan', 'url' => '',
-                                        'items' => array(
-                                            //array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pembelian', 'url' => array('/report/pembelian')),
-                                            array('label' => '<i class="fa fa-line-chart fa-fw"></i>' . ' Penjualan', 'url' => array('/report/penjualan')),
-                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Retur Pembelian', 'url' => array('/report/returpembelian')),
-                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Total Stok', 'url' => array('/report/totalstok')),
-                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian Detail', 'url' => array('/report/hariandetail')),
-                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Harian Detail (Omzet=Penjualan)', 'url' => array('/report/hariandetail2')),
-                                            array('label' => '<i class="fa fa-bar-chart fa-fw"></i>' . ' Poin Member', 'url' => array('/report/poinmember')),
-                                            array('label' => '<i class="fa fa-bar-chart fa-fw"></i>' . ' Top Rank / Slow Moving', 'url' => array('/report/toprank')),
-                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Rekap Hutang Piutang', 'url' => array('/report/rekaphutangpiutang')),
-                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Hutang Piutang (per Profil)', 'url' => array('/report/hutangpiutang')),
-                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Pengeluaran/Penerimaan', 'url' => array('/report/pengeluaranpenerimaan')),
-                                            array('label' => '<i class="fa fa-bar-chart fa-fw"></i>' . ' Umur Barang (Aging of Inventory)', 'url' => array('/report/umurbarang')),
-                                            array('label' => '<i class="fa fa-bar-chart fa-fw"></i>' . ' Potensi Lost Sales', 'url' => array('/report/pls')),
-                                            array('label' => '<i class="fa fa-database fa-fw"></i>' . ' Kartu Stok', 'url' => array('/report/kartustok')),
-                                            array('label' => '<i class="fa fa-file fa-fw"></i>' . ' Daftar Barang', 'url' => array('/report/daftarbarang')),
-                                        //array('label' => '<i class="fa fa-file-pdf-o fa-fw"></i>' . ' Harian Rekap', 'url' => array('/report/harianrekap')),
-                                        ),
-                                        'itemOptions' => array('class' => 'has-dropdown'),
-                                        'submenuOptions' => array('class' => 'dropdown'),
-                                    ),
-                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-wrench fa-fw fa-lg"></i>' . ' Tools', 'url' => '',
-                                        'items' => array(
-                                            array('label' => '<i class="fa fa-barcode fa-fw"></i>' . ' Cetak Label Rak', 'url' => array('tools/cetaklabelrak/index')),
-                                            array('label' => '<i class="fa fa-check-square-o fa-fw"></i>' . ' Cetak Form SO', 'url' => array('tools/cetakformso/index')),
-                                            array('label' => '<i class="fa fa-search fa-fw"></i>' . ' Cek Harga', 'url' => array('tools/cekharga/index')),
-                                            array('label' => '<i class="fa fa-tablet fa-fw"></i>' . ' Customer Display', 'url' => array('tools/customerdisplay/index')),
-                                        //array('label' => '<i class="fa fa-code fa-fw"></i>' . ' Penerimaan PO', 'url' => array('')),
-                                        ),
-                                        'itemOptions' => array('class' => 'has-dropdown'),
-                                        'submenuOptions' => array('class' => 'dropdown'),
-                                    ),
-                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                ),
-                            ));
+                                'items' => markUpMenu($mainMenu)
+                                    ]
+                            );
                         }
                         ?>
 
                         <?php
                         if (Yii::app()->user->isGuest) {
                             // Jika belum login, tampilkan menu login
-                            $this->widget('zii.widgets.CMenu', array(
+                            $this->widget('zii.widgets.CMenu', [
                                 'encodeLabel' => false,
-                                'htmlOptions' => array('class' => 'right'),
+                                'htmlOptions' => ['class' => 'right'],
                                 'id' => '',
-                                'items' => array(
-                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-unlock-alt fa-fw"></i>' . ' Login', 'url' => array('/app/login')
-                                    ),
-                                ),
-                            ));
+                                'items' => [
+                                    [
+                                        'itemOptions' => ['class' => 'divider'],
+                                        'label' => ''
+                                    ],
+                                    [
+                                        'label' => '<i class="fa fa-unlock-alt fa-fw"></i>' . ' Login',
+                                        'url' => ['/app/login']
+                                    ],
+                                ],
+                            ]);
                         } else {
                             // Jika sudah login, tampilkan menu user
-                            $this->widget('zii.widgets.CMenu', array(
+                            $this->widget('zii.widgets.CMenu', [
                                 'encodeLabel' => false,
-                                'htmlOptions' => array('class' => 'right'),
+                                'htmlOptions' => ['class' => 'right'],
                                 'id' => '',
-                                'items' => array(
+                                'items' => [
                                     //array('itemOptions' => array('class' => 'divider'), 'label' => ''),
                                     //array('label' => '<i class="fa fa-envelope-o fa-fw getar"></i>' . ' <span class="alert label">27</span>', 'url' => array('#'),),
-                                    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-                                    array('label' => '<i class="fa fa-at fa-lg fa-fw"></i> ' . Yii::app()->user->namaLengkap, 'url' => '',
-                                        'items' => array(
-                                            array('label' => '<i class="fa fa-user fa-fw"></i>' . ' Profile', 'url' => array('user/ubah/' . Yii::app()->user->id)),
-                                            array('label' => '<i class="fa fa-power-off fa-fw"></i>' . ' Logout', 'url' => array('/app/logout')),
-                                        ),
-                                        'itemOptions' => array('class' => 'has-dropdown'),
-                                        'submenuOptions' => array('class' => 'dropdown'),
-                                    ),
-                                ),
-                            ));
+                                    ['itemOptions' => ['class' => 'divider'], 'label' => ''],
+                                    ['label' => '<i class="fa fa-at fa-lg fa-fw"></i> ' . Yii::app()->user->namaLengkap, 'url' => '',
+                                        'items' => [
+                                            [
+                                                'label' => '<i class="fa fa-user fa-fw"></i>' . ' Profile',
+                                                'url' => ['user/ubah/' . Yii::app()->user->id]
+                                            ],
+                                            [
+                                                'label' => '<i class="fa fa-power-off fa-fw"></i>' . ' Logout',
+                                                'url' => ['/app/logout']
+                                            ],
+                                        ],
+                                        'itemOptions' => ['class' => 'has-dropdown'],
+                                        'submenuOptions' => ['class' => 'dropdown'],
+                                    ],
+                                ],
+                            ]);
                         }
                         ?>
                     </section>
@@ -262,7 +201,8 @@
             function updateClock()
             {
                 var currentTime = new Date();
-                var currentDate = currentTime.getDate();
+                var curDate = currentTime.getDate();
+                var currentDate = curDate < 10 ? '0' + curDate : '' + curDate;
                 var month = currentTime.getMonth() + 1;
                 currentMonth = month < 10 ? '0' + month : '' + month;
                 var currentYear = currentTime.getFullYear();
@@ -307,7 +247,7 @@
 
 
 
-<?php // if (isset($this->breadcrumbs)):         ?>
+<?php // if (isset($this->breadcrumbs)):          ?>
 <?php
 //	$this->widget('zii.widgets.CBreadcrumbs', array(
 //		 'links' => $this->breadcrumbs,

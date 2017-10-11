@@ -177,6 +177,7 @@ class BarangController extends Controller
     {
         $model = new Barang('search');
         $model->unsetAttributes();  // clear any default values
+      $model->setAttribute('status', Barang::STATUS_AKTIF); // default yang tampil
         if (isset($_GET['Barang']))
             $model->attributes = $_GET['Barang'];
 

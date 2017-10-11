@@ -13,7 +13,7 @@ class CetakformsoController extends Controller
                 /* Penambahan memory_limit jika file pdf "agak" besar */
                 ini_set('memory_limit', '256M');
                 set_time_limit(0);
-                $this->formSoPdf($modelForm, $modelForm->dataForm());
+                $this->formSoPdf($modelForm, $modelForm->data());
             }
         }
 

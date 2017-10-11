@@ -17,7 +17,15 @@ $this->boxHeader['normal'] = 'User: ' . $model->nama;
             'data' => $model,
             'attributes' => array(
                 'nama',
-                'nama_lengkap'
+                'nama_lengkap',
+                [
+                    'label' => 'Theme',
+                    'name' => 'theme.deskripsi'
+                ],
+                [
+                    'label' => 'Menu',
+                    'name' => 'menu.deskripsi'
+                ]
             ),
         ));
         ?>

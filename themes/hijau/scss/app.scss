@@ -39,7 +39,7 @@ a{
     }
 }
 
-.delete{
+.delete, .angka-negatif{
     color: $merah;
 }
 
@@ -607,4 +607,8 @@ select {
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
     background-color: $biru;
+}
+
+.text-total{
+    font-weight: bold;
 }

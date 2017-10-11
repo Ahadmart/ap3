@@ -924,7 +924,7 @@ class Penjualan extends CActiveRecord
          */
         $piutangDetail = new HutangPiutangDetail;
         $piutangDetail->hutang_piutang_id = $piutang->id;
-        $piutangDetail->keterangan = 'Pembelian: ' . $this->nomor;
+        $piutangDetail->keterangan = 'Penjualan: ' . $this->nomor;
         $piutangDetail->jumlah = $jumlahPenjualan;
         if (!$piutangDetail->save()) {
             throw new Exception("Gagal simpan piutang detail", 500);

@@ -89,7 +89,7 @@ class ReportTopRankForm extends CFormModel
         $command->from("(SELECT
                                 barang_id,
                                 SUM(pd.harga_jual * pd.qty) total,
-                                SUM(qty) totalqty
+                                SUM(pd.qty) totalqty
                         FROM
                             penjualan_detail pd
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
@@ -108,8 +108,9 @@ class ReportTopRankForm extends CFormModel
                             barang_id, SUM(qty) stok
                         FROM
                             inventory_balance
-                        GROUP BY barang_id) t_stok', "barang.id = t_stok.barang_id");
-        $command->join('supplier_barang sb', 'sb.barang_id = t_penjualan.barang_id');
+                        GROUP BY barang_id
+                        /*HAVING SUM(qty) > 0*/) t_stok', "barang.id = t_stok.barang_id"); // Jumlah Stok tidak relevan, kalau yang diinginkan penjualan toprank / slow moving
+        //$command->join('supplier_barang sb', 'sb.barang_id = t_penjualan.barang_id'); // Jika ingin ditampilkan, pilih salah 1 saja, atau gunakan teknik Lazy loading
         $command->where("barang.id is not null");
 
         if ($this->rakId > 0) {

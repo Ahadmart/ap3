@@ -11,7 +11,7 @@ $form = $this->beginWidget('CActiveForm', array(
     // See class documentation of CActiveForm for details on this,
     // you need to use the performAjaxValidation()-method described there.
     'enableAjaxValidation' => false,
-    'htmlOptions' => [ 'target' => 'blank']
+    'htmlOptions' => [ 'target' => '_blank']
         ));
 ?>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
@@ -45,6 +45,13 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->labelEx($model, 'kertas'); ?>
         <?php echo $form->dropDownList($model, 'kertas', CetakStockOpnameForm::listKertas()); ?>
         <?php echo $form->error($model, 'kertas', ['class' => 'error']); ?>
+    </div>
+    <div class="small-12 large-6 columns">
+        <label>Kecuali Stok 0 (Nol)</label>
+        <div class="small switch">
+        <?php echo $form->checkBox($model, 'kecualiStokNol'); ?>
+        <?php echo $form->labelEx($model, 'kecualiStokNol'); ?>
+        </div> 
     </div>
 </div>
 
