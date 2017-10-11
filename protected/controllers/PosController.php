@@ -247,7 +247,7 @@ class PosController extends Controller
     {
         $q = new CDbCriteria();
         $q->addCondition("barcode like :term OR nama like :term");
-        $q->order = 'nama';
+        $q->order = 'status desc, nama';
         $q->params = [':term' => "%{$term}%"];
         $barangs = Barang::model()->findAll($q);
 
@@ -257,7 +257,8 @@ class PosController extends Controller
                 'label' => $barang->nama,
                 'value' => $barang->barcode,
                 'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
-                'harga' => $barang->hargaJual
+                'harga' => $barang->hargaJual,
+                'status' => $barang->status
             );
         }
 
