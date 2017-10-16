@@ -19,6 +19,7 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
 <div class="row" style="overflow: auto">
     <div class="small-12 columns">
         <?= CHtml::link('Set Non Aktif', '#', ['class' => 'button', 'id' => 'tombol-set-na', 'disabled' => true]) ?>
+        <?= CHtml::link('Set Aktif', '#', ['class' => 'button', 'id' => 'tombol-set-a', 'disabled' => true]) ?>
     </div>
     <div class="small-12 columns">
         <?php
@@ -99,7 +100,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 ?>
 <script>
     $(document).ajaxComplete(function () {
-        $("#tombol-set-na").attr('disabled', true);
+        DisableTombol();
         $(".checkbox-column").change(cekboxchange);
     });
 
@@ -108,15 +109,26 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     function cekboxchange() {
         var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
         console.log(data.length);
-        $("#tombol-set-na").attr('disabled', true);
+        DisableTombol();
         if (data.length > 0) {
-            $("#tombol-set-na").attr('disabled', false);
+            enableTombol();
         }
+    }
+
+    function enableTombol() {
+        $("#tombol-set-na").attr('disabled', false);
+        $("#tombol-set-a").attr('disabled', false);
+    }
+
+    function DisableTombol() {
+        $("#tombol-set-na").attr('disabled', true);
+        $("#tombol-set-a").attr('disabled', true);
+
     }
 
     $("#tombol-set-na").click(function () {
         if ($(this).is("[disabled]")) {
-            console.log('disabled clicked');
+            console.log('set na disabled clicked');
         } else {
             var dataUrl = '<?= $this->createUrl('setna'); ?>';
             var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
@@ -134,6 +146,41 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                         $.gritter.add({
                             title: 'Sukses',
                             text: data.rowAffected + ' item di NON Aktifkan',
+                            time: 3000
+                        });
+                        $('#barang-grid').yiiGridView('update');
+                    } else {
+                        $.gritter.add({
+                            title: 'Error ' + data.error.code,
+                            text: data.error.msg,
+                            time: 5000
+                        });
+                    }
+                }
+            });
+        }
+    });
+
+    $("#tombol-set-a").click(function () {
+        if ($(this).is("[disabled]")) {
+            console.log('set a disabled clicked');
+        } else {
+            var dataUrl = '<?= $this->createUrl('seta'); ?>';
+            var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
+            var dataKirim = {
+                'ajaxdata': true,
+                'items': data
+            };
+            console.log(dataKirim);
+            $.ajax({
+                type: 'POST',
+                url: dataUrl,
+                data: dataKirim,
+                success: function (data) {
+                    if (data.sukses) {
+                        $.gritter.add({
+                            title: 'Sukses',
+                            text: data.rowAffected + ' item di Aktifkan',
                             time: 3000
                         });
                         $('#barang-grid').yiiGridView('update');

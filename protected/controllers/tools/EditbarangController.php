@@ -19,7 +19,7 @@ class EditbarangController extends Controller
     {
         if (isset($_POST['ajaxdata']) && !empty($_POST['items'])) {
             $items = $_POST['items'];
-            $this->renderJSON($this->_setnasql($items));
+            $this->renderJSON($this->_setStatus($items, Barang::STATUS_TIDAK_AKTIF));
         } else {
             $this->renderJSON([
                 'sukses' => false,
@@ -31,7 +31,23 @@ class EditbarangController extends Controller
         }
     }
 
-    private function _setnasql($items)
+    public function actionSeta()
+    {
+        if (isset($_POST['ajaxdata']) && !empty($_POST['items'])) {
+            $items = $_POST['items'];
+            $this->renderJSON($this->_setStatus($items, Barang::STATUS_AKTIF));
+        } else {
+            $this->renderJSON([
+                'sukses' => false,
+                'error' => [
+                    'code' => 500,
+                    'msg' => 'Tidak ada data!'
+                ]
+            ]);
+        }
+    }
+
+    private function _setStatus($items, $status)
     {
         $condition = 'id in (';
         $i = 1;
@@ -48,7 +64,7 @@ class EditbarangController extends Controller
             $i++;
         }
         $condition .= ')';
-        $rowAffected = Barang::model()->updateAll(['status' => Barang::STATUS_TIDAK_AKTIF], $condition, $params);
+        $rowAffected = Barang::model()->updateAll(['status' => $status], $condition, $params);
         return [
             'sukses' => true,
             'rowAffected' => $rowAffected,
