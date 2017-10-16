@@ -10,10 +10,8 @@ $this->breadcrumbs = [
 $this->boxHeader['small'] = 'Edit Barang';
 $this->boxHeader['normal'] = 'Edit Barang';
 
-//Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
-//Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 // Agar focus tetap di input cari barcode setelah pencarian
-Yii::app()->clientScript->registerScript('editableQty', ''
+Yii::app()->clientScript->registerScript('barcodeFocus', ''
         . '$( document ).ajaxComplete(function() {'
         . '$("input[name=\'Barang[barcode]\'").select();'
         . '});');
@@ -95,20 +93,59 @@ Yii::app()->clientScript->registerScript('editableQty', ''
         ?>
     </div>
 </div>
+<?php
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+?>
 <script>
-    $("#tombol-set-na").click(function () {
-        if ($(this).is("[disabled]")) {
-            console.log('disabled clicked');
-        } else {
-            alert($('#barang-grid').yiiGridView('getChecked', 'kolomcek'));
-        }
+    $(document).ajaxComplete(function () {
+        $("#tombol-set-na").attr('disabled', true);
+        $(".checkbox-column").change(cekboxchange);
     });
-    $(".checkbox-column").change(function () {
+
+    $(".checkbox-column").change(cekboxchange);
+
+    function cekboxchange() {
         var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
         console.log(data.length);
         $("#tombol-set-na").attr('disabled', true);
         if (data.length > 0) {
             $("#tombol-set-na").attr('disabled', false);
+        }
+    }
+
+    $("#tombol-set-na").click(function () {
+        if ($(this).is("[disabled]")) {
+            console.log('disabled clicked');
+        } else {
+            var dataUrl = '<?= $this->createUrl('setna'); ?>';
+            var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
+            var dataKirim = {
+                'ajaxdata': true,
+                'items': data
+            };
+            console.log(dataKirim);
+            $.ajax({
+                type: 'POST',
+                url: dataUrl,
+                data: dataKirim,
+                success: function (data) {
+                    if (data.sukses) {
+                        $.gritter.add({
+                            title: 'Sukses',
+                            text: data.rowAffected + ' item di NON Aktifkan',
+                            time: 3000
+                        });
+                        $('#barang-grid').yiiGridView('update');
+                    } else {
+                        $.gritter.add({
+                            title: 'Error ' + data.error.code,
+                            text: data.error.msg,
+                            time: 5000
+                        });
+                    }
+                }
+            });
         }
     });
 </script>
