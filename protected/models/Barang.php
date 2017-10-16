@@ -286,5 +286,25 @@ class Barang extends CActiveRecord
     {
         return TagBarang::model()->findAll('barang_id=:barangId', [':barangId' => $this->id]);
     }
-
+    
+    /**
+     * Mencari tanggal terakhir dari pembelian barang ini 
+     * @return Tanggal 'd-m-Y H:i:s'
+     */
+    public function getTanggalBeliTerakhir()
+    {
+        $hasil = Yii::app()->db->createCommand("
+            SELECT
+                DATE_FORMAT(pembelian.tanggal, '%d-%m-%Y %H:%i:%s') tanggal_terakhir
+            FROM
+                pembelian_detail
+            JOIN 
+                pembelian on pembelian.id = pembelian_detail.pembelian_id
+            WHERE
+                barang_id =  {$this->id}
+            ORDER BY pembelian_detail.id DESC
+            LIMIT 1
+	")->queryRow();
+        return $hasil['tanggal_terakhir'];
+    }
 }

@@ -225,7 +225,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         }
     }).autocomplete("instance")._renderItem = function (ul, item) {
         return $("<li style='clear:both'>")
-                .append("<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-harga'>" + item.harga + "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item.stok + "</stok></a>")
+                .append(item.status == <?= Barang::STATUS_AKTIF ?> ?
+                        "<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-harga'>" + item.harga + "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item.stok + "</stok></a>" :
+                        "<span class='ac-nama'><s>" + item.label + "</s></span> <span class='ac-harga'>N/A</span> <span class='ac-barcode'><s><i>" + item.value + "</i></s></span> <span class='ac-stok'>N/A</stok>")
                 .appendTo(ul);
     };
 

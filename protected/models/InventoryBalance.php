@@ -648,7 +648,7 @@ class InventoryBalance extends CActiveRecord
         $sisa = $selisih;
         $inventory = InventoryBalance::model()->find(array(
             'condition' => 'barang_id=:barangId and id < :invId',
-            'order' => 'id',
+            'order' => 'id desc',
             'params' => array(':barangId' => $barangId, ':invId' => $invId)));
 
         if (is_null($inventory)) {

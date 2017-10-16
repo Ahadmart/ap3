@@ -79,7 +79,7 @@ class PosController extends Controller
     {
         $this->penjualanId = $id;
         $model = $this->loadModel($id);
-// Penjualan tidak bisa diubah kecuali statusnya draft
+        // Penjualan tidak bisa diubah kecuali statusnya draft
         if ($model->status != Penjualan::STATUS_DRAFT) {
             $this->redirect(array('index'));
         }
@@ -87,8 +87,8 @@ class PosController extends Controller
         $this->namaProfil = $model->profil->nama;
         $this->profil = Profil::model()->findByPk($model->profil_id);
 
-// Uncomment the following line if AJAX validation is needed
-// $this->performAjaxValidation($model);
+        // Uncomment the following line if AJAX validation is needed
+        // $this->performAjaxValidation($model);
 
         $penjualanDetail = new PenjualanDetail('search');
         $penjualanDetail->unsetAttributes();
@@ -102,7 +102,9 @@ class PosController extends Controller
             $barang->unsetAttributes(['id']);
             $barang->setAttribute('nama', $_GET['namaBarang']);
             $criteria = new CDbCriteria;
-            $criteria->order = 'nama ASC';
+            $criteria->condition = 'status = :status';
+            $criteria->order = 'nama';
+            $criteria->params = [':status' => Barang::STATUS_AKTIF];
             $barang->setDbCriteria($criteria);
         }
 
@@ -246,9 +248,9 @@ class PosController extends Controller
     public function actionCariBarang($term)
     {
         $q = new CDbCriteria();
-        $q->addCondition("barcode like :term OR nama like :term");
+        $q->addCondition("(barcode like :term OR nama like :term) AND status = :status");
         $q->order = 'nama';
-        $q->params = [':term' => "%{$term}%"];
+        $q->params = [':term' => "%{$term}%", ':status' => Barang::STATUS_AKTIF];
         $barangs = Barang::model()->findAll($q);
 
         $r = array();
@@ -257,7 +259,8 @@ class PosController extends Controller
                 'label' => $barang->nama,
                 'value' => $barang->barcode,
                 'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
-                'harga' => $barang->hargaJual
+                'harga' => $barang->hargaJual,
+                'status' => $barang->status
             );
         }
 

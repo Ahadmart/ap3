@@ -136,6 +136,7 @@ class PenjualanController extends Controller
 
         if (isset($_GET['cariBarang'])) {
             $barang->setAttribute('nama', $_GET['namaBarang']);
+            $barang->setAttribute('status', Barang::STATUS_AKTIF);
         }
 
         $tipePrinterInvoiceRrp = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
