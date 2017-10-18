@@ -16,10 +16,21 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
         . '$("input[name=\'Barang[barcode]\'").select();'
         . '});');
 ?>
+
+<div id="ganti-rak-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+
+</div>
 <div class="row" style="overflow: auto">
     <div class="small-12 columns">
         <?= CHtml::link('Set Non Aktif', '#', ['class' => 'button', 'id' => 'tombol-set-na', 'disabled' => true]) ?>
         <?= CHtml::link('Set Aktif', '#', ['class' => 'button', 'id' => 'tombol-set-a', 'disabled' => true]) ?>
+        <?=
+        CHtml::link('Ganti Rak', '#', [
+            'class' => 'button',
+            'data-reveal-id' => 'ganti-rak-m',
+            'id' => 'tombol-ganti-rak',
+            'disabled' => true])
+        ?>
     </div>
     <div class="small-12 columns">
         <?php
@@ -100,7 +111,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 ?>
 <script>
     $(document).ajaxComplete(function () {
-        DisableTombol();
+        cekboxchange();
         $(".checkbox-column").change(cekboxchange);
     });
 
@@ -118,11 +129,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     function enableTombol() {
         $("#tombol-set-na").attr('disabled', false);
         $("#tombol-set-a").attr('disabled', false);
+        $("#tombol-ganti-rak").attr('disabled', false);
     }
 
     function DisableTombol() {
         $("#tombol-set-na").attr('disabled', true);
         $("#tombol-set-a").attr('disabled', true);
+        $("#tombol-ganti-rak").attr('disabled', true);
 
     }
 
@@ -191,6 +204,22 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                             time: 5000
                         });
                     }
+                }
+            });
+        }
+    });
+
+    $("#tombol-ganti-rak").click(function () {
+        if ($(this).is("[disabled]")) {
+            console.log('set rak disabled clicked');
+        } else {
+            $('#ganti-rak-m').foundation('reveal', 'open', {
+                url: '<?= $this->createUrl('formgantirak') ?>',
+                success: function (data) {
+                    // Tampilkan Dropdown pilihan rak
+                },
+                error: function () {
+                    alert('Gagal mengambil data rak!');
                 }
             });
         }
