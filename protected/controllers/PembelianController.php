@@ -419,14 +419,14 @@ class PembelianController extends Controller
         return $return;
     }
 
-    function renderLinkToSupplier($data)
+    public function renderLinkToSupplier($data)
     {
         return '<a href="' .
                 $this->createUrl('supplier/view', array('id' => $data->profil_id)) . '">' .
                 $data->profil->nama . '</a>';
     }
 
-    function actionTambahBarangBaru($id)
+    public function actionTambahBarangBaru($id)
     {
         $return = array(
             'sukses' => false
