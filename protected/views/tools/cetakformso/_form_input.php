@@ -47,6 +47,13 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->error($model, 'kertas', ['class' => 'error']); ?>
     </div>
     <div class="small-12 large-6 columns">
+        <label>Barang yang Aktif saja</label>
+        <div class="small switch">
+        <?php echo $form->checkBox($model, 'aktifSaja'); ?>
+        <?php echo $form->labelEx($model, 'aktifSaja'); ?>
+        </div> 
+    </div>
+    <div class="small-12 large-6 columns">
         <label>Kecuali Stok 0 (Nol)</label>
         <div class="small switch">
         <?php echo $form->checkBox($model, 'kecualiStokNol'); ?>
