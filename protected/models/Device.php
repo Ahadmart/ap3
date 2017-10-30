@@ -32,7 +32,7 @@ class Device extends CActiveRecord
     const TIPE_TEXT_PRINTER = 2;
     const TIPE_PDF_PRINTER = 3;
     const TIPE_CSV_PRINTER = 4;
-    const TIPE_QZ_PRINTER = 5;
+    const TIPE_BROWSER_PRINTER = 5;
 
     /**
      * @return string the associated database table name
@@ -176,7 +176,7 @@ class Device extends CActiveRecord
             Device::TIPE_TEXT_PRINTER => 'Printer - Plain Text',
             Device::TIPE_PDF_PRINTER => 'Printer - PDF',
             Device::TIPE_CSV_PRINTER => 'Printer - CSV',
-            Device::TIPE_QZ_PRINTER => 'Printer - QZ'
+            Device::TIPE_BROWSER_PRINTER => 'Printer - Browser'
         );
     }
 
