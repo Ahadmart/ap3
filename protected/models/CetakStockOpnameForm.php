@@ -30,6 +30,7 @@ class CetakStockOpnameForm extends CFormModel
     public $sortBy;
     public $kertas;
     public $kecualiStokNol = 1;
+    public $aktifSaja = 1;
 
     /**
      * Declares the validation rules.
@@ -38,7 +39,7 @@ class CetakStockOpnameForm extends CFormModel
     {
         return array(
             array('rakId, kategoriId, sortBy, kertas', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            ['kecualiStokNol', 'numerical', 'integerOnly' => true],
+            ['kecualiStokNol, aktifSaja', 'numerical', 'integerOnly' => true],
             ['kecualiStokNol', 'safe'],
         );
     }
@@ -53,7 +54,8 @@ class CetakStockOpnameForm extends CFormModel
             'kategoriId' => 'Kategori',
             'sortBy' => 'Sort by',
             'kertas' => 'Kertas',
-            'kecualiStokNol' => 'Kecuali Stok 0'
+            'kecualiStokNol' => 'Kecuali Stok 0',
+            'aktifSaja' => 'Barang Aktif Saja'
         );
     }
 
@@ -119,6 +121,9 @@ class CetakStockOpnameForm extends CFormModel
         if ($this->kecualiStokNol != 0) {
             $where .= " AND stok != 0";
         }
+        if ($this->aktifSaja != 0) {
+            $where .= " AND barang.status=:statusAktif";
+        }
 
         $order = '';
         switch ($this->sortBy) {
@@ -169,6 +174,9 @@ class CetakStockOpnameForm extends CFormModel
         $command->bindValue(':rakId', $this->rakId);
         if ($this->kategoriId > 0) {
             $command->bindValue(':kategoriId', $this->kategoriId);
+        }
+        if ($this->aktifSaja != 0) {
+            $command->bindValue(':statusAktif', Barang::STATUS_AKTIF);
         }
         return $command->queryAll();
     }

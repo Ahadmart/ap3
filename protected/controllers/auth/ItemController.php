@@ -45,7 +45,6 @@ class ItemController extends Controller
      */
     public function actionTambah()
     {
-        $this->layout = '//layouts/box_kecil';
         $model = new AuthItem;
 
         // Uncomment the following line if AJAX validation is needed
@@ -205,6 +204,109 @@ class ItemController extends Controller
         return '<a href="' .
                 $this->createUrl($this->id . '/ubah?id=' . $data->name) . '">' .
                 $data->name . '</a>';
+    }
+
+    /**
+     * Mencari nama controller.action yang ada di aplikasi
+     * @return array Daftar Nama controller.action yang ada di aplikasi
+     */
+    private function getAllActionsName()
+    {
+        $names = [];
+//            print_r(AuthItem::getControllerActions());
+        foreach (AuthItem::getControllerActions() as $cm) {
+            foreach ($cm as $key => $item) {
+                $controllerName = $item['name'];
+                foreach ($item['actions'] as $action) {
+                    $controllerAction = strtolower($key . '.' . $action['name']);
+                    $names[] = $controllerAction;
+                }
+            }
+        }
+        return $names;
+    }
+
+    /**
+     * Mencari nama controller.action yang sudah ada di database
+     * @return array Daftar Nama controller.action yang sudah ada di database
+     */
+    private function getAllActionsNameDb()
+    {
+        $itemTable = AuthItem::model()->tableName();
+
+        $sql = "
+            SELECT name FROM {$itemTable}
+            WHERE
+                `type` = 0
+            ";
+        $actionsDb = Yii::app()->db->createCommand($sql)
+                ->queryAll();
+
+        $actionsDbArr = [];
+        foreach ($actionsDb as $row) {
+            $actionsDbArr[] = $row['name'];
+        }
+        return $actionsDbArr;
+    }
+
+    /* Menampilkan Item-item yang akan ditambah dan dihapus */
+
+    public function actionGensim()
+    {
+        $controllerACtionsName = $this->getAllActionsName();
+        $actionsDbArr = $this->getAllActionsNameDb();
+
+        $adaDbTidakController = array_diff($controllerACtionsName, $actionsDbArr);
+        $adaConTidakDb = array_diff($actionsDbArr, $controllerACtionsName);
+
+        $akanDiTambahkanText = '';
+        foreach ($adaDbTidakController as $item) {
+            $akanDiTambahkanText .= $item . PHP_EOL;
+        }
+
+        $akanDiHapusText = '';
+        foreach ($adaConTidakDb as $item) {
+            $akanDiHapusText .= $item . PHP_EOL;
+        }
+        $this->renderJSON([
+            'sukses' => true,
+            'message' =>
+            "<label for='text-ditambah'>" . count($adaDbTidakController) . ' item akan ditambahkan</label>' .
+            '<textarea id="text-ditambah" rows="10">' . print_r($akanDiTambahkanText, true) . '</textarea>' .
+            "<label for='text-dihapus'>" . count($adaConTidakDb) . ' item akan dihapus</label>' .
+            '<textarea id="text-dihapus" rows="10">' . print_r($akanDiHapusText, true) . '</textarea>'
+        ]);
+    }
+
+    /* Menambah dan menghapus item (operations) automatically
+      dan redirect ke index
+     */
+
+    public function actionGenExec()
+    {
+        $itemTable = AuthItem::model()->tableName();
+
+        $controllerACtionsName = $this->getAllActionsName();
+        $actionsDbArr = $this->getAllActionsNameDb();
+
+        $adaDbTidakController = array_diff($controllerACtionsName, $actionsDbArr);
+        $adaConTidakDb = array_diff($actionsDbArr, $controllerACtionsName);
+
+        $auth = Yii::app()->authManager;
+
+        foreach ($adaDbTidakController as $nama) {
+            $auth->createOperation($nama);
+        }
+
+        foreach ($adaConTidakDb as $nama) {
+            $sql = "
+                DELETE FROM {$itemTable}
+                WHERE name = :name
+            ";
+
+            Yii::app()->db->createCommand($sql)->bindValue(':name', $nama)->execute();
+        }
+        $this->redirect('index');
     }
 
 }

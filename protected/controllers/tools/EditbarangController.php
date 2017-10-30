@@ -71,4 +71,52 @@ class EditbarangController extends Controller
         ];
     }
 
+    public function actionFormGantiRak()
+    {
+        $this->renderPartial('_form_ganti_rak');
+    }
+
+    public function actionSetRak()
+    {
+        if (isset($_POST['ajaxrak']) && !empty($_POST['rak-id']) && !empty($_POST['items'])) {
+            $items = $_POST['items'];
+            $rakId = $_POST['rak-id'];
+            $this->renderJSON($this->_setRak($items, $rakId));
+        } else {
+            $this->renderJSON([
+                'sukses' => false,
+                'error' => [
+                    'code' => 500,
+                    'msg' => 'Tidak ada data!'
+                ]
+            ]);
+        }
+    }
+
+    private function _setRak($items, $rakId)
+    {
+        $condition = 'id in (';
+        $i = 1;
+        $params = [];
+        $pertamax = true;
+        foreach ($items as $item) {
+            $key = ':item' . $i;
+            if (!$pertamax) {
+                $condition .= ',';
+            }
+            $condition .= $key;
+            $params[$key] = $item;
+            $pertamax = false;
+            $i++;
+        }
+        $condition .= ')';
+        $rowAffected = Barang::model()->updateAll(['rak_id' => $rakId], $condition, $params);
+        $rak = RakBarang::model()->findByPk($rakId);
+        return [
+            'sukses' => true,
+            'rowAffected' => $rowAffected,
+            'namarak' => $rak->nama
+        ];
+    }
+
 }

@@ -300,7 +300,7 @@ class Menu extends CActiveRecord
         $list = Yii::app()->db->createCommand()->
                 select("id, concat(nama, ' | ',keterangan) nama_menu")->
                 from($this->tableName())->
-                where("parent_id is null")->
+                where("parent_id is null and status=:publish", [':publish' => Menu::STATUS_PUBLISH])->
                 order('nama')->
                 queryAll();
         return CHtml::listData($list, 'id', 'nama_menu');
@@ -316,7 +316,7 @@ class Menu extends CActiveRecord
         $list = Yii::app()->db->createCommand()->
                 select("id, nama nama_menu")->
                 from($this->tableName())->
-                where("parent_id is null")->
+                where("parent_id is null and status=:publish", [':publish' => Menu::STATUS_PUBLISH])->
                 order('nama')->
                 queryAll();
         return CHtml::listData($list, 'id', 'nama_menu');

@@ -11,6 +11,7 @@ $oranye: #edc240;
 $merah: #b71c1c;
 $violet: #9440ed;
 $warna-text: #212121;
+$warning-color: #ff5722; //primary color
 
 @mixin animasi($param){
     -webkit-animation: $param;
@@ -526,7 +527,22 @@ select {
 }
 
 .grid-loading{
-    background:url(3.gif) no-repeat;
+    background:url(3.gif) no-repeat;    
+    th{
+        animation: bgpulse 0.5s infinite;
+    }
+}
+
+@keyframes bgpulse {
+    0% {
+        background-color: inherit;
+    }
+    50% {
+        background-color: $warning-color;
+    }
+    100% {
+        background-color: inherit;
+    }
 }
 
 //jquery-editable overwrite

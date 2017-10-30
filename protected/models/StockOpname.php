@@ -291,4 +291,47 @@ class StockOpname extends CActiveRecord
         }
     }
 
+    /**
+     * Tambah SO Detail dengan qty sebenarnya = 0
+     * @return int Jumlah baris yang terpengaruh
+     */
+    public function tambahDetailSetNol()
+    {
+        $sql = "
+            INSERT INTO stock_opname_detail (stock_opname_id, barang_id, qty_tercatat, qty_sebenarnya, updated_by, created_at)
+            SELECT 
+                :soId stock_opname_id,
+                barang_id,
+                SUM(qty) qty_tercatat,
+                0 qty_sebenarnya,
+                :userId updated_by,
+                NOW() created_at
+            FROM
+                inventory_balance ib
+                    JOIN
+                (SELECT 
+                    t.id
+                FROM
+                    barang t
+                LEFT JOIN stock_opname_detail sod ON t.id = sod.barang_id
+                    AND sod.stock_opname_id = :soId
+                WHERE
+                    t.rak_id = :rakId AND t.status = :statusBarang
+                        AND sod.barang_id IS NULL) AS t_belum_so ON t_belum_so.id = ib.barang_id
+            GROUP BY barang_id
+            HAVING SUM(qty) != 0;
+                ";
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':soId' => $this->id,
+            ':userId' => Yii::app()->user->id,
+            ':rakId' => $this->rak_id,
+            ':statusBarang' => Barang::STATUS_AKTIF
+        ]);
+
+        $rowAffected = $command->execute();
+        return $rowAffected;
+    }
+
 }

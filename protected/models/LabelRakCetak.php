@@ -111,7 +111,7 @@ class LabelRakCetak extends CActiveRecord
         $criteria->with = array('barang');
         $criteria->compare('barang.barcode', $this->barcode);
         $criteria->compare('barang.nama', $this->namaBarang);
-        $criteria->compare('barang.kategori_id', $this->kategoriId, true);
+        $criteria->compare('barang.kategori_id', $this->kategoriId);
         //$criteria->compare('kategori.nama', $this->namaKategori);
 
         $sort = array(
