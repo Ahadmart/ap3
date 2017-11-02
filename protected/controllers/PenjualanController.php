@@ -50,7 +50,7 @@ class PenjualanController extends Controller
         }
 
         $tipePrinterInvoiceRrp = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
-        $tipePrinterStruk = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER);
+        $tipePrinterStruk = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER, Device::TIPE_BROWSER_PRINTER);
         $tipePrinterNota = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER);
 
         $printerInvoiceRrp = Device::model()->listDevices($tipePrinterInvoiceRrp);
@@ -336,7 +336,7 @@ class PenjualanController extends Controller
         $text = '';
         foreach ($hpp as $hargaBeli) {
             if (!$barisPertama) {
-                $text .='<br />';
+                $text .= '<br />';
             }
             $text .= number_format($hargaBeli->harga_beli, 0, ',', '.') . ' x ' . $hargaBeli->qty;
             $barisPertama = false;
@@ -428,8 +428,8 @@ class PenjualanController extends Controller
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
         foreach ($profilList as $profil) {
-            $string.='<option value="' . $profil->id . '">';
-            $string.=$profil->nama . '</option>';
+            $string .= '<option value="' . $profil->id . '">';
+            $string .= $profil->nama . '</option>';
         }
         echo $string;
     }
@@ -484,6 +484,15 @@ class PenjualanController extends Controller
         $text = $this->getText($model, $print);
         $device->printLpr($text);
         $this->renderPartial('_print_autoclose', array(
+            'text' => $text
+        ));
+    }
+
+    public function printBrowser($id, $device, $print = 0)
+    {
+        $model = $this->loadModel($id);
+        $text = $this->getText($model, $print);
+        $this->renderPartial('_print_autoclose_browser', array(
             'text' => $text
         ));
     }
@@ -592,6 +601,9 @@ class PenjualanController extends Controller
                  */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_STRUK);
+                    break;
+                case Device::TIPE_BROWSER_PRINTER:
+                    $this->printBrowser($id, $device, self::PRINT_STRUK);
                     break;
             }
         }

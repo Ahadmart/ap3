@@ -56,10 +56,25 @@ class PosController extends Controller
      */
     public function actionTambah()
     {
+        /*
+          Jika ada suspended sale (Status Draft, Profil = Umum, User ybs, dan belum ada detail) yang masih 0 (NOL)
+          Maka ini dipakai terlebih dahulu
+         */
+        $suspendedSale = Penjualan::model()->find([
+            'condition' => "t.status=:sDraft and t.profil_id=:pUmum and t.updated_by=:userId and penjualan_detail.id IS NULL",
+            'order' => 't.id',
+            'join' => 'LEFT JOIN penjualan_detail ON t.id=penjualan_detail.penjualan_id',
+            'params' => [
+                ':sDraft' => Penjualan::STATUS_DRAFT,
+                ':pUmum' => Profil::PROFIL_UMUM,
+                ':userId' => Yii::app()->user->id
+            ]
+        ]);
+        if (!is_null($suspendedSale)) {
+            $this->redirect(array('ubah', 'id' => $suspendedSale->id));
+        }
+        
         $model = new Penjualan;
-
-// Uncomment the following line if AJAX validation is needed
-// $this->performAjaxValidation($model);
 
         $model->profil_id = Profil::PROFIL_UMUM;
 
