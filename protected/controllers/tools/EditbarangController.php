@@ -119,4 +119,55 @@ class EditbarangController extends Controller
         ];
     }
 
+    public function actionFormEditSup()
+    {
+        $this->renderPartial('_form_edit_supplier');
+    }
+
+    public function actionTambahSup()
+    {
+        if (isset($_POST['ajaxsup']) && !empty($_POST['sup-id']) && !empty($_POST['items'])) {
+            $items = $_POST['items'];
+            $supId = $_POST['sup-id'];
+        } else {
+            $this->renderJSON([
+                'sukses' => false,
+                'error' => [
+                    'code' => 500,
+                    'msg' => 'Tidak ada data!'
+                ]
+            ]);
+        }
+        $this->renderJSON([
+            'sukses' => false,
+            'error' => [
+                'code' => 500,
+                'msg' => 'Tidak ada data!'
+            ]
+        ]);
+    }
+
+    public function actionGantiSup()
+    {
+        if (isset($_POST['ajaxsup']) && !empty($_POST['sup-id']) && !empty($_POST['items'])) {
+            $items = $_POST['items'];
+            $supId = $_POST['sup-id'];
+        } else {
+            $this->renderJSON([
+                'sukses' => false,
+                'error' => [
+                    'code' => 500,
+                    'msg' => 'Tidak ada data!'
+                ]
+            ]);
+        }
+        $this->renderJSON([
+            'sukses' => false,
+            'error' => [
+                'code' => 500,
+                'msg' => 'Tidak ada data!'
+            ]
+        ]);
+    }
+
 }
