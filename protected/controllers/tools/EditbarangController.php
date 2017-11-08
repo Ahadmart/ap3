@@ -129,6 +129,7 @@ class EditbarangController extends Controller
         if (isset($_POST['ajaxsup']) && !empty($_POST['sup-id']) && !empty($_POST['items'])) {
             $items = $_POST['items'];
             $supId = $_POST['sup-id'];
+            $this->renderJSON($this->_tambahSupplier($items, $supId));
         } else {
             $this->renderJSON([
                 'sukses' => false,
@@ -145,6 +146,29 @@ class EditbarangController extends Controller
                 'msg' => 'Tidak ada data!'
             ]
         ]);
+    }
+
+    private function _tambahSupplier($items, $supplierId)
+    {
+        $profil = Profil::model()->findByPk($supplierId);
+
+        $sql = "INSERT IGNORE INTO `supplier_barang` (supplier_id, barang_id, updated_by, created_at) VALUES (:supId, :barangId, :userId, :waktu)";
+        $params = [];
+        $sekarang = date('Y-m-d H:i:s');
+        foreach ($items as $item) {
+            $params[] = [':supId' => $supplierId, ':barangId' => $item, ':userId' => Yii::app()->user->id, ':waktu' => $sekarang];
+        }
+        $command = Yii::app()->db->createCommand($sql);
+        $rowAffected = 0;
+        foreach ($params as $param) {
+            $rowAffected += $command->execute($param);
+        }
+
+        return [
+            'sukses' => true,
+            'rowAffected' => $rowAffected,
+            'namasup' => $profil->nama
+        ];
     }
 
     public function actionGantiSup()
