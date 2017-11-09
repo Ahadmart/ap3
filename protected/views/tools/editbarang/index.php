@@ -67,6 +67,14 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
                     'type' => 'raw',
                 ],
                 [
+                    'class' => 'BDataColumn',
+                    'name' => 'daftarSupplier',
+                    //'header' => '<span class="ak">N</span>ama / NIP',
+                    //'accesskey' => 'n',
+                    'type' => 'raw',
+                    'value' => [$this, 'renderSuppliers'],
+                ],
+                [
                     'name' => 'satuan_id',
                     'value' => '$data->satuan->nama',
                     'filter' => $model->filterSatuan()

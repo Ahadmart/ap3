@@ -1,7 +1,7 @@
 <?= CHtml::label('Tambahkan supplier', 'sup-dropdown-t') ?>
 <?= CHtml::dropDownList('sup-dropdown-t', null, CHtml::listData(Profil::model()->tipeSupplier()->profilTrx()->findAll(array('order' => 'nama')), 'id', 'nama'), ["prompt" => "Pilih satu.."]); ?>
 <p>ATAU</p>
-<?= CHtml::label('Ganti supplier (Supplier yang ada akan dihapus!)', 'sup-dropdown-g') ?>
+<?= CHtml::label('Ganti supplier (Supplier yang sudah ada akan dihapus!)', 'sup-dropdown-g') ?>
 <?= CHtml::dropDownList('sup-dropdown-g', null, CHtml::listData(Profil::model()->tipeSupplier()->profilTrx()->findAll(array('order' => 'nama')), 'id', 'nama'), ["prompt" => "Pilih satu.."]); ?>
 
 <?= CHtml::link('Submit', '#', ['class' => 'tiny bigfont button', 'id' => 'tombol-submit-supplier']) ?>

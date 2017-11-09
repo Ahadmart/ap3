@@ -194,4 +194,22 @@ class EditbarangController extends Controller
         ]);
     }
 
+    public function renderSuppliers($data)
+    {
+        $return = '';
+        $sups = $data->listSupplier;
+        if (!empty($sups)) {
+            $str = "";
+            foreach ($sups as $sup) {
+                if ($sup['default']) {
+                    $str .= '<b>' . $sup['nama'] . '</b></br>';
+                } else {
+                    $str .= $sup['nama'] . '</br>';
+                }
+            }
+            $return = $str;
+        }
+        return $return;
+    }
+
 }
