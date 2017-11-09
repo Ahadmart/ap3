@@ -160,6 +160,18 @@ class Barang extends CActiveRecord
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('t.created_at', $this->created_at, true);
+        $criteria->compare("(SELECT 
+                                group_concat(p.nama)
+                            FROM
+                                supplier_barang sb
+                                    JOIN
+                                profil p ON p.id = sb.supplier_id
+                            WHERE
+                                barang_id = t.id
+                                GROUP BY barang_id)", $this->daftarSupplier, true);
+//        if (!empty($this->daftarSupplier)){
+//            $criteria->addCondition("");
+//        }
         if ($this->rak_id != 'NULL') {
             $criteria->compare('rak_id', $this->rak_id);
         } else {

@@ -12,14 +12,14 @@ $this->boxHeader['normal'] = 'Edit Barang';
 
 // Agar focus tetap di input cari barcode setelah pencarian
 Yii::app()->clientScript->registerScript('barcodeFocus', ''
-        . '$( document ).ajaxComplete(function() {'
+        . '$(document).ajaxComplete(function() {'
         . '$("input[name=\'Barang[barcode]\'").select();'
         . '});');
 ?>
 
 <div id="ganti-rak-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 <div id="edit-sup-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
-<div class="row" style="overflow: auto">
+<div class="row">
     <div class="small-12 columns">
         <?= CHtml::link('Set Non Aktif', '#', ['class' => 'button tb-edit-barang', 'id' => 'tombol-set-na', 'disabled' => true]) ?>
         <?= CHtml::link('Set Aktif', '#', ['class' => 'button tb-edit-barang', 'id' => 'tombol-set-a', 'disabled' => true]) ?>
@@ -30,14 +30,16 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
             'id' => 'tombol-ganti-rak',
             'disabled' => true])
         ?>
-        <?php
-//        CHtml::link('Edit Supplier..', '#', [
-//            'class' => 'button tb-edit-barang',
-//            'data-reveal-id' => 'edit-sup-m',
-//            'id' => 'tombol-edit-sup',
-//            'disabled' => true])
+        <?=
+        CHtml::link('Edit Supplier..', '#', [
+            'class' => 'button tb-edit-barang',
+            'data-reveal-id' => 'edit-sup-m',
+            'id' => 'tombol-edit-sup',
+            'disabled' => true])
         ?>
     </div>
+</div>
+<div class="row" style="overflow: auto">
     <div class="small-12 columns">
         <?php
         $this->widget('BGridView', [
@@ -69,8 +71,6 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
                 [
                     'class' => 'BDataColumn',
                     'name' => 'daftarSupplier',
-                    //'header' => '<span class="ak">N</span>ama / NIP',
-                    //'accesskey' => 'n',
                     'type' => 'raw',
                     'value' => [$this, 'renderSuppliers'],
                 ],
@@ -110,8 +110,6 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
                 [
                     'name' => 'Pembelian Terakhir',
                     'value' => '$data->tanggalBeliTerakhir',
-                    //'htmlOptions' => array('class' => 'rata-kanan'),
-                    //'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
                     'filter' => false
                 ],
             ],
@@ -126,7 +124,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 <script>
     $(document).ajaxComplete(function () {
         cekboxchange();
-        $(".checkbox-column").change(cekboxchange);
+    $(".checkbox-column").change(cekboxchange);
     });
 
     $(".checkbox-column").change(cekboxchange);
