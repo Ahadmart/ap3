@@ -129,7 +129,8 @@ class EditbarangController extends Controller
         if (isset($_POST['ajaxsup']) && !empty($_POST['sup-id']) && !empty($_POST['items'])) {
             $items = $_POST['items'];
             $supId = $_POST['sup-id'];
-            $this->renderJSON($this->_tambahSupplier($items, $supId));
+            $setDefault = $_POST['sup-def'];
+            $this->renderJSON($this->_tambahSupplier($items, $supId, $setDefault));
         } else {
             $this->renderJSON([
                 'sukses' => false,
@@ -148,7 +149,7 @@ class EditbarangController extends Controller
         ]);
     }
 
-    private function _tambahSupplier($items, $supplierId)
+    private function _tambahSupplier($items, $supplierId, $setDefault)
     {
         $profil = Profil::model()->findByPk($supplierId);
 
@@ -162,6 +163,14 @@ class EditbarangController extends Controller
         $rowAffected = 0;
         foreach ($params as $param) {
             $rowAffected += $command->execute($param);
+        }
+
+        if ($setDefault) {
+            foreach ($items as $item) {
+                $supBarang = Yii::app()->db->createCommand("select id from supplier_barang where supplier_id=:supplierId and barang_id=:barangId")
+                                ->bindValues([':supplierId' => $supplierId, ':barangId' => $item])->queryRow();
+                SupplierBarang::model()->assignDefaultSupplier($supBarang['id'], $item);
+            }
         }
 
         return [

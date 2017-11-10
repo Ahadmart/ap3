@@ -165,6 +165,7 @@ class SupplierBarang extends CActiveRecord
                 ':id' => $id
             ));
             $transaction->commit();
+            return true;
         } catch (Exception $e) {
             $transaction->rollback();
             throw $e;

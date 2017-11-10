@@ -1,5 +1,10 @@
 <?= CHtml::label('Tambahkan supplier', 'sup-dropdown-t') ?>
 <?= CHtml::dropDownList('sup-dropdown-t', null, CHtml::listData(Profil::model()->tipeSupplier()->profilTrx()->findAll(array('order' => 'nama')), 'id', 'nama'), ["prompt" => "Pilih satu.."]); ?>
+<label>Set sebagai supplier default</label>
+<div class="small switch">
+    <?= CHtml::checkBox("set_default", false) ?>
+    <?= CHtml::label("Set default", 'set_default') ?>
+</div> 
 <!--<p>ATAU</p>-->
 <?php // CHtml::label('Ganti supplier (Supplier yang sudah ada akan dihapus!)', 'sup-dropdown-g') ?>
 <?php // CHtml::dropDownList('sup-dropdown-g', null, CHtml::listData(Profil::model()->tipeSupplier()->profilTrx()->findAll(array('order' => 'nama')), 'id', 'nama'), ["prompt" => "Pilih satu.."]); ?>
@@ -23,6 +28,7 @@
     $("#tombol-submit-supplier").click(function () {
         var supT = $("#sup-dropdown-t").val();
         var supG = $("#sup-dropdown-g").val();
+        var supDefault = $("#set_default").prop('checked');
         if (supT.length === 0 && supG.length === 0) {
             $('#edit-sup-m').foundation('reveal', 'close');
             console.log("Edit Supplier Modal diclose");
@@ -44,9 +50,10 @@
         var dataKirim = {
             'ajaxsup': true,
             'sup-id': sup,
+            'sup-def': supDefault,
             'items': data
         };
-        console.log(dataUrl+' === '+dataKirim);
+        console.log(dataUrl + ' === ' + dataKirim);
         $.ajax({
             type: 'POST',
             url: dataUrl,
