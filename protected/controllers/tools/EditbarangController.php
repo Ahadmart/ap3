@@ -165,7 +165,7 @@ class EditbarangController extends Controller
             $rowAffected += $command->execute($param);
         }
 
-        if ($setDefault) {
+        if ($setDefault === TRUE) {
             foreach ($items as $item) {
                 $supBarang = Yii::app()->db->createCommand("select id from supplier_barang where supplier_id=:supplierId and barang_id=:barangId")
                                 ->bindValues([':supplierId' => $supplierId, ':barangId' => $item])->queryRow();
@@ -176,7 +176,8 @@ class EditbarangController extends Controller
         return [
             'sukses' => true,
             'rowAffected' => $rowAffected,
-            'namasup' => $profil->nama
+            'namasup' => $profil->nama,
+            'setDefault' => $setDefault
         ];
     }
 
@@ -185,6 +186,7 @@ class EditbarangController extends Controller
         if (isset($_POST['ajaxsup']) && !empty($_POST['sup-id']) && !empty($_POST['items'])) {
             $items = $_POST['items'];
             $supId = $_POST['sup-id'];
+            $this->renderJSON($this->_gantiSupplier($items, $supId));
         } else {
             $this->renderJSON([
                 'sukses' => false,
@@ -201,6 +203,53 @@ class EditbarangController extends Controller
                 'msg' => 'Tidak ada data!'
             ]
         ]);
+    }
+
+    private function _gantiSupplier($items, $supId)
+    {
+        $profil = Profil::model()->findByPk($supId);
+
+        /* Delete all barang di items */
+        $condition = 'barang_id in (';
+        $i = 1;
+        $params = [];
+        $pertamax = true;
+        foreach ($items as $item) {
+            $key = ':item' . $i;
+            if (!$pertamax) {
+                $condition .= ',';
+            }
+            $condition .= $key;
+            $params[$key] = $item;
+            $pertamax = false;
+            $i++;
+        }
+        $condition .= ')';
+        $rowDeleted = SupplierBarang::model()->deleteAll($condition, $params);
+        
+        /* insert all barang dengan supplier $supId dan default */
+        $sql = "INSERT INTO `supplier_barang` (supplier_id, barang_id, `default`, updated_by, created_at) VALUES (:supId, :barangId, :default, :userId, :waktu)";
+        $params = [];
+        $sekarang = date('Y-m-d H:i:s');
+        foreach ($items as $item) {
+            $params[] = [
+                ':supId' => $supId,
+                ':barangId' => $item,
+                ':default' => 1, // set as default!
+                ':userId' => Yii::app()->user->id,
+                ':waktu' => $sekarang];
+        }
+        $command = Yii::app()->db->createCommand($sql);
+        $rowAffected = 0;
+        foreach ($params as $param) {
+            $rowAffected += $command->execute($param);
+        }
+        return [
+            'sukses' => true,
+            'rowDeleted' => $rowDeleted,
+            'rowAffected' => $rowAffected,
+            'namasup' => $profil->nama
+        ];
     }
 
     public function renderSuppliers($data)

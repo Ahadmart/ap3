@@ -5,9 +5,9 @@
     <?= CHtml::checkBox("set_default", false) ?>
     <?= CHtml::label("Set default", 'set_default') ?>
 </div> 
-<!--<p>ATAU</p>-->
-<?php // CHtml::label('Ganti supplier (Supplier yang sudah ada akan dihapus!)', 'sup-dropdown-g') ?>
-<?php // CHtml::dropDownList('sup-dropdown-g', null, CHtml::listData(Profil::model()->tipeSupplier()->profilTrx()->findAll(array('order' => 'nama')), 'id', 'nama'), ["prompt" => "Pilih satu.."]); ?>
+<p>ATAU</p>
+<?= CHtml::label('Ganti supplier (Supplier yang sudah ada akan dihapus!)', 'sup-dropdown-g') ?>
+<?= CHtml::dropDownList('sup-dropdown-g', null, CHtml::listData(Profil::model()->tipeSupplier()->profilTrx()->findAll(array('order' => 'nama')), 'id', 'nama'), ["prompt" => "Pilih satu.."]); ?>
 
 <?= CHtml::link('Submit', '#', ['class' => 'tiny bigfont button', 'id' => 'tombol-submit-supplier']) ?>
 <?= CHtml::link('&#215;', '', ['class' => 'close-reveal-modal', 'aria-label' => 'Close']) ?>
@@ -63,7 +63,7 @@
                     $.gritter.add({
                         title: 'Sukses',
                         text: data.rowAffected + ' item ' + ket + ': ' + data.namasup,
-                        time: 3000
+                        time: 5000
                     });
                     $('#barang-grid').yiiGridView('update');
                 } else {
