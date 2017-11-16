@@ -165,7 +165,7 @@ class EditbarangController extends Controller
             $rowAffected += $command->execute($param);
         }
 
-        if ($setDefault === TRUE) {
+        if ($setDefault) {
             foreach ($items as $item) {
                 $supBarang = Yii::app()->db->createCommand("select id from supplier_barang where supplier_id=:supplierId and barang_id=:barangId")
                                 ->bindValues([':supplierId' => $supplierId, ':barangId' => $item])->queryRow();

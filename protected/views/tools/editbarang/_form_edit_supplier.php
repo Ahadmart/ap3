@@ -28,7 +28,7 @@
     $("#tombol-submit-supplier").click(function () {
         var supT = $("#sup-dropdown-t").val();
         var supG = $("#sup-dropdown-g").val();
-        var supDefault = $("#set_default").prop('checked');
+        var supDefault = $("#set_default").prop('checked') ? 1 : 0;
         if (supT.length === 0 && supG.length === 0) {
             $('#edit-sup-m').foundation('reveal', 'close');
             console.log("Edit Supplier Modal diclose");
