@@ -67,7 +67,7 @@ class ReportUmurBarangForm extends CFormModel
         $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
         if (empty($this->bulan)) {
-            $whereBulan = "inventory_balance.created_at BETWEEN :dari AND :sampai";
+            $whereBulan = "DATE_FORMAT(inventory_balance.created_at, '%Y-%m-%d') BETWEEN :dari AND :sampai";
         } else {
             $whereBulan = "TIMESTAMPDIFF(MONTH, inventory_balance.created_at, NOW()) >= :bulan";
         }

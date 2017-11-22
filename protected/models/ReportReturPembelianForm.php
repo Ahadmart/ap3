@@ -82,7 +82,7 @@ class ReportReturPembelianForm extends CFormModel
                     JOIN
                 retur_pembelian retur ON retur.id = detail.retur_pembelian_id
                     AND retur.`status` != :statusDraft
-                    AND retur.tanggal BETWEEN :dari AND :sampai
+                    AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
                     JOIN
                 profil ON profil.id = retur.profil_id {$wProfilId}
                     JOIN
