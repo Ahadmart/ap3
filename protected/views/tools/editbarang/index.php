@@ -248,24 +248,3 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         }
     });
 </script>
-<?php
-$this->menu = [
-    ['itemOptions' => ['class' => 'divider'], 'label' => ''],
-    ['itemOptions' => ['class' => 'has-form hide-for-small-only'], 'label' => '',
-        'items' => [
-            ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
-                    'class' => 'button',
-                    'accesskey' => 't'
-                ]],
-        ],
-        'submenuOptions' => ['class' => 'button-group']
-    ],
-    ['itemOptions' => ['class' => 'has-form show-for-small-only'], 'label' => '',
-        'items' => [
-            ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
-                    'class' => 'button',
-                ]],
-        ],
-        'submenuOptions' => ['class' => 'button-group']
-    ]
-];
