@@ -545,7 +545,7 @@ class InventoryBalance extends CActiveRecord
             $layerTerakhir = $this->layerTerakhir($barangId);
             /* Jika kosong juga, berarti belum ada proses pembelian ?? */
             if (is_null($layerTerakhir)) {
-                throw new Exception('[SO-]Inventory barang ID#'.$barangId.' tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
+                throw new Exception('[SO-]Inventory barang ID#' . $barangId . ' tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
             }
             /* Variabel $inventories diisi hanya dengan layer terakhir */
             $inventories = array($layerTerakhir);
@@ -613,7 +613,7 @@ class InventoryBalance extends CActiveRecord
             $layerTerakhir = $this->layerTerakhir($barangId);
             /* Jika kosong juga, berarti belum ada proses pembelian ?? */
             if (is_null($layerTerakhir)) {
-                throw new Exception('[SO+] Inventory barang ID#'.$barangId.' tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
+                throw new Exception('[SO+] Inventory barang ID#' . $barangId . ' tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
             }
             /* Variabel $inventory diisi dengan layer terakhir */
             $inventory = $layerTerakhir;
@@ -623,11 +623,11 @@ class InventoryBalance extends CActiveRecord
         $kapasitasInventory = $inventory->qty_awal - $inventory->qty;
         if ($kapasitasInventory != 0) {
             if ($sisa < $kapasitasInventory) {
-                $inventory->qty+=$sisa;
+                $inventory->qty += $sisa;
                 $sisa = 0;
             } else {
                 $inventory->qty = $inventory->qty_awal;
-                $sisa-=$kapasitasInventory;
+                $sisa -= $kapasitasInventory;
             }
 
             /*
@@ -676,11 +676,11 @@ class InventoryBalance extends CActiveRecord
             $kapasitasInventory = $inventory->qty_awal - $inventory->qty;
             if ($kapasitasInventory != 0) {
                 if ($sisa < $kapasitasInventory) {
-                    $inventory->qty+=$sisa;
+                    $inventory->qty += $sisa;
                     $sisa = 0;
                 } else {
                     $inventory->qty = $inventory->qty_awal;
-                    $sisa-=$kapasitasInventory;
+                    $sisa -= $kapasitasInventory;
                 }
 
                 /*
@@ -772,10 +772,19 @@ class InventoryBalance extends CActiveRecord
 
     public function totalInventory()
     {
-        $inventory = Yii::app()->db->createCommand()->
-                select('sum(harga_beli * qty) total')->
-                from('inventory_balance')->
-                where('qty > 0')->
+        $sql = "
+            SELECT 
+                SUM(harga_beli * qty) total
+            FROM
+                inventory_balance ib
+                    JOIN
+                barang ON barang.id = ib.barang_id
+                    AND barang.`status` = :statusAktif
+            WHERE
+                ib.qty > 0
+               ";
+        $inventory = Yii::app()->db->createCommand($sql)->
+                bindValue(':statusAktif', Barang::STATUS_AKTIF)->
                 queryRow();
         return $inventory['total'];
     }
