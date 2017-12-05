@@ -476,7 +476,7 @@ class ReturPembelian extends CActiveRecord
 
     public function keCsv()
     {
-        $csv = '"barcode", "nama","inv_id","ref","tgl_ref","harga_beli","qty"' . PHP_EOL;
+        $csv = '"barcode","nama","inv_id","ref","tgl_ref","harga_beli","qty"' . PHP_EOL;
 
         /*
          * Ambil data retur pembelian detail, untuk diexport ke csv
