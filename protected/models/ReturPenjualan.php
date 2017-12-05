@@ -494,4 +494,41 @@ class ReturPenjualan extends CActiveRecord
         );
     }
 
+    public function cariByRef($profilId, $noRef, $nominal)
+    {
+        return Yii::app()->db->createCommand()->
+                        select('*')->
+                        from("
+                    (SELECT
+                        id, nomor, tanggal, referensi, `status`
+                    FROM
+                        retur_penjualan
+                    WHERE
+                        profil_id = :profilId
+                            AND referensi = :noRef) t1
+                        ")->
+                        join("
+                    (SELECT
+                        retur_penjualan_id, SUM(qty * harga_jual) total
+                    FROM
+                        retur_penjualan_detail
+                    WHERE
+                        retur_penjualan_id IN (SELECT
+                                id
+                            FROM
+                                retur_penjualan
+                            WHERE
+                                profil_id = :profilId
+                                    AND referensi = :noRef)
+                    GROUP BY retur_penjualan_id
+                    HAVING SUM(qty * harga_jual) = :nominal) t2
+                        ", 't1.id = t2.retur_penjualan_id')->
+                        bindValues([
+                            ':profilId' => $profilId,
+                            ':noRef' => $noRef,
+                            ':nominal' => $nominal
+                        ])
+                        ->queryAll();
+    }
+
 }
