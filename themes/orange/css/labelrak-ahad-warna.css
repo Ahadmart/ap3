@@ -60,32 +60,32 @@ body{
 .footer1{
     background-color: greenyellow;
     height: 10px;
-    width: 70%;
+    width: 100%;
     /*margin-top: -25px;*/
     overflow: visible;
-    margin-left: 30%;
+    margin-left: 0;
 }
 .footer2{
     background-color: red;
     height: 10px;
-    width: 70%;
-    margin-left: 30%;
+    width: 100%;
+    margin-left: 0;
     /*margin-top: 25px;*/
 }
 .footer3{
     background-color: greenyellow;
     height: 10px;
-    width: 70%;
-    margin-left: 30%;
+    width: 100%;
+    margin-left: 0;
     /*margin-top: 25px;*/
 }
 
 img.logo{
-    background-color: #fff;
+    background-color: white;
     height: 30px;
     width: auto;
     margin-top: -30px;
-    margin-left: 5px;
+    margin-left: 19mm;
     float: left;
 }
 

@@ -451,4 +451,10 @@ class ReturpenjualanController extends Controller
         ]);
     }
 
+    public function actionCariByRef($profilId, $nomorRef, $nominal)
+    {
+        $pembelian = ReturPenjualan::model()->cariByRef($profilId, $nomorRef, $nominal);
+        empty($pembelian) ? $this->renderJSON(['ada' => false]) : $this->renderJSON(['ada' => true, 'returpenjualan' => $this->renderPartial('_import_sudah_ada', ['pembelian' => $pembelian], true)]);
+    }
+
 }

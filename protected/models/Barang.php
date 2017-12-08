@@ -37,6 +37,7 @@ class Barang extends CActiveRecord
     const STATUS_AKTIF = 1;
 
     public $soId;
+    public $daftarSupplier;
 
     /**
      * @return string the associated database table name
@@ -82,7 +83,7 @@ class Barang extends CActiveRecord
             array('created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, barcode, nama, kategori_id, satuan_id, rak_id, restock_point, restock_level, status', 'safe', 'on' => 'search'),
+            array('id, barcode, nama, kategori_id, satuan_id, rak_id, restock_point, restock_level, status, daftarSupplier', 'safe', 'on' => 'search'),
         );
     }
 
@@ -125,7 +126,8 @@ class Barang extends CActiveRecord
             'status' => 'Status',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
-            'created_at' => 'Created At'
+            'created_at' => 'Created At',
+            'daftarSupplier' => 'Supplier'
         );
     }
 
@@ -158,6 +160,18 @@ class Barang extends CActiveRecord
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('t.created_at', $this->created_at, true);
+        $criteria->compare("(SELECT 
+                                group_concat(p.nama)
+                            FROM
+                                supplier_barang sb
+                                    JOIN
+                                profil p ON p.id = sb.supplier_id
+                            WHERE
+                                barang_id = t.id
+                                GROUP BY barang_id)", $this->daftarSupplier, true);
+//        if (!empty($this->daftarSupplier)){
+//            $criteria->addCondition("");
+//        }
         if ($this->rak_id != 'NULL') {
             $criteria->compare('rak_id', $this->rak_id);
         } else {
@@ -306,5 +320,26 @@ class Barang extends CActiveRecord
             LIMIT 1
 	")->queryRow();
         return $hasil['tanggal_terakhir'];
+    }
+    
+    /**
+     * Ambil daftar supplier dari barang ini
+     * @return array list of supplier (id, nama, default)
+     */
+    public function getListSupplier(){
+        $sql = "
+            SELECT 
+                p.id, p.nama, sb.`default`
+            FROM
+                supplier_barang sb
+                    JOIN
+                profil p ON p.id = sb.supplier_id
+            WHERE
+                barang_id = :barangId
+            ORDER BY sb.`default` DESC , p.nama
+               ";
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValue(":barangId", $this->id);
+        return $command->queryAll();        
     }
 }

@@ -40,7 +40,7 @@ class CetakStockOpnameForm extends CFormModel
         return array(
             array('rakId, kategoriId, sortBy, kertas', 'required', 'message' => '{attribute} tidak boleh kosong'),
             ['kecualiStokNol, aktifSaja', 'numerical', 'integerOnly' => true],
-            ['kecualiStokNol', 'safe'],
+            ['kecualiStokNol, aktifSaja', 'safe'],
         );
     }
 

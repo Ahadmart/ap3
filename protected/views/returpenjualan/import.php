@@ -3,6 +3,15 @@ $this->boxHeader['small'] = 'Import';
 $this->boxHeader['normal'] = 'Import Retur Penjualan';
 ?>
 
+<?php
+if (!empty($error)) {
+    ?>
+    <div class="error alone">
+        <?= 'Error ' . $error['error']['code'] . '<br />' . $error['error']['msg'] ?>
+    </div>
+    <?php
+}
+?>
 <div class="row">
     <div class="medium-6 columns">
         <div class="panel">
@@ -112,13 +121,13 @@ $this->boxHeader['normal'] = 'Import Retur Penjualan';
                 var data = $.csv.toArrays(csv);
                 for (var row in data) {
                     if (row > 0) {
-                        subTotal = data[row][3] * data[row][5];
+                        subTotal = data[row][5] * data[row][6];
                         jumlah += subTotal;
                         //console.log(subTotal);
                     }
                 }
                 var namaFile = escape(file.name);
-                var nF = namaFile.split('-');
+                var nF = namaFile.split('_');
                 var nomor = nF[0];
                 var profilId = $("#UploadCsvReturPenjualanForm_profilId").val();
                 tampilkanInfo(profilId, nomor, jumlah);
