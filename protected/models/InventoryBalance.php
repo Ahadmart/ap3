@@ -507,7 +507,9 @@ class InventoryBalance extends CActiveRecord
             }
 
             if ($inventoryBalance->save()) {
-                return true;
+                if ($sisa == 0) {
+                    return true;
+                }
             } else {
                 throw new Exception("Gagal simpan layer inventory");
             }
