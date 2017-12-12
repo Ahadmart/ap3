@@ -1,125 +1,133 @@
 <?php
-/* @var $this EditbarangController */
-/* @var $model Barang */
+    /* @var $this EditbarangController */
+    /* @var $model Barang */
 
-$this->breadcrumbs = [
-    'Barang' => ['index'],
-    'Index',
-];
+    $this->breadcrumbs = [
+        'Barang' => ['index'],
+        'Index',
+    ];
 
-$this->boxHeader['small'] = 'Edit Barang';
-$this->boxHeader['normal'] = 'Edit Barang';
+    $this->boxHeader['small']  = 'Edit Barang';
+    $this->boxHeader['normal'] = 'Edit Barang';
 
-// Agar focus tetap di input cari barcode setelah pencarian
-Yii::app()->clientScript->registerScript('barcodeFocus', ''
+    // Agar focus tetap di input cari barcode setelah pencarian
+    Yii::app()->clientScript->registerScript('barcodeFocus', ''
         . '$(document).ajaxComplete(function() {'
         . '$("input[name=\'Barang[barcode]\'").select();'
         . '});');
 ?>
 
 <div id="ganti-rak-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
+<div id="ganti-kat-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 <div id="edit-sup-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 <div class="row">
     <div class="small-12 columns">
-        <?= CHtml::link('Set Non Aktif', '#', ['class' => 'button tb-edit-barang', 'id' => 'tombol-set-na', 'disabled' => true]) ?>
-        <?= CHtml::link('Set Aktif', '#', ['class' => 'button tb-edit-barang', 'id' => 'tombol-set-a', 'disabled' => true]) ?>
+        <?=CHtml::link('Set Non Aktif', '#', ['class' => 'button tb-edit-barang', 'id' => 'tombol-set-na', 'disabled' => true]);?>
+        <?=CHtml::link('Set Aktif', '#', ['class' => 'button tb-edit-barang', 'id' => 'tombol-set-a', 'disabled' => true]);?>
         <?=
-        CHtml::link('Ganti Rak..', '#', [
-            'class' => 'button tb-edit-barang',
-            'data-reveal-id' => 'ganti-rak-m',
-            'id' => 'tombol-ganti-rak',
-            'disabled' => true])
-        ?>
+CHtml::link('Ganti Rak..', '#', [
+    'class'          => 'button tb-edit-barang',
+    'data-reveal-id' => 'ganti-rak-m',
+    'id'             => 'tombol-ganti-rak',
+    'disabled'       => true])
+;?>
         <?=
-        CHtml::link('Edit Supplier..', '#', [
-            'class' => 'button tb-edit-barang',
-            'data-reveal-id' => 'edit-sup-m',
-            'id' => 'tombol-edit-sup',
-            'disabled' => true])
-        ?>
+CHtml::link('Ganti Kategori..', '#', [
+    'class'          => 'button tb-edit-barang',
+    'data-reveal-id' => 'ganti-kat-m',
+    'id'             => 'tombol-ganti-kat',
+    'disabled'       => true])
+;?>
+        <?=
+CHtml::link('Edit Supplier..', '#', [
+    'class'          => 'button tb-edit-barang',
+    'data-reveal-id' => 'edit-sup-m',
+    'id'             => 'tombol-edit-sup',
+    'disabled'       => true])
+;?>
     </div>
 </div>
 <div class="row" style="overflow: auto">
     <div class="small-12 columns">
         <?php
-        $this->widget('BGridView', [
-            'id' => 'barang-grid',
-            'dataProvider' => $model->search(50),
-            'filter' => $model,
-            'itemsCssClass' => 'tabel-index',
-            'columns' => [
-                [
-                    'id' => 'kolomcek',
-                    'class' => 'CCheckBoxColumn',
-                    'selectableRows' => 2,
-                    'value' => '$data->id'
+            $this->widget('BGridView', [
+                'id'            => 'barang-grid',
+                'dataProvider'  => $model->search(50),
+                'filter'        => $model,
+                'itemsCssClass' => 'tabel-index',
+                'columns'       => [
+                    [
+                        'id'             => 'kolomcek',
+                        'class'          => 'CCheckBoxColumn',
+                        'selectableRows' => 2,
+                        'value'          => '$data->id',
+                    ],
+                    [
+                        'class'     => 'BDataColumn',
+                        'name'      => 'barcode',
+                        'header'    => '<span class="ak">B</span>arcode',
+                        'accesskey' => 'b',
+                        'autoFocus' => true,
+                    ],
+                    [
+                        'class'     => 'BDataColumn',
+                        'name'      => 'nama',
+                        'header'    => '<span class="ak">N</span>ama',
+                        'accesskey' => 'n',
+                        'type'      => 'raw',
+                    ],
+                    [
+                        'class' => 'BDataColumn',
+                        'name'  => 'daftarSupplier',
+                        'type'  => 'raw',
+                        'value' => [$this, 'renderSuppliers'],
+                    ],
+                    [
+                        'name'   => 'satuan_id',
+                        'value'  => '$data->satuan->nama',
+                        'filter' => $model->filterSatuan(),
+                    ],
+                    [
+                        'name'   => 'kategori_id',
+                        'value'  => '$data->kategori->nama',
+                        'filter' => $model->filterKategori(),
+                    ],
+                    [
+                        'name'   => 'rak_id',
+                        'value'  => '$data->rak == null ? "NULL":$data->rak->nama',
+                        'filter' => $model->filterRak(),
+                    ],
+                    [
+                        'name'   => 'status',
+                        'value'  => '$data->namaStatus',
+                        'filter' => $model->filterStatus(),
+                    ],
+                    [
+                        'header'            => 'Harga Jual',
+                        'value'             => '$data->hargaJual',
+                        'htmlOptions'       => ['class' => 'rata-kanan'],
+                        'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    ],
+                    [
+                        'name'              => 'Stok',
+                        'value'             => '$data->stok',
+                        'htmlOptions'       => ['class' => 'rata-kanan'],
+                        'headerHtmlOptions' => ['style' => 'width:75px', 'class' => 'rata-kanan'],
+                        'filter'            => false,
+                    ],
+                    [
+                        'name'   => 'Pembelian Terakhir',
+                        'value'  => '$data->tanggalBeliTerakhir',
+                        'filter' => false,
+                    ],
                 ],
-                [
-                    'class' => 'BDataColumn',
-                    'name' => 'barcode',
-                    'header' => '<span class="ak">B</span>arcode',
-                    'accesskey' => 'b',
-                    'autoFocus' => true
-                ],
-                [
-                    'class' => 'BDataColumn',
-                    'name' => 'nama',
-                    'header' => '<span class="ak">N</span>ama',
-                    'accesskey' => 'n',
-                    'type' => 'raw',
-                ],
-                [
-                    'class' => 'BDataColumn',
-                    'name' => 'daftarSupplier',
-                    'type' => 'raw',
-                    'value' => [$this, 'renderSuppliers'],
-                ],
-                [
-                    'name' => 'satuan_id',
-                    'value' => '$data->satuan->nama',
-                    'filter' => $model->filterSatuan()
-                ],
-                [
-                    'name' => 'kategori_id',
-                    'value' => '$data->kategori->nama',
-                    'filter' => $model->filterKategori()
-                ],
-                [
-                    'name' => 'rak_id',
-                    'value' => '$data->rak == null ? "NULL":$data->rak->nama',
-                    'filter' => $model->filterRak()
-                ],
-                [
-                    'name' => 'status',
-                    'value' => '$data->namaStatus',
-                    'filter' => $model->filterStatus()
-                ],
-                [
-                    'header' => 'Harga Jual',
-                    'value' => '$data->hargaJual',
-                    'htmlOptions' => ['class' => 'rata-kanan'],
-                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                ],
-                [
-                    'name' => 'Stok',
-                    'value' => '$data->stok',
-                    'htmlOptions' => array('class' => 'rata-kanan'),
-                    'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
-                    'filter' => false
-                ],
-                [
-                    'name' => 'Pembelian Terakhir',
-                    'value' => '$data->tanggalBeliTerakhir',
-                    'filter' => false
-                ],
-            ],
-        ]);
+            ]);
         ?>
     </div>
 </div>
 <?php
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+    Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+    Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 ?>
 <script>
     $(document).ajaxComplete(function () {
@@ -150,7 +158,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         if ($(this).is("[disabled]")) {
             console.log('set na disabled clicked');
         } else {
-            var dataUrl = '<?= $this->createUrl('setna'); ?>';
+            var dataUrl = '<?=$this->createUrl('setna');?>';
             var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
             var dataKirim = {
                 'ajaxdata': true,
@@ -185,7 +193,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         if ($(this).is("[disabled]")) {
             console.log('set a disabled clicked');
         } else {
-            var dataUrl = '<?= $this->createUrl('seta'); ?>';
+            var dataUrl = '<?=$this->createUrl('seta');?>';
             var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
             var dataKirim = {
                 'ajaxdata': true,
@@ -221,7 +229,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             console.log('set rak disabled clicked');
         } else {
             $('#ganti-rak-m').foundation('reveal', 'open', {
-                url: '<?= $this->createUrl('formgantirak') ?>',
+                url: '<?=$this->createUrl('formgantirak');?>',
                 success: function (data) {
                     // Tampilkan Dropdown pilihan rak
                 },
@@ -232,12 +240,28 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         }
     });
 
+    $("#tombol-ganti-kat").click(function () {
+        if ($(this).is("[disabled]")) {
+            console.log('ganti kat disabled clicked');
+        } else {
+            $('#ganti-kat-m').foundation('reveal', 'open', {
+                url: '<?=$this->createUrl('formgantikat');?>',
+                success: function (data) {
+                    // Tampilkan Dropdown pilihan kategori
+                },
+                error: function () {
+                    alert('Gagal mengambil data kategori!');
+                }
+            });
+        }
+    });
+
     $("#tombol-edit-sup").click(function () {
         if ($(this).is("[disabled]")) {
             console.log('edit sup disabled clicked');
         } else {
             $('#edit-sup-m').foundation('reveal', 'open', {
-                url: '<?= $this->createUrl('formeditsup') ?>',
+                url: '<?=$this->createUrl('formeditsup');?>',
                 success: function (data) {
                     // Tampilkan Dropdown pilihan rak
                 },

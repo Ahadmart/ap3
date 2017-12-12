@@ -271,4 +271,51 @@ class EditbarangController extends Controller
         return $return;
     }
 
+    private function _setKat($items, $katId)
+    {
+        $condition = 'id in (';
+        $i         = 1;
+        $params    = [];
+        $pertamax  = true;
+        foreach ($items as $item) {
+            $key = ':item' . $i;
+            if (!$pertamax) {
+                $condition .= ',';
+            }
+            $condition .= $key;
+            $params[$key] = $item;
+            $pertamax     = false;
+            $i++;
+        }
+        $condition .= ')';
+        $rowAffected = Barang::model()->updateAll(['kategori_id' => $katId], $condition, $params);
+        $kat         = KategoriBarang::model()->findByPk($katId);
+        return [
+            'sukses'      => true,
+            'rowAffected' => $rowAffected,
+            'namakat'     => $kat->nama,
+        ];
+    }
+
+    public function actionFormGantiKat()
+    {
+        $this->renderPartial('_form_ganti_kategori');
+    }
+
+    public function actionSetKat()
+    {
+        if (isset($_POST['ajaxkat']) && !empty($_POST['kat-id']) && !empty($_POST['items'])) {
+            $items = $_POST['items'];
+            $katId = $_POST['kat-id'];
+            $this->renderJSON($this->_setKat($items, $katId));
+        } else {
+            $this->renderJSON([
+                'sukses' => false,
+                'error'  => [
+                    'code' => 500,
+                    'msg'  => 'Tidak ada data!',
+                ],
+            ]);
+        }
+    }
 }
