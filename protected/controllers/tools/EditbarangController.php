@@ -6,13 +6,14 @@ class EditbarangController extends Controller
     public function actionIndex()
     {
         $model = new Barang('search');
-        $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['Barang']))
+        $model->unsetAttributes(); // clear any default values
+        if (isset($_GET['Barang'])) {
             $model->attributes = $_GET['Barang'];
+        }
 
-        $this->render('index', array(
+        $this->render('index', [
             'model' => $model,
-        ));
+        ]);
     }
 
     public function actionSetna()
@@ -23,10 +24,10 @@ class EditbarangController extends Controller
         } else {
             $this->renderJSON([
                 'sukses' => false,
-                'error' => [
+                'error'  => [
                     'code' => 500,
-                    'msg' => 'Tidak ada data!'
-                ]
+                    'msg'  => 'Tidak ada data!',
+                ],
             ]);
         }
     }
@@ -39,10 +40,10 @@ class EditbarangController extends Controller
         } else {
             $this->renderJSON([
                 'sukses' => false,
-                'error' => [
+                'error'  => [
                     'code' => 500,
-                    'msg' => 'Tidak ada data!'
-                ]
+                    'msg'  => 'Tidak ada data!',
+                ],
             ]);
         }
     }
@@ -50,9 +51,9 @@ class EditbarangController extends Controller
     private function _setStatus($items, $status)
     {
         $condition = 'id in (';
-        $i = 1;
-        $params = [];
-        $pertamax = true;
+        $i         = 1;
+        $params    = [];
+        $pertamax  = true;
         foreach ($items as $item) {
             $key = ':item' . $i;
             if (!$pertamax) {
@@ -60,13 +61,13 @@ class EditbarangController extends Controller
             }
             $condition .= $key;
             $params[$key] = $item;
-            $pertamax = false;
+            $pertamax     = false;
             $i++;
         }
         $condition .= ')';
         $rowAffected = Barang::model()->updateAll(['status' => $status], $condition, $params);
         return [
-            'sukses' => true,
+            'sukses'      => true,
             'rowAffected' => $rowAffected,
         ];
     }
@@ -85,10 +86,10 @@ class EditbarangController extends Controller
         } else {
             $this->renderJSON([
                 'sukses' => false,
-                'error' => [
+                'error'  => [
                     'code' => 500,
-                    'msg' => 'Tidak ada data!'
-                ]
+                    'msg'  => 'Tidak ada data!',
+                ],
             ]);
         }
     }
@@ -96,9 +97,9 @@ class EditbarangController extends Controller
     private function _setRak($items, $rakId)
     {
         $condition = 'id in (';
-        $i = 1;
-        $params = [];
-        $pertamax = true;
+        $i         = 1;
+        $params    = [];
+        $pertamax  = true;
         foreach ($items as $item) {
             $key = ':item' . $i;
             if (!$pertamax) {
@@ -106,16 +107,16 @@ class EditbarangController extends Controller
             }
             $condition .= $key;
             $params[$key] = $item;
-            $pertamax = false;
+            $pertamax     = false;
             $i++;
         }
         $condition .= ')';
         $rowAffected = Barang::model()->updateAll(['rak_id' => $rakId], $condition, $params);
-        $rak = RakBarang::model()->findByPk($rakId);
+        $rak         = RakBarang::model()->findByPk($rakId);
         return [
-            'sukses' => true,
+            'sukses'      => true,
             'rowAffected' => $rowAffected,
-            'namarak' => $rak->nama
+            'namarak'     => $rak->nama,
         ];
     }
 
@@ -127,25 +128,25 @@ class EditbarangController extends Controller
     public function actionTambahSup()
     {
         if (isset($_POST['ajaxsup']) && !empty($_POST['sup-id']) && !empty($_POST['items'])) {
-            $items = $_POST['items'];
-            $supId = $_POST['sup-id'];
+            $items      = $_POST['items'];
+            $supId      = $_POST['sup-id'];
             $setDefault = $_POST['sup-def'];
             $this->renderJSON($this->_tambahSupplier($items, $supId, $setDefault));
         } else {
             $this->renderJSON([
                 'sukses' => false,
-                'error' => [
+                'error'  => [
                     'code' => 500,
-                    'msg' => 'Tidak ada data!'
-                ]
+                    'msg'  => 'Tidak ada data!',
+                ],
             ]);
         }
         $this->renderJSON([
             'sukses' => false,
-            'error' => [
+            'error'  => [
                 'code' => 500,
-                'msg' => 'Tidak ada data!'
-            ]
+                'msg'  => 'Tidak ada data!',
+            ],
         ]);
     }
 
@@ -153,13 +154,13 @@ class EditbarangController extends Controller
     {
         $profil = Profil::model()->findByPk($supplierId);
 
-        $sql = "INSERT IGNORE INTO `supplier_barang` (supplier_id, barang_id, updated_by, created_at) VALUES (:supId, :barangId, :userId, :waktu)";
-        $params = [];
+        $sql      = "INSERT IGNORE INTO `supplier_barang` (supplier_id, barang_id, updated_by, created_at) VALUES (:supId, :barangId, :userId, :waktu)";
+        $params   = [];
         $sekarang = date('Y-m-d H:i:s');
         foreach ($items as $item) {
             $params[] = [':supId' => $supplierId, ':barangId' => $item, ':userId' => Yii::app()->user->id, ':waktu' => $sekarang];
         }
-        $command = Yii::app()->db->createCommand($sql);
+        $command     = Yii::app()->db->createCommand($sql);
         $rowAffected = 0;
         foreach ($params as $param) {
             $rowAffected += $command->execute($param);
@@ -168,16 +169,16 @@ class EditbarangController extends Controller
         if ($setDefault) {
             foreach ($items as $item) {
                 $supBarang = Yii::app()->db->createCommand("select id from supplier_barang where supplier_id=:supplierId and barang_id=:barangId")
-                                ->bindValues([':supplierId' => $supplierId, ':barangId' => $item])->queryRow();
+                    ->bindValues([':supplierId' => $supplierId, ':barangId' => $item])->queryRow();
                 SupplierBarang::model()->assignDefaultSupplier($supBarang['id'], $item);
             }
         }
 
         return [
-            'sukses' => true,
+            'sukses'      => true,
             'rowAffected' => $rowAffected,
-            'namasup' => $profil->nama,
-            'setDefault' => $setDefault
+            'namasup'     => $profil->nama,
+            'setDefault'  => $setDefault,
         ];
     }
 
@@ -190,18 +191,18 @@ class EditbarangController extends Controller
         } else {
             $this->renderJSON([
                 'sukses' => false,
-                'error' => [
+                'error'  => [
                     'code' => 500,
-                    'msg' => 'Tidak ada data!'
-                ]
+                    'msg'  => 'Tidak ada data!',
+                ],
             ]);
         }
         $this->renderJSON([
             'sukses' => false,
-            'error' => [
+            'error'  => [
                 'code' => 500,
-                'msg' => 'Tidak ada data!'
-            ]
+                'msg'  => 'Tidak ada data!',
+            ],
         ]);
     }
 
@@ -211,9 +212,9 @@ class EditbarangController extends Controller
 
         /* Delete all barang di items */
         $condition = 'barang_id in (';
-        $i = 1;
-        $params = [];
-        $pertamax = true;
+        $i         = 1;
+        $params    = [];
+        $pertamax  = true;
         foreach ($items as $item) {
             $key = ':item' . $i;
             if (!$pertamax) {
@@ -221,41 +222,41 @@ class EditbarangController extends Controller
             }
             $condition .= $key;
             $params[$key] = $item;
-            $pertamax = false;
+            $pertamax     = false;
             $i++;
         }
         $condition .= ')';
         $rowDeleted = SupplierBarang::model()->deleteAll($condition, $params);
-        
+
         /* insert all barang dengan supplier $supId dan default */
-        $sql = "INSERT INTO `supplier_barang` (supplier_id, barang_id, `default`, updated_by, created_at) VALUES (:supId, :barangId, :default, :userId, :waktu)";
-        $params = [];
+        $sql      = "INSERT INTO `supplier_barang` (supplier_id, barang_id, `default`, updated_by, created_at) VALUES (:supId, :barangId, :default, :userId, :waktu)";
+        $params   = [];
         $sekarang = date('Y-m-d H:i:s');
         foreach ($items as $item) {
             $params[] = [
-                ':supId' => $supId,
+                ':supId'    => $supId,
                 ':barangId' => $item,
-                ':default' => 1, // set as default!
-                ':userId' => Yii::app()->user->id,
-                ':waktu' => $sekarang];
+                ':default'  => 1, // set as default!
+                ':userId'   => Yii::app()->user->id,
+                ':waktu'    => $sekarang];
         }
-        $command = Yii::app()->db->createCommand($sql);
+        $command     = Yii::app()->db->createCommand($sql);
         $rowAffected = 0;
         foreach ($params as $param) {
             $rowAffected += $command->execute($param);
         }
         return [
-            'sukses' => true,
-            'rowDeleted' => $rowDeleted,
+            'sukses'      => true,
+            'rowDeleted'  => $rowDeleted,
             'rowAffected' => $rowAffected,
-            'namasup' => $profil->nama
+            'namasup'     => $profil->nama,
         ];
     }
 
     public function renderSuppliers($data)
     {
         $return = '';
-        $sups = $data->listSupplier;
+        $sups   = $data->listSupplier;
         if (!empty($sups)) {
             $str = "";
             foreach ($sups as $sup) {
