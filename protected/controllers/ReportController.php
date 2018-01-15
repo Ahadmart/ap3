@@ -2,7 +2,6 @@
 
 class ReportController extends Controller
 {
-
     public function actionIndex()
     {
         $this->render('index');
@@ -11,11 +10,11 @@ class ReportController extends Controller
     public function actionPilihProfil($id)
     {
         $profil = Profil::model()->findByPk($id);
-        $return = array(
-            'id' => $id,
-            'nama' => $profil->nama,
+        $return = [
+            'id'      => $id,
+            'nama'    => $profil->nama,
             'alamat1' => $profil->alamat1,
-        );
+        ];
         $this->renderJSON($return);
     }
 
@@ -33,15 +32,15 @@ class ReportController extends Controller
         }
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
-        $this->render('pembelian', array(
-            'model' => $model,
-            'profil' => $profil
-        ));
+        $this->render('pembelian', [
+            'model'  => $model,
+            'profil' => $profil,
+        ]);
     }
 
     /**
@@ -49,8 +48,8 @@ class ReportController extends Controller
      */
     public function actionPenjualan()
     {
-        $model = new ReportPenjualanForm;
-        $report = array();
+        $model  = new ReportPenjualanForm;
+        $report = [];
         if (isset($_POST['ReportPenjualanForm'])) {
             $model->attributes = $_POST['ReportPenjualanForm'];
             if ($model->validate()) {
@@ -59,27 +58,27 @@ class ReportController extends Controller
         }
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
         $user = new User('search');
-        $user->unsetAttributes();  // clear any default values
+        $user->unsetAttributes(); // clear any default values
         if (isset($_GET['User'])) {
             $user->attributes = $_GET['User'];
         }
 
         $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
         //$kertasUntukPdf = ReportPenjualanForm::listKertas();
-        $this->render('penjualan', array(
-            'model' => $model,
-            'profil' => $profil,
-            'user' => $user,
-            'report' => $report,
-            'printers' => $printers
-        ));
+        $this->render('penjualan', [
+            'model'    => $model,
+            'profil'   => $profil,
+            'user'     => $user,
+            'report'   => $report,
+            'printers' => $printers,
+        ]);
     }
 
     public function actionPrintPenjualan()
@@ -101,20 +100,20 @@ class ReportController extends Controller
     public function penjualanCsv()
     {
         $reportPenjualan = new ReportPenjualanForm;
-        $csv = $reportPenjualan->toCsv();
+        $csv             = $reportPenjualan->toCsv();
 
         if (is_null($csv)) {
             throw new Exception("Tidak ada data", 500);
         }
 
-        $namaToko = Config::model()->find("nama = 'toko.nama'");
+        $namaToko  = Config::model()->find("nama = 'toko.nama'");
         $timeStamp = date("Y-m-d-H-i");
-        $namaFile = "Penjualan {$namaToko->nilai} {$timeStamp}";
+        $namaFile  = "Penjualan {$namaToko->nilai} {$timeStamp}";
 
-        $this->renderPartial('_csv', array(
+        $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
-            'csv' => $csv
-        ));
+            'csv'      => $csv,
+        ]);
     }
 
     /**
@@ -127,20 +126,20 @@ class ReportController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-                    $this->createUrl('pilihuser', array('id' => $data->id)) .
-                    '" class="pilih user">' . $data->nama_lengkap . '</a>';
+            $this->createUrl('pilihuser', ['id' => $data->id]) .
+            '" class="pilih user">' . $data->nama_lengkap . '</a>';
         }
         return $return;
     }
 
     public function actionPilihUser($id)
     {
-        $user = User::model()->findByPk($id);
-        $return = array(
-            'id' => $id,
+        $user   = User::model()->findByPk($id);
+        $return = [
+            'id'          => $id,
             'namaLengkap' => $user->nama_lengkap,
-            'nama' => $user->nama,
-        );
+            'nama'        => $user->nama,
+        ];
         $this->renderJSON($return);
     }
 
@@ -150,12 +149,12 @@ class ReportController extends Controller
     public function actionHarianDetail()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new ReportHarianForm;
+        $model        = new ReportHarianForm;
         if (isset($_REQUEST['ReportHarianForm'])) {
             $model->attributes = $_REQUEST['ReportHarianForm'];
             if ($model->validate()) {
-                $report = $model->reportHarianDetail();
-                $report['tanggal'] = $model->tanggal;
+                $report             = $model->reportHarianDetail();
+                $report['tanggal']  = $model->tanggal;
                 $report['namaToko'] = $this->namaToko();
                 $report['kodeToko'] = $this->kodeToko();
                 $this->harianDetailPdf($report);
@@ -163,17 +162,17 @@ class ReportController extends Controller
             }
         }
 
-        $tipePrinterAvailable = array(Device::TIPE_PDF_PRINTER);
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
-        $kertasPdf = ReportHarianForm::listKertas();
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf            = ReportHarianForm::listKertas();
 
-        $this->render('harian', array(
-            'model' => $model,
-            'judul' => 'Harian Detail',
-            'printers' => $printers,
-            'kertasPdf' => $kertasPdf,
-            'printHandle' => 'printharian'
-        ));
+        $this->render('harian', [
+            'model'       => $model,
+            'judul'       => 'Harian Detail',
+            'printers'    => $printers,
+            'kertasPdf'   => $kertasPdf,
+            'printHandle' => 'printharian',
+        ]);
     }
 
     /**
@@ -182,32 +181,32 @@ class ReportController extends Controller
     public function actionHarianDetail2()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new ReportHarianForm;
+        $model        = new ReportHarianForm;
 
-        $tipePrinterAvailable = array(Device::TIPE_PDF_PRINTER);
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
-        $kertasPdf = ReportHarianForm::listKertas();
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf            = ReportHarianForm::listKertas();
 
-        $this->render('harian', array(
-            'model' => $model,
-            'judul' => 'Harian Detail',
-            'printers' => $printers,
-            'kertasPdf' => $kertasPdf,
-            'printHandle' => 'printharian2'
-        ));
+        $this->render('harian', [
+            'model'       => $model,
+            'judul'       => 'Harian Detail',
+            'printers'    => $printers,
+            'kertasPdf'   => $kertasPdf,
+            'printHandle' => 'printharian2',
+        ]);
     }
 
     public function actionPrintHarian($printId, $kertas, $tanggal, $group)
     {
-        $model = new ReportHarianForm;
-        $model->tanggal = $tanggal;
+        $model                = new ReportHarianForm;
+        $model->tanggal       = $tanggal;
         $model->groupByProfil = $group;
         if ($model->validate()) {
-            $report = $model->reportHarianDetail();
-            $report['tanggal'] = $tanggal;
+            $report             = $model->reportHarianDetail();
+            $report['tanggal']  = $tanggal;
             $report['namaToko'] = $this->namaToko();
             $report['kodeToko'] = $this->kodeToko();
-            $device = Device::model()->findByPk($printId);
+            $device             = Device::model()->findByPk($printId);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
                     /* Ada tambahan parameter kertas untuk tipe pdf */
@@ -220,15 +219,15 @@ class ReportController extends Controller
 
     public function actionPrintHarian2($printId, $kertas, $tanggal, $group)
     {
-        $model = new ReportHarianForm;
-        $model->tanggal = $tanggal;
+        $model                = new ReportHarianForm;
+        $model->tanggal       = $tanggal;
         $model->groupByProfil = $group;
         if ($model->validate()) {
-            $report = $model->reportHarianDetail();
-            $report['tanggal'] = $tanggal;
+            $report             = $model->reportHarianDetail();
+            $report['tanggal']  = $tanggal;
             $report['namaToko'] = $this->namaToko();
             $report['kodeToko'] = $this->kodeToko();
-            $device = Device::model()->findByPk($printId);
+            $device             = Device::model()->findByPk($printId);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
                     /* Ada tambahan parameter kertas untuk tipe pdf */
@@ -245,12 +244,12 @@ class ReportController extends Controller
     public function actionHarianRekap()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new ReportHarianForm;
+        $model        = new ReportHarianForm;
         if (isset($_REQUEST['ReportHarianForm'])) {
             $model->attributes = $_REQUEST['ReportHarianForm'];
             if ($model->validate()) {
-                $report = $model->reportHarianRekap();
-                $report['tanggal'] = $model->tanggal;
+                $report             = $model->reportHarianRekap();
+                $report['tanggal']  = $model->tanggal;
                 $report['namaToko'] = $this->namaToko();
                 $report['kodeToko'] = $this->kodeToko();
                 $this->harianRekapPdf($report);
@@ -258,35 +257,34 @@ class ReportController extends Controller
             }
         }
 
-        $this->render('harian', array(
+        $this->render('harian', [
             'model' => $model,
-            'judul' => 'Harian Rekap'
-        ));
+            'judul' => 'Harian Rekap',
+        ]);
     }
 
     public function namaToko()
     {
-        $config = Config::model()->find('nama=:nama', array(':nama' => 'toko.nama'));
+        $config = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
         return $config->nilai;
     }
 
     public function kodeToko()
     {
-        $config = Config::model()->find('nama=:nama', array(':nama' => 'toko.kode'));
+        $config = Config::model()->find('nama=:nama', [':nama' => 'toko.kode']);
         return $config->nilai;
     }
 
     public function harianDetailPdf($report, $kertas)
     {
-
         /*
          * Persiapan render PDF
          */
         $listNamaKertas = ReportHarianForm::listKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf', array(
-                    'report' => $report,
-                        ), true
+        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf', [
+            'report' => $report,
+        ], true
         ));
 
         $mPDF1->SetDisplayMode('fullpage');
@@ -298,15 +296,14 @@ class ReportController extends Controller
 
     public function harianDetailPdf2($report, $kertas)
     {
-
         /*
          * Persiapan render PDF
          */
         $listNamaKertas = ReportHarianForm::listKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf_2', array(
-                    'report' => $report,
-                        ), true
+        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf_2', [
+            'report' => $report,
+        ], true
         ));
 
         $mPDF1->SetDisplayMode('fullpage');
@@ -318,14 +315,13 @@ class ReportController extends Controller
 
     public function harianRekapPdf($report)
     {
-
         /*
          * Persiapan render PDF
          */
         $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
-        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf', array(
-                    'report' => $report,
-                        ), true
+        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf', [
+            'report' => $report,
+        ], true
         ));
 
         $mPDF1->SetDisplayMode('fullpage');
@@ -337,32 +333,32 @@ class ReportController extends Controller
 
     public function actionPoinMember()
     {
-        $model = new ReportPoinMemberForm;
+        $model  = new ReportPoinMemberForm;
         $report = null;
         if (isset($_POST['ReportPoinMemberForm'])) {
             $model->attributes = $_POST['ReportPoinMemberForm'];
-            $report = $model->ambilDataPoinMember();
+            $report            = $model->ambilDataPoinMember();
         }
 
         $kertasUntukPdf = ReportPoinMemberForm::listKertas();
-        $this->render('poinmember', array(
-            'model' => $model,
-            'judul' => 'Poin Member',
+        $this->render('poinmember', [
+            'model'       => $model,
+            'judul'       => 'Poin Member',
             'listPeriode' => $model->listPeriode(),
-            'listSortBy' => $model->listSortBy(),
-            'report' => $report,
-            'kertasPdf' => $kertasUntukPdf
-        ));
+            'listSortBy'  => $model->listSortBy(),
+            'report'      => $report,
+            'kertasPdf'   => $kertasUntukPdf,
+        ]);
     }
 
     public function actionPoinMemberPdf()
     {
-        $model = new ReportPoinMemberForm;
+        $model  = new ReportPoinMemberForm;
         $report = null;
 
         if (isset($_POST['ReportPoinMemberForm'])) {
             $model->attributes = $_POST['ReportPoinMemberForm'];
-            $report = $model->ambilDataPoinMember();
+            $report            = $model->ambilDataPoinMember();
         } else {
             throw new Exception("Tidak ada data, klik lagi dari tombol cetak", 500);
         }
@@ -371,7 +367,7 @@ class ReportController extends Controller
         /*
          * Ubah config (object) jadi array
          */
-        $branchConfig = array();
+        $branchConfig = [];
         foreach ($configs as $config) {
             $branchConfig[$config->nama] = $config->nilai;
         }
@@ -379,14 +375,14 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        $waktuCetak = date('dmY His');
+        $waktuCetak     = date('dmY His');
         $listNamaKertas = ReportPoinMemberForm::listNamaKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_poin_member_pdf', array(
-                    'report' => $report,
-                    'config' => $branchConfig,
-                    'waktuCetak' => $waktuCetak
-                        ), true
+        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_poin_member_pdf', [
+            'report'     => $report,
+            'config'     => $branchConfig,
+            'waktuCetak' => $waktuCetak,
+        ], true
         ));
 
         $mPDF1->SetDisplayMode('fullpage');
@@ -404,7 +400,7 @@ class ReportController extends Controller
 
     public function actionTopRank()
     {
-        $model = new ReportTopRankForm();
+        $model  = new ReportTopRankForm();
         $report = null;
         if (isset($_POST['ReportTopRankForm'])) {
             $model->attributes = $_POST['ReportTopRankForm'];
@@ -414,28 +410,28 @@ class ReportController extends Controller
         }
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
         $kertasUntukPdf = ReportTopRankForm::listKertas();
         $this->render('toprank', [
-            'model' => $model,
-            'profil' => $profil,
-            'report' => $report,
-            'kertasPdf' => $kertasUntukPdf
+            'model'     => $model,
+            'profil'    => $profil,
+            'report'    => $report,
+            'kertasPdf' => $kertasUntukPdf,
         ]);
     }
 
     public function actionTopRankPdf()
     {
-        $model = new ReportTopRankForm;
+        $model  = new ReportTopRankForm;
         $report = null;
 
         if (isset($_POST['ReportTopRankForm'])) {
             $model->attributes = $_POST['ReportTopRankForm'];
-            $report = $model->reportTopRank();
+            $report            = $model->reportTopRank();
         } else {
             throw new Exception("Tidak ada data, klik lagi dari tombol cetak", 500);
         }
@@ -444,7 +440,7 @@ class ReportController extends Controller
         /*
          * Ubah config (object) jadi array
          */
-        $branchConfig = array();
+        $branchConfig = [];
         foreach ($configs as $config) {
             $branchConfig[$config->nama] = $config->nilai;
         }
@@ -452,15 +448,15 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        $waktuCetak = date('dmY His');
+        $waktuCetak     = date('dmY His');
         $listNamaKertas = ReportTopRankForm::listKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_toprank_pdf', array(
-                    'model' => $model,
-                    'report' => $report,
-                    'config' => $branchConfig,
-                    'waktuCetak' => $waktuCetak
-                        ), true
+        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_toprank_pdf', [
+            'model'      => $model,
+            'report'     => $report,
+            'config'     => $branchConfig,
+            'waktuCetak' => $waktuCetak,
+        ], true
         ));
         $mPDF1->SetDisplayMode('fullpage');
         $mPDF1->pagenumPrefix = 'Hal ';
@@ -471,7 +467,7 @@ class ReportController extends Controller
 
     public function actionHutangPiutang()
     {
-        $model = new ReportHutangPiutangForm();
+        $model  = new ReportHutangPiutangForm();
         $report = null;
         if (isset($_POST['ReportHutangPiutangForm'])) {
             $model->attributes = $_POST['ReportHutangPiutangForm'];
@@ -482,21 +478,21 @@ class ReportController extends Controller
         }
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
-        $tipePrinterAvailable = array(Device::TIPE_PDF_PRINTER, Device::TIPE_CSV_PRINTER);
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
-        $kertasUntukPdf = ReportHutangPiutangForm::listKertas();
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER, Device::TIPE_CSV_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasUntukPdf       = ReportHutangPiutangForm::listKertas();
         $this->render('hutangpiutang', [
-            'model' => $model,
-            'profil' => $profil,
-            'report' => $report,
+            'model'      => $model,
+            'profil'     => $profil,
+            'report'     => $report,
             'listAsalHP' => HutangPiutang::model()->listNamaAsal(),
-            'printers' => $printers,
-            'kertasPdf' => $kertasUntukPdf
+            'printers'   => $printers,
+            'kertasPdf'  => $kertasUntukPdf,
         ]);
     }
 
@@ -518,14 +514,14 @@ class ReportController extends Controller
 
     public function hutangPiutangPdf($profilId, $showDetail, $pilihCetak, $kertas)
     {
-        $model = new ReportHutangPiutangForm;
+        $model  = new ReportHutangPiutangForm;
         $report = null;
 
         if (isset($profilId)) {
-            $model->profilId = $profilId;
+            $model->profilId   = $profilId;
             $model->showDetail = $showDetail;
             $model->pilihCetak = $pilihCetak;
-            $report = $model->reportHutangPiutang();
+            $report            = $model->reportHutangPiutang();
         } else {
             throw new Exception("Tidak ada data", 500);
         }
@@ -534,7 +530,7 @@ class ReportController extends Controller
         /*
          * Ubah config (object) jadi array
          */
-        $branchConfig = array();
+        $branchConfig = [];
         foreach ($configs as $config) {
             $branchConfig[$config->nama] = $config->nilai;
         }
@@ -542,19 +538,19 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        $waktu = date('Y-m-d H:i:s');
-        $waktuCetak = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
+        $waktu          = date('Y-m-d H:i:s');
+        $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportHutangPiutangForm::listKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_hutangpiutang_pdf', array(
-                    'model' => $model,
-                    'report' => $report,
-                    'config' => $branchConfig,
-                    'listAsalHP' => HutangPiutang::model()->listNamaAsal(),
-                    'waktu' => $waktu,
-                    'waktuCetak' => $waktuCetak,
-                    'profil' => Profil::model()->findByPk($model->profilId)
-                        ), true
+        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_hutangpiutang_pdf', [
+            'model'      => $model,
+            'report'     => $report,
+            'config'     => $branchConfig,
+            'listAsalHP' => HutangPiutang::model()->listNamaAsal(),
+            'waktu'      => $waktu,
+            'waktuCetak' => $waktuCetak,
+            'profil'     => Profil::model()->findByPk($model->profilId),
+        ], true
         ));
         $mPDF1->SetDisplayMode('fullpage');
         $mPDF1->pagenumPrefix = 'Hal ';
@@ -566,31 +562,31 @@ class ReportController extends Controller
     public function hutangPiutangCsv($profilId, $showDetail, $pilihCetak)
     {
         $model = new ReportHutangPiutangForm;
-        $csv = null;
+        $csv   = null;
 
         if (isset($profilId)) {
-            $model->profilId = $profilId;
+            $model->profilId   = $profilId;
             $model->showDetail = $showDetail;
             $model->pilihCetak = $pilihCetak;
-            $csv = $model->reportHutangPiutangCsv();
+            $csv               = $model->reportHutangPiutangCsv();
         } else {
             throw new Exception("Tidak ada data", 500);
         }
         $profil = Profil::model()->findByPk($profilId);
 
-        $namaToko = Config::model()->find("nama = 'toko.nama'");
+        $namaToko  = Config::model()->find("nama = 'toko.nama'");
         $timeStamp = date("Y-m-d-H-i");
-        $namaFile = "HP {$namaToko->nilai} {$profil->nama} {$timeStamp}";
+        $namaFile  = "HP {$namaToko->nilai} {$profil->nama} {$timeStamp}";
 
-        $this->renderPartial('_csv', array(
+        $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
-            'csv' => $csv
-        ));
+            'csv'      => $csv,
+        ]);
     }
 
     public function actionRekapHutangPiutang()
     {
-        $model = new ReportRekapHutangPiutangForm;
+        $model  = new ReportRekapHutangPiutangForm;
         $report = null;
         if (isset($_POST['tombol_submit'])) {
             $report = $model->reportRekapHutangPiutang();
@@ -598,15 +594,15 @@ class ReportController extends Controller
 
         $kertasUntukPdf = ReportRekapHutangPiutangForm::listKertas();
         $this->render('rekaphutangpiutang', [
-            'model' => $model,
-            'report' => $report,
-            'kertasPdf' => $kertasUntukPdf
+            'model'     => $model,
+            'report'    => $report,
+            'kertasPdf' => $kertasUntukPdf,
         ]);
     }
 
     public function actionPengeluaranPenerimaan()
     {
-        $model = new ReportPengeluaranPenerimaanForm;
+        $model  = new ReportPengeluaranPenerimaanForm;
         $report = [];
         if (isset($_POST['ReportPengeluaranPenerimaanForm'])) {
             $model->attributes = $_POST['ReportPengeluaranPenerimaanForm'];
@@ -616,13 +612,13 @@ class ReportController extends Controller
         }
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
         $itemKeuangan = new ItemKeuangan('search');
-        $itemKeuangan->unsetAttributes();  // clear any default values
+        $itemKeuangan->unsetAttributes(); // clear any default values
         $itemKeuangan->parent_id = '>0';
         /* Uncomment jika ingin trx diluar trx inventory
          * fix me: masukkan ke config.
@@ -632,11 +628,15 @@ class ReportController extends Controller
             $itemKeuangan->attributes = $_GET['ItemKeuangan'];
         }
 
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+
         $this->render('pengeluaranpenerimaan', [
-            'model' => $model,
-            'profil' => $profil,
+            'model'        => $model,
+            'profil'       => $profil,
             'itemKeuangan' => $itemKeuangan,
-            'report' => $report
+            'report'       => $report,
+            'printers'     => $printers,
         ]);
     }
 
@@ -645,8 +645,8 @@ class ReportController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-                    $this->createUrl('pilihitemkeu', array('id' => $data->id)) .
-                    '" class="pilih itemkeu">' . $data->nama . '</a>';
+            $this->createUrl('pilihitemkeu', ['id' => $data->id]) .
+            '" class="pilih itemkeu">' . $data->nama . '</a>';
         }
         return $return;
     }
@@ -654,17 +654,17 @@ class ReportController extends Controller
     public function actionPilihItemKeu($id)
     {
         $itemKeuangan = ItemKeuangan::model()->findByPk($id);
-        $return = array(
-            'id' => $id,
+        $return       = [
+            'id'     => $id,
             'parent' => isset($itemKeuangan->parent) ? $itemKeuangan->parent->nama : '-',
-            'nama' => $itemKeuangan->nama,
-        );
+            'nama'   => $itemKeuangan->nama,
+        ];
         $this->renderJSON($return);
     }
 
     public function actionUmurBarang()
     {
-        $model = new ReportUmurBarangForm;
+        $model  = new ReportUmurBarangForm;
         $report = null;
         if (isset($_POST['ReportUmurBarangForm'])) {
             $model->attributes = $_POST['ReportUmurBarangForm'];
@@ -674,13 +674,13 @@ class ReportController extends Controller
         }
 
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
-        $kertasUntukPdf = ReportUmurBarangForm::listKertas();
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasUntukPdf       = ReportUmurBarangForm::listKertas();
         $this->render('umurbarang', [
-            'model' => $model,
-            'report' => $report,
-            'printers' => $printers,
-            'kertasPdf' => $kertasUntukPdf
+            'model'     => $model,
+            'report'    => $report,
+            'printers'  => $printers,
+            'kertasPdf' => $kertasUntukPdf,
         ]);
     }
 
@@ -700,20 +700,20 @@ class ReportController extends Controller
     {
         $model = new ReportUmurBarangForm();
 
-        $model->bulan = $bulan;
-        $model->dari = $dari;
-        $model->sampai = $sampai;
+        $model->bulan      = $bulan;
+        $model->dari       = $dari;
+        $model->sampai     = $sampai;
         $model->kategoriId = $kategoriId;
-        $model->limit = $limit;
-        $model->sortBy0 = $sortBy0;
-        $model->sortBy1 = $sortBy1;
-        $report = $model->reportUmurBarang();
+        $model->limit      = $limit;
+        $model->sortBy0    = $sortBy0;
+        $model->sortBy1    = $sortBy1;
+        $report            = $model->reportUmurBarang();
 
         $configs = Config::model()->findAll();
         /*
          * Ubah config (object) jadi array
          */
-        $branchConfig = array();
+        $branchConfig = [];
         foreach ($configs as $config) {
             $branchConfig[$config->nama] = $config->nilai;
         }
@@ -721,17 +721,17 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        $waktu = date('Y-m-d H:i:s');
-        $waktuCetak = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
+        $waktu          = date('Y-m-d H:i:s');
+        $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportUmurBarangForm::listKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_umurbarang_pdf', array(
-                    'model' => $model,
-                    'report' => $report,
-                    'config' => $branchConfig,
-                    'waktu' => $waktu,
-                    'waktuCetak' => $waktuCetak,
-                        ), true
+        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_umurbarang_pdf', [
+            'model'      => $model,
+            'report'     => $report,
+            'config'     => $branchConfig,
+            'waktu'      => $waktu,
+            'waktuCetak' => $waktuCetak,
+        ], true
         ));
         $mPDF1->SetDisplayMode('fullpage');
         $mPDF1->pagenumPrefix = 'Hal ';
@@ -742,7 +742,7 @@ class ReportController extends Controller
 
     public function actionPls()
     {
-        $model = new ReportPlsForm();
+        $model  = new ReportPlsForm();
         $report = null;
         if (isset($_POST['ReportPlsForm'])) {
             $model->attributes = $_POST['ReportPlsForm'];
@@ -751,20 +751,20 @@ class ReportController extends Controller
             }
         }
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
-        $kertasUntukPdf = ReportPlsForm::listKertas();
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasUntukPdf       = ReportPlsForm::listKertas();
         $this->render('pls', [
-            'model' => $model,
-            'profil' => $profil,
-            'report' => $report,
-            'printers' => $printers,
-            'kertasPdf' => $kertasUntukPdf
+            'model'     => $model,
+            'profil'    => $profil,
+            'report'    => $report,
+            'printers'  => $printers,
+            'kertasPdf' => $kertasUntukPdf,
         ]);
     }
 
@@ -788,17 +788,17 @@ class ReportController extends Controller
 
         $model = new ReportPlsForm();
 
-        $model->jumlahHari = $jumlahHari;
-        $model->profilId = $profilId;
+        $model->jumlahHari  = $jumlahHari;
+        $model->profilId    = $profilId;
         $model->sisaHariMax = $sisaHariMax;
-        $model->sortBy = $sortBy;
-        $report = $model->reportPls();
+        $model->sortBy      = $sortBy;
+        $report             = $model->reportPls();
 
         $configs = Config::model()->findAll();
         /*
          * Ubah config (object) jadi array
          */
-        $branchConfig = array();
+        $branchConfig = [];
         foreach ($configs as $config) {
             $branchConfig[$config->nama] = $config->nilai;
         }
@@ -806,17 +806,17 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        $waktu = date('Y-m-d H:i:s');
-        $waktuCetak = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
+        $waktu          = date('Y-m-d H:i:s');
+        $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportPlsForm::listKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_pls_pdf', array(
-                    'model' => $model,
-                    'report' => $report,
-                    'config' => $branchConfig,
-                    'waktu' => $waktu,
-                    'waktuCetak' => $waktuCetak,
-                        ), true
+        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mPDF1->WriteHTML($this->renderPartial('_pls_pdf', [
+            'model'      => $model,
+            'report'     => $report,
+            'config'     => $branchConfig,
+            'waktu'      => $waktu,
+            'waktuCetak' => $waktuCetak,
+        ], true
         ));
         $mPDF1->SetDisplayMode('fullpage');
         $mPDF1->pagenumPrefix = 'Hal ';
@@ -827,24 +827,24 @@ class ReportController extends Controller
 
     public function actionKartuStok()
     {
-        $model = new ReportKartuStokForm();
+        $model  = new ReportKartuStokForm();
         $report = null;
         if (isset($_POST['ReportKartuStokForm'])) {
             $model->attributes = $_POST['ReportKartuStokForm'];
-            $model->sortBy = ReportKartuStokForm::SORT_BY_TANGGAL_ASC;
+            $model->sortBy     = ReportKartuStokForm::SORT_BY_TANGGAL_ASC;
             if ($model->validate()) {
                 $report = $model->reportKartuStok();
             }
         }
 
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
-        $kertasUntukPdf = ReportKartuStokForm::listKertas();
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasUntukPdf       = ReportKartuStokForm::listKertas();
         $this->render('kartustok', [
-            'model' => $model,
-            'report' => $report,
-            'printers' => $printers,
-            'kertasPdf' => $kertasUntukPdf
+            'model'     => $model,
+            'report'    => $report,
+            'printers'  => $printers,
+            'kertasPdf' => $kertasUntukPdf,
         ]);
     }
 
@@ -852,19 +852,19 @@ class ReportController extends Controller
     {
         $q = new CDbCriteria();
         $q->addCondition("barcode like :term OR nama like :term");
-        $q->order = 'nama';
+        $q->order  = 'nama';
         $q->params = [':term' => "%{$term}%"];
-        $barangs = Barang::model()->findAll($q);
+        $barangs   = Barang::model()->findAll($q);
 
-        $r = array();
+        $r = [];
         foreach ($barangs as $barang) {
-            $r[] = array(
+            $r[] = [
                 'label' => $barang->nama,
                 'value' => $barang->barcode,
-                'id' => $barang->id,
-                'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
-                'harga' => $barang->hargaJual
-            );
+                'id'    => $barang->id,
+                'stok'  => is_null($barang->stok) ? 'null' : $barang->stok,
+                'harga' => $barang->hargaJual,
+            ];
         }
 
         $this->renderJSON($r);
@@ -872,8 +872,8 @@ class ReportController extends Controller
 
     public function actionRekapPenjualan()
     {
-        $model = new ReportRekapPenjualanForm;
-        $report = array();
+        $model  = new ReportRekapPenjualanForm;
+        $report = [];
         if (isset($_POST['ReportRekapPenjualanForm'])) {
             $model->attributes = $_POST['ReportRekapPenjualanForm'];
             if ($model->validate()) {
@@ -882,59 +882,59 @@ class ReportController extends Controller
         }
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
         $user = new User('search');
-        $user->unsetAttributes();  // clear any default values
+        $user->unsetAttributes(); // clear any default values
         if (isset($_GET['User'])) {
             $user->attributes = $_GET['User'];
         }
 
         $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
-        $this->render('rekappenjualan', array(
-            'model' => $model,
-            'profil' => $profil,
-            'user' => $user,
-            'report' => $report,
-            'printers' => $printers
-        ));
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $this->render('rekappenjualan', [
+            'model'    => $model,
+            'profil'   => $profil,
+            'user'     => $user,
+            'report'   => $report,
+            'printers' => $printers,
+        ]);
     }
 
     public function actionDaftarBarang()
     {
         $this->layout = '//layouts/box_kecil';
 
-        $model = new ReportDaftarBarangForm;
+        $model  = new ReportDaftarBarangForm;
         $report = null;
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
         $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $this->render('daftarbarang', [
-            'model' => $model,
-            'profil' => $profil,
-            'report' => $report,
-            'printers' => $printers
+            'model'    => $model,
+            'profil'   => $profil,
+            'report'   => $report,
+            'printers' => $printers,
         ]);
     }
 
     public function actionPrintDaftarBarang($printId, $profilId, $hanyaDefault, $sortBy0, $sortBy1)
     {
-        $model = new ReportDaftarBarangForm;
+        $model             = new ReportDaftarBarangForm;
         $model->attributes = [
-            'profilId' => $profilId,
+            'profilId'     => $profilId,
             'hanyaDefault' => $hanyaDefault,
-            'sortBy0' => $sortBy0,
-            'sortBy1' => $sortBy1
+            'sortBy0'      => $sortBy0,
+            'sortBy1'      => $sortBy1,
         ];
 
         if ($model->validate()) {
@@ -959,15 +959,15 @@ class ReportController extends Controller
 
     public function daftarBarangCsv($model, $report, $profilId)
     {
-        $profil = Profil::model()->findByPk($profilId);
-        $namaToko = Config::model()->find("nama = 'toko.nama'");
+        $profil    = Profil::model()->findByPk($profilId);
+        $namaToko  = Config::model()->find("nama = 'toko.nama'");
         $timeStamp = date("Y-m-d-H-i");
-        $namaFile = "Daftar Barang_{$profil->nama}_{$namaToko->nilai}_{$timeStamp}";
+        $namaFile  = "Daftar Barang_{$profil->nama}_{$namaToko->nilai}_{$timeStamp}";
 
-        $this->renderPartial('_csv', array(
+        $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
-            'csv' => $model->reportKeCsv($report)
-        ));
+            'csv'      => $model->reportKeCsv($report),
+        ]);
     }
 
     /**
@@ -975,8 +975,8 @@ class ReportController extends Controller
      */
     public function actionReturPembelian()
     {
-        $model = new ReportReturPembelianForm;
-        $report = array();
+        $model  = new ReportReturPembelianForm;
+        $report = [];
         if (isset($_POST['ReportReturPembelianForm'])) {
             $model->attributes = $_POST['ReportReturPembelianForm'];
             if ($model->validate()) {
@@ -985,32 +985,32 @@ class ReportController extends Controller
         }
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
         $user = new User('search');
-        $user->unsetAttributes();  // clear any default values
+        $user->unsetAttributes(); // clear any default values
         if (isset($_GET['User'])) {
             $user->attributes = $_GET['User'];
         }
 
         $tipePrinterAvailable = [];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
 
-        $this->render('returpembelian', array(
-            'model' => $model,
-            'profil' => $profil,
-            'user' => $user,
-            'report' => $report,
-            'printers' => $printers
-        ));
+        $this->render('returpembelian', [
+            'model'    => $model,
+            'profil'   => $profil,
+            'user'     => $user,
+            'report'   => $report,
+            'printers' => $printers,
+        ]);
     }
 
     public function actionDiskon()
     {
-        $model = new ReportDiskonForm();
+        $model  = new ReportDiskonForm();
         $report = [];
         if (isset($_POST['ReportDiskonForm'])) {
             $model->attributes = $_POST['ReportDiskonForm'];
@@ -1020,32 +1020,32 @@ class ReportController extends Controller
         }
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
         $user = new User('search');
-        $user->unsetAttributes();  // clear any default values
+        $user->unsetAttributes(); // clear any default values
         if (isset($_GET['User'])) {
             $user->attributes = $_GET['User'];
         }
 
         $tipePrinterAvailable = [];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
 
         $this->render('diskon', [
-            'model' => $model,
-            'profil' => $profil,
-            'user' => $user,
-            'report' => $report,
-            'printers' => $printers
+            'model'    => $model,
+            'profil'   => $profil,
+            'user'     => $user,
+            'report'   => $report,
+            'printers' => $printers,
         ]);
     }
 
     public function actionRekapDiskon()
     {
-        $model = new ReportRekapDiskonForm();
+        $model  = new ReportRekapDiskonForm();
         $report = [];
         if (isset($_POST['ReportRekapDiskonForm'])) {
             $model->attributes = $_POST['ReportRekapDiskonForm'];
@@ -1055,13 +1055,54 @@ class ReportController extends Controller
         }
 
         $tipePrinterAvailable = [];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
 
         $this->render('rekapdiskon', [
-            'model' => $model,
-            'report' => $report,
-            'printers' => $printers
+            'model'    => $model,
+            'report'   => $report,
+            'printers' => $printers,
         ]);
+    }
+
+    public function pengeluaranPenerimaanCsv($dari, $sampai, $itemKeuId, $profilId)
+    {
+        $model             = new ReportPengeluaranPenerimaanForm;
+        $csv               = [];
+        $model->attributes = [
+            'dari'      => $dari,
+            'sampai'    => $sampai,
+            'itemKeuId' => $itemKeuId,
+            'profilId'  => $profilId,
+        ];
+        if ($model->validate()) {
+            $csv = $model->toCsv();
+
+        }
+
+        if (is_null($csv)) {
+            throw new Exception("Tidak ada data", 500);
+        }
+
+        $namaToko  = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp = date("Y-m-d-H-i");
+        $namaFile  = "Pengeluaran Penerimaan {$namaToko->nilai} {$dari} {$sampai} {$timeStamp}";
+
+        $this->renderPartial('_csv', [
+            'namaFile' => $namaFile,
+            'csv'      => $csv,
+        ]);
+    }
+
+    public function actionPrintPengeluaranPenerimaan()
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_CSV_PRINTER:
+                    $this->pengeluaranPenerimaanCsv($_GET['dari'], $_GET['sampai'], $_GET['itemKeuId'], $_GET['profilId']);
+                    break;
+            }
+        }
     }
 
 }
