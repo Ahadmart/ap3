@@ -215,7 +215,7 @@ class AuthItem extends CActiveRecord
         }
 
         foreach ($items['modules'] as $moduleName => $module)
-            $items['modules'][$moduleName] = $this->getControllerActions($module);
+            $items['modules'][$moduleName] = self::getControllerActions($module);
 
         return $items;
     }
