@@ -632,11 +632,15 @@ class ReportController extends Controller
             $itemKeuangan->attributes = $_GET['ItemKeuangan'];
         }
 
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+
         $this->render('pengeluaranpenerimaan', [
             'model' => $model,
             'profil' => $profil,
             'itemKeuangan' => $itemKeuangan,
-            'report' => $report
+            'report' => $report,
+            'printers' => $printers
         ]);
     }
 
@@ -1062,6 +1066,46 @@ class ReportController extends Controller
             'report' => $report,
             'printers' => $printers
         ]);
+    }
+
+    public function pengeluaranPenerimaanCsv($dari, $sampai, $itemKeuId, $profilId){
+        $model = new ReportPengeluaranPenerimaanForm;
+        $csv = [];       
+            $model->attributes = [
+                'dari'=>$dari,
+                'sampai'=>$sampai,
+                'itemKeuId'=>$itemKeuId,
+                'profilId' =>$profilId
+            ];
+            if ($model->validate()) {
+                $csv = $model->toCsv();
+                
+            }
+
+        if (is_null($csv)) {
+            throw new Exception("Tidak ada data", 500);
+        }
+
+        $namaToko = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp = date("Y-m-d-H-i");
+        $namaFile = "Pengeluaran Penerimaan {$namaToko->nilai} {$dari} {$sampai} {$timeStamp}";
+
+        $this->renderPartial('_csv', array(
+            'namaFile' => $namaFile,
+            'csv' => $csv
+        ));
+    }
+
+    public function actionPrintPengeluaranPenerimaan()
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_CSV_PRINTER:
+                    $this->pengeluaranPenerimaanCsv($_GET['dari'],$_GET['sampai'],$_GET['itemKeuId'],$_GET['profilId']);
+                    break;
+            }
+        }
     }
 
 }
