@@ -280,18 +280,19 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+
+        require_once __DIR__ . '/../vendors/autoload.php';
         $listNamaKertas = ReportHarianForm::listKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf', [
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas],'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('harian_detail_pdf', [
             'report' => $report,
         ], true
         ));
-
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
+        $mpdf->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
     }
 
     public function harianDetailPdf2($report, $kertas)
