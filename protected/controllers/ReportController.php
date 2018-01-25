@@ -300,18 +300,19 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+        require_once __DIR__ . '/../vendors/autoload.php';
         $listNamaKertas = ReportHarianForm::listKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf_2', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('harian_detail_pdf_2', [
             'report' => $report,
         ], true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
+        $mpdf->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
     }
 
     public function harianRekapPdf($report)
@@ -376,21 +377,22 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+        require_once __DIR__ . '/../vendors/autoload.php';
         $waktuCetak     = date('dmY His');
         $listNamaKertas = ReportPoinMemberForm::listNamaKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_poin_member_pdf', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$model->kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_poin_member_pdf', [
             'report'     => $report,
             'config'     => $branchConfig,
             'waktuCetak' => $waktuCetak,
         ], true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Poin Member {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("Poin Member {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionTotalStok()
