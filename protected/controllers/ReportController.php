@@ -814,11 +814,13 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+        ini_set('pcre.backtrack_limit', 10000000); // Persiapan jika rownya banyak
+        require_once __DIR__ . '/../vendors/autoload.php';
         $waktu          = date('Y-m-d H:i:s');
         $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportPlsForm::listKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_pls_pdf', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_pls_pdf', [
             'model'      => $model,
             'report'     => $report,
             'config'     => $branchConfig,
@@ -826,11 +828,11 @@ class ReportController extends Controller
             'waktuCetak' => $waktuCetak,
         ], true
         ));
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("NPLS {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("NPLS {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionKartuStok()
