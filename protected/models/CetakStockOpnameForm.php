@@ -184,7 +184,7 @@ class CetakStockOpnameForm extends CFormModel
             $command->bindValue(':statusAktif', Barang::STATUS_AKTIF);
         }
         if (!empty($this->filterNama) || $this->filterNama != ''){
-            $command->bindValue(':filterNama', $this->filterNama);
+            $command->bindValue(':filterNama', "%{$this->filterNama}%");
         }
         return $command->queryAll();
     }
