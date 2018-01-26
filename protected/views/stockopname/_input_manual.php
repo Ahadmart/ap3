@@ -53,11 +53,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                     'header' => 'Set 0 (nol)<br /><a id="tombol-setnol-all" href="#" class="delete">All <i class="fa fa-check-square"><i></a>'
                 ),
                 array(
-                    'header' => 'Set inaktif',
+                    // 'header' => 'Set inaktif',
                     'type' => 'raw',
                     'value' => array($this, 'renderTombolSetInAktif'),
                     'headerHtmlOptions' => array('class' => 'rata-tengah'),
                     'htmlOptions' => array('class' => 'rata-tengah'),
+                    'header' => 'Set inaktif<br /><a id="tombol-inaktif-all" href="#" class="delete">All <i class="fa fa-check-square"><i></a>'
                 ),
                 array(
                     'header' => 'Pindah Rak',
@@ -112,6 +113,23 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
         $(document).on('click', "#tombol-setnol-all", function () {
             $("#barang-grid").addClass("grid-loading");
             dataUrl = '<?php echo $this->createUrl('setnolall', array('id' => $model->id)); ?>';
+            $.ajax({
+                //type: 'POST',
+                url: dataUrl,
+                success: function (data) {
+                    if (data.sukses) {
+                        $.fn.yiiGridView.update("barang-grid");
+                        $.fn.yiiGridView.update("so-detail-grid");
+                    } else {
+                        alert('Ada Error!')
+                    }
+                }
+            });
+            return false;
+        });
+        $(document).on('click', "#tombol-inaktif-all", function () {
+            $("#barang-grid").addClass("grid-loading");
+            dataUrl = '<?php echo $this->createUrl('setinaktifall', array('id' => $model->id)); ?>';
             $.ajax({
                 //type: 'POST',
                 url: dataUrl,
