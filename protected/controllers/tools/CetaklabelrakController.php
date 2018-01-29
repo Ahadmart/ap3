@@ -61,6 +61,9 @@ class CetaklabelrakController extends Controller
         /*
          * Persiapan render PDF
          */
+        error_reporting(0); // Masih ada error di library Mpdf. Sembunyikan error dahulu, perbaiki kemudian :senyum
+        require_once __DIR__ . '/../../vendors/autoload.php';
+
         set_time_limit(0);
         $tanggalCetak = date('dmY His');
         $filterKategori = null;
@@ -72,22 +75,31 @@ class CetaklabelrakController extends Controller
 
         $listNamaKertas = CetakLabelRakLayoutForm::listNamaKertas();
 
-        $mPDF1 = Yii::app()->ePdf->mpdf('utf-8', $listNamaKertas[$layout['kertasId']], 0, '', 7, 7, 7, 7, 9, 9);
+        //$mPDF1 = Yii::app()->ePdf->mpdf('utf-8', $listNamaKertas[$layout['kertasId']], 0, '', 7, 7, 7, 7, 9, 9);
+        $mpdf           = new \Mpdf\Mpdf([
+            'mode' => 'utf-8', 
+            'format' => $listNamaKertas[$layout['kertasId']], 
+            'tempDir' => __DIR__ . '/../../runtime/',
+            'margin_left' => 7,
+            'margin_right' => 7,
+            'margin_top' => 5,
+            'margin_bottom' => 5,
+            'margin_header' => 9,
+            'margin_footer' => 5,
+            ]);
 
         $labelRakView = CetakLabelRakLayoutForm::listView();
-        $mPDF1->WriteHTML($this->renderPartial($labelRakView[$layout['layoutId']], array(
+        $mpdf->WriteHTML($this->renderPartial($labelRakView[$layout['layoutId']], array(
                     'barang' => $barang,
                     'namaToko' => $this->namaToko(),
                     'tanggalCetak' => $tanggalCetak
                         ), true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->margin_top = 5;
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("label rak {$tanggalCetak}.pdf", 'I');
+        $mpdf->Output("label rak {$tanggalCetak}.pdf", 'I');
     }
 
     public function actionPilihProfil($id)
