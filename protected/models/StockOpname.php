@@ -334,4 +334,40 @@ class StockOpname extends CActiveRecord
         return $rowAffected;
     }
 
+    /**
+     * Set Inaktif (Tidak Aktif) untuk (semua) barang-barang yang belum di SO
+     * @return int Jumlah baris yang terpengaruh
+     */
+    public function setInAktifAll(){
+        $sql = "
+        UPDATE barang
+                JOIN
+            (SELECT 
+                t.id
+            FROM
+                barang t
+            LEFT JOIN stock_opname_detail sod ON t.id = sod.barang_id
+                AND sod.stock_opname_id = :soId
+            WHERE
+                t.rak_id = :rakId AND t.status = :statusBarangAktif
+                    AND sod.barang_id IS NULL) AS t_belum_so ON t_belum_so.id = barang.id 
+        SET 
+            barang.status = :statusBarangInAktif,
+            barang.updated_by = :userId
+                ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':soId' => $this->id,
+            ':userId' => Yii::app()->user->id,
+            ':rakId' => $this->rak_id,
+            ':statusBarangAktif' => Barang::STATUS_AKTIF,
+            ':statusBarangInAktif' => Barang::STATUS_TIDAK_AKTIF
+        ]);
+
+        $rowAffected = $command->execute();
+        return $rowAffected;
+    }
+
 }
