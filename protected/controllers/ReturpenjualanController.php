@@ -374,13 +374,14 @@ class ReturpenjualanController extends Controller
         /*
          * Persiapan render PDF
          */
+        require_once __DIR__ . '/../vendors/autoload.php';
         $listNamaKertas = ReturPenjualan::listNamaKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $viewCetak = '_pdf';
         if ($draft) {
             $viewCetak = '_pdf_draft';
         }
-        $mPDF1->WriteHTML($this->renderPartial($viewCetak, array(
+        $mpdf->WriteHTML($this->renderPartial($viewCetak, array(
                     'modelHeader' => $modelHeader,
                     'branchConfig' => $branchConfig,
                     'profil' => $profil,
@@ -388,11 +389,11 @@ class ReturpenjualanController extends Controller
                         ), true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumSuffix = ' dari ';
-        $mPDF1->pagenumPrefix = 'Halaman ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumSuffix = ' dari ';
+        $mpdf->pagenumPrefix = 'Halaman ';
         // Render PDF
-        $mPDF1->Output("{$modelHeader->nomor}.pdf", 'I');
+        $mpdf->Output("{$modelHeader->nomor}.pdf", 'I');
     }
 
     public function exportText($id, $device, $print = 0)
