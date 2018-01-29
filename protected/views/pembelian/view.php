@@ -95,6 +95,13 @@ $this->boxHeader['normal'] = 'Pembelian: ' . $model->nomor;
                     'filter' => false
                 ),
                 array(
+                    'name' => 'harga_jual',
+                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
+                    'htmlOptions' => array('class' => 'rata-kanan'),
+                    'value' => 'number_format($data->harga_jual, 0, ",", ".")',
+                    'filter' => false
+                ),
+                array(
                     'name' => 'subTotal',
                     'header' => 'Total',
                     'value' => '$data->total',
