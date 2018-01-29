@@ -110,7 +110,6 @@ class ReportTopRankForm extends CFormModel
                             inventory_balance
                         GROUP BY barang_id
                         /*HAVING SUM(qty) > 0*/) t_stok', "barang.id = t_stok.barang_id"); // Jumlah Stok tidak relevan, kalau yang diinginkan penjualan toprank / slow moving
-        //$command->join('supplier_barang sb', 'sb.barang_id = t_penjualan.barang_id'); // Jika ingin ditampilkan, pilih salah 1 saja, atau gunakan teknik Lazy loading
         $command->where("barang.id is not null");
 
         if ($this->rakId > 0) {
@@ -122,6 +121,7 @@ class ReportTopRankForm extends CFormModel
         }
 
         if (!empty($this->profilId)) {
+            $command->join('supplier_barang sb', 'sb.barang_id = t_penjualan.barang_id');
             $command->andWhere('sb.supplier_id=:profilId');
         }
 
