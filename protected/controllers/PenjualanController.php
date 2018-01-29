@@ -377,12 +377,14 @@ class PenjualanController extends Controller
         /*
          * Persiapan render PDF
          */
-        $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
+        require_once __DIR__ . '/../vendors/autoload.php';
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'tempDir' => __DIR__ . '/../runtime/']);
+
         $viewInvoice = '_invoice';
         if ($draft) {
             $viewInvoice = '_invoice_draft';
         }
-        $mPDF1->WriteHTML($this->renderPartial($viewInvoice, array(
+        $mpdf->WriteHTML($this->renderPartial($viewInvoice, array(
                     'modelHeader' => $modelHeader,
                     'branchConfig' => $branchConfig,
                     'customer' => $customer,
@@ -390,11 +392,11 @@ class PenjualanController extends Controller
                         ), true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumSuffix = ' dari ';
-        $mPDF1->pagenumPrefix = 'Halaman ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumSuffix = ' / ';
+        // $mpdf->pagenumPrefix = 'Halaman ';
         // Render PDF
-        $mPDF1->Output("{$modelHeader->nomor}.pdf", 'I');
+        $mpdf->Output("{$modelHeader->nomor}.pdf", 'I');
     }
 
     /**
