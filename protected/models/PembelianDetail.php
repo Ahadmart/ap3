@@ -233,6 +233,16 @@ class PembelianDetail extends CActiveRecord
         $this->tanggal_kadaluwarsa = $this->tanggal_kadaluwarsa == '' ? NULL : $this->tanggal_kadaluwarsa;
         $this->harga_jual_rekomendasi = $this->harga_jual_rekomendasi == '' ? NULL : $this->harga_jual_rekomendasi;
         return parent::beforeValidate();
+    }    
+    
+    public function getStok()
+    {
+        $stok = Yii::app()->db->createCommand("
+				  select sum(qty) stok
+				  from inventory_balance
+				  where barang_id = {$this->barang_id}
+				  ")->queryRow();
+        return $stok['stok'] ? $stok['stok'] : 0;
     }
 
 }
