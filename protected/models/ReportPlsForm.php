@@ -9,17 +9,16 @@
  */
 class ReportPlsForm extends CFormModel
 {
-
     const SORT_BY_SISA_HARI_ASC = 1;
     const SORT_BY_SISA_HARI_DSC = 2;
     /* ============= */
     const KERTAS_LETTER = 10;
-    const KERTAS_A4 = 20;
-    const KERTAS_FOLIO = 30;
+    const KERTAS_A4     = 20;
+    const KERTAS_FOLIO  = 30;
     /* ===================== */
     const KERTAS_LETTER_NAMA = 'Letter';
-    const KERTAS_A4_NAMA = 'A4';
-    const KERTAS_FOLIO_NAMA = 'Folio';
+    const KERTAS_A4_NAMA     = 'A4';
+    const KERTAS_FOLIO_NAMA  = 'Folio';
 
     public $jumlahHari;
     public $profilId;
@@ -33,10 +32,10 @@ class ReportPlsForm extends CFormModel
      */
     public function rules()
     {
-        return array(
-            array('jumlahHari, sortBy, sisaHariMax', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            array('profilId, rakId, kertas', 'safe')
-        );
+        return [
+            ['jumlahHari, sortBy, sisaHariMax', 'required', 'message' => '{attribute} tidak boleh kosong'],
+            ['profilId, rakId, kertas', 'safe'],
+        ];
     }
 
     /**
@@ -44,12 +43,12 @@ class ReportPlsForm extends CFormModel
      */
     public function attributeLabels()
     {
-        return array(
-            'jumlahHari' => 'Range Analisa Penjualan',
-            'profilId' => 'Profil (Opsional)',
+        return [
+            'jumlahHari'  => 'Range Analisa Penjualan',
+            'profilId'    => 'Profil (Opsional)',
             'sisaHariMax' => 'Limit Estimasi Sisa Hari <=',
-            'sortBy' => 'Urut berdasarkan',
-        );
+            'sortBy'      => 'Urut berdasarkan',
+        ];
     }
 
     public function getNamaProfil()
@@ -70,7 +69,7 @@ class ReportPlsForm extends CFormModel
             t_stok.qty / (t_jualan.qty / :range) sisa_hari
                 ");
         $command->from("
-            (SELECT 
+            (SELECT
                 barang_id, SUM(qty) qty
             FROM
                 penjualan_detail
@@ -79,7 +78,7 @@ class ReportPlsForm extends CFormModel
             GROUP BY barang_id) AS t_jualan
                 ");
         $command->join("
-            (SELECT 
+            (SELECT
                 barang_id, SUM(qty) qty
             FROM
                 inventory_balance
@@ -89,22 +88,26 @@ class ReportPlsForm extends CFormModel
         $command->where("t_stok.qty / (t_jualan.qty / :range) <= :sisaHariMax");
         $command->order("t_stok.qty / (t_jualan.qty / :range)" . $this->listNamaSortBy()[$this->sortBy]);
 
-        $command->bindValues([
-            ':range' => $this->jumlahHari,
-            ':sisaHariMax' => $this->sisaHariMax
-        ]);
+        if (!empty($this->profilId)) {
+            $command->join('supplier_barang sb', 'sb.barang_id = t_jualan.barang_id');
+            $command->andWhere('sb.supplier_id=:profilId');
+            $command->bindValue(":profilId", $this->profilId);
+        }
+
+        $command->bindValue(":range", $this->jumlahHari);
+        $command->bindValue(":sisaHariMax", $this->sisaHariMax);
 
         return $command->queryAll();
     }
 
     public function filterKategori()
     {
-        return ['NULL' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return ['NULL' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
     public function filterRak()
     {
-        return ['NULL' => '[SEMUA]'] + CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return ['NULL' => '[SEMUA]'] + CHtml::listData(RakBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
     public function listSortBy()
@@ -126,9 +129,9 @@ class ReportPlsForm extends CFormModel
     public static function listKertas()
     {
         return [
-            self::KERTAS_A4 => self::KERTAS_A4_NAMA,
-            self::KERTAS_FOLIO => self::KERTAS_FOLIO_NAMA,
-            self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA
+            self::KERTAS_A4     => self::KERTAS_A4_NAMA,
+            self::KERTAS_FOLIO  => self::KERTAS_FOLIO_NAMA,
+            self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA,
         ];
     }
 
