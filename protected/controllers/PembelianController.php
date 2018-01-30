@@ -52,11 +52,15 @@ class PembelianController extends Controller
 
         $kertasUntukPdf = Pembelian::model()->listNamaKertas();
 
+        $configShowStok = Config::model()->find('nama = :namaConfig',[':namaConfig'=>'pembelian.view.showstok']);
+        $showCurrentStock = $configShowStok && $configShowStok->nilai == TRUE ? TRUE : FALSE;
+
         $this->render('view', array(
             'model' => $this->loadModel($id),
             'pembelianDetail' => $pembelianDetail,
             'printerPembelian' => $printerPembelian,
-            'kertasUntukPdf' => $kertasUntukPdf
+            'kertasUntukPdf' => $kertasUntukPdf,
+            'showCurrentStock' => $showCurrentStock
         ));
     }
 
