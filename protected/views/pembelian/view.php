@@ -38,7 +38,7 @@
 
             <ul class="button-group right">
                 <li>
-                    <a href="<?=$this->createUrl("retur", ['id' => $model->id])?>" class="tiny bigfont alert button" accesskey="r">
+                    <a href="<?=$this->createUrl('retur', ['id' => $model->id])?>" class="tiny bigfont alert button" accesskey="r">
                         <i class="fa fa-reply fa-fw"></i>
                         <span class="ak">R</span>etur</a>
                 </li>
