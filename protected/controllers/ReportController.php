@@ -832,7 +832,7 @@ class ReportController extends Controller
         $mpdf->pagenumPrefix = 'Hal ';
         $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mpdf->Output("NPLS {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("PLS {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionKartuStok()
