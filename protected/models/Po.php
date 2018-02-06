@@ -136,10 +136,8 @@ class Po extends CActiveRecord
         return parent::model($className);
     }
 
-   
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
             /*
@@ -157,7 +155,7 @@ class Po extends CActiveRecord
             $this->status = self::STATUS_PO;
             // Dapat nomor dan tanggal
             $this->tanggal = date('Y-m-d H:i:s');
-            $this->nomor = $this->generateNomor6Seq();
+            $this->nomor   = $this->generateNomor6Seq();
         }
 
         return parent::beforeSave();
@@ -167,8 +165,8 @@ class Po extends CActiveRecord
     {
         $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : null;
         return parent::beforeValidate();
-	}
-	
+    }
+
     /**
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
@@ -176,8 +174,8 @@ class Po extends CActiveRecord
     public function cariNomorTahunan()
     {
         $tahun = date('y');
-        $data = $this->find([
-            'select' => 'max(substring(nomor,9)*1) as max',
+        $data  = $this->find([
+            'select'    => 'max(substring(nomor,9)*1) as max',
             'condition' => "substring(nomor,5,2)='{$tahun}'"]
         );
 
@@ -191,11 +189,34 @@ class Po extends CActiveRecord
      */
     public function generateNomor6Seq()
     {
-        $config = Config::model()->find("nama='toko.kode'");
-        $kodeCabang = $config->nilai;
-        $kodeDokumen = KodeDokumen::PO;
+        $config         = Config::model()->find("nama='toko.kode'");
+        $kodeCabang     = $config->nilai;
+        $kodeDokumen    = KodeDokumen::PO;
         $kodeTahunBulan = date('ym');
-        $sequence = substr('00000' . $this->cariNomorTahunan(), -6);
+        $sequence       = substr('00000' . $this->cariNomorTahunan(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
+    }
+
+    /**
+     * Total PO
+     * @return int Nilai Total
+     */
+    public function getTotalRaw()
+    {
+        $po = Yii::app()->db->createCommand()
+            ->select('sum(harga_beli_terakhir * qty_order) total')
+            ->from(PoDetail::model()->tableName())
+            ->where('po_id=:poId', [':poId' => $this->id])
+            ->queryRow();
+        return $po['total'];
+    }
+
+    /**
+     * Nilai total PO
+     * @return text Total PO dalam format ribuan
+     */
+    public function getTotal()
+    {
+        return number_format($this->totalRaw, 0, ',', '.');
     }
 }

@@ -8,7 +8,7 @@ $this->breadcrumbs=array(
 );
 
 $this->boxHeader['small'] = 'View';
-$this->boxHeader['normal'] = 'Po: '.$model->nama;
+$this->boxHeader['normal'] = 'PO: '.$model->nomor;
 ?>
 <div class="row">
     <div class="small-12 columns">
