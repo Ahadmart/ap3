@@ -280,18 +280,19 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+
+        require_once __DIR__ . '/../vendors/autoload.php';
         $listNamaKertas = ReportHarianForm::listKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('harian_detail_pdf', [
             'report' => $report,
         ], true
         ));
-
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
+        $mpdf->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
     }
 
     public function harianDetailPdf2($report, $kertas)
@@ -299,18 +300,19 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+        require_once __DIR__ . '/../vendors/autoload.php';
         $listNamaKertas = ReportHarianForm::listKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf_2', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('harian_detail_pdf_2', [
             'report' => $report,
         ], true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
+        $mpdf->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
     }
 
     public function harianRekapPdf($report)
@@ -375,21 +377,22 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+        require_once __DIR__ . '/../vendors/autoload.php';
         $waktuCetak     = date('dmY His');
         $listNamaKertas = ReportPoinMemberForm::listNamaKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_poin_member_pdf', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$model->kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_poin_member_pdf', [
             'report'     => $report,
             'config'     => $branchConfig,
             'waktuCetak' => $waktuCetak,
         ], true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Poin Member {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("Poin Member {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionTotalStok()
@@ -448,21 +451,22 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+        require_once __DIR__ . '/../vendors/autoload.php';
         $waktuCetak     = date('dmY His');
         $listNamaKertas = ReportTopRankForm::listKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$model->kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_toprank_pdf', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$model->kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_toprank_pdf', [
             'model'      => $model,
             'report'     => $report,
             'config'     => $branchConfig,
             'waktuCetak' => $waktuCetak,
         ], true
         ));
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionHutangPiutang()
@@ -538,11 +542,12 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+        require_once __DIR__ . '/../vendors/autoload.php';
         $waktu          = date('Y-m-d H:i:s');
         $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportHutangPiutangForm::listKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_hutangpiutang_pdf', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_hutangpiutang_pdf', [
             'model'      => $model,
             'report'     => $report,
             'config'     => $branchConfig,
@@ -552,11 +557,11 @@ class ReportController extends Controller
             'profil'     => Profil::model()->findByPk($model->profilId),
         ], true
         ));
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function hutangPiutangCsv($profilId, $showDetail, $pilihCetak)
@@ -721,11 +726,14 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+
+        error_reporting(0); // Masih ada error di library Mpdf. Sembunyikan error dahulu, perbaiki kemudian :senyum
+        require_once __DIR__ . '/../vendors/autoload.php';
         $waktu          = date('Y-m-d H:i:s');
         $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportUmurBarangForm::listKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_umurbarang_pdf', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_umurbarang_pdf', [
             'model'      => $model,
             'report'     => $report,
             'config'     => $branchConfig,
@@ -733,11 +741,11 @@ class ReportController extends Controller
             'waktuCetak' => $waktuCetak,
         ], true
         ));
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionPls()
@@ -806,11 +814,13 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
+        ini_set('pcre.backtrack_limit', 10000000); // Persiapan jika rownya banyak
+        require_once __DIR__ . '/../vendors/autoload.php';
         $waktu          = date('Y-m-d H:i:s');
         $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportPlsForm::listKertas();
-        $mPDF1          = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $mPDF1->WriteHTML($this->renderPartial('_pls_pdf', [
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_pls_pdf', [
             'model'      => $model,
             'report'     => $report,
             'config'     => $branchConfig,
@@ -818,11 +828,11 @@ class ReportController extends Controller
             'waktuCetak' => $waktuCetak,
         ], true
         ));
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("PLS {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("NPLS {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionKartuStok()

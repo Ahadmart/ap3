@@ -2,13 +2,12 @@
 
 class CetaklabelrakController extends Controller
 {
-
     public function actionIndex()
     {
         $modelForm = new CetakLabelRakForm;
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
@@ -39,105 +38,115 @@ class CetaklabelrakController extends Controller
             $scanBarcode = $_GET['barcodescan'];
         }
 
-        $this->render('index', array(
-            'modelForm' => $modelForm,
-            'profil' => $profil,
-            'rak' => $rak,
-            'labelCetak' => $labelCetak,
-            'layoutForm' => $layoutForm,
-            'scanBarcode' => $scanBarcode
-        ));
+        $this->render('index', [
+            'modelForm'   => $modelForm,
+            'profil'      => $profil,
+            'rak'         => $rak,
+            'labelCetak'  => $labelCetak,
+            'layoutForm'  => $layoutForm,
+            'scanBarcode' => $scanBarcode,
+        ]);
     }
 
     public function namaToko()
     {
-        $config = Config::model()->find('nama=:nama', array(':nama' => 'toko.nama'));
+        $config = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
         return $config->nilai;
     }
 
     public function labelRakPdf($layout)
     {
-
         /*
          * Persiapan render PDF
          */
+        error_reporting(0); // Masih ada error di library Mpdf. Sembunyikan error dahulu, perbaiki kemudian :senyum
+        require_once __DIR__ . '/../../vendors/autoload.php';
+
         set_time_limit(0);
-        $tanggalCetak = date('dmY His');
+        $tanggalCetak   = date('dmY His');
         $filterKategori = null;
         if (Yii::app()->user->hasState('labelKategoriId')) {
             $filterKategori = Yii::app()->user->getState('labelKategoriId');
         }
         $barang = is_null($filterKategori) || empty($filterKategori) ? LabelRakCetak::model()->findAll() : LabelRakCetak::model()->with('barang', 'barang.kategori')->findAll('barang.kategori_id=' . $filterKategori);
 
-
         $listNamaKertas = CetakLabelRakLayoutForm::listNamaKertas();
 
-        $mPDF1 = Yii::app()->ePdf->mpdf('utf-8', $listNamaKertas[$layout['kertasId']], 0, '', 7, 7, 7, 7, 9, 9);
+        //$mPDF1 = Yii::app()->ePdf->mpdf('utf-8', $listNamaKertas[$layout['kertasId']], 0, '', 7, 7, 7, 7, 9, 9);
+        $mpdf = new \Mpdf\Mpdf([
+            'mode'          => 'utf-8',
+            'format'        => $listNamaKertas[$layout['kertasId']],
+            'tempDir'       => __DIR__ . '/../../runtime/',
+            'margin_left'   => 7,
+            'margin_right'  => 7,
+            'margin_top'    => 5,
+            'margin_bottom' => 5,
+            'margin_header' => 9,
+            'margin_footer' => 9,
+        ]);
 
         $labelRakView = CetakLabelRakLayoutForm::listView();
-        $mPDF1->WriteHTML($this->renderPartial($labelRakView[$layout['layoutId']], array(
-                    'barang' => $barang,
-                    'namaToko' => $this->namaToko(),
-                    'tanggalCetak' => $tanggalCetak
-                        ), true
+        $mpdf->WriteHTML($this->renderPartial($labelRakView[$layout['layoutId']], [
+            'barang'       => $barang,
+            'namaToko'     => $this->namaToko(),
+            'tanggalCetak' => $tanggalCetak,
+        ], true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->margin_top = 5;
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("label rak {$tanggalCetak}.pdf", 'I');
+        $mpdf->Output("label rak {$tanggalCetak}.pdf", 'I');
     }
 
     public function actionPilihProfil($id)
     {
         $profil = Profil::model()->findByPk($id);
-        $return = array(
-            'id' => $id,
-            'nama' => $profil->nama,
+        $return = [
+            'id'      => $id,
+            'nama'    => $profil->nama,
             'alamat1' => $profil->alamat1,
-        );
+        ];
         $this->renderJSON($return);
     }
 
     public function actionPilihRak($id)
     {
-        $rak = RakBarang::model()->findByPk($id);
-        $return = array(
-            'id' => $id,
+        $rak    = RakBarang::model()->findByPk($id);
+        $return = [
+            'id'   => $id,
             'nama' => $rak->nama,
-        );
+        ];
         $this->renderJSON($return);
     }
 
     public function actionTambahkanBarang()
     {
-        $return = array(
+        $return = [
             'sukses' => false,
-            'error' => [
+            'error'  => [
                 'code' => 500,
-                'msg' => 'Sempurnakan input!'
-            ]
-        );
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
         if (isset($_POST['CetakLabelRakForm'])) {
-            $cetakLabelRakForm = new CetakLabelRakForm;
+            $cetakLabelRakForm             = new CetakLabelRakForm;
             $cetakLabelRakForm->attributes = $_POST['CetakLabelRakForm'];
-            $rowAffected = $cetakLabelRakForm->inputBarangKeCetak();
+            $rowAffected                   = $cetakLabelRakForm->inputBarangKeCetak();
             if (!is_null($rowAffected) && $rowAffected > 0) {
-                $return = array(
-                    'sukses' => true,
-                    'rowAffected' => $rowAffected
-                );
+                $return = [
+                    'sukses'      => true,
+                    'rowAffected' => $rowAffected,
+                ];
             }
             if ($rowAffected == 0) {
-                $return = array(
+                $return = [
                     'sukses' => false,
-                    'error' => [
+                    'error'  => [
                         'code' => 501,
-                        'msg' => 'Tidak ada barang yang ditambahkan'
-                    ]
-                );
+                        'msg'  => 'Tidak ada barang yang ditambahkan',
+                    ],
+                ];
             }
         }
         $this->renderJSON($return);

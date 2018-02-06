@@ -2,13 +2,12 @@
 
 class PenjualanController extends Controller
 {
-
-    const PROFIL_ALL = 0;
+    const PROFIL_ALL      = 0;
     const PROFIL_CUSTOMER = Profil::TIPE_CUSTOMER;
     /* ============== */
-    const PRINT_INVOICE = 0;
-    const PRINT_STRUK = 1;
-    const PRINT_NOTA = 2;
+    const PRINT_INVOICE       = 0;
+    const PRINT_STRUK         = 1;
+    const PRINT_NOTA          = 2;
     const PRINT_INVOICE_DRAFT = 3;
 
     /**
@@ -16,10 +15,10 @@ class PenjualanController extends Controller
      */
     public function filters()
     {
-        return array(
-            'accessControl', // perform access control for CRUD operations
+        return [
+            'accessControl',     // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
-        );
+        ];
     }
 
     /**
@@ -29,11 +28,11 @@ class PenjualanController extends Controller
      */
     public function accessRules()
     {
-        return array(
-            array('deny', // deny guest
-                'users' => array('guest'),
-            ),
-        );
+        return [
+            ['deny', // deny guest
+                'users' => ['guest'],
+            ],
+        ];
     }
 
     /**
@@ -49,21 +48,21 @@ class PenjualanController extends Controller
             $penjualanDetail->attributes = $_GET['PenjualanDetail'];
         }
 
-        $tipePrinterInvoiceRrp = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
-        $tipePrinterStruk = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER, Device::TIPE_BROWSER_PRINTER);
-        $tipePrinterNota = array(Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER);
+        $tipePrinterInvoiceRrp = [Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER];
+        $tipePrinterStruk      = [Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER, Device::TIPE_BROWSER_PRINTER];
+        $tipePrinterNota       = [Device::TIPE_LPR, Device::TIPE_TEXT_PRINTER];
 
         $printerInvoiceRrp = Device::model()->listDevices($tipePrinterInvoiceRrp);
-        $printerStruk = Device::model()->listDevices($tipePrinterStruk);
-        $printerNota = Device::model()->listDevices($tipePrinterNota);
+        $printerStruk      = Device::model()->listDevices($tipePrinterStruk);
+        $printerNota       = Device::model()->listDevices($tipePrinterNota);
 
-        $this->render('view', array(
-            'model' => $this->loadModel($id),
-            'penjualanDetail' => $penjualanDetail,
+        $this->render('view', [
+            'model'             => $this->loadModel($id),
+            'penjualanDetail'   => $penjualanDetail,
             'printerInvoiceRrp' => $printerInvoiceRrp,
-            'printerStruk' => $printerStruk,
-            'printerNota' => $printerNota
-        ));
+            'printerStruk'      => $printerStruk,
+            'printerNota'       => $printerNota,
+        ]);
     }
 
     /**
@@ -73,26 +72,28 @@ class PenjualanController extends Controller
     public function actionTambah()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new Penjualan;
+        $model        = new Penjualan;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
         if (isset($_POST['Penjualan'])) {
             $model->attributes = $_POST['Penjualan'];
-            if ($model->save())
-                $this->redirect(array('ubah', 'id' => $model->id, 'uid' => Yii::app()->user->id));
+            if ($model->save()) {
+                $this->redirect(['ubah', 'id' => $model->id, 'uid' => Yii::app()->user->id]);
+            }
+
         }
 
-        $customerList = Profil::model()->findAll(array(
-            'select' => 'id, nama',
+        $customerList = Profil::model()->findAll([
+            'select'    => 'id, nama',
             'condition' => 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER,
-            'order' => 'nama'));
+            'order'     => 'nama']);
 
-        $this->render('tambah', array(
-            'model' => $model,
+        $this->render('tambah', [
+            'model'        => $model,
             'customerList' => $customerList,
-        ));
+        ]);
     }
 
     /**
@@ -106,7 +107,7 @@ class PenjualanController extends Controller
 
         // Jika status sudah tidak draft, tidak bisa ubah
         if ($model->status != Penjualan::STATUS_DRAFT) {
-            $this->redirect(array('view', 'id' => $id));
+            $this->redirect(['view', 'id' => $id]);
         }
 
         /* Jika user ID yang di link tidak sama dengan yang di database, maka
@@ -123,8 +124,10 @@ class PenjualanController extends Controller
 
         if (isset($_POST['Penjualan'])) {
             $model->attributes = $_POST['Penjualan'];
-            if ($model->save())
-                $this->redirect(array('view', 'id' => $id));
+            if ($model->save()) {
+                $this->redirect(['view', 'id' => $id]);
+            }
+
         }
 
         $penjualanDetail = new PenjualanDetail('search');
@@ -139,15 +142,15 @@ class PenjualanController extends Controller
             $barang->setAttribute('status', Barang::STATUS_AKTIF);
         }
 
-        $tipePrinterInvoiceRrp = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
-        $printerInvoiceRrp = Device::model()->listDevices($tipePrinterInvoiceRrp);
+        $tipePrinterInvoiceRrp = [Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER];
+        $printerInvoiceRrp     = Device::model()->listDevices($tipePrinterInvoiceRrp);
 
-        $this->render('ubah', array(
-            'model' => $model,
-            'penjualanDetail' => $penjualanDetail,
-            'barang' => $barang,
+        $this->render('ubah', [
+            'model'             => $model,
+            'penjualanDetail'   => $penjualanDetail,
+            'barang'            => $barang,
             'printerInvoiceRrp' => $printerInvoiceRrp,
-        ));
+        ]);
     }
 
     /**
@@ -164,8 +167,10 @@ class PenjualanController extends Controller
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        if (!isset($_GET['ajax'])) {
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
+        }
+
     }
 
     /**
@@ -174,14 +179,14 @@ class PenjualanController extends Controller
     public function actionIndex()
     {
         $model = new Penjualan('search');
-        $model->unsetAttributes();  // clear any default values
+        $model->unsetAttributes(); // clear any default values
         if (isset($_GET['Penjualan'])) {
             $model->attributes = $_GET['Penjualan'];
         }
 
-        $this->render('index', array(
+        $this->render('index', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -194,8 +199,10 @@ class PenjualanController extends Controller
     public function loadModel($id)
     {
         $model = Penjualan::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+
         return $model;
     }
 
@@ -218,18 +225,18 @@ class PenjualanController extends Controller
      */
     public function actionTambahDetail($id)
     {
-        $return = array(
+        $return = [
             'sukses' => false,
-            'error' => array(
+            'error'  => [
                 'code' => '500',
-                'msg' => 'Sempurnakan input!',
-            )
-        );
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
         if (isset($_POST['tambah_barang']) && $_POST['tambah_barang']) {
             $penjualan = $this->loadModel($id);
-            $qty = $_POST['qty'];
-            $barcode = $_POST['barcode'];
-            $return = $penjualan->transfer_mode ? $penjualan->transferBarang($barcode, $qty, true) : $penjualan->tambahBarang($barcode, $qty, true);
+            $qty       = $_POST['qty'];
+            $barcode   = $_POST['barcode'];
+            $return    = $penjualan->transfer_mode ? $penjualan->transferBarang($barcode, $qty, true) : $penjualan->tambahBarang($barcode, $qty, true);
         }
         $this->renderJSON($return);
     }
@@ -244,8 +251,8 @@ class PenjualanController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('view', array('id' => $data->id)) . '">' .
-                    $data->nomor . '</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">' .
+            $data->nomor . '</a>';
         }
         return $return;
     }
@@ -259,8 +266,8 @@ class PenjualanController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
-                    $data->tanggal . '</a>';
+            $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
+            $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -269,13 +276,13 @@ class PenjualanController extends Controller
 
     public function actionSimpanPenjualan($id)
     {
-        $return = array(
+        $return = [
             'sukses' => false,
-            'error' => array(
+            'error'  => [
                 'code' => '500',
-                'msg' => 'Sempurnakan input!',
-            )
-        );
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $penjualan = $this->loadModel($id);
             if ($penjualan->status == Penjualan::STATUS_DRAFT) {
@@ -299,11 +306,11 @@ class PenjualanController extends Controller
      */
     public function actionTotal($id)
     {
-        $penjualan = $this->loadModel($id);
-        $total = $penjualan->ambilTotal();
-        $totalF = $penjualan->total;
+        $penjualan        = $this->loadModel($id);
+        $total            = $penjualan->ambilTotal();
+        $totalF           = $penjualan->total;
         $return['sukses'] = true;
-        $return['total'] = $total;
+        $return['total']  = $total;
         $return['totalF'] = $totalF;
         $this->renderJSON($return);
     }
@@ -316,7 +323,7 @@ class PenjualanController extends Controller
     public function actionPoin($id)
     {
         $penjualan = $this->loadModel($id);
-        $curPoin = $penjualan->getCurPoin();
+        $curPoin   = $penjualan->getCurPoin();
     }
 
     public function formatHargaJual($data)
@@ -331,9 +338,9 @@ class PenjualanController extends Controller
 
     public function tampilkanHargaBeli($data)
     {
-        $hpp = HargaPokokPenjualan::model()->findAll('penjualan_detail_id=' . $data->id);
+        $hpp          = HargaPokokPenjualan::model()->findAll('penjualan_detail_id=' . $data->id);
         $barisPertama = true;
-        $text = '';
+        $text         = '';
         foreach ($hpp as $hargaBeli) {
             if (!$barisPertama) {
                 $text .= '<br />';
@@ -350,13 +357,12 @@ class PenjualanController extends Controller
      */
     public function exportPdf($id, $draft = false)
     {
-
         $modelHeader = $this->loadModel($id);
-        $configs = Config::model()->findAll();
+        $configs     = Config::model()->findAll();
         /*
          * Ubah config (object) jadi array
          */
-        $branchConfig = array();
+        $branchConfig = [];
         foreach ($configs as $config) {
             $branchConfig[$config->nama] = $config->nilai;
         }
@@ -369,32 +375,34 @@ class PenjualanController extends Controller
         /*
          * Penjualan Detail
          */
-        $penjualanDetail = PenjualanDetail::model()->with('barang')->findAll(array(
+        $penjualanDetail = PenjualanDetail::model()->with('barang')->findAll([
             'condition' => "penjualan_id={$id}",
-            'order' => 'barang.nama'
-        ));
+            'order'     => 'barang.nama',
+        ]);
 
         /*
          * Persiapan render PDF
          */
-        $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
+        require_once __DIR__ . '/../vendors/autoload.php';
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'tempDir' => __DIR__ . '/../runtime/']);
+
         $viewInvoice = '_invoice';
         if ($draft) {
             $viewInvoice = '_invoice_draft';
         }
-        $mPDF1->WriteHTML($this->renderPartial($viewInvoice, array(
-                    'modelHeader' => $modelHeader,
-                    'branchConfig' => $branchConfig,
-                    'customer' => $customer,
-                    'penjualanDetail' => $penjualanDetail
-                        ), true
+        $mpdf->WriteHTML($this->renderPartial($viewInvoice, [
+            'modelHeader'     => $modelHeader,
+            'branchConfig'    => $branchConfig,
+            'customer'        => $customer,
+            'penjualanDetail' => $penjualanDetail,
+        ], true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumSuffix = ' dari ';
-        $mPDF1->pagenumPrefix = 'Halaman ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumSuffix = ' / ';
+        // $mpdf->pagenumPrefix = 'Halaman ';
         // Render PDF
-        $mPDF1->Output("{$modelHeader->nomor}.pdf", 'I');
+        $mpdf->Output("{$modelHeader->nomor}.pdf", 'I');
     }
 
     /**
@@ -404,15 +412,15 @@ class PenjualanController extends Controller
     public function actionExportCsv($id)
     {
         $model = $this->loadModel($id);
-        $csv = $model->eksporCsv();
+        $csv   = $model->eksporCsv();
 
         $timeStamp = date("Y-m-d--H-i");
-        $namaFile = "{$model->nomor}-{$model->profil->nama}-{$timeStamp}";
+        $namaFile  = "{$model->nomor}-{$model->profil->nama}-{$timeStamp}";
 
-        $this->renderPartial('_csv', array(
+        $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
-            'csv' => $csv
-        ));
+            'csv'      => $csv,
+        ]);
     }
 
     public function actionAmbilProfil($tipe)
@@ -420,11 +428,11 @@ class PenjualanController extends Controller
         /*
          * Tampilkan daftar sesuai pilihan tipe
          */
-        $condition = $tipe == Profil::TIPE_CUSTOMER ? 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER : 'id>' . Profil::AWAL_ID;
-        $profilList = Profil::model()->findAll(array(
-            'select' => 'id, nama',
+        $condition  = $tipe == Profil::TIPE_CUSTOMER ? 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER : 'id>' . Profil::AWAL_ID;
+        $profilList = Profil::model()->findAll([
+            'select'    => 'id, nama',
             'condition' => $condition,
-            'order' => 'nama'));
+            'order'     => 'nama']);
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
         foreach ($profilList as $profil) {
@@ -436,7 +444,7 @@ class PenjualanController extends Controller
 
     public function exportText($id, $device, $print = 0)
     {
-        $model = $this->loadModel($id);
+        $model    = $this->loadModel($id);
         $namaFile = $this->getNamaFile($model->nomor, $print);
         header("Content-type: text/plain");
         header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
@@ -481,20 +489,20 @@ class PenjualanController extends Controller
     public function printLpr($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
-        $text = $this->getText($model, $print);
+        $text  = $this->getText($model, $print);
         $device->printLpr($text);
-        $this->renderPartial('_print_autoclose', array(
-            'text' => $text
-        ));
+        $this->renderPartial('_print_autoclose', [
+            'text' => $text,
+        ]);
     }
 
     public function printBrowser($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
-        $text = $this->getText($model, $print);
-        $this->renderPartial('_print_autoclose_browser', array(
-            'text' => $text
-        ));
+        $text  = $this->getText($model, $print);
+        $this->renderPartial('_print_autoclose_browser', [
+            'text' => $text,
+        ]);
     }
 
     public function actionPrintInvoice($id)
@@ -539,39 +547,38 @@ class PenjualanController extends Controller
     public function actionImport()
     {
         if (isset($_POST['nomor'])) {
-            $dbAhadPos2 = $_POST['database'];
-            $nomor = $_POST['nomor'];
+            $dbAhadPos2    = $_POST['database'];
+            $nomor         = $_POST['nomor'];
             $penjualanPos2 = Yii::app()->db->createCommand("
                      SELECT t.tglTransaksiJual, c.namaCustomer
                      FROM {$dbAhadPos2}.transaksijual t
                      JOIN {$dbAhadPos2}.customer c on t.idCustomer=c.idCustomer
                      WHERE idTransaksiJual = :nomor")
-                    ->bindValue(':nomor', $nomor)
-                    ->queryRow();
-            $profil = Profil::model()->find('nama=:nama', array('nama' => trim($penjualanPos2['namaCustomer'])));
+                ->bindValue(':nomor', $nomor)
+                ->queryRow();
+            $profil = Profil::model()->find('nama=:nama', ['nama' => trim($penjualanPos2['namaCustomer'])]);
             if (!is_null($profil)) {
-                $penjualan = new Penjualan;
+                $penjualan            = new Penjualan;
                 $penjualan->profil_id = $profil->id;
                 if ($penjualan->save()) {
-
                     $penjualanDetailPos2 = Yii::app()->db
-                            ->createCommand("
+                        ->createCommand("
                            select d.barcode, d.jumBarang, d.hargaBeli, d.hargaJual, d.RRP, barang.id
                            from {$dbAhadPos2}.detail_jual d
                            join barang on d.barcode=barang.barcode
                            where d.nomorStruk = :nomor
                                ")
-                            ->bindValue(':nomor', $nomor)
-                            ->queryAll();
+                        ->bindValue(':nomor', $nomor)
+                        ->queryAll();
 
                     foreach ($penjualanDetailPos2 as $detailPos2) {
                         $barangId = $detailPos2['id'];
 
-                        $detail = new PenjualanDetail;
-                        $detail->barang_id = $barangId;
-                        $detail->penjualan_id = $penjualan->id;
-                        $detail->qty = $detailPos2['jumBarang'];
-                        $detail->harga_jual = $detailPos2['hargaJual'];
+                        $detail                         = new PenjualanDetail;
+                        $detail->barang_id              = $barangId;
+                        $detail->penjualan_id           = $penjualan->id;
+                        $detail->qty                    = $detailPos2['jumBarang'];
+                        $detail->harga_jual             = $detailPos2['hargaJual'];
                         $detail->harga_jual_rekomendasi = $detailPos2['RRP'];
                         $detail->save();
                     }
@@ -592,12 +599,12 @@ class PenjualanController extends Controller
                     $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
                 /*
-                  case Device::TIPE_PDF_PRINTER:
-                  $this->exportPdf($id);
-                  break;
-                  case Device::TIPE_CSV_PRINTER:
-                  $this->eksporCsv($id);
-                  break;
+                case Device::TIPE_PDF_PRINTER:
+                $this->exportPdf($id);
+                break;
+                case Device::TIPE_CSV_PRINTER:
+                $this->eksporCsv($id);
+                break;
                  */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_STRUK);
@@ -618,12 +625,12 @@ class PenjualanController extends Controller
                     $this->printLpr($id, $device, self::PRINT_NOTA);
                     break;
                 /*
-                  case Device::TIPE_PDF_PRINTER:
-                  $this->exportPdf($id);
-                  break;
-                  case Device::TIPE_CSV_PRINTER:
-                  $this->eksporCsv($id);
-                  break;
+                case Device::TIPE_PDF_PRINTER:
+                $this->exportPdf($id);
+                break;
+                case Device::TIPE_CSV_PRINTER:
+                $this->eksporCsv($id);
+                break;
                  */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_NOTA);
