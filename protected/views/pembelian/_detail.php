@@ -53,18 +53,6 @@ endif;
                 'value' => 'number_format($data->harga_jual, 0, ",", ".")'
             ),
             array(
-                'name' => 'harga_jual_rekomendasi',
-                'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                'htmlOptions' => array('class' => 'rata-kanan'),
-                'value' => function($data) {
-            if (is_null($data->harga_jual_rekomendasi)) {
-                return 'NULL';
-            } else {
-                return number_format($data->harga_jual_rekomendasi, 0, ',', '.');
-            }
-        }
-            ),
-            array(
                 'name' => 'subTotal',
                 'header' => 'Total',
                 'value' => '$data->total',

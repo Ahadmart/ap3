@@ -12,8 +12,26 @@ class PoController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->loadModel($id);
+
+        $poDetail = new PoDetail('search');
+        $poDetail->unsetAttributes();
+        $poDetail->setAttribute('po_id', '=' . $id);
+        if (isset($_GET['PoDetail'])) {
+            $poDetail->attributes = $_GET['PoDetail'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+
+        $printerPo = empty($tipePrinterAvailable) ? [] : Device::model()->listDevices($tipePrinterAvailable);
+
+        $kertasUntukPdf = Po::listNamaKertas();
+
         $this->render('view', [
-            'model' => $this->loadModel($id),
+            'model'          => $model,
+            'poDetail'       => $poDetail,
+            'printerPo'      => $printerPo,
+            'kertasUntukPdf' => $kertasUntukPdf
         ]);
     }
 
@@ -34,7 +52,6 @@ class PoController extends Controller
             if ($model->save()) {
                 $this->redirect(['ubah', 'id' => $model->id]);
             }
-
         }
 
         $supplierList = Profil::model()->profilTrx()->tipeSupplier()->orderByNama()->findAll([
@@ -58,12 +75,16 @@ class PoController extends Controller
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
+        // Jika PO sudah disimpan (status bukan draft) maka tidak bisa diubah lagi
+        if ($model->status != Po::STATUS_DRAFT) {
+            $this->redirect(['view', 'id' => $id]);
+        }
+
         if (isset($_POST['Po'])) {
             $model->attributes = $_POST['Po'];
             if ($model->save()) {
                 $this->redirect(['view', 'id' => $id]);
             }
-
         }
 
         /*
@@ -138,7 +159,6 @@ class PoController extends Controller
         if (!isset($_GET['ajax'])) {
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
         }
-
     }
 
     /**
@@ -251,7 +271,7 @@ class PoController extends Controller
     {
         if (isset($_POST['barangId'])) {
             $barangId = $_POST['barangId'];
-        } else if (isset($_POST['barcode'])) {
+        } elseif (isset($_POST['barcode'])) {
             $barang   = Barang::model()->find('barcode = :barcode', [':barcode' => $_POST['barcode']]);
             $barangId = $barang->id;
         }
@@ -367,5 +387,110 @@ class PoController extends Controller
     {
         $detail = PoDetail::model()->findByPk($id);
         $detail->delete();
+    }
+
+    /**
+     * Simpan po:
+     * Update status dari draft menjadi po, dapat nomor
+     * @param int $id
+     */
+    public function actionSimpan($id)
+    {
+        $return = ['sukses' => false];
+        // cek jika 'simpan' ada dan bernilai true
+        if (isset($_POST['simpan']) && $_POST['simpan']) {
+            $po = $this->loadModel($id);
+            if ($po->status == Po::STATUS_DRAFT) {
+                /*
+                 * simpan pembelian jika hanya dan hanya jika status masih draft
+                 */
+                $return = $po->simpan();
+            }
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionPrint($id)
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_LPR:
+                    // $this->printLpr($id, $device);
+                    break;
+                case Device::TIPE_PDF_PRINTER:
+                    $this->exportPdf($id, $_GET['kertas']);
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    // $this->eksporCsv($id);
+                    break;
+            }
+        }
+    }
+
+    public function exportPdf($id, $kertas = Po::KERTAS_A4, $draft = false)
+    {
+        $modelHeader = $this->loadModel($id);
+        $configs     = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = [];
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        /*
+         * Data Supplier
+         */
+        $profil = Profil::model()->findByPk($modelHeader->profil_id);
+
+        /*
+         * Po Detail
+         */
+        $poDetail = PoDetail::model()->findAll([
+            'condition' => "po_id={$id}",
+            'order'     => 'nama'
+        ]);
+
+        /*
+         * Persiapan render PDF
+         */
+        require_once __DIR__ . '/../vendors/autoload.php';
+
+        $listNamaKertas = Po::listNamaKertas();
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+
+        $viewCetak      = '_pdf';
+        if ($draft) {
+            $viewCetak = '_pdf_draft';
+        }
+        $mpdf->WriteHTML($this->renderPartial(
+            $viewCetak,
+            [
+                    'modelHeader'  => $modelHeader,
+                    'branchConfig' => $branchConfig,
+                    'profil'       => $profil,
+                    'poDetail'     => $poDetail
+                        ],
+            true
+        ));
+
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumSuffix = ' / ';
+        // $mpdf->pagenumPrefix = 'Hlm ';
+        // Render PDF
+        $mpdf->Output("{$modelHeader->nomor}.pdf", 'I');
+    }
+    
+    public function actionBeli($id)
+    {
+        if (isset($id)) {
+            $model = $this->loadModel($id);
+            $return = $model->beli();
+            if ($return['sukses']) {
+                $this->redirect(['pembelian/ubah', 'id' => $return['data']['pembelianId']]);
+            }
+        }
     }
 }

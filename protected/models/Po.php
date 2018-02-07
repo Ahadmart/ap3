@@ -26,8 +26,18 @@ class Po extends CActiveRecord
 {
     const STATUS_DRAFT = 0;
     const STATUS_PO    = 10;
+    /* ===================== */
+    const KERTAS_LETTER = 10;
+    const KERTAS_A4     = 20;
+    const KERTAS_FOLIO  = 30;
+    /* ===================== */
+    const KERTAS_LETTER_NAMA = 'Letter';
+    const KERTAS_A4_NAMA     = 'A4';
+    const KERTAS_FOLIO_NAMA  = 'Folio';
 
     public $max; // Untuk mencari untuk nomor surat;
+    public $namaSupplier;
+    public $namaUpdatedBy;
     /**
      * @return string the associated database table name
      */
@@ -120,8 +130,28 @@ class Po extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $criteria->with = ['profil', 'updatedBy'];
+        $criteria->compare('profil.nama', $this->namaSupplier, true);
+        $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
+
+        $sort = [
+            'defaultOrder' => 't.status, t.tanggal desc',
+            'attributes' => [
+                'namaSupplier' => [
+                    'asc' => 'profil.nama',
+                    'desc' => 'profil.nama desc'
+                ],
+                'namaUpdatedBy' => [
+                    'asc' => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc'
+                ],
+                '*'
+            ]
+        ];
+
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
+            'sort' => $sort
         ]);
     }
 
@@ -146,7 +176,7 @@ class Po extends CActiveRecord
              */
             $this->tanggal = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
 
         // Jika disimpan melalui proses simpan
@@ -167,6 +197,13 @@ class Po extends CActiveRecord
         return parent::beforeValidate();
     }
 
+    public function afterFind()
+    {
+        $this->tanggal           = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
+        $this->tanggal_referensi = !is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
+        return parent::afterFind();
+    }
+
     /**
      * Mencari nomor untuk penomoran surat
      * @return int maksimum+1 atau 1 jika belum ada nomor untuk tahun ini
@@ -174,7 +211,8 @@ class Po extends CActiveRecord
     public function cariNomorTahunan()
     {
         $tahun = date('y');
-        $data  = $this->find([
+        $data  = $this->find(
+            [
             'select'    => 'max(substring(nomor,9)*1) as max',
             'condition' => "substring(nomor,5,2)='{$tahun}'"]
         );
@@ -218,5 +256,120 @@ class Po extends CActiveRecord
     public function getTotal()
     {
         return number_format($this->totalRaw, 0, ',', '.');
+    }
+
+    public function simpan()
+    {
+        $this->scenario = 'simpan';
+        $transaction    = $this->dbConnection->beginTransaction();
+
+        try {
+            if ($this->save()) {
+                $transaction->commit();
+                return ['sukses' => true];
+            } else {
+                throw new Exception('Gagal Simpan PO');
+            }
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return [
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
+        }
+    }
+
+    public function statusList()
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_PO    => 'PO',
+        ];
+    }
+
+    public function getNamaStatus()
+    {
+        return $this->statusList()[$this->status];
+    }
+
+    public static function listNamaKertas()
+    {
+        return [
+            self::KERTAS_A4     => self::KERTAS_A4_NAMA,
+            self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA,
+            self::KERTAS_FOLIO  => self::KERTAS_FOLIO_NAMA,
+        ];
+    }
+
+    /**
+     * Buat Pembelian dari PO ini
+     */
+    public function beli()
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+            $pembelian                    = new Pembelian;
+            $pembelian->profil_id         = $this->profil_id;
+            $pembelian->referensi         = $this->nomor;
+            $pembelian->tanggal_referensi = date_format(date_create_from_format('d-m-Y H:i:s', $this->tanggal), 'd-m-Y');
+            if (!$pembelian->save()) {
+                throw new Exception('Gagal simpan Pembelian');
+            }
+
+            /* Insert semua yang ada di po_detail ke pembelian_detail */
+            $sql = '
+            INSERT INTO pembelian_detail (pembelian_id, barang_id, qty, harga_beli, harga_jual, updated_by, created_at)
+            SELECT
+                :pembelianId,
+                po_detail.barang_id,
+                po_detail.qty_order,
+                po_detail.harga_beli_terakhir,
+                hj.harga,
+                :userId,
+                NOW()
+            FROM
+                po_detail
+                    JOIN
+                (SELECT
+                    po_detail.barang_id,
+                        MAX(barang_harga_jual.id) max_hj
+                FROM
+                    po_detail
+                JOIN barang_harga_jual ON po_detail.barang_id = barang_harga_jual.barang_id
+                WHERE
+                    po_detail.po_id = :poId
+                GROUP BY po_detail.barang_id) AS tabel_max_id ON tabel_max_id.barang_id = po_detail.barang_id
+                    JOIN
+                barang_harga_jual hj ON hj.id = tabel_max_id.max_hj
+            WHERE
+                po_detail.po_id = :poId
+                    ';
+            $command = Yii::app()->db->createCommand($sql);
+            $command->bindValues([
+                ':pembelianId' => $pembelian->id,
+                ':poId'        => $this->id,
+                ':userId'      => Yii::app()->user->id
+            ]);
+            $rows = $command->execute();
+
+            $transaction->commit();
+            return [
+                'sukses' => true,
+                'data'   => [
+                    'pembelianId' => $pembelian->id,
+                    'rows'        => $rows
+                ]
+            ];
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return [
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
+        }
     }
 }
