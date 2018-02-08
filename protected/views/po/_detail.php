@@ -28,10 +28,16 @@
                     'htmlOptions'       => ['class' => 'rata-kanan'],
                 ],
                 [
-                    'name'              => 'harga_beli_terakhir',
+                    'name'              => 'harga_beli',
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'value'             => 'number_format($data->harga_beli_terakhir, 0, ",", ".")',
+                    'value'             => 'number_format($data->harga_beli, 0, ",", ".")',
+                ],
+                [
+                    'name'              => 'harga_jual',
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'value'             => 'number_format($data->harga_jual, 0, ",", ".")',
                 ],
                 [
                     'name'              => 'subTotal',

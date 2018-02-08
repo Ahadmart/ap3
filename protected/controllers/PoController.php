@@ -282,6 +282,7 @@ class PoController extends Controller
             'barcode'        => $barang['barcode'],
             'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
             'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
+            'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
             'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
             'satuan'         => $barang['satuan'],
         ];
@@ -332,7 +333,8 @@ class PoController extends Controller
             $detail->barcode             = $barang->barcode;
             $detail->nama                = $barang->nama;
             $detail->qty_order           = $_POST['qty'] > 0 ? $_POST['qty'] : 0;
-            $detail->harga_beli_terakhir = $_POST['hargabeli'];
+            $detail->harga_beli          = $_POST['hargabeli'];
+            $detail->harga_jual          = $_POST['hargajual'];
 
             // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
             // echo terlihat di console
@@ -482,11 +484,11 @@ class PoController extends Controller
         // Render PDF
         $mpdf->Output("{$modelHeader->nomor}.pdf", 'I');
     }
-    
+
     public function actionBeli($id)
     {
         if (isset($id)) {
-            $model = $this->loadModel($id);
+            $model  = $this->loadModel($id);
             $return = $model->beli();
             if ($return['sukses']) {
                 $this->redirect(['pembelian/ubah', 'id' => $return['data']['pembelianId']]);

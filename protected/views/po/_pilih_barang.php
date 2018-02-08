@@ -114,6 +114,7 @@
             $("#satuan").text(info['satuan']);
             $("#qty").val('');
             $("#harga-beli").val(info['hargaBeli']);
+            $("#harga-jual").val(info['hargaJual']);
             $("#input-po-detail").slideDown(500);
             $("#qty").focus();
             //$("#harga-jual-raw").html('&nbsp;');
@@ -322,13 +323,17 @@
                 <h5><span id="barang-info"></span></h5>
                 <div class="row collapse">
                     <div class="row">
-                        <div class="medium-5 columns">
+                        <div class="medium-3 columns">
                             <?= CHtml::label('Harga Beli', 'hargabeli', ['id' => 'label-harga-beli']) ?>
                             <?= CHtml::textField('hargabeli', '', ['id' => 'harga-beli', 'autocomplete' => 'off']) ?>
                         </div>
+                        <div class="medium-3 end columns">
+                            <?= CHtml::label('Harga Jual', 'hargajual', ['id' => 'label-harga-jual']) ?>
+                            <?= CHtml::textField('hargajual', '', ['id' => 'harga-jual', 'autocomplete' => 'off']) ?>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="medium-5 columns">
+                        <div class="medium-6 columns">
                             <?= CHtml::label('<u><b>J</b></u>umlah Order', 'qty'); ?>
                             <div class="row collapse">
                                 <div class="small-9 columns">
@@ -412,7 +417,7 @@
                         <div class="span-12 columns">
                             <?php
                              $focusSetelahTambah = $tipeCari > 1 ? '#barcode-pilih' : '#scan';
-                              echo CHtml::ajaxSubmitButton('Tambah (Alt+a)', $this->createUrl('tambahbarang', [
+                             echo CHtml::ajaxSubmitButton('Tambah (Alt+a)', $this->createUrl('tambahbarang', [
                                'id' => $pembelianModel->id,
                               ]), [
                                'type'    => 'POST',

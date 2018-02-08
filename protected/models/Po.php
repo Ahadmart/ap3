@@ -242,7 +242,7 @@ class Po extends CActiveRecord
     public function getTotalRaw()
     {
         $po = Yii::app()->db->createCommand()
-            ->select('sum(harga_beli_terakhir * qty_order) total')
+            ->select('sum(harga_beli * qty_order) total')
             ->from(PoDetail::model()->tableName())
             ->where('po_id=:poId', [':poId' => $this->id])
             ->queryRow();
@@ -325,7 +325,7 @@ class Po extends CActiveRecord
                 :pembelianId,
                 po_detail.barang_id,
                 po_detail.qty_order,
-                po_detail.harga_beli_terakhir,
+                po_detail.harga_beli,
                 hj.harga,
                 :userId,
                 NOW()
