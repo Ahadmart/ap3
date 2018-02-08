@@ -38,6 +38,7 @@ class Po extends CActiveRecord
     public $max; // Untuk mencari untuk nomor surat;
     public $namaSupplier;
     public $namaUpdatedBy;
+
     /**
      * @return string the associated database table name
      */
@@ -61,7 +62,7 @@ class Po extends CActiveRecord
             ['tanggal_referensi, created_at, tanggal, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, nomor, tanggal, profil_id, referensi, tanggal_referensi, status, pembelian_id, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, nomor, tanggal, profil_id, referensi, tanggal_referensi, status, pembelian_id, updated_at, updated_by, created_at, namaSupplier, namaUpdatedBy', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -97,6 +98,7 @@ class Po extends CActiveRecord
             'updated_at'        => 'Updated At',
             'updated_by'        => 'Updated By',
             'created_at'        => 'Created At',
+            'namaUpdatedBy'     => 'User'
         ];
     }
 
@@ -136,13 +138,13 @@ class Po extends CActiveRecord
 
         $sort = [
             'defaultOrder' => 't.status, t.tanggal desc',
-            'attributes' => [
+            'attributes'   => [
                 'namaSupplier' => [
-                    'asc' => 'profil.nama',
+                    'asc'  => 'profil.nama',
                     'desc' => 'profil.nama desc'
                 ],
                 'namaUpdatedBy' => [
-                    'asc' => 'updatedBy.nama_lengkap',
+                    'asc'  => 'updatedBy.nama_lengkap',
                     'desc' => 'updatedBy.nama_lengkap desc'
                 ],
                 '*'
@@ -151,7 +153,7 @@ class Po extends CActiveRecord
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort' => $sort
+            'sort'     => $sort
         ]);
     }
 
