@@ -9,60 +9,62 @@ endif;
 
 <div class="small-12  columns">
     <?php
-    $this->widget('BGridView', array(
-        'id' => 'pembelian-detail-grid',
-        'dataProvider' => $pembelianDetail->search($pilihBarang ? NULL : 't.id'),
+    $this->widget('BGridView', [
+        'id'           => 'pembelian-detail-grid',
+        'dataProvider' => $pembelianDetail->search($pilihBarang ? null : 't.id'),
         //'filter' => $pembelianDetail,
-        'rowCssClassExpression' => function($row, $data) {
+        'rowCssClassExpression' => function ($row, $data) {
             if ($data->isBarangBaru()) {
                 return 'baru';
-            } else if ($data->isHargaJualBerubah()) {
+            } elseif ($data->isMarginMin()) {
+                return 'margin-min';
+            } elseif ($data->isHargaJualBerubah()) {
                 return 'hj-berubah';
             }
         },
         'summaryText' => '{start}-{end} dari {count}, Total: ' . $pembelian->total,
-        'columns' => array(
-            array(
-                'name' => 'barcode',
+        'columns'     => [
+            [
+                'name'  => 'barcode',
                 'value' => '$data->barang->barcode',
-            ),
-            array(
-                'name' => 'namaBarang',
+            ],
+            [
+                'name'  => 'namaBarang',
                 'value' => '$data->barang->nama',
-            ),
-            array(
-                'name' => 'qty',
-                'value' => function($data) {
+            ],
+            [
+                'name'  => 'qty',
+                'value' => function ($data) {
                     return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updateqty') . '">' .
                             $data->qty . '</a>';
                 },
-                'type' => 'raw',
-                'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
-                'htmlOptions' => array('class' => 'rata-kanan'),
-            ),
-            array(
-                'name' => 'harga_beli',
-                'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                'htmlOptions' => array('class' => 'rata-kanan'),
-                'value' => 'number_format($data->harga_beli, 0, ",", ".")'
-            ),
-            array(
-                'name' => 'harga_jual',
-                'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                'htmlOptions' => array('class' => 'rata-kanan'),
-                'value' => 'number_format($data->harga_jual, 0, ",", ".")'
-            ),
-            array(
-                'name' => 'subTotal',
-                'header' => 'Total',
-                'value' => '$data->total',
-                'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                'htmlOptions' => array('class' => 'rata-kanan'),
-                'filter' => false
-            ),
+                'type'              => 'raw',
+                'headerHtmlOptions' => ['style' => 'width:75px', 'class' => 'rata-kanan'],
+                'htmlOptions'       => ['class' => 'rata-kanan'],
+            ],
+            [
+                'name'              => 'harga_beli',
+                'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                'htmlOptions'       => ['class' => 'rata-kanan'],
+                'value'             => 'number_format($data->harga_beli, 0, ",", ".")'
+            ],
+            [
+                'name'              => 'harga_jual',
+                'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                'htmlOptions'       => ['class' => 'rata-kanan'],
+                'value'             => 'number_format($data->harga_jual, 0, ",", ".")'
+            ],
+            [
+                'name'              => 'subTotal',
+                'header'            => 'Total',
+                'value'             => '$data->total',
+                'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                'htmlOptions'       => ['class' => 'rata-kanan'],
+                'filter'            => false
+            ],
             [
                 'header' => 'Rak=NULL',
-                'value' => function($data) {
+                'value'  => function ($data) {
                     if (is_null($data->barang->rak_id)) {
                         return '<a href="#" class="editable-rak" data-type="select" data-pk="' . $data->barang_id . '" data-url="' . Yii::app()->controller->createUrl('updaterak') . '">NULL</a>';
                     } else {
@@ -70,19 +72,19 @@ endif;
                         //return $data->barang->rak->nama;
                     }
                 },
-                'type' => 'raw',
-                'headerHtmlOptions' => array('class' => 'rata-tengah'),
-                'htmlOptions' => array('class' => 'rata-tengah'),
+                'type'              => 'raw',
+                'headerHtmlOptions' => ['class' => 'rata-tengah'],
+                'htmlOptions'       => ['class' => 'rata-tengah'],
             ],
             // Jika pembelian masih draft tampilkan tombol hapus
-            array(
-                'class' => 'BButtonColumn',
-                'template' => $pembelian->status == 0 ? '{delete}' : '',
+            [
+                'class'           => 'BButtonColumn',
+                'template'        => $pembelian->status == 0 ? '{delete}' : '',
                 'deleteButtonUrl' => 'Yii::app()->controller->createUrl("pembelian/hapusdetail", array("id"=>$data->primaryKey))',
-                'afterDelete' => 'function(link,success,data){ if(success) updateTotal(); }',
-            ),
-        ),
-    ));
+                'afterDelete'     => 'function(link,success,data){ if(success) updateTotal(); }',
+            ],
+        ],
+    ]);
     ?>
 </div>
 
@@ -108,8 +110,8 @@ endif;
                 },
                 source: [
 <?php
-$listRak = CHtml::listData(RakBarang::model()->findAll(array('select' => 'id,nama', 'order' => 'nama')), 'id', 'nama');
-$firstRow = TRUE;
+$listRak  = CHtml::listData(RakBarang::model()->findAll(['select' => 'id,nama', 'order' => 'nama']), 'id', 'nama');
+$firstRow = true;
 foreach ($listRak as $key => $value):
     ?>
     <?php

@@ -67,6 +67,7 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
     <div class="small-12 columns">
         <span class="warning label" style="font-weight: bold">BARANG BARU</span>
         <span class="success label" style="font-weight: bold">HARGA JUAL BERUBAH</span>
+        <span class="alert label" style="font-weight: bold">MARGIN ≤ 0</span>
     </div>
 </div>
 
