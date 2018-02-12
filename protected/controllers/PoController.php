@@ -21,7 +21,7 @@ class PoController extends Controller
             $poDetail->attributes = $_GET['PoDetail'];
         }
 
-        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER, Device::TIPE_PDF_PRINTER];
 
         $printerPo = empty($tipePrinterAvailable) ? [] : Device::model()->listDevices($tipePrinterAvailable);
 
@@ -424,7 +424,7 @@ class PoController extends Controller
                     $this->exportPdf($id, $_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    // $this->eksporCsv($id);
+                    $this->eksporCsv($id);
                     break;
             }
         }
@@ -482,7 +482,27 @@ class PoController extends Controller
         $mpdf->pagenumSuffix = ' / ';
         // $mpdf->pagenumPrefix = 'Hlm ';
         // Render PDF
-        $mpdf->Output("{$modelHeader->nomor}.pdf", 'I');
+        $mpdf->Output("PO {$modelHeader->nomor}.pdf", 'I');
+    }
+
+    /**
+     * Render csv untuk didownload
+     * @param int $id PO Id
+     */
+    public function eksporCsv($id)
+    {
+        $model = $this->loadModel($id);
+        $text = $model->toCsv();
+
+        $timeStamp = date("Y-m-d--H-i");
+        $namaFile = "PO-{$model->nomor}-{$model->profil->nama}-{$timeStamp}.csv";
+        $contentTypeMeta = 'text/csv';
+
+        $this->renderPartial('_file_text', [
+            'namaFile' => $namaFile,
+            'text' => $text,
+            'contentType' => $contentTypeMeta
+        ]);
     }
 
     public function actionBeli($id)
