@@ -495,7 +495,7 @@ class PoController extends Controller
         $text = $model->toCsv();
 
         $timeStamp = date("Y-m-d--H-i");
-        $namaFile = "PO-{$model->nomor}-{$model->profil->nama}-{$timeStamp}.csv";
+        $namaFile = "PO_{$model->nomor}_{$model->profil->nama}_{$timeStamp}.csv";
         $contentTypeMeta = 'text/csv';
 
         $this->renderPartial('_file_text', [
