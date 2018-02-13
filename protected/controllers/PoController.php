@@ -80,11 +80,12 @@ class PoController extends Controller
             $this->redirect(['view', 'id' => $id]);
         }
 
-        if (isset($_POST['Po'])) {
-            $model->attributes = $_POST['Po'];
-            if ($model->save()) {
-                $this->redirect(['view', 'id' => $id]);
-            }
+        /*  Mode untuk input item barang,
+            bisa manual, atau bisa lewat analisa PLS (Potensi Lost Sales) terlebih dahulu
+        */
+        $modeManual = true;
+        if (isset($_GET['modepls']) && $_GET['modepls']) {
+            $modeManual = false;
         }
 
         /*
@@ -128,13 +129,14 @@ class PoController extends Controller
         $barang = new Barang;
 
         // Kondisi untuk menampilkan pilih barang
-        $pilihBarang = true;
+        $pilihBarang = $modeManual == true;
 
         // Tipe cari barang
         $configCariBarang = Config::model()->find("nama='po.caribarangmode'");
 
         $this->render('ubah', [
             'model'         => $model,
+            'modeManual'    => $modeManual,
             'barangBarcode' => $barangBarcode,
             'barangNama'    => $barangNama,
             'PODetail'      => $PODetail,
@@ -492,15 +494,15 @@ class PoController extends Controller
     public function eksporCsv($id)
     {
         $model = $this->loadModel($id);
-        $text = $model->toCsv();
+        $text  = $model->toCsv();
 
-        $timeStamp = date("Ymd His");
-        $namaFile = "PO_{$model->nomor}_{$model->profil->nama}_{$timeStamp}.csv";
+        $timeStamp       = date('Ymd His');
+        $namaFile        = "PO_{$model->nomor}_{$model->profil->nama}_{$timeStamp}.csv";
         $contentTypeMeta = 'text/csv';
 
         $this->renderPartial('_file_text', [
-            'namaFile' => $namaFile,
-            'text' => $text,
+            'namaFile'    => $namaFile,
+            'text'        => $text,
             'contentType' => $contentTypeMeta
         ]);
     }
