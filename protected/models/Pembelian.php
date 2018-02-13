@@ -331,7 +331,7 @@ class Pembelian extends CActiveRecord
                     }
 
                     /* Set Barang menjadi aktif */
-                    Barang::model()->updatedByPk($detail->barang_id, ['status'=>Barang::STATUS_AKTIF]);
+                    Barang::model()->updateByPk($detail->barang_id, ['status'=>Barang::STATUS_AKTIF]);
                 }
 
                 // Total dari pembelian barang
