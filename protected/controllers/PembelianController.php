@@ -158,6 +158,7 @@ class PembelianController extends Controller
 
         $barangList = new Barang('search');
         $barangList->unsetAttributes();
+        $barangList->aktif();
         $curSupplierCr = NULL;
 
         if (isset($_GET['cariBarang'])) {
