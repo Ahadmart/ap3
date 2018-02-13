@@ -15,9 +15,9 @@
     <div class="medium-6 large-4 end columns">
         <?=
         CHtml::link('<i class="fa fa-calculator fa-fw"></i> <span class="ak">A</span>mbil Data PLS', '#', [
-            'class' => 'tiny bigfont button',
+            'class'     => 'tiny bigfont button',
             'accesskey' => 'a',
-            'id' => 'tombol-ambil-pls'
+            'id'        => 'tombol-ambil-pls'
         ]);
         ?>
     </div>
@@ -45,7 +45,7 @@
             },
             success: function (data) {
                 if (data.sukses) {
-                    $.fn.yiiGridView.update('potoko-detail-grid')
+                    $.fn.yiiGridView.update('pls-detail-grid')
                 } else {
                     $(".error").html("Error " + data.error.code + ": " + data.error.msg).slideDown(500);
                 }
@@ -62,7 +62,7 @@
     $('#tombol-ambil-pls').on('click', handler);
 
     function ambilTotal() {
-        $("#total-po-toko").load("<?= $this->createAbsoluteUrl('potoko/ambiltotal',['id'=>$model->id]) ?>");
-        console.log("<?= $this->createUrl('ambiltotal',['id'=>$model->id]) ?>");
+        $("#total-po").load("<?= $this->createAbsoluteUrl('po/ambiltotal', ['id'=>$model->id]) ?>");
+        // console.log("<?= $this->createUrl('ambiltotal', ['id'=>$model->id]) ?>");
     }
 </script>

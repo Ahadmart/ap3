@@ -98,7 +98,7 @@
                 'tipeCari'       => $tipeCari,
             ]);
         } else {
-            $this->renderPartial('_pls_form');
+            $this->renderPartial('_pls_form', ['model'=>$model]);
         }
     ?>
     </div>

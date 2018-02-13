@@ -517,4 +517,16 @@ class PoController extends Controller
             }
         }
     }
+
+    public function actionAmbilPls($id)
+    {
+        $return =[
+            'sukses'=> false,
+            'error' => [
+                'code'=> 500,
+                'msg' => 'UNDER CONSTRUCTION! Belum Bisa dipakai'
+            ]
+            ];
+        $this->renderJSON($return);
+    }
 }
