@@ -109,13 +109,16 @@ class PoController extends Controller
         // Untuk menampilkan daftar barang, pada pencarian tabel
         $barangList = new Barang('search');
         $barangList->unsetAttributes();
-        $curSupplierCr = null;
+        $curSupplierCr      = null;
+        $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [':filterPerSupplier' => 'po.filterpersupplier']);
 
         if (isset($_GET['cariBarang'])) {
             $barangList->setAttribute('nama', $_GET['namaBarang']);
-            $curSupplierCr        = new CDbCriteria;
-            $curSupplierCr->join  = "JOIN supplier_barang ON barang_id = t.id AND supplier_id = {$model->profil_id}";
-            $curSupplierCr->order = 'nama ASC';
+            if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
+                $curSupplierCr        = new CDbCriteria;
+                $curSupplierCr->join  = "JOIN supplier_barang ON barang_id = t.id AND supplier_id = {$model->profil_id}";
+                $curSupplierCr->order = 'nama ASC';
+            }
         }
 
         $PODetail = new PoDetail('search');

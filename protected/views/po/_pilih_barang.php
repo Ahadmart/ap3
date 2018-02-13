@@ -14,7 +14,7 @@
             ?>
                 <div class="row collapse" id="scan-cari-barang">
                     <div class="small-2 medium-1 columns">
-                        <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i>/span>
+                        <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
                     </div>
                     <div class="small-6 medium-9 columns">
                         <input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus" />
