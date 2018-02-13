@@ -109,6 +109,7 @@ class PoController extends Controller
         // Untuk menampilkan daftar barang, pada pencarian tabel
         $barangList = new Barang('search');
         $barangList->unsetAttributes();
+        $barangList->aktif();
         $curSupplierCr      = null;
         $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [':filterPerSupplier' => 'po.filterpersupplier']);
 
