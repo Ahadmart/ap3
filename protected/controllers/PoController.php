@@ -533,4 +533,33 @@ class PoController extends Controller
             ];
         $this->renderJSON($return);
     }
+
+    /**
+     * List Barang untuk autocomplete
+     * @param int $profilId
+     * @param text $term
+     * @return JSON nama, barcode, dan id barang
+     */
+    public function actionCariBarang($profilId, $term)
+    {
+        $q = new CDbCriteria();
+        $q->addCondition('(barcode like :term OR nama like :term) AND status=:status');
+        $q->order  = 'nama';
+        $q->params = [
+            ':term'   => "%{$term}%",
+            ':status' => Barang::STATUS_AKTIF
+        ];
+        $barangs = Barang::model()->findAll($q);
+
+        $r = [];
+        foreach ($barangs as $barang) {
+            $r[] = [
+                'label' => $barang->nama,
+                'value' => $barang->barcode,
+                'id'    => $barang->id
+            ];
+        }
+
+        $this->renderJSON($r);
+    }
 }
