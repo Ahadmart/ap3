@@ -18,16 +18,6 @@
                 'barcode',
                 'nama',
                 [
-                    'name'              => 'qty_order',
-                    'value'             => function ($data) {
-                        return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updateqty') . '">' .
-                        $data->qty_order . '</a>';
-                    },
-                    'type'              => 'raw',
-                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions'       => ['class' => 'rata-kanan'],
-                ],
-                [
                     'name'              => 'harga_beli',
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
@@ -38,6 +28,36 @@
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
                     'value'             => 'number_format($data->harga_jual, 0, ",", ".")',
+                ],
+                [
+                    'name' => 'ads',
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'name' => 'stok',
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'name' => 'est_sisa_hari',
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'name' => 'saran_order',
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'name'              => 'qty_order',
+                    'value'             => function ($data) {
+                        return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updateqty') . '">' .
+                        $data->qty_order . '</a>';
+                    },
+                    'type'              => 'raw',
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
                 ],
                 [
                     'name'              => 'subTotal',

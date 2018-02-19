@@ -28,6 +28,9 @@
  */
 class PoDetail extends CActiveRecord
 {
+    const STATUS_DRAFT = 0;
+    const STATUS_ORDER = 10;
+
     /**
      * @return string the associated database table name
      */

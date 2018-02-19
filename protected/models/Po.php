@@ -112,7 +112,7 @@ class Po extends CActiveRecord
      * - Pass data provider to CGridView, CListView or any similar widget.
      *
      * @return CActiveDataProvider the data provider that can return the models
-     * based on the search/filter conditions.
+     *                             based on the search/filter conditions.
      */
     public function search()
     {
@@ -160,8 +160,8 @@ class Po extends CActiveRecord
     /**
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
-     * @param string $className active record class name.
-     * @return Po the static model class
+     * @param  string $className active record class name.
+     * @return Po     the static model class
      */
     public static function model($className = __CLASS__)
     {
@@ -408,5 +408,18 @@ class Po extends CActiveRecord
         $report = Yii::app()->db->createCommand($sql)->bindValue(':poId', $this->id)->queryAll();
 
         return $this->array2csv($report);
+    }
+
+    public function analisaPLS($hariPenjualan, $sisaHari)
+    {
+        $model              = new ReportPlsForm;
+        $model->jumlahHari  = $hariPenjualan;
+        $model->sisaHariMax = $sisaHari;
+        $model->sortBy      = ReportPlsForm::SORT_BY_SISA_HARI_ASC;
+        $hasil              = $model->reportPls();
+        // foreach ($hasil as $row){
+
+        // }
+        return $hasil;
     }
 }

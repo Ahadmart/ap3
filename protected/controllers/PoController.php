@@ -125,6 +125,7 @@ class PoController extends Controller
         $PODetail = new PoDetail('search');
         $PODetail->unsetAttributes();
         $PODetail->setAttribute('po_id', '=' . $id);
+        $PODetail->status = PoDetail::STATUS_ORDER;
         if (isset($_GET['PoDetail'])) {
             $PODetail->attributes = $_GET['PoDetail'];
         }
@@ -138,17 +139,29 @@ class PoController extends Controller
         // Tipe cari barang
         $configCariBarang = Config::model()->find("nama='po.caribarangmode'");
 
+        $modelReportPls = new ReportPlsForm;
+
+        $PLSDetail = new PoDetail('search');
+        $PLSDetail->unsetAttributes();
+        $PLSDetail->setAttribute('po_id', '=' . $id);
+        $PLSDetail->status = PoDetail::STATUS_DRAFT;
+        if (isset($_GET['PoDetail'])) {
+            $PLSDetail->attributes = $_GET['PoDetail'];
+        }
+
         $this->render('ubah', [
-            'model'         => $model,
-            'modeManual'    => $modeManual,
-            'barangBarcode' => $barangBarcode,
-            'barangNama'    => $barangNama,
-            'PODetail'      => $PODetail,
-            'barangList'    => $barangList,
-            'curSupplierCr' => $curSupplierCr,
-            'barang'        => $barang,
-            'pilihBarang'   => $pilihBarang,
-            'tipeCari'      => $configCariBarang->nilai,
+            'model'          => $model,
+            'modeManual'     => $modeManual,
+            'barangBarcode'  => $barangBarcode,
+            'barangNama'     => $barangNama,
+            'PODetail'       => $PODetail,
+            'barangList'     => $barangList,
+            'curSupplierCr'  => $curSupplierCr,
+            'barang'         => $barang,
+            'pilihBarang'    => $pilihBarang,
+            'tipeCari'       => $configCariBarang->nilai,
+            'modelReportPls' => $modelReportPls,
+            'plsDetail'      => $PLSDetail
         ]);
     }
 
@@ -186,8 +199,8 @@ class PoController extends Controller
     /**
      * Returns the data model based on the primary key given in the GET variable.
      * If the data model is not found, an HTTP exception will be raised.
-     * @param integer $id the ID of the model to be loaded
-     * @return Po the loaded model
+     * @param  integer        $id the ID of the model to be loaded
+     * @return Po             the loaded model
      * @throws CHttpException
      */
     public function loadModel($id)
@@ -214,7 +227,7 @@ class PoController extends Controller
 
     /**
      * Untuk render link actionView jika ada nomor, jika belum, string kosong
-     * @param obj $data
+     * @param  obj    $data
      * @return string Link ke action view jika ada nomor
      */
     public function renderLinkToView($data)
@@ -230,7 +243,7 @@ class PoController extends Controller
 
     /**
      * render link actionUbah jika belum ada nomor
-     * @param obj $data
+     * @param  obj    $data
      * @return string tanggal, beserta link jika masih draft (belum ada nomor)
      */
     public function renderLinkToUbah($data)
@@ -333,14 +346,15 @@ class PoController extends Controller
         if (isset($_POST['input-detail']) && $_POST['input-detail'] == 1) {
             $barang = Barang::model()->findByPk($_POST['barang-id']);
 
-            $detail                      = new PoDetail;
-            $detail->po_id               = $id;
-            $detail->barang_id           = $_POST['barang-id'];
-            $detail->barcode             = $barang->barcode;
-            $detail->nama                = $barang->nama;
-            $detail->qty_order           = $_POST['qty'] > 0 ? $_POST['qty'] : 0;
-            $detail->harga_beli          = $_POST['hargabeli'];
-            $detail->harga_jual          = $_POST['hargajual'];
+            $detail             = new PoDetail;
+            $detail->po_id      = $id;
+            $detail->barang_id  = $_POST['barang-id'];
+            $detail->barcode    = $barang->barcode;
+            $detail->nama       = $barang->nama;
+            $detail->qty_order  = $_POST['qty'] > 0 ? $_POST['qty'] : 0;
+            $detail->harga_beli = $_POST['hargabeli'];
+            $detail->harga_jual = $_POST['hargajual'];
+            $detail->status     = PoDetail::STATUS_ORDER;
 
             // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
             // echo terlihat di console
@@ -525,19 +539,25 @@ class PoController extends Controller
     public function actionAmbilPls($id)
     {
         $return =[
-            'sukses'=> false,
-            'error' => [
-                'code'=> 500,
-                'msg' => 'UNDER CONSTRUCTION! Belum Bisa dipakai'
-            ]
+                'sukses'=> false,
+                'error' => [
+                    'code'=> 500,
+                    'msg' => 'UNDER CONSTRUCTION! Belum Bisa dipakai'
+                ]
             ];
+        $model = $this->loadModel($id);
+        $hasil = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa']);
+        if (!empty($hasil)) {
+            $return['error']['msg']= print_r($hasil, true);
+        }
+
         $this->renderJSON($return);
     }
 
     /**
      * List Barang untuk autocomplete
-     * @param int $profilId
-     * @param text $term
+     * @param  int  $profilId
+     * @param  text $term
      * @return JSON nama, barcode, dan id barang
      */
     public function actionCariBarang($profilId, $term)
