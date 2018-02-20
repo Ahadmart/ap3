@@ -405,11 +405,11 @@ class PoController extends Controller
      * Hapus detail po
      * @param integer $id the ID of the detail to be deleted
      */
-    public function actionHapusDetail($id)
-    {
-        $detail = PoDetail::model()->findByPk($id);
-        $detail->delete();
-    }
+    // public function actionHapusDetail($id)
+    // {
+    //     $detail = PoDetail::model()->findByPk($id);
+    //     $detail->delete();
+    // }
 
     /**
      * Simpan po:
@@ -546,10 +546,7 @@ class PoController extends Controller
                 ]
             ];
         $model = $this->loadModel($id);
-        $hasil = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa']);
-        if (!empty($hasil)) {
-            $return['error']['msg']= print_r($hasil, true);
-        }
+        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa']);
 
         $this->renderJSON($return);
     }
@@ -581,5 +578,85 @@ class PoController extends Controller
         }
 
         $this->renderJSON($r);
+    }
+
+    /**
+     * Render html link (<a>) untuk edit qty order
+     * @param  activeRecord $data
+     * @param  type         $row
+     * @return html         link editable
+     */
+    public function renderOrderEditable($data, $row)
+    {
+        $ak = '';
+        if ($row == 0) {
+            $ak = 'accesskey="r"';
+        }
+        return '<a href="#" class="editable-order" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
+                Yii::app()->controller->createUrl('inputorder') . '">' . $data->qty_order . '</a>';
+    }
+
+    public function renderTombolSetOrder($data, $row)
+    {
+        return CHtml::link('<i class="fa fa-plus-square"><i>', Yii::app()->controller->createUrl('setorder'), [
+                    'data-detailid' => $data->id,
+                    'class'         => 'tombol-setorder'
+        ]);
+    }
+
+    public function actionSetOrder($id)
+    {
+        $return = ['sukses' => false];
+        if (isset($_POST['detailId'])) {
+            $pk          = $_POST['detailId'];
+            $rowAffected = PoDetail::model()->updateByPk($pk, ['status' => PoDetail::STATUS_ORDER]);
+            if ($rowAffected > 0) {
+                $return = ['sukses' => true];
+            }
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionUnsetOrder($id)
+    {
+        $return      = ['sukses' => false];
+        $rowAffected = PoDetail::model()->updateByPk($id, ['status' => PoDetail::STATUS_DRAFT]);
+        if ($rowAffected > 0) {
+            $return = ['sukses' => true];
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionInputOrder()
+    {
+        $return = ['sukses' => false];
+        if (isset($_POST['pk'])) {
+            $pk          = $_POST['pk'];
+            $rowAffected = PoDetail::model()->updateByPk($pk, [
+                'order'  => $_POST['value'],
+                'status' => PoDetail::STATUS_ORDER
+            ]);
+            if ($rowAffected > 0) {
+                $return = ['sukses' => true];
+            }
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionHapusDetail($id)
+    {
+        $return      = ['sukses' => false];
+        $rowAffected = PoDetail::model()->deleteByPk($id);
+        if ($rowAffected > 0) {
+            $return = ['sukses' => true];
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionAmbilTotal($id)
+    {
+        $model = $this->loadModel($id);
+        $total = $model->total;
+        echo $total;
     }
 }

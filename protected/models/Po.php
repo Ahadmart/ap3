@@ -412,14 +412,88 @@ class Po extends CActiveRecord
 
     public function analisaPLS($hariPenjualan, $sisaHari)
     {
+        /* Analisa PLS
+           Kode diambil dari Report PLS 
+        */
         $model              = new ReportPlsForm;
         $model->jumlahHari  = $hariPenjualan;
         $model->sisaHariMax = $sisaHari;
         $model->sortBy      = ReportPlsForm::SORT_BY_SISA_HARI_ASC;
         $hasil              = $model->reportPls();
-        // foreach ($hasil as $row){
 
-        // }
-        return $hasil;
+        /* Hapus data yang masih draft */
+        PoDetail::model()->deleteAll('po_id=:poId AND status=:sDraft', [':poId'=>$this->id, ':sDraft'=>PoDetail::STATUS_DRAFT]);
+
+        /* Insert data hasil report ke po_detail */
+        $data = [];
+        foreach ($hasil as $row) {
+            $data[]=[
+                'po_id'        => $this->id,
+                'barang_id'    => $row['barang_id'],
+                'barcode'      => $row['barcode'],
+                'nama'         => $row['nama'],
+                'harga_beli'   => 0, // dinol kan terlebih dahulu, nanti akan diupdate ان شاءالله
+                'ads'          => $row['ads'],
+                'stok'         => $row['stok'],
+                'est_sisa_hari'=> $row['sisa_hari'],
+                'updated_by'   => 1 // User administrator
+            ];
+        }
+        Yii::app()->db->commandBuilder->createMultipleInsertCommand('po_detail', $data)->execute();
+        
+        /* Update dengan perhitungan saran order, untuk persediaan selama $sisaHari + buffer 30% */
+        return  $this->hitungSaranOrder($sisaHari, 0.3);
+    }
+
+    public function hitungSaranOrder($hariPersediaan, $buffer)
+    {
+        $bufferHari = $buffer * $hariPersediaan;
+        $sql = "
+            UPDATE po_detail
+                    JOIN
+                barang_harga_jual bhj ON bhj.barang_id = po_detail.barang_id
+                    JOIN
+                (SELECT
+                    MAX(id) max_id
+                FROM
+                    barang_harga_jual
+                GROUP BY barang_id) bhjx ON bhjx.max_id = bhj.id
+
+                JOIN
+                pembelian_detail belid ON belid.barang_id = po_detail.barang_id
+                    JOIN
+                (SELECT
+                    MAX(id) max_id
+                FROM
+                    pembelian_detail
+                GROUP BY barang_id) belidx ON belidx.max_id = belid.id
+
+            SET
+                `saran_order` = CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`),
+                `qty_order` = CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`),
+                `po_detail`.`harga_jual` = bhj.harga,
+                `po_detail`.`harga_beli` = belid.harga_beli
+            WHERE
+                po_id = :poId
+                ";
+        try {
+            $command = Yii::app()->db->createCommand($sql);
+            $hasil = $command->execute([
+                ':hariPersediaan' => $hariPersediaan,
+                ':bufferHari' => $bufferHari,
+                ':poId' => $this->id
+            ]);
+            return [
+                'sukses' => true,
+                'data' => $hasil
+            ];
+        } catch (Exception $ex) {
+            return [
+                'sukses' => false,
+                'error' => [
+                    'msg' => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
+        }
     }
 }

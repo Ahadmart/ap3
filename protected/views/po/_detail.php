@@ -67,6 +67,14 @@
                     'htmlOptions'       => ['class' => 'rata-kanan'],
                     'filter'            => false,
                 ],
+                [
+                    'class' => 'BButtonColumn',
+                    'deleteButtonLabel' => '<i class="fa fa-minus-square"></i>',
+                    'deleteButtonUrl' => 'Yii::app()->controller->createUrl("po/unsetorder", array("id"=>$data->primaryKey))',
+                    'afterDelete' => 'function(link,success,data){ if(success) {$.fn.yiiGridView.update("detail-order-grid");$.fn.yiiGridView.update("po-detail-grid");ambilTotal();}}',
+                    'deleteConfirmation' => false,
+                    'header' => '<a id="tombol-unorder-semua" class="delete" href="' . $this->createUrl('unordersemua', ['id' => $po->id]) . '"><i class="fa fa-minus"></i> All</a>'
+                ],
                 // Jika po masih draft tampilkan tombol hapus
                 [
                     'class'           => 'BButtonColumn',

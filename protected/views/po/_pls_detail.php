@@ -18,12 +18,12 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                 'barcode',
                 'nama',
                 //'qty',
-                [
-                    'name' => 'qty',
-                    'filter' => false,
-                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions' => ['class' => 'rata-kanan'],
-                ],
+                // [
+                //     'name' => 'qty',
+                //     'filter' => false,
+                //     'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                //     'htmlOptions' => ['class' => 'rata-kanan'],
+                // ],
                 //'harga_beli',
                 [
                     'name' => 'harga_beli',
@@ -32,14 +32,21 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'htmlOptions' => ['class' => 'rata-kanan'],
                     'value' => 'number_format($data->harga_beli,0,",",".")'
                 ],
-                //'harga_beli_terakhir',
                 [
-                    'name' => 'harga_beli_terakhir',
+                    'name' => 'harga_jual',
                     'filter' => false,
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions' => ['class' => 'rata-kanan'],
-                    'value' => 'number_format($data->harga_beli_terakhir,0,",",".")'
+                    'value' => 'number_format($data->harga_jual,0,",",".")'
                 ],
+                //'harga_beli_terakhir',
+                // [
+                //     'name' => 'harga_beli_terakhir',
+                //     'filter' => false,
+                //     'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                //     'htmlOptions' => ['class' => 'rata-kanan'],
+                //     'value' => 'number_format($data->harga_beli_terakhir,0,",",".")'
+                // ],
                 //'ads',
                 [
                     'name' => 'ads',
@@ -70,7 +77,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                 ],
                 //'order',
                 [
-                    'name' => 'order',
+                    'name' => 'qty_order',
                     'filter' => false,
                     'header' => 'O<span class="ak">r</span>der',
                     'type' => 'raw',
@@ -88,7 +95,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                 ],
                 [
                     'class' => 'BButtonColumn',
-                    'deleteButtonUrl' => 'Yii::app()->controller->createUrl("pls/hapusdetail", array("id"=>$data->primaryKey))',
+                    'deleteButtonUrl' => 'Yii::app()->controller->createUrl("po/hapusplsdetail", array("id"=>$data->primaryKey))',
                 ],
             ],
         ]);
@@ -109,7 +116,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                 success: function (data) {
                     if (data.sukses) {
                         $.fn.yiiGridView.update("pls-detail-grid");
-                        $.fn.yiiGridView.update("detail-order-grid");
+                        $.fn.yiiGridView.update("po-detail-grid");
                         ambilTotal();
                     }
                 }
@@ -118,14 +125,14 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
         });
     });
 
-    function enableEditable() {
+    function enableQtyOrderEditable() {
         $(".editable-order").editable({
             mode: "inline",
             inputclass: "input-editable-qty",
             success: function (response, newValue) {
                 if (response.sukses) {
                     $.fn.yiiGridView.update("pls-detail-grid");
-                    $.fn.yiiGridView.update("detail-order-grid");
+                    $.fn.yiiGridView.update("po-detail-grid");
                     ambilTotal();
                 }
             }
@@ -140,10 +147,10 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
     }
 
     $(function () {
-        enableEditable();
+        enableQtyOrderEditable();
     });
     $(document).ajaxComplete(function () {
-        enableEditable();
+        enableQtyOrderEditable();
     });
 
     $("body").on("click", "#tombol-order-semua", function () {
@@ -154,7 +161,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                 if (data.sukses) {
                     ambilTotal();
                     $.fn.yiiGridView.update("pls-detail-grid");
-                    $.fn.yiiGridView.update("detail-order-grid");
+                    $.fn.yiiGridView.update("po-detail-grid");
                 }
             }
         });
