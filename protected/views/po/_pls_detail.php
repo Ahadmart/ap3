@@ -32,6 +32,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'htmlOptions' => ['class' => 'rata-kanan'],
                     'value' => 'number_format($data->harga_beli,0,",",".")'
                 ],
+                //'harga_jual',
                 [
                     'name' => 'harga_jual',
                     'filter' => false,
@@ -39,14 +40,6 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'htmlOptions' => ['class' => 'rata-kanan'],
                     'value' => 'number_format($data->harga_jual,0,",",".")'
                 ],
-                //'harga_beli_terakhir',
-                // [
-                //     'name' => 'harga_beli_terakhir',
-                //     'filter' => false,
-                //     'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                //     'htmlOptions' => ['class' => 'rata-kanan'],
-                //     'value' => 'number_format($data->harga_beli_terakhir,0,",",".")'
-                // ],
                 //'ads',
                 [
                     'name' => 'ads',
@@ -95,7 +88,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                 ],
                 [
                     'class' => 'BButtonColumn',
-                    'deleteButtonUrl' => 'Yii::app()->controller->createUrl("po/hapusplsdetail", array("id"=>$data->primaryKey))',
+                    'deleteButtonUrl' => 'Yii::app()->controller->createUrl("po/hapusdetail", array("id"=>$data->primaryKey))',
                 ],
             ],
         ]);
