@@ -58,11 +58,13 @@ $this->widget('BGridView', array(
         ),
         array(
             'name' => 'faktur',
-            'value' => '$data->inventoryBalance->pembelianDetail == null ? "":$data->inventoryBalance->pembelianDetail->pembelian->referensi'
+            'value' => '$data->inventoryBalance->pembelianDetail == null ? "":$data->inventoryBalance->pembelianDetail->pembelian->referensi',
+            'header' => 'Ref'
         ),
         array(
             'name' => 'tglFaktur',
-            'value' => '$data->inventoryBalance->pembelianDetail == null ? "":$data->inventoryBalance->pembelianDetail->pembelian->tanggal_referensi'
+            'value' => '$data->inventoryBalance->pembelianDetail == null ? "":$data->inventoryBalance->pembelianDetail->pembelian->tanggal_referensi',
+            'header' => 'Tgl Ref'
         ),
         array(
             'name' => 'hargaBeli',
