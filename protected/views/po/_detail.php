@@ -84,6 +84,7 @@
                                     success:function(data) {
                                           $.fn.yiiGridView.update('pls-detail-grid');
                                           $.fn.yiiGridView.update('po-detail-grid');
+                                          updateTotal();
                                     }
                                 })
                                 return false;
@@ -137,5 +138,20 @@
     });
     $(document).ajaxComplete(function () {
         enableEditable();
+    });
+
+    $("body").on("click", "#tombol-unorder-semua", function () {
+        var dataurl = $(this).attr('href');
+        $.ajax({
+            url: dataurl,
+            success: function (data) {
+                if (data.sukses) {
+                    ambilTotal();
+                    $.fn.yiiGridView.update("po-detail-grid");
+                    $.fn.yiiGridView.update("pls-detail-grid");
+                }
+            }
+        });
+        return false;
     });
 </script>

@@ -246,7 +246,7 @@ class Po extends CActiveRecord
         $po = Yii::app()->db->createCommand()
             ->select('sum(harga_beli * qty_order) total')
             ->from(PoDetail::model()->tableName())
-            ->where('po_id=:poId', [':poId' => $this->id])
+            ->where('po_id=:poId AND status=:sDraft', [':poId' => $this->id, ':sDraft' => PoDetail::STATUS_ORDER])
             ->queryRow();
         return $po['total'];
     }
@@ -266,12 +266,15 @@ class Po extends CActiveRecord
         $transaction    = $this->dbConnection->beginTransaction();
 
         try {
-            if ($this->save()) {
-                $transaction->commit();
-                return ['sukses' => true];
-            } else {
+            PoDetail::model()->deleteAll('po_id=:poId and status=:status', [
+                ':poId'     => $this->id,
+                ':status'   => PoDetail::STATUS_DRAFT
+            ]);
+            if (!$this->save()) {
                 throw new Exception('Gagal Simpan PO');
             }
+            $transaction->commit();
+            return ['sukses' => true];
         } catch (Exception $ex) {
             $transaction->rollback();
             return [
@@ -413,7 +416,7 @@ class Po extends CActiveRecord
     public function analisaPLS($hariPenjualan, $sisaHari)
     {
         /* Analisa PLS
-           Kode diambil dari Report PLS 
+           Kode diambil dari Report PLS
         */
         $model              = new ReportPlsForm;
         $model->jumlahHari  = $hariPenjualan;
@@ -440,7 +443,7 @@ class Po extends CActiveRecord
             ];
         }
         Yii::app()->db->commandBuilder->createMultipleInsertCommand('po_detail', $data)->execute();
-        
+
         /* Update dengan perhitungan saran order, untuk persediaan selama $sisaHari + buffer 30% */
         return  $this->hitungSaranOrder($sisaHari, 0.3);
     }
@@ -448,7 +451,7 @@ class Po extends CActiveRecord
     public function hitungSaranOrder($hariPersediaan, $buffer)
     {
         $bufferHari = $buffer * $hariPersediaan;
-        $sql = "
+        $sql        = '
             UPDATE po_detail
                     JOIN
                 barang_harga_jual bhj ON bhj.barang_id = po_detail.barang_id
@@ -475,23 +478,23 @@ class Po extends CActiveRecord
                 `po_detail`.`harga_beli` = belid.harga_beli
             WHERE
                 po_id = :poId
-                ";
+                ';
         try {
             $command = Yii::app()->db->createCommand($sql);
-            $hasil = $command->execute([
+            $hasil   = $command->execute([
                 ':hariPersediaan' => $hariPersediaan,
-                ':bufferHari' => $bufferHari,
-                ':poId' => $this->id
+                ':bufferHari'     => $bufferHari,
+                ':poId'           => $this->id
             ]);
             return [
                 'sukses' => true,
-                'data' => $hasil
+                'data'   => $hasil
             ];
         } catch (Exception $ex) {
             return [
                 'sukses' => false,
-                'error' => [
-                    'msg' => $ex->getMessage(),
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
             ]];
         }

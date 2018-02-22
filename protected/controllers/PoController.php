@@ -545,7 +545,7 @@ class PoController extends Controller
                     'msg' => 'UNDER CONSTRUCTION! Belum Bisa dipakai'
                 ]
             ];
-        $model = $this->loadModel($id);
+        $model  = $this->loadModel($id);
         $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa']);
 
         $this->renderJSON($return);
@@ -633,7 +633,7 @@ class PoController extends Controller
         if (isset($_POST['pk'])) {
             $pk          = $_POST['pk'];
             $rowAffected = PoDetail::model()->updateByPk($pk, [
-                'order'  => $_POST['value'],
+                'qty_order'  => $_POST['value'],
                 'status' => PoDetail::STATUS_ORDER
             ]);
             if ($rowAffected > 0) {
@@ -658,5 +658,25 @@ class PoController extends Controller
         $model = $this->loadModel($id);
         $total = $model->total;
         echo $total;
+    }
+
+    public function actionOrderSemua($id)
+    {
+        $return      = ['sukses' => false];
+        $rowAffected = PoDetail::model()->updateAll(['status' => PoDetail::STATUS_ORDER], 'po_id=:POId', [':POId' => $id]);
+        if ($rowAffected > 0) {
+            $return = ['sukses' => true];
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionUnOrderSemua($id)
+    {
+        $return      = ['sukses' => false];
+        $rowAffected = PoDetail::model()->updateAll(['status' => PoDetail::STATUS_DRAFT], 'po_id=:POId', [':POId' => $id]);
+        if ($rowAffected > 0) {
+            $return = ['sukses' => true];
+        }
+        $this->renderJSON($return);
     }
 }

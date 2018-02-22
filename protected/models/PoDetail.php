@@ -110,7 +110,7 @@ class PoDetail extends CActiveRecord
      * - Pass data provider to CGridView, CListView or any similar widget.
      *
      * @return CActiveDataProvider the data provider that can return the models
-     * based on the search/filter conditions.
+     *                             based on the search/filter conditions.
      */
     public function search()
     {
@@ -135,15 +135,20 @@ class PoDetail extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $sort = [
+            'defaultOrder' => 't.updated_at desc'
+        ];
+
         return new CActiveDataProvider($this, [
             'criteria'=> $criteria,
+            'sort'    => $sort
         ]);
     }
 
     /**
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
-     * @param string $className active record class name.
+     * @param  string   $className active record class name.
      * @return PoDetail the static model class
      */
     public static function model($className=__CLASS__)
