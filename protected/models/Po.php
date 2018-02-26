@@ -246,7 +246,7 @@ class Po extends CActiveRecord
         $po = Yii::app()->db->createCommand()
             ->select('sum(harga_beli * qty_order) total')
             ->from(PoDetail::model()->tableName())
-            ->where('po_id=:poId AND status=:sDraft', [':poId' => $this->id, ':sDraft' => PoDetail::STATUS_ORDER])
+            ->where('po_id=:poId AND status=:sOrder', [':poId' => $this->id, ':sOrder' => PoDetail::STATUS_ORDER])
             ->queryRow();
         return $po['total'];
     }
