@@ -108,6 +108,17 @@ option{
             }
         }
     }
+    tr.margin-min{
+        background-color: #d32f2f;
+        font-weight: bold;
+        td{
+            color: #fff;
+            a.editable{
+                color: #fff;     
+                border-bottom-color: #fff;           
+            }
+        }
+    }
 }
 input, select {
     &.error{

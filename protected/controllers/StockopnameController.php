@@ -419,4 +419,14 @@ class StockopnameController extends Controller
         ]);
     }
 
+    public function actionSetInAktifAll($id)
+    {
+        $model = $this->loadModel($id);
+
+        $this->renderJSON([
+            'sukses' => true,
+            'rows' => $model->setInAktifAll()
+        ]);
+    }
+
 }

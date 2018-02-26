@@ -2,8 +2,7 @@
 
 class ReturpenjualanController extends Controller
 {
-
-    const PROFIL_ALL = 0;
+    const PROFIL_ALL      = 0;
     const PROFIL_CUSTOMER = Profil::TIPE_CUSTOMER;
     /* ============== */
     const PRINT_RETUR_PENJUALAN = 0;
@@ -13,10 +12,10 @@ class ReturpenjualanController extends Controller
      */
     public function filters()
     {
-        return array(
-            'accessControl', // perform access control for CRUD operations
+        return [
+            'accessControl',     // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
-        );
+        ];
     }
 
     /**
@@ -26,11 +25,11 @@ class ReturpenjualanController extends Controller
      */
     public function accessRules()
     {
-        return array(
-            array('deny', // deny guest
-                'users' => array('guest'),
-            ),
-        );
+        return [
+            ['deny', // deny guest
+                'users' => ['guest'],
+            ],
+        ];
     }
 
     /**
@@ -43,18 +42,18 @@ class ReturpenjualanController extends Controller
         $returPenjualanDetail->unsetAttributes();
         $returPenjualanDetail->setAttribute('retur_penjualan_id', '=' . $id);
 
-        $tipePrinterAvailable = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER);
+        $tipePrinterAvailable = [Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER];
 
         $printerReturPenjualan = Device::model()->listDevices($tipePrinterAvailable);
 
         $kertasUntukPdf = ReturPenjualan::model()->listNamaKertas();
 
-        $this->render('view', array(
-            'model' => $this->loadModel($id),
-            'returPenjualanDetail' => $returPenjualanDetail,
+        $this->render('view', [
+            'model'                 => $this->loadModel($id),
+            'returPenjualanDetail'  => $returPenjualanDetail,
             'printerReturPenjualan' => $printerReturPenjualan,
-            'kertasUntukPdf' => $kertasUntukPdf
-        ));
+            'kertasUntukPdf'        => $kertasUntukPdf,
+        ]);
     }
 
     /**
@@ -64,27 +63,29 @@ class ReturpenjualanController extends Controller
     public function actionTambah()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new ReturPenjualan;
+        $model        = new ReturPenjualan;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
         if (isset($_POST['ReturPenjualan'])) {
             $model->attributes = $_POST['ReturPenjualan'];
-            if ($model->save())
-                $this->redirect(array('ubah', 'id' => $model->id));
+            if ($model->save()) {
+                $this->redirect(['ubah', 'id' => $model->id]);
+            }
+
         }
 
-        $customerList = Profil::model()->findAll(array(
-            'select' => 'id, nama',
+        $customerList = Profil::model()->findAll([
+            'select'    => 'id, nama',
             'condition' => 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER,
-            'order' => 'nama'
-        ));
+            'order'     => 'nama',
+        ]);
 
-        $this->render('tambah', array(
-            'model' => $model,
+        $this->render('tambah', [
+            'model'        => $model,
             'customerList' => $customerList,
-        ));
+        ]);
     }
 
     /**
@@ -96,7 +97,7 @@ class ReturpenjualanController extends Controller
         $model = $this->loadModel($id);
 
         if ($model->status != ReturPenjualan::STATUS_DRAFT) {
-            $this->redirect(array('view', 'id' => $model->id));
+            $this->redirect(['view', 'id' => $model->id]);
         }
 
         // Uncomment the following line if AJAX validation is needed
@@ -122,19 +123,19 @@ class ReturpenjualanController extends Controller
         }
         if (isset($_GET['pilih'])) {
             $barcode = $_GET['barcode'] == '' ? 'null' : $_GET['barcode'];
-            $qty = $_GET['qty'];
+            $qty     = $_GET['qty'];
             $penjualanDetail->setAttribute('barcode', '=' . $barcode);
             $penjualanDetail->setAttribute('qty', '>=' . $qty);
         }
         $penjualanDetail->setAttribute('statusPenjualan', '<>0');
 //      $penjualanDetail->setAttribute('customerId', '='.$model->customer_id);
 
-        $this->render('ubah', array(
-            'model' => $model,
+        $this->render('ubah', [
+            'model'                => $model,
             'returPenjualanDetail' => $returPenjualanDetail,
-            'barang' => $barang,
-            'penjualanDetail' => $penjualanDetail
-        ));
+            'barang'               => $barang,
+            'penjualanDetail'      => $penjualanDetail,
+        ]);
     }
 
     /**
@@ -151,8 +152,10 @@ class ReturpenjualanController extends Controller
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        if (!isset($_GET['ajax'])) {
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
+        }
+
     }
 
     /**
@@ -161,13 +164,14 @@ class ReturpenjualanController extends Controller
     public function actionIndex()
     {
         $model = new ReturPenjualan('search');
-        $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['ReturPenjualan']))
+        $model->unsetAttributes(); // clear any default values
+        if (isset($_GET['ReturPenjualan'])) {
             $model->attributes = $_GET['ReturPenjualan'];
+        }
 
-        $this->render('index', array(
+        $this->render('index', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -180,8 +184,10 @@ class ReturpenjualanController extends Controller
     public function loadModel($id)
     {
         $model = ReturPenjualan::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+
         return $model;
     }
 
@@ -207,8 +213,8 @@ class ReturpenjualanController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('view', array('id' => $data->id)) . '">' .
-                    $data->nomor . '</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">' .
+            $data->nomor . '</a>';
         }
         return $return;
     }
@@ -222,8 +228,8 @@ class ReturpenjualanController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('ubah', array('id' => $data->id)) . '">' .
-                    $data->tanggal . '</a>';
+            $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+            $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -232,23 +238,23 @@ class ReturpenjualanController extends Controller
 
     public function actionTambahDetail($id)
     {
-        $return = array(
-            'sukses' => false
-        );
+        $return = [
+            'sukses' => false,
+        ];
         if (isset($_POST['penjualanDetailId'])) {
             $penjualanDetailId = $_POST['penjualanDetailId'];
-            $qty = $_POST['qty'];
-            $penjualanDetail = PenjualanDetail::model()->findByPk($penjualanDetailId);
+            $qty               = $_POST['qty'];
+            $penjualanDetail   = PenjualanDetail::model()->findByPk($penjualanDetailId);
 
-            $returPenjualanDetail = new ReturPenjualanDetail;
-            $returPenjualanDetail->retur_penjualan_id = $id;
+            $returPenjualanDetail                      = new ReturPenjualanDetail;
+            $returPenjualanDetail->retur_penjualan_id  = $id;
             $returPenjualanDetail->penjualan_detail_id = $penjualanDetailId;
-            $returPenjualanDetail->qty = $qty;
-            $returPenjualanDetail->harga_jual = $penjualanDetail->harga_jual;
+            $returPenjualanDetail->qty                 = $qty;
+            $returPenjualanDetail->harga_jual          = $penjualanDetail->harga_jual;
             if ($returPenjualanDetail->save()) {
-                $return = array(
-                    'sukses' => true
-                );
+                $return = [
+                    'sukses' => true,
+                ];
             }
         }
         $this->renderJSON($return);
@@ -267,7 +273,7 @@ class ReturpenjualanController extends Controller
     public function actionTotal($id)
     {
         $returPenjualan = $this->loadModel($id);
-        $total = $returPenjualan->getTotal();
+        $total          = $returPenjualan->getTotal();
         echo $total;
     }
 
@@ -280,7 +286,7 @@ class ReturpenjualanController extends Controller
 
     public function actionSimpan($id)
     {
-        $return = array('sukses' => false);
+        $return = ['sukses' => false];
         // cek jika 'simpan' ada dan bernilai true
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $returPenjualan = $this->loadModel($id);
@@ -289,7 +295,7 @@ class ReturpenjualanController extends Controller
                  * simpan retur penjualan jika hanya dan hanya jika status masih draft
                  */
                 if ($returPenjualan->simpan()) {
-                    $return = array('sukses' => true);
+                    $return = ['sukses' => true];
                 }
             }
         }
@@ -297,24 +303,24 @@ class ReturpenjualanController extends Controller
     }
 
 //   public function renderRadioButton($data, $row) {
-//      return CHtml::radioButton('penjualanid', $row == 0, array('value' => $data->id));
-//   }
+    //      return CHtml::radioButton('penjualanid', $row == 0, array('value' => $data->id));
+    //   }
 
     public function actionAmbilProfil($tipe)
     {
         /*
          * Tampilkan daftar sesuai pilihan tipe
          */
-        $condition = $tipe == Profil::TIPE_CUSTOMER ? 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER : 'id>' . Profil::AWAL_ID;
-        $profilList = Profil::model()->findAll(array(
-            'select' => 'id, nama',
+        $condition  = $tipe == Profil::TIPE_CUSTOMER ? 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER : 'id>' . Profil::AWAL_ID;
+        $profilList = Profil::model()->findAll([
+            'select'    => 'id, nama',
             'condition' => $condition,
-            'order' => 'nama'));
+            'order'     => 'nama']);
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
         foreach ($profilList as $profil) {
-            $string.='<option value="' . $profil->id . '">';
-            $string.=$profil->nama . '</option>';
+            $string .= '<option value="' . $profil->id . '">';
+            $string .= $profil->nama . '</option>';
         }
         echo $string;
     }
@@ -338,22 +344,21 @@ class ReturpenjualanController extends Controller
     public function printLpr($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
-        $text = $this->getText($model, $print);
+        $text  = $this->getText($model, $print);
         $device->printLpr($text);
-        $this->renderPartial('_print_autoclose', array(
-            'text' => $text
-        ));
+        $this->renderPartial('_print_autoclose', [
+            'text' => $text,
+        ]);
     }
 
     public function exportPdf($id, $kertas = ReturPenjualan::KERTAS_A4, $draft = false)
     {
-
         $modelHeader = $this->loadModel($id);
-        $configs = Config::model()->findAll();
+        $configs     = Config::model()->findAll();
         /*
          * Ubah config (object) jadi array
          */
-        $branchConfig = array();
+        $branchConfig = [];
         foreach ($configs as $config) {
             $branchConfig[$config->nama] = $config->nilai;
         }
@@ -366,38 +371,39 @@ class ReturpenjualanController extends Controller
         /*
          * Retur Penjualan Detail
          */
-        $returPenjualanDetail = ReturPenjualanDetail::model()->with('penjualanDetail', 'penjualanDetail.barang')->findAll(array(
+        $returPenjualanDetail = ReturPenjualanDetail::model()->with('penjualanDetail', 'penjualanDetail.barang')->findAll([
             'condition' => "retur_penjualan_id={$id}",
-            'order' => 'barang.nama'
-        ));
+            'order'     => 'barang.nama',
+        ]);
 
         /*
          * Persiapan render PDF
          */
+        require_once __DIR__ . '/../vendors/autoload.php';
         $listNamaKertas = ReturPenjualan::listNamaKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
-        $viewCetak = '_pdf';
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $viewCetak      = '_pdf';
         if ($draft) {
             $viewCetak = '_pdf_draft';
         }
-        $mPDF1->WriteHTML($this->renderPartial($viewCetak, array(
-                    'modelHeader' => $modelHeader,
-                    'branchConfig' => $branchConfig,
-                    'profil' => $profil,
-                    'returPenjualanDetail' => $returPenjualanDetail
-                        ), true
+        $mpdf->WriteHTML($this->renderPartial($viewCetak, [
+            'modelHeader'          => $modelHeader,
+            'branchConfig'         => $branchConfig,
+            'profil'               => $profil,
+            'returPenjualanDetail' => $returPenjualanDetail,
+        ], true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumSuffix = ' dari ';
-        $mPDF1->pagenumPrefix = 'Halaman ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumSuffix = ' dari ';
+        $mpdf->pagenumPrefix = 'Halaman ';
         // Render PDF
-        $mPDF1->Output("{$modelHeader->nomor}.pdf", 'I');
+        $mpdf->Output("{$modelHeader->nomor}.pdf", 'I');
     }
 
     public function exportText($id, $device, $print = 0)
     {
-        $model = $this->loadModel($id);
+        $model    = $this->loadModel($id);
         $namaFile = $this->getNamaFile($model->nomor, $print);
         header("Content-type: text/plain");
         header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
@@ -432,14 +438,14 @@ class ReturpenjualanController extends Controller
     public function actionImport()
     {
         $modelCsvForm = new UploadCsvReturPenjualanForm;
-        $customerList = Profil::model()->profilTrx()->tipeCustomer()->orderByNama()->findAll(array(
-            'select' => 'id, nama'
-        ));
+        $customerList = Profil::model()->profilTrx()->tipeCustomer()->orderByNama()->findAll([
+            'select' => 'id, nama',
+        ]);
         if (isset($_POST['UploadCsvReturPenjualanForm'])) {
             $modelCsvForm->attributes = $_POST['UploadCsvReturPenjualanForm'];
             if (!empty($_FILES['UploadCsvReturPenjualanForm']['tmp_name']['csvFile'])) {
                 $modelCsvForm->csvFile = CUploadedFile::getInstance($modelCsvForm, 'csvFile');
-                $return = $modelCsvForm->simpanCsvKeReturPenjualan();
+                $return                = $modelCsvForm->simpanCsvKeReturPenjualan();
                 if ($return['sukses']) {
                     $this->redirect($this->createUrl('ubah', ['id' => $return['returPenjualanId']]));
                 }
@@ -447,7 +453,7 @@ class ReturpenjualanController extends Controller
         }
         $this->render('import', [
             'modelCsvForm' => $modelCsvForm,
-            'customerList' => $customerList
+            'customerList' => $customerList,
         ]);
     }
 

@@ -28,6 +28,13 @@
         </div>
         <br />
         <br />
+        <?php
+        if (!empty($model->profilId)){
+            ?>
+        Profil: <em><?= $model->namaProfil; ?></em>
+            <?php
+        }
+        ?>
         <table style="margin:0 auto" class="table-bordered bordered">
             <thead>
                 <tr>

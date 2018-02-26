@@ -329,6 +329,9 @@ class Pembelian extends CActiveRecord
                             throw new Exception("Gagal simpan supplier barang");
                         }
                     }
+
+                    /* Set Barang menjadi aktif */
+                    Barang::model()->updateByPk($detail->barang_id, ['status'=>Barang::STATUS_AKTIF]);
                 }
 
                 // Total dari pembelian barang

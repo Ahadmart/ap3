@@ -2,11 +2,10 @@
 
 class CetakformsoController extends Controller
 {
-
     public function actionIndex()
     {
         $this->layout = '//layouts/box_kecil';
-        $modelForm = new CetakStockOpnameForm;
+        $modelForm    = new CetakStockOpnameForm;
         if (isset($_POST['CetakStockOpnameForm'])) {
             $modelForm->attributes = $_POST['CetakStockOpnameForm'];
             if ($modelForm->validate()) {
@@ -25,17 +24,17 @@ class CetakformsoController extends Controller
 
         $this->render('index', [
             'modelForm' => $modelForm,
-            'rak' => $rak
+            'rak'       => $rak,
         ]);
     }
 
     public function actionPilihRak($id)
     {
-        $rak = RakBarang::model()->findByPk($id);
-        $return = array(
-            'id' => $id,
+        $rak    = RakBarang::model()->findByPk($id);
+        $return = [
+            'id'   => $id,
             'nama' => $rak->nama,
-        );
+        ];
         $this->renderJSON($return);
     }
 
@@ -57,44 +56,49 @@ class CetakformsoController extends Controller
 
     public function namaToko()
     {
-        $config = Config::model()->find('nama=:nama', array(':nama' => 'toko.nama'));
+        $config = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
         return $config->nilai;
     }
 
     public function kodeToko()
     {
-        $config = Config::model()->find('nama=:nama', array(':nama' => 'toko.kode'));
+        $config = Config::model()->find('nama=:nama', [':nama' => 'toko.kode']);
         return $config->nilai;
     }
 
     public function formSoPdf($modelForm, $data)
     {
-
         /*
          * Persiapan render PDF
          */
-        $tanggalCetak = date('d-m-Y H:i:s');
+        require_once __DIR__ . '/../../vendors/autoload.php';
+
+        $tanggalCetak   = date('d-m-Y H:i:s');
         $listNamaKertas = CetakStockOpnameForm::listNamaKertas();
 
-        //$mPDF1 = Yii::app()->ePdf->mpdf('utf-8', $listNamaKertas[$modelForm->kertas], 0, '', 7, 7, 7, 7, 9, 9);
-        $mPDF1 = Yii::app()->ePdf->mpdf('utf-8', $listNamaKertas[$modelForm->kertas], 0);
-        $mPDF1->WriteHTML($this->renderPartial('_form_so_pdf', array(
-                    'modelForm' => $modelForm,
-                    'data' => $data,
-                    'tanggalCetak' => $tanggalCetak,
-                    'toko' => [
-                        'kode' => $this->kodeToko(),
-                        'nama' => $this->namaToko()
-                    ]
-                        ), true
+        $mpdf = new \Mpdf\Mpdf([
+            'mode'         => 'utf-8',
+            'format'       => $listNamaKertas[$modelForm->kertas],
+            'tempDir'      => __DIR__ . '/../../runtime/',
+            'margin_left'  => 7,
+            'margin_right' => 7,
+            'margin_top'   => 7,
+        ]);
+        $mpdf->WriteHTML($this->renderPartial('_form_so_pdf', [
+            'modelForm'    => $modelForm,
+            'data'         => $data,
+            'tanggalCetak' => $tanggalCetak,
+            'toko'         => [
+                'kode' => $this->kodeToko(),
+                'nama' => $this->namaToko(),
+            ],
+        ], true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->margin_top = 5;
-        $mPDF1->pagenumPrefix = 'Hal ';
-        $mPDF1->pagenumSuffix = ' / ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mPDF1->Output("{$this->namaToko()} form so {$modelForm->namaRak} {$tanggalCetak}.pdf", 'I');
+        $mpdf->Output("{$this->namaToko()} form so {$modelForm->namaRak} {$tanggalCetak}.pdf", 'I');
     }
 
 }

@@ -52,11 +52,15 @@ class PembelianController extends Controller
 
         $kertasUntukPdf = Pembelian::model()->listNamaKertas();
 
+        $configShowStok = Config::model()->find('nama = :namaConfig',[':namaConfig'=>'pembelian.view.showstok']);
+        $showCurrentStock = $configShowStok && $configShowStok->nilai == TRUE ? TRUE : FALSE;
+
         $this->render('view', array(
             'model' => $this->loadModel($id),
             'pembelianDetail' => $pembelianDetail,
             'printerPembelian' => $printerPembelian,
-            'kertasUntukPdf' => $kertasUntukPdf
+            'kertasUntukPdf' => $kertasUntukPdf,
+            'showCurrentStock' => $showCurrentStock
         ));
     }
 
@@ -154,6 +158,7 @@ class PembelianController extends Controller
 
         $barangList = new Barang('search');
         $barangList->unsetAttributes();
+        $barangList->aktif();
         $curSupplierCr = NULL;
 
         if (isset($_GET['cariBarang'])) {
@@ -633,13 +638,14 @@ class PembelianController extends Controller
         /*
          * Persiapan render PDF
          */
+        require_once __DIR__ . '/../vendors/autoload.php';
         $listNamaKertas = Pembelian::listNamaKertas();
-        $mPDF1 = Yii::app()->ePdf->mpdf('', $listNamaKertas[$kertas]);
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $viewCetak = '_pdf';
         if ($draft) {
             $viewCetak = '_pdf_draft';
         }
-        $mPDF1->WriteHTML($this->renderPartial($viewCetak, array(
+        $mpdf->WriteHTML($this->renderPartial($viewCetak, array(
                     'modelHeader' => $modelHeader,
                     'branchConfig' => $branchConfig,
                     'profil' => $profil,
@@ -647,11 +653,11 @@ class PembelianController extends Controller
                         ), true
         ));
 
-        $mPDF1->SetDisplayMode('fullpage');
-        $mPDF1->pagenumSuffix = ' dari ';
-        $mPDF1->pagenumPrefix = 'Halaman ';
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumSuffix = ' / ';
+        //$mpdf->pagenumPrefix = 'hlm ';
         // Render PDF
-        $mPDF1->Output("{$modelHeader->nomor}.pdf", 'I');
+        $mpdf->Output("{$modelHeader->nomor}.pdf", 'I');
     }
 
     public function exportText($id, $device, $print = 0)
