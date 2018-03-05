@@ -172,7 +172,11 @@ class PoController extends Controller
      */
     public function actionHapus($id)
     {
-        $this->loadModel($id)->delete();
+        $model = $this->loadModel($id);
+        if ($model->status == Po::STATUS_DRAFT) {
+            PoDetail::model()->deleteAll('po_id=:poId', [':poId'=>$id]);
+            $model->delete();
+        }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax'])) {
@@ -634,7 +638,7 @@ class PoController extends Controller
             $pk          = $_POST['pk'];
             $rowAffected = PoDetail::model()->updateByPk($pk, [
                 'qty_order'  => $_POST['value'],
-                'status' => PoDetail::STATUS_ORDER
+                'status'     => PoDetail::STATUS_ORDER
             ]);
             if ($rowAffected > 0) {
                 $return = ['sukses' => true];
