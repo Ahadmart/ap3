@@ -290,7 +290,7 @@ class PoController extends Controller
      * Untuk mengambil informasi barang untuk ditampilkan
      * pada saat input po
      */
-    public function actionGetBarang()
+    public function actionGetBarang($id)
     {
         if (isset($_POST['barangId'])) {
             $barangId = $_POST['barangId'];
@@ -298,18 +298,60 @@ class PoController extends Controller
             $barang   = Barang::model()->find('barcode = :barcode', [':barcode' => $_POST['barcode']]);
             $barangId = $barang->id;
         }
-        $barang = Pembelian::model()->ambilDataBarang($barangId);
-        $arr    = [
-            'barangId'       => $barangId,
-            'nama'           => $barang['nama'],
-            'barcode'        => $barang['barcode'],
-            'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
-            'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
-            'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
-            'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
-            'satuan'         => $barang['satuan'],
-        ];
-        echo CJSON::encode($arr);
+
+        $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
+            ':filterPerSupplier' => 'po.filterpersupplier'
+            ]);
+
+        if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
+            $po          = Po::model()->findByPk($id);
+            $cekSupplier = SupplierBarang::model()->find('barang_id=:barangId AND supplier_id=:supplierId', [
+                    ':barangId'   => $barangId,
+                    ':supplierId' => $po->profil_id
+                    ]);
+
+            if (!is_null($cekSupplier)) {
+                $barang = Pembelian::model()->ambilDataBarang($barangId);
+                $arr    = [
+                    'barangId'       => $barangId,
+                    'nama'           => $barang['nama'],
+                    'barcode'        => $barang['barcode'],
+                    'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
+                    'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
+                    'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
+                    'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
+                    'satuan'         => $barang['satuan'],
+                ];
+                $this->renderJSON([
+                    'sukses'=> true,
+                    'info'  => $arr
+                ]);
+            } elseif (is_null($cekSupplier)) {
+                $this->renderJSON([
+                    'sukses'=> false,
+                    'error' => [
+                        'code'=> 500,
+                        'msg' => 'Barang ID #' . $barangId . ' tidak ditemukan di profil ini'
+                    ]
+                    ]);
+            }
+        } elseif ($configFilterPerSup->nilai == 0) {
+            $barang = Pembelian::model()->ambilDataBarang($barangId);
+            $arr    = [
+                'barangId'       => $barangId,
+                'nama'           => $barang['nama'],
+                'barcode'        => $barang['barcode'],
+                'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
+                'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
+                'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
+                'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
+                'satuan'         => $barang['satuan'],
+            ];
+            $this->renderJSON([
+                'sukses'=> true,
+                'info'  => $arr
+            ]);
+        }
     }
 
     public function actionTambahBarangBaru($id)
