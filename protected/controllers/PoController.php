@@ -110,6 +110,7 @@ class PoController extends Controller
         $barangList = new Barang('search');
         $barangList->unsetAttributes();
         $barangList->aktif();
+        $barangList->setAttribute('nama', '=" "'); // Init data: agar barang tidak tampil
         $curSupplierCr      = null;
         $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [':filterPerSupplier' => 'po.filterpersupplier']);
 
@@ -294,6 +295,7 @@ class PoController extends Controller
     {
         if (isset($_POST['barangId'])) {
             $barangId = $_POST['barangId'];
+            $barang   = Barang::model()->findByPk($barangId);
         } elseif (isset($_POST['barcode'])) {
             $barang   = Barang::model()->find('barcode = :barcode', [':barcode' => $_POST['barcode']]);
             $barangId = $barang->id;
@@ -331,7 +333,7 @@ class PoController extends Controller
                     'sukses'=> false,
                     'error' => [
                         'code'=> 500,
-                        'msg' => 'Barang ID #' . $barangId . ' tidak ditemukan di profil ini'
+                        'msg' => 'Barang "' . $barang->nama . '" (' . $barang->barcode . ') tidak ditemukan di profil ini'
                     ]
                     ]);
             }
@@ -592,7 +594,16 @@ class PoController extends Controller
                 ]
             ];
         $model  = $this->loadModel($id);
-        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa']);
+
+        $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
+            ':filterPerSupplier' => 'po.filterpersupplier'
+            ]);
+
+        $profilId = null;
+        if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
+            $profilId = $model->profil_id;
+        }
+        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa'], $profilId);
 
         $this->renderJSON($return);
     }

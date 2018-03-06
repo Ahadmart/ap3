@@ -413,8 +413,9 @@ class Po extends CActiveRecord
         return $this->array2csv($report);
     }
 
-    public function analisaPLS($hariPenjualan, $sisaHari)
+    public function analisaPLS($hariPenjualan, $sisaHari, $profilId)
     {
+        
         /* Analisa PLS
            Kode diambil dari Report PLS
         */
@@ -422,6 +423,9 @@ class Po extends CActiveRecord
         $model->jumlahHari  = $hariPenjualan;
         $model->sisaHariMax = $sisaHari;
         $model->sortBy      = ReportPlsForm::SORT_BY_SISA_HARI_ASC;
+        if (!is_null($profilId)){
+            $model->profilId = $profilId;
+        }
         $hasil              = $model->reportPls();
 
         /* Hapus data yang masih draft */
