@@ -166,7 +166,7 @@
                         updateFormDetail(data.info)
                     } else {
                         $(".response").addClass("error");
-                        $(".response").html("Error : <br />" + data.error.msg).slideDown('slow').delay(5000).slideUp('slow');
+                        $(".response").html("Error : <br />" + data.error.msg).slideDown('slow').delay(5000.slideUp('slow');
                     }
                 }
             });
