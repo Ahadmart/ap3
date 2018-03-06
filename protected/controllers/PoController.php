@@ -623,6 +623,15 @@ class PoController extends Controller
             ':term'   => "%{$term}%",
             ':status' => Barang::STATUS_AKTIF
         ];
+
+        $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
+            ':filterPerSupplier' => 'po.filterpersupplier'
+            ]);
+
+        if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
+            $q->join                = 'JOIN supplier_barang s ON t.id=s.barang_id AND s.supplier_id=:profilId';
+            $q->params[':profilId'] = $profilId;
+        }
         $barangs = Barang::model()->findAll($q);
 
         $r = [];
