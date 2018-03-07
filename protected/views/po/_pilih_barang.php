@@ -97,7 +97,7 @@
             var datakirim = {
                 'barangId': barangId
             };
-            var dataurl = "<?= $this->createUrl('getbarang',['id'=>$poModel->id]); ?>";
+            var dataurl = "<?= $this->createUrl('getbarang', ['id'=>$poModel->id]); ?>";
 
             $.ajax({
                 data: datakirim,
@@ -155,7 +155,7 @@
             var datakirim = {
                 'barcode': barcode
             };
-            var dataurl = "<?= $this->createUrl('getbarang',['id'=>$poModel->id]); ?>";
+            var dataurl = "<?= $this->createUrl('getbarang', ['id'=>$poModel->id]); ?>";
             $.ajax({
                 data: datakirim,
                 url: dataurl,
@@ -236,6 +236,7 @@
          $this->renderPartial('_barang_list', [
            'barang'        => $barangList,
            'curSupplierCr' => $curSupplierCr,
+           'poModel'       => $poModel,
           ]);
          ?>
     </div>
