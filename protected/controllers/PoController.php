@@ -110,6 +110,7 @@ class PoController extends Controller
         $barangList = new Barang('search');
         $barangList->unsetAttributes();
         $barangList->aktif();
+        $barangList->setAttribute('nama', '=" "'); // Init data: agar barang tidak tampil
         $curSupplierCr      = null;
         $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [':filterPerSupplier' => 'po.filterpersupplier']);
 
@@ -172,7 +173,11 @@ class PoController extends Controller
      */
     public function actionHapus($id)
     {
-        $this->loadModel($id)->delete();
+        $model = $this->loadModel($id);
+        if ($model->status == Po::STATUS_DRAFT) {
+            PoDetail::model()->deleteAll('po_id=:poId', [':poId'=>$id]);
+            $model->delete();
+        }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax'])) {
@@ -286,26 +291,69 @@ class PoController extends Controller
      * Untuk mengambil informasi barang untuk ditampilkan
      * pada saat input po
      */
-    public function actionGetBarang()
+    public function actionGetBarang($id)
     {
         if (isset($_POST['barangId'])) {
             $barangId = $_POST['barangId'];
+            $barang   = Barang::model()->findByPk($barangId);
         } elseif (isset($_POST['barcode'])) {
             $barang   = Barang::model()->find('barcode = :barcode', [':barcode' => $_POST['barcode']]);
             $barangId = $barang->id;
         }
-        $barang = Pembelian::model()->ambilDataBarang($barangId);
-        $arr    = [
-            'barangId'       => $barangId,
-            'nama'           => $barang['nama'],
-            'barcode'        => $barang['barcode'],
-            'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
-            'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
-            'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
-            'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
-            'satuan'         => $barang['satuan'],
-        ];
-        echo CJSON::encode($arr);
+
+        $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
+            ':filterPerSupplier' => 'po.filterpersupplier'
+            ]);
+
+        if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
+            $po          = Po::model()->findByPk($id);
+            $cekSupplier = SupplierBarang::model()->find('barang_id=:barangId AND supplier_id=:supplierId', [
+                    ':barangId'   => $barangId,
+                    ':supplierId' => $po->profil_id
+                    ]);
+
+            if (!is_null($cekSupplier)) {
+                $barang = Pembelian::model()->ambilDataBarang($barangId);
+                $arr    = [
+                    'barangId'       => $barangId,
+                    'nama'           => $barang['nama'],
+                    'barcode'        => $barang['barcode'],
+                    'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
+                    'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
+                    'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
+                    'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
+                    'satuan'         => $barang['satuan'],
+                ];
+                $this->renderJSON([
+                    'sukses'=> true,
+                    'info'  => $arr
+                ]);
+            } elseif (is_null($cekSupplier)) {
+                $this->renderJSON([
+                    'sukses'=> false,
+                    'error' => [
+                        'code'=> 500,
+                        'msg' => 'Barang "' . $barang->nama . '" (' . $barang->barcode . ') tidak ditemukan di profil ini'
+                    ]
+                    ]);
+            }
+        } elseif ($configFilterPerSup->nilai == 0) {
+            $barang = Pembelian::model()->ambilDataBarang($barangId);
+            $arr    = [
+                'barangId'       => $barangId,
+                'nama'           => $barang['nama'],
+                'barcode'        => $barang['barcode'],
+                'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
+                'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
+                'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
+                'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
+                'satuan'         => $barang['satuan'],
+            ];
+            $this->renderJSON([
+                'sukses'=> true,
+                'info'  => $arr
+            ]);
+        }
     }
 
     public function actionTambahBarangBaru($id)
@@ -546,7 +594,16 @@ class PoController extends Controller
                 ]
             ];
         $model  = $this->loadModel($id);
-        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa']);
+
+        $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
+            ':filterPerSupplier' => 'po.filterpersupplier'
+            ]);
+
+        $profilId = null;
+        if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
+            $profilId = $model->profil_id;
+        }
+        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa'], $profilId);
 
         $this->renderJSON($return);
     }
@@ -566,6 +623,15 @@ class PoController extends Controller
             ':term'   => "%{$term}%",
             ':status' => Barang::STATUS_AKTIF
         ];
+
+        $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
+            ':filterPerSupplier' => 'po.filterpersupplier'
+            ]);
+
+        if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
+            $q->join                = 'JOIN supplier_barang s ON t.id=s.barang_id AND s.supplier_id=:profilId';
+            $q->params[':profilId'] = $profilId;
+        }
         $barangs = Barang::model()->findAll($q);
 
         $r = [];
@@ -634,7 +700,7 @@ class PoController extends Controller
             $pk          = $_POST['pk'];
             $rowAffected = PoDetail::model()->updateByPk($pk, [
                 'qty_order'  => $_POST['value'],
-                'status' => PoDetail::STATUS_ORDER
+                'status'     => PoDetail::STATUS_ORDER
             ]);
             if ($rowAffected > 0) {
                 $return = ['sukses' => true];

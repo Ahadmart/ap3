@@ -89,7 +89,7 @@
         <?php
         if ($pilihBarang) {
             $this->renderPartial('_pilih_barang', [
-                'pembelianModel' => $model,
+                'poModel' => $model,
                 'barangBarcode'  => $barangBarcode,
                 'barangNama'     => $barangNama,
                 'barang'         => $barang,

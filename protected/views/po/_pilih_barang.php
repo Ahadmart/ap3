@@ -72,6 +72,11 @@
                     <?php
                      endif;
                      ?>
+                <div class="row collapse">
+                    <div class="small-12 columns">
+                        <div class="response" style="display: none"></div>
+                    </div>
+                </div>
         </div>
     </div>
     <script>
@@ -92,21 +97,28 @@
             var datakirim = {
                 'barangId': barangId
             };
-            var dataurl = "<?= $this->createUrl('getbarang'); ?>";
+            var dataurl = "<?= $this->createUrl('getbarang', ['id'=>$poModel->id]); ?>";
 
             $.ajax({
                 data: datakirim,
                 url: dataurl,
                 type: "POST",
                 dataType: "json",
-                success: updateFormDetail
+                success: function(data) {
+                    if (data.sukses) {
+                        updateFormDetail(data.info)
+                    } else {
+                        $(".response").addClass("error");
+                        $(".response").html("Error : <br />" + data.error.msg).slideDown('slow').delay(5000).slideUp('slow');
+                    }
+                }
             });
         });
 
         /**
-         * Update nilai-nilai pada form input pembelian barang
+         * Update nilai-nilai pada form input po barang
          * @param json Informasi barang
-         * @returns {mixed} Menampilkan form input pembelian barang dan mengisi field yang diperlukan
+         * @returns {mixed} Menampilkan form input po barang dan mengisi field yang diperlukan
          */
         function updateFormDetail(info) {
             $("#barang-info").html(info['nama'] + ' <small>' + info['barcode'] + '</small><br /><small>Harga Beli </small>' + info['labelHargaBeli'] + ' <small>Harga Jual </small>' + info['labelHargaJual']);
@@ -143,14 +155,20 @@
             var datakirim = {
                 'barcode': barcode
             };
-            var dataurl = "<?= $this->createUrl('getbarang'); ?>";
-
+            var dataurl = "<?= $this->createUrl('getbarang', ['id'=>$poModel->id]); ?>";
             $.ajax({
                 data: datakirim,
                 url: dataurl,
                 type: "POST",
                 dataType: "json",
-                success: updateFormDetail
+                success: function(data) {
+                    if (data.sukses) {
+                        updateFormDetail(data.info)
+                    } else {
+                        $(".response").addClass("error");
+                        $(".response").html("Error : <br />" + data.error.msg).slideDown('slow').delay(5000).slideUp('slow');
+                    }
+                }
             });
         }
 
@@ -183,7 +201,7 @@
         });
 
         $("#scan").autocomplete({
-            source: "<?= $this->createUrl('caribarang', ['profilId' => $pembelianModel->profil_id]); ?>",
+            source: "<?= $this->createUrl('caribarang', ['profilId' => $poModel->profil_id]); ?>",
             minLength: 2,
             delay: 1000,
             search: function(event, ui) {
@@ -218,6 +236,7 @@
          $this->renderPartial('_barang_list', [
            'barang'        => $barangList,
            'curSupplierCr' => $curSupplierCr,
+           'poModel'       => $poModel,
           ]);
          ?>
     </div>
@@ -225,7 +244,7 @@
         <?php
          $formInputBaru = $this->beginWidget('CActiveForm', [
            'id'                   => 'barang-baru-form',
-           'action'               => $this->createUrl('tambahbarangbaru', ['id' => $pembelianModel->id]),
+           'action'               => $this->createUrl('tambahbarangbaru', ['id' => $poModel->id]),
            'enableAjaxValidation' => false,
            // 'htmlOptions' => array("onsubmit" => "return false;")
           ]);
@@ -273,7 +292,7 @@
                     <div class="span-12 columns">
                         <?php
                          echo CHtml::ajaxLink('Simpan (Alt+m)', $this->createUrl('tambahbarangbaru', [
-                           'id' => $pembelianModel->id,
+                           'id' => $poModel->id,
                           ]), [
                            'type'    => 'POST',
                            'success' => "function (data) {
@@ -313,7 +332,7 @@
         <?php
          $form = $this->beginWidget('CActiveForm', [
            'id'                   => 'po-detail-form',
-           'action'               => $this->createUrl('tambahbarang', ['id' => $pembelianModel->id]),
+           'action'               => $this->createUrl('tambahbarang', ['id' => $poModel->id]),
            'enableAjaxValidation' => false,
           ]);
          ?>
@@ -352,7 +371,7 @@
                             <?php
                              $focusSetelahTambah = $tipeCari > 1 ? '#barcode-pilih' : '#scan';
                               echo CHtml::ajaxSubmitButton('Tambah (Alt+a)', $this->createUrl('tambahbarang', [
-                               'id' => $pembelianModel->id,
+                               'id' => $poModel->id,
                               ]), [
                                'type'    => 'POST',
                                'success' => "function () {
@@ -383,7 +402,7 @@
         <?php
          $form = $this->beginWidget('CActiveForm', [
            'id'                   => 'po-detail-form',
-           'action'               => $this->createUrl('tambahbarang', ['id' => $pembelianModel->id]),
+           'action'               => $this->createUrl('tambahbarang', ['id' => $poModel->id]),
            'enableAjaxValidation' => false,
           ]);
          ?>
@@ -418,7 +437,7 @@
                             <?php
                              $focusSetelahTambah = $tipeCari > 1 ? '#barcode-pilih' : '#scan';
                              echo CHtml::ajaxSubmitButton('Tambah (Alt+a)', $this->createUrl('tambahbarang', [
-                               'id' => $pembelianModel->id,
+                               'id' => $poModel->id,
                               ]), [
                                'type'    => 'POST',
                                'success' => "function () {
