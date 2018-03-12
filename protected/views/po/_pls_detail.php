@@ -10,84 +10,72 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
     <div class="small-12 columns">
         <?php
         $this->widget('BGridView', [
-            'id' => 'pls-detail-grid',
-            'dataProvider' => $model->search(),
-            'filter' => $model,
-            'columns' => [
-                //'barang_id',
+            'id'           => 'pls-detail-grid',
+            'dataProvider' => $model->search($pageSize),
+            'filter'       => $model,
+            'columns'      => [
                 'barcode',
                 'nama',
-                //'qty',
-                // [
-                //     'name' => 'qty',
-                //     'filter' => false,
-                //     'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                //     'htmlOptions' => ['class' => 'rata-kanan'],
-                // ],
-                //'harga_beli',
                 [
-                    'name' => 'harga_beli',
-                    'filter' => false,
+                    'name'              => 'harga_beli',
+                    'filter'            => false,
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions' => ['class' => 'rata-kanan'],
-                    'value' => 'number_format($data->harga_beli,0,",",".")'
-                ],
-                //'harga_jual',
-                [
-                    'name' => 'harga_jual',
-                    'filter' => false,
-                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions' => ['class' => 'rata-kanan'],
-                    'value' => 'number_format($data->harga_jual,0,",",".")'
-                ],
-                //'ads',
-                [
-                    'name' => 'ads',
-                    'filter' => false,
-                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions' => ['class' => 'rata-kanan'],
-                ],
-                //'stok',
-                [
-                    'name' => 'stok',
-                    'filter' => false,
-                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions' => ['class' => 'rata-kanan'],
-                ],
-                //'est_sisa_hari',
-                [
-                    'name' => 'est_sisa_hari',
-                    'filter' => false,
-                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions' => ['class' => 'rata-kanan'],
-                ],
-                //'saran_order',
-                [
-                    'name' => 'saran_order',
-                    'filter' => false,
-                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions' => ['class' => 'rata-kanan'],
-                ],
-                //'order',
-                [
-                    'name' => 'qty_order',
-                    'filter' => false,
-                    'header' => 'O<span class="ak">r</span>der',
-                    'type' => 'raw',
-                    'value' => [$this, 'renderOrderEditable'],
-                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'value'             => 'number_format($data->harga_beli,0,",",".")'
                 ],
                 [
-                    'header' => 'Set Order',
-                    'type' => 'raw',
-                    'value' => [$this, 'renderTombolSetOrder'],
+                    'name'              => 'harga_jual',
+                    'filter'            => false,
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'value'             => 'number_format($data->harga_jual,0,",",".")'
+                ],
+                [
+                    'name'              => 'ads',
+                    'filter'            => false,
+                    'headerHtmlOptions' => ['class' => 'rata-kanan', 'data-tooltip', 'title'=>'Average Daily Sales'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'name'              => 'stok',
+                    'filter'            => false,
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'name'              => 'est_sisa_hari',
+                    'filter'            => false,
+                    'headerHtmlOptions' => ['class' => 'rata-kanan', 'data-tooltip', 'title'=>'Stok saat ini masih bisa bertahan selama beberapa hari'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'name'              => 'saran_order',
+                    'filter'            => false,
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'name'              => 'qty_order',
+                    'filter'            => false,
+                    'header'            => 'O<span class="ak">r</span>der',
+                    'type'              => 'raw',
+                    'value'             => [$this, 'renderOrderEditable'],
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'header'            => 'Set Order',
+                    'type'              => 'raw',
+                    'value'             => [$this, 'renderTombolSetOrder'],
                     'headerHtmlOptions' => ['class' => 'rata-tengah'],
-                    'htmlOptions' => ['class' => 'rata-tengah'],
-                    'header' => '<a id="tombol-order-semua" href="' . $this->createUrl('ordersemua', ['id' => $poModel->id]) . '"><i class="fa fa-plus"></i> All</a>'
+                    'htmlOptions'       => ['class' => 'rata-tengah'],
+                    'header'            => '<a id="tombol-order-semua" href="' . $this->createUrl('ordersemua', ['id' => $poModel->id]) . '"><i class="fa fa-plus"></i> All</a>'
                 ],
                 [
-                    'class' => 'BButtonColumn',
+                    'class'           => 'BButtonColumn',
+                    'header'          => CHtml::dropDownList('pageSize', $pageSize, [20=>20, 50=>50, 100=>100, $model->search()->getTotalItemCount()=> 'SEMUA'], [
+                        'onchange'=> "$.fn.yiiGridView.update('pls-detail-grid',{ data:{pageSize: $(this).val() }})",
+                    ]),
                     'deleteButtonUrl' => 'Yii::app()->controller->createUrl("po/hapusdetail", array("id"=>$data->primaryKey))',
                 ],
             ],

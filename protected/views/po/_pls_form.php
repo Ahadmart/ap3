@@ -1,15 +1,15 @@
 <div class="row">
     <div class="small-12 medium-4 large-2 columns">
         <?php
-                    echo CHtml::activeLabelEx($modelReportPls, 'jumlahHari');
-                    echo CHtml::activeTextField($modelReportPls, 'jumlahHari', ['value' => empty($modelReportPls->jumlahHari) ? '30' : $model->jumlahHari]);
+                    echo CHtml::activeLabelEx($modelReportPls, 'jumlahHari',['data-tooltip', 'title'=>"Lakukan Analisa penjualan barang selama beberapa hari yang lalu"]);
+                    echo CHtml::activeTextField($modelReportPls, 'jumlahHari', ['value' => empty($modelReportPls->jumlahHari) ? '30' : $model->jumlahHari, 'data-tooltip','class'=>'has-tip', 'title'=>"Lakukan Analisa penjualan barang selama beberapa hari yang lalu"]);
                     // echo $form->error($model, 'jumlahHari', ['class' => 'error']);
         ?>
     </div>
     <div class="small-12 medium-4 large-2 columns end">
         <?php
-                    echo CHtml::activeLabelEx($modelReportPls, 'sisaHariMax');
-                    echo CHtml::activeTextField($modelReportPls, 'sisaHariMax', ['value' => empty($modelReportPls->sisaHariMax) ? '7' : $model->sisaHariMax]);
+                    echo CHtml::activeLabelEx($modelReportPls, 'sisaHariMax',['data-tooltip', 'title'=>"Hitung jumlah stok yang musti dipesan untuk ketersediaan jangka waktu ini"]);
+                    echo CHtml::activeTextField($modelReportPls, 'sisaHariMax', ['value' => empty($modelReportPls->sisaHariMax) ? '7' : $model->sisaHariMax, 'data-tooltip','class'=>'has-tip', 'title'=>"Hitung jumlah stok yang musti dipesan untuk ketersediaan jangka waktu ini"]);
                     // echo $form->error($model, 'sisaHariMax', ['class' => 'error']);
         ?>
     </div>

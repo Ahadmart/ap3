@@ -89,7 +89,7 @@
         <?php
         if ($pilihBarang) {
             $this->renderPartial('_pilih_barang', [
-                'poModel' => $model,
+                'poModel'        => $model,
                 'barangBarcode'  => $barangBarcode,
                 'barangNama'     => $barangNama,
                 'barang'         => $barang,
@@ -104,10 +104,10 @@
             ]);
 
             $this->renderPartial('_pls_detail', [
-                'model'   => $plsDetail,
-                'poModel' => $model
-            ]);
-            ?>
+                'model'    => $plsDetail,
+                'poModel'  => $model,
+                'pageSize' => $pageSize,
+            ]); ?>
             <hr />
             <?php
         }

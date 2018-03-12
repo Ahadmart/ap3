@@ -150,6 +150,11 @@ class PoController extends Controller
             $PLSDetail->attributes = $_GET['PoDetail'];
         }
 
+        $pageSize = 20;
+        if (isset($_GET['pageSize'])) {
+            $pageSize = (int)$_GET['pageSize'];
+        }
+
         $this->render('ubah', [
             'model'          => $model,
             'modeManual'     => $modeManual,
@@ -162,7 +167,8 @@ class PoController extends Controller
             'pilihBarang'    => $pilihBarang,
             'tipeCari'       => $configCariBarang->nilai,
             'modelReportPls' => $modelReportPls,
-            'plsDetail'      => $PLSDetail
+            'plsDetail'      => $PLSDetail,
+            'pageSize'       => $pageSize,
         ]);
     }
 
