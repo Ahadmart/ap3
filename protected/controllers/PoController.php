@@ -397,7 +397,13 @@ class PoController extends Controller
     public function actionTambahBarang($id)
     {
         // Jika ada post input-detail, berarti ada input-an barang
-        if (isset($_POST['input-detail']) && $_POST['input-detail'] == 1) {
+        if (isset($_POST['input-detail']) && $_POST['input-detail'] == 1 && $_POST['qty'] > 0) {
+            $sudahAda = PoDetail::sudahAda($id, $_POST['barang-id']);
+            $qtyOrder = 0;
+            if (!is_null($sudahAda)) {
+                $qtyOrder = $sudahAda->qty_order;
+                $sudahAda->delete();
+            }
             $barang = Barang::model()->findByPk($_POST['barang-id']);
 
             $detail             = new PoDetail;
@@ -405,7 +411,7 @@ class PoController extends Controller
             $detail->barang_id  = $_POST['barang-id'];
             $detail->barcode    = $barang->barcode;
             $detail->nama       = $barang->nama;
-            $detail->qty_order  = $_POST['qty'] > 0 ? $_POST['qty'] : 0;
+            $detail->qty_order  = $qtyOrder + $_POST['qty'];
             $detail->harga_beli = $_POST['hargabeli'];
             $detail->harga_jual = $_POST['hargajual'];
             $detail->status     = PoDetail::STATUS_ORDER;
