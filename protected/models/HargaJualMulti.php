@@ -69,11 +69,11 @@ class HargaJualMulti extends CActiveRecord
             'id'         => 'ID',
             'barang_id'  => 'Barang',
             'satuan_id'  => 'Satuan',
-            'qty'        => 'Qty',
+            'qty'        => 'Isi',
             'harga'      => 'Harga',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
-            'created_at' => 'Created At',
+            'created_at' => 'Sejak',
         ];
     }
 
@@ -95,13 +95,13 @@ class HargaJualMulti extends CActiveRecord
 
         $criteria=new CDbCriteria;
 
-        $criteria->compare('id', $this->id, true);
-        $criteria->compare('barang_id', $this->barang_id, true);
-        $criteria->compare('satuan_id', $this->satuan_id, true);
+        $criteria->compare('id', $this->id);
+        $criteria->compare('barang_id', $this->barang_id);
+        $criteria->compare('satuan_id', $this->satuan_id);
         $criteria->compare('qty', $this->qty, true);
         $criteria->compare('harga', $this->harga, true);
         $criteria->compare('updated_at', $this->updated_at, true);
-        $criteria->compare('updated_by', $this->updated_by, true);
+        $criteria->compare('updated_by', $this->updated_by);
         $criteria->compare('created_at', $this->created_at, true);
 
         return new CActiveDataProvider($this, [

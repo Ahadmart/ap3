@@ -27,9 +27,13 @@ class BarangController extends Controller
         $hargaJual->unsetAttributes();
         $hargaJual->setAttribute('barang_id', '=' . $id);
 
-        $rrp = new HargaJualRekomendasi('search');
-        $rrp->unsetAttributes();
-        $rrp->setAttribute('barang_id', '=' . $id);
+        // $rrp = new HargaJualRekomendasi('search');
+        // $rrp->unsetAttributes();
+        // $rrp->setAttribute('barang_id', '=' . $id);
+
+        $hargaJualMulti = new HargaJualMulti('search');
+        $hargaJualMulti->unsetAttributes();
+        $hargaJualMulti->setAttribute('barang_id', $id);
 
         $currentTags = $model->tagList;
         $curTags = [];
@@ -43,7 +47,8 @@ class BarangController extends Controller
             'supplierBarang' => $supplierBarang,
             'inventoryBalance' => $inventoryBalance,
             'hargaJual' => $hargaJual,
-            'rrp' => $rrp,
+            // 'rrp' => $rrp,
+            'hargaJualMulti' => $hargaJualMulti,
             'curTags' => $curTags
         ));
     }

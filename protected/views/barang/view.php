@@ -19,24 +19,15 @@ $this->boxHeader['normal'] = 'Barang: ' . $model->nama;
             ))
             ?>
         </div>
-    </div>
-    <div class="medium-6 large-5 columns">
-        <div class="panel">
+        <!-- <div class="panel">
             <?php
-            $this->renderPartial('_view_inventory_balance', array(
-                'inventoryBalance' => $inventoryBalance
-            ))
+            // $this->renderPartial('_view_harga_jual_multi', array(
+            //     'hargaJualMulti' => $hargaJualMulti
+            // ))
             ?>
-        </div>
-        <div class="panel">
-            <?php
-            $this->renderPartial('_view_supplier_barang', array(
-                'supplierBarang' => $supplierBarang
-            ))
-            ?>
-        </div>
+        </div> -->
     </div>
-    <div class="medium-6 large-3 columns end">
+    <div class="medium-6 large-3 columns">
         <div class="panel">
             <?php
             $this->renderPartial('_view_harga_jual', array(
@@ -50,6 +41,22 @@ $this->boxHeader['normal'] = 'Barang: ' . $model->nama;
 //                'rrp' => $rrp
 //            ))
             $this->renderPartial('_view_tag', ['curTags'=>$curTags]);
+            ?>
+        </div>
+    </div>
+    <div class="medium-12 large-5 columns end">
+        <div class="panel">
+            <?php
+            $this->renderPartial('_view_inventory_balance', array(
+                'inventoryBalance' => $inventoryBalance
+            ))
+            ?>
+        </div>
+        <div class="panel">
+            <?php
+            $this->renderPartial('_view_supplier_barang', array(
+                'supplierBarang' => $supplierBarang
+            ))
             ?>
         </div>
     </div>
