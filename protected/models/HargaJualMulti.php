@@ -70,7 +70,7 @@ class HargaJualMulti extends CActiveRecord
             'barang_id'  => 'Barang',
             'satuan_id'  => 'Satuan',
             'qty'        => 'Isi',
-            'harga'      => 'Harga',
+            'harga'      => 'Harga (Satuan)',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Sejak',

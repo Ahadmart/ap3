@@ -95,9 +95,15 @@ class BarangController extends Controller
         $hargaJual->unsetAttributes();
         $hargaJual->setAttribute('barang_id', '=' . $id);
 
-        $rrp = new HargaJualRekomendasi('search');
-        $rrp->unsetAttributes();
-        $rrp->setAttribute('barang_id', '=' . $id);
+        // $rrp = new HargaJualRekomendasi('search');
+        // $rrp->unsetAttributes();
+        // $rrp->setAttribute('barang_id', '=' . $id);
+
+        $hargaJualMulti = new HargaJualMulti('search');
+        $hargaJualMulti->unsetAttributes();
+        $hargaJualMulti->setAttribute('barang_id', $id);
+
+        $hjMultiModel = new HargaJualMulti;
 
         if (isset($_POST['Barang'])) {
             $model->attributes = $_POST['Barang'];
@@ -117,8 +123,10 @@ class BarangController extends Controller
             'supplierBarang' => $supplierBarang,
             'listBukanSupplier' => $this->_listBukanSupplier($id),
             'hargaJual' => $hargaJual,
-            'rrp' => $rrp,
-            'curTags' => $curTags
+            // 'rrp' => $rrp,
+            'curTags' => $curTags,
+            'hjMultiModel' => $hjMultiModel,
+            'hjMulti' => $hargaJualMulti
         ));
     }
 
