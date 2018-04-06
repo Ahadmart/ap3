@@ -22,7 +22,7 @@ $this->boxHeader['normal'] = 'Barang: ' . $model->nama;
         <div class="panel">
             <?php
             $this->renderPartial('_view_harga_jual_multi', array(
-                'hargaJualMulti' => $hargaJualMulti
+                'hjMultiList' => $hjMultiList
             ))
             ?>
         </div>
