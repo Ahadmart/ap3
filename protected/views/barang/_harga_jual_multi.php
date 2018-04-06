@@ -1,6 +1,9 @@
 <h4><small>Update</small> Multi Harga Jual</h4>
 <hr />
 <?php
+    $this->renderPartial('_harga_jual_multi_aktif', ['hjMultiList' => $hjMultiList]);
+?>
+<?php
 $form = $this->beginWidget('CActiveForm', [
     'id'                   => 'harga-jual-multi-form',
     'enableAjaxValidation' => false,
@@ -9,10 +12,10 @@ $form = $this->beginWidget('CActiveForm', [
 <div class="row">
     <div class="small-12 columns">
         <div class="row collapse">
-            <div class="medium-3 columns">
+            <div class="medium-3 large-4 columns">
                 <?= $form->dropDownList($hjMultiModel, 'satuan_id', CHtml::listData(SatuanBarang::model()->findAll(['order'=>'nama']), 'id', 'nama'), ['prompt'=>'Pilih satuan..']) ?>
         </div>
-            <div class="medium-3 columns">
+            <div class="medium-3 large-2 columns">
                 <?= $form->textField($hjMultiModel, 'qty', ['placeholder'=>'Isi', 'value'=>'']) ?>
         </div>
             <div class="medium-3 columns">
@@ -22,11 +25,11 @@ $form = $this->beginWidget('CActiveForm', [
                 <?php
                 echo CHtml::ajaxSubmitButton('Update', $this->createUrl('updatehargajualmulti', ['id' => $barang->id]), [
                     'success' => "function () {
-                                $.fn.yiiGridView.update('harga-jual-grid');
+                                $.fn.yiiGridView.update('harga-jual-multi-grid');
                             }"
                         ], [
                     'class' => 'button postfix',
-                    'id'    => 'tombol-update-hj'
+                    'id'    => 'tombol-update-hj-multi'
                     ]);
                 ?>
             </div>
@@ -37,7 +40,7 @@ $form = $this->beginWidget('CActiveForm', [
 
 <?php
 $this->widget('BGridView', [
-    'id'           => 'harga-jual-grid',
+    'id'           => 'harga-jual-multi-grid',
     'dataProvider' => $hjMulti->search(),
     'columns'      => [
         [

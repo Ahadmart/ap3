@@ -105,6 +105,8 @@ class BarangController extends Controller
 
         $hjMultiModel = new HargaJualMulti;
 
+        $hjMultiList = HargaJualMulti::listAktif($id);
+
         if (isset($_POST['Barang'])) {
             $model->attributes = $_POST['Barang'];
             if ($model->save())
@@ -126,7 +128,8 @@ class BarangController extends Controller
             // 'rrp' => $rrp,
             'curTags' => $curTags,
             'hjMultiModel' => $hjMultiModel,
-            'hjMulti' => $hargaJualMulti
+            'hjMulti' => $hargaJualMulti,
+            'hjMultiList' => $hjMultiList,
         ));
     }
 
@@ -272,6 +275,17 @@ class BarangController extends Controller
         $tags = $_POST['tags'];
         TagBarang::model()->updateTags($id, $tags);
         //print_r(TagBarang::model()->findAll('barang_id=:barangId',[':barangId'=>$id]));
+    }
+
+    public function actionUpdateHargaJualMulti($id)
+    {
+        $barangId   = $id;
+        $attributes = $_POST['HargaJualMulti'];
+        if (HargaJualMulti::updateHargaTrx($barangId, $attributes)) {
+            echo 'Sukses';
+        } else {
+            echo 'Fail';
+        }
     }
 
 }

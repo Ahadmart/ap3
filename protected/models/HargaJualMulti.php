@@ -55,7 +55,7 @@ class HargaJualMulti extends CActiveRecord
         // class name for the relations automatically generated below.
         return [
             'barang'    => [self::BELONGS_TO, 'Barang', 'barang_id'],
-            'satuan'    => [self::BELONGS_TO, 'BarangSatuan', 'satuan_id'],
+            'satuan'    => [self::BELONGS_TO, 'SatuanBarang', 'satuan_id'],
             'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
         ];
     }
@@ -70,7 +70,7 @@ class HargaJualMulti extends CActiveRecord
             'barang_id'  => 'Barang',
             'satuan_id'  => 'Satuan',
             'qty'        => 'Isi',
-            'harga'      => 'Harga (Satuan)',
+            'harga'      => 'Harga @',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Sejak',
@@ -104,8 +104,13 @@ class HargaJualMulti extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $sort = [
+            'defaultOrder' => 'id desc'
+        ];
+
         return new CActiveDataProvider($this, [
             'criteria'=> $criteria,
+            'sort'    => $sort
         ]);
     }
 
@@ -128,5 +133,82 @@ class HargaJualMulti extends CActiveRecord
         $this->updated_at = null; // Trigger current timestamp
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
+    }
+
+    public static function updateHarga($barangId, $attributes)
+    {
+        $return = false;
+        // Cari harga jual multi terakhir
+        $hasil = Yii::app()->db->createCommand()
+                  ->select('satuan_id, harga')
+                  ->from(HargaJualMulti::model()->tableName())
+                  ->where('barang_id = :barangId AND qty = :qty', [
+                      ':barangId' => $barangId,
+                      ':qty'      => (int) $attributes['qty']
+                      ])
+                  ->order('id desc')
+                  ->queryRow();
+
+        if ($hasil['harga'] != $attributes['harga'] || $hasil['satuan_id'] != $attributes['satuan_id']) {
+            // Jika tidak sama atau belum ada maka: insert harga jual baru
+            $hargaJualModel             = new HargaJualMulti;
+            $hargaJualModel->attributes = $attributes;
+            $hargaJualModel->barang_id  = $barangId;
+            if ($hargaJualModel->save()) {
+                $return = true;
+            }
+        } else {
+            $return = true;
+        }
+        return $return;
+    }
+
+    public static function updateHargaTrx($barangId, $attributes)
+    {
+        $transaction = Yii::app()->db->beginTransaction();
+        try {
+            if (self::updateHarga($barangId, $attributes)) {
+                $transaction->commit();
+                return true;
+            } else {
+                throw new Exception('Gagal Update Multi Harga Jual');
+            }
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw $e;
+        }
+    }
+
+    public function afterFind()
+    {
+        $this->harga      = number_format($this->harga, 0, ',', '.');
+        $this->created_at = date_format(date_create_from_format('Y-m-d H:i:s', $this->created_at), 'd-m-Y H:i:s');
+        return parent::afterFind();
+    }
+
+    public static function listAktif($barangId)
+    {
+        $sql = '
+        SELECT 
+            s.nama nama_satuan, qty, harga
+        FROM
+            barang_harga_jual_multi t
+                JOIN
+            barang_satuan s ON s.id = t.satuan_id
+        WHERE
+            t.id IN (SELECT 
+                    MAX(id) id
+                FROM
+                    barang_harga_jual_multi
+                WHERE
+                    barang_id = :barangId
+                GROUP BY qty)
+                AND harga > 0
+        ORDER BY qty
+        ';
+
+        return Yii::app()->db->createCommand($sql)
+        ->bindValue(':barangId', $barangId)
+        ->queryAll();
     }
 }
