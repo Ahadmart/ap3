@@ -732,4 +732,15 @@ class PembelianController extends Controller
         }
     }
 
+    public function actionUpdateHjMulti()
+    {
+        $barangId = $_POST['barang-id'];
+        $attributes = $_POST['HargaJualMulti'];
+        if (HargaJualMulti::updateHargaTrx($barangId, $attributes)) {
+            echo 'Sukses';
+        } else {
+            echo 'Fail';
+        }
+    }
+
 }

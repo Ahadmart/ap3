@@ -186,6 +186,12 @@ class HargaJualMulti extends CActiveRecord
         return parent::afterFind();
     }
 
+    /**
+     * Daftar Multi Harga Jual yang sedang aktif
+     *
+     * @param int $barangId ID Barang
+     * @return array [nama_satuan, qty, harga]
+     */
     public static function listAktif($barangId)
     {
         $sql = '
