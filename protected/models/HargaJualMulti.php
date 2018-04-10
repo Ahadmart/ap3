@@ -192,7 +192,7 @@ class HargaJualMulti extends CActiveRecord
      * @param int $barangId ID Barang
      * @return array [nama_satuan, qty, harga]
      */
-    public static function listAktif($barangId)
+    public static function listAktif($barangId, $sort='')
     {
         $sql = '
         SELECT 
@@ -210,8 +210,7 @@ class HargaJualMulti extends CActiveRecord
                     barang_id = :barangId
                 GROUP BY qty)
                 AND harga > 0
-        ORDER BY qty
-        ';
+        ORDER BY qty '. $sort;
 
         return Yii::app()->db->createCommand($sql)
         ->bindValue(':barangId', $barangId)
