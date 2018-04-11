@@ -1774,11 +1774,6 @@ class Penjualan extends CActiveRecord
         return $limit > 0 && $this->ambilTotal() > $limit;
     }
 
-    public function cekMultiHJ($barangId)
-    {
-        return is_empty(HargaJualMulti::listAktif($barangId)) ? false : true;
-    }
-
     public function aksiMultiHJ($barangId, $qty, $hargaJualNormal)
     {
         $listHarga = HargaJualMulti::listAktif($barangId, 'desc');

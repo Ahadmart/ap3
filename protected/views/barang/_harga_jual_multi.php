@@ -1,10 +1,5 @@
 <h4><small>Update</small> Multi Harga Jual</h4>
 <hr />
-<div id="hj-aktif">
-<?php
-    $this->renderPartial('_harga_jual_multi_aktif', ['hjMultiList' => $hjMultiList]);
-?>
-</div>
 <?php
 $form = $this->beginWidget('CActiveForm', [
     'id'                   => 'harga-jual-multi-form',
@@ -28,8 +23,7 @@ $form = $this->beginWidget('CActiveForm', [
                 echo CHtml::ajaxSubmitButton('Update', $this->createUrl('updatehargajualmulti', ['id' => $barang->id]), [
                     'success' => "function () {
                                 $.fn.yiiGridView.update('harga-jual-multi-grid');
-                                $('#hj-aktif').load('" . $this->createUrl('listhargajualmulti', ['id'=>$barang->id]) . '\');
-                            }'
+                            }"
                         ], [
                     'class' => 'button postfix',
                     'id'    => 'tombol-update-hj-multi'
