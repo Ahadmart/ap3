@@ -371,9 +371,17 @@ class PosController extends Controller
             } else {
                 /* qty=0 / hapus barang, hanya bisa jika ada otorisasi Admin */
                 if ($this->isOtorisasiAdmin($detail->penjualan_id)) {
-                    PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $pk);
-                    $this->simpanHapusDetail($detail);
-                    $detail->delete();
+                    $barang = Barang::model()->findByPk($detail->barang_id);
+                    $penjualan = Penjualan::model()->findByPk($detail->penjualan_id);
+                    $details = PenjualanDetail::model()->findAll('barang_id=:barangId AND penjualan_id=:penjualanId',[
+                        ':barangId' => $detail->barang_id,
+                        ':penjualanId' => $detail->penjualan_id
+                    ]);
+                    foreach ($details as $d){
+                        $this->simpanHapusDetail($d); // Simpan barang yang dihapus ke tabel "lain"
+                    }
+                    $penjualan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
+
                     $return = array('sukses' => true);
                 } else {
                     throw new Exception('Tidak ada otorisasi Admin', 500);

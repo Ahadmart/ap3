@@ -19,13 +19,13 @@ $this->boxHeader['normal'] = 'Barang: ' . $model->nama;
             ))
             ?>
         </div>
-        <!-- <div class="panel">
+        <div class="panel">
             <?php
-            // $this->renderPartial('_view_harga_jual_multi', array(
-            //     'hargaJualMulti' => $hargaJualMulti
-            // ))
+            $this->renderPartial('_view_harga_jual_multi', array(
+                'hjMultiList' => $hjMultiList
+            ))
             ?>
-        </div> -->
+        </div>
     </div>
     <div class="medium-6 large-3 columns">
         <div class="panel">

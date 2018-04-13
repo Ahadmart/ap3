@@ -18,15 +18,16 @@ $this->boxHeader['normal'] = "Barang: {$model->nama}";
             <hr />
             <?php $this->renderPartial('_form', ['model' => $model]); ?>
         </div>
-        <!-- <div class="panel">
+        <div class="panel">
             <?php 
-            // $this->renderPartial('_harga_jual_multi', [
-            //     'barang'       => $model,
-            //     'hjMultiModel' => $hjMultiModel,
-            //     'hjMulti'      => $hjMulti
-            //     ]);
+            $this->renderPartial('_harga_jual_multi', [
+                'barang'       => $model,
+                'hjMultiModel' => $hjMultiModel,
+                'hjMulti'      => $hjMulti,
+                'hjMultiList'  => $hjMultiList,
+                ]);
                 ?>
-        </div> -->
+        </div>
     </div>
 
     <div class="large-8 columns">

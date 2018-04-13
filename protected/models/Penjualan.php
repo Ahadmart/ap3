@@ -320,13 +320,26 @@ class Penjualan extends CActiveRecord
     }
 
     /**
-     * Hapus barang di penjualan_detail dan penjualan_diskon
+     * Hapus barang di penjualan_multi_harga, penjualan_detail dan penjualan_diskon
      * @param ActiveRecord $barang
      */
     public function cleanBarang($barang)
     {
+        $tabelPenjualanMultiHJ = PenjualanMultiHarga::model()->tableName();
         $tabelPenjualanDiskon = PenjualanDiskon::model()->tableName();
         $tabelPenjualanDetail = PenjualanDetail::model()->tableName();
+
+        Yii::app()->db->createCommand("
+                    DELETE {$tabelPenjualanMultiHJ}
+                    FROM {$tabelPenjualanMultiHJ}
+                    INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanMultiHJ}.penjualan_detail_id = {$tabelPenjualanDetail}.id
+                    WHERE {$tabelPenjualanDetail}.barang_id=:barangId AND {$tabelPenjualanDetail}.penjualan_id=:penjualanId
+                        ")
+                ->bindValues(array(
+                    ':barangId' => $barang->id,
+                    ':penjualanId' => $this->id
+                ))
+                ->execute();
 
         Yii::app()->db->createCommand("
                     DELETE {$tabelPenjualanDiskon}
@@ -413,12 +426,16 @@ class Penjualan extends CActiveRecord
     {
         $sisa = $qty;
         $hargaJualNormal = HargaJual::model()->terkini($barang->id);
-        /*
+        /* 
+         * Cek Multi Harga Jual, jika ada: Diskon diabaikan!
          * Cek Diskon, dengan prioritas PROMO MEMBER, PROMO, GROSIR, BANDED, QTY DAPAT BARANG
          * Hanya bisa salah satu
          */
-
-        if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO_MEMBER))) {
+        if (!empty(HargaJualMulti::listAktif($barang->id))){
+            //terapkan multi harga jual
+            //ambil sisanya (yang tidak kena kelipatan satuan multi harga)
+            $sisa = $this->aksiMultiHJ($barang->id, $qty, $hargaJualNormal);
+        } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO_MEMBER))) {
             //terapkan diskon promo member jika member
             //ambil sisanya (yang tidak didiskon)
             $customer = Profil::model()->findByPk($this->profil_id);
@@ -687,7 +704,7 @@ class Penjualan extends CActiveRecord
      * @param int $tipeDiskonId
      * @throws Exception
      */
-    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null)
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [])
     {
         $detail = new PenjualanDetail;
         $detail->penjualan_id = $this->id;
@@ -703,6 +720,9 @@ class Penjualan extends CActiveRecord
         }
         if ($diskon > 0) {
             $this->insertDiskon($detail, $tipeDiskonId);
+        }
+        if (!empty($multiHJ)){
+            $this->insertMultiHJ($detail, $multiHJ);
         }
     }
 
@@ -1752,6 +1772,37 @@ class Penjualan extends CActiveRecord
         $limitPenjualan = Config::model()->find("nama='penjualan.limit'");
         $limit = $limitPenjualan->nilai;
         return $limit > 0 && $this->ambilTotal() > $limit;
+    }
+
+    public function aksiMultiHJ($barangId, $qty, $hargaJualNormal)
+    {
+        $listHarga = HargaJualMulti::listAktif($barangId, 'desc');
+        $sisa = $qty;
+        foreach ($listHarga as $satuan){
+            if ($sisa >= $satuan['qty']){
+                $jmlSatuan = floor($sisa / $satuan['qty']); // Jumlah dari satuan (pak, lsn, karton, dst)
+                $qtyTotal = $jmlSatuan * $satuan['qty']; // Jumlah qty total dari KELIPATAN satuan
+                /* -------------- */
+                $satuan['harga_jual_normal'] = $hargaJualNormal;
+                $this->insertBarang($barangId, $qtyTotal, $satuan['harga'], 0, null, $satuan);
+                /* -------------- */
+                $sisa = $sisa % $satuan['qty'];
+            }
+        }
+        return $sisa;
+    }
+
+    public function insertMultiHJ($penjualanDetail, $params)
+    {
+        $penjualanMultiHJ = new PenjualanMultiHarga;
+        $penjualanMultiHJ->penjualan_detail_id = $penjualanDetail->id;
+        $penjualanMultiHJ->penjualan_id = $penjualanDetail->penjualan_id;
+        $penjualanMultiHJ->qty = $penjualanDetail->qty;
+        $penjualanMultiHJ->harga = $penjualanDetail->harga_jual;
+        $penjualanMultiHJ->harga_normal = $params['harga_jual_normal'];
+        if (!$penjualanMultiHJ->save()){
+            throw new Exception('Gagal simpan penjualan multi harga untuk detail #'.$penjualanDetail->id, 500);
+        }
     }
 
 }
