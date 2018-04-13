@@ -54,6 +54,7 @@ class m180202_155741_create_table_po extends CDbMigration
             CONSTRAINT `fk_po_detail_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
             ",
         ], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+        $now = date('Y-m-d H:i:s');
     }
 
     public function safeDown()
@@ -61,5 +62,4 @@ class m180202_155741_create_table_po extends CDbMigration
         echo "m180202_155741_create_table_po does not support migration down.\n";
         return false;
     }
-
 }
