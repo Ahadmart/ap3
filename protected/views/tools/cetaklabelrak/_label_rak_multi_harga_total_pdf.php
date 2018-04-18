@@ -95,41 +95,40 @@
             switch ($jmlMultiHarga) {
                 case 0:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:21pt; margin-top:5px',
+                    'hargaJualCSS'       => 'font-size:21pt; margin-top:5px',
                     'multiHargaFontSize' => '',
                     'barcodeMarginTop'   => 'margin-top:5mm',
                 ];
                     break;
                 case 1:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:20pt',
+                    'hargaJualCSS'       => 'font-size:20pt',
                     'multiHargaFontSize' => 'font-size:12pt',
                     'barcodeMarginTop'   => 'margin-top:1mm',
                 ];
                     break;
                 case 2:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:18pt; margin-top:-5px',
+                    'hargaJualCSS'       => 'font-size:18pt; margin-top:-5px',
                     'multiHargaFontSize' => 'font-size:8pt',
                     'barcodeMarginTop'   => 'margin-top:1mm',
                 ];
                     break;
                 case 3:
                     $customCSS = [
-                        'hargaJualCSS'      => 'font-size:14pt; margin-top:-9px',
+                        'hargaJualCSS'       => 'font-size:14pt; margin-top:-9px',
                         'multiHargaFontSize' => 'font-size:8pt',
                         'barcodeMarginTop'   => 'margin-top:1mm',
                     ];
                         break;
                 default:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:12pt; margin-top:-10px',
+                    'hargaJualCSS'       => 'font-size:12pt; margin-top:-10px',
                     'multiHargaFontSize' => 'font-size:6pt',
                     'barcodeMarginTop'   => 'margin-top:0',
                 ];
                     break;
-            }
-            ?>
+            } ?>
             <div class="label-container">
                 <div class="label">
                     <div class="nama-barang">
@@ -144,10 +143,11 @@
                                     foreach ($multiHarga as $multi) {
                                         ?>
                                 <tr>
-                                    <td class="info-harga" style="<?=$customCSS['multiHargaFontSize']?>">@ Rp. <?= number_format($multi['harga'], 0, ',', '.') ?></td>
-                                        <td width="3mm" style="<?=$customCSS['multiHargaFontSize']?>; text-align: right">/</td>
-                                        <td class="info-satuan" style="<?=$customCSS['multiHargaFontSize']?>"><?= $multi['qty'] ?> <?= $satuanBarang ?></td>
-                                    </tr>
+                                    <td style="<?=$customCSS['multiHargaFontSize']?>">Rp.</td>
+                                    <td class="info-harga" style="<?=$customCSS['multiHargaFontSize']?>"><?= number_format($multi['qty'] * $multi['harga'], 0, ',', '.') ?></td>
+                                    <td width="3mm" style="<?=$customCSS['multiHargaFontSize']?>; text-align: right">/</td>                                    
+                                    <td class="info-satuan" style="<?=$customCSS['multiHargaFontSize']?>"><?= $multi['qty'] ?> <?= $satuanBarang ?></td>
+                                </tr>
                                         <?php
                                     } ?>
                         </table>

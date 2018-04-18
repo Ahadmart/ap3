@@ -1,7 +1,6 @@
 <html>
     <head>
         <title>Label Rak</title>
-        <!-- <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/labelrak.css" /> -->
         <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" />
         <style>
             body {
@@ -11,30 +10,38 @@
 
             .label {
                 border: 1px solid #000;
-                height: 30mm;
+                height: 65mm;
                 text-align: left;
                 overflow: hidden;
                 margin-bottom: 2mm;
+                border-radius: 25px;
             }
 
             .label-container {
-                width: 53mm;
+                width: 95mm;
                 page-break-inside: avoid;
                 float: left;
                 margin-left: 2mm;
             }
 
+            .nama-toko{
+                font-size: 40pt;
+                text-align: center;
+                font-family: FreeSerif;   
+                border-width: 3px;
+                border-bottom-style: double;
+            }
             .nama-barang {
                 padding: 2px 5px;
                 /*margin-top: 3px;*/
                 text-transform: uppercase;
-                font-weight: bold;
+                /* font-weight: bold; */
                 font-family: Ubuntu;
-                height: 15px;
+                font-size: 12pt;
             }
 
             .harga-jual {
-                font-size: 20pt;
+                /* font-size: 40pt; */
                 padding: 0 5px;
                 float: right;
                 text-align: center;
@@ -76,7 +83,7 @@
             <sethtmlpagefooter name="footer" value="on" />
           mpdf-->
         <?php
-        $jumlahKarakterNamaBarang = 30;
+        $jumlahKarakterNamaBarang = 37;
 
         foreach ($barang as $labelBarang) {
             $namaBarang1 = '';
@@ -95,43 +102,45 @@
             switch ($jmlMultiHarga) {
                 case 0:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:21pt; margin-top:5px',
+                    'hargaJualCSS'       => 'font-size:40pt; margin-top:5px',
                     'multiHargaFontSize' => '',
-                    'barcodeMarginTop'   => 'margin-top:5mm',
+                    'barcodeMarginTop'   => 'margin-top:3mm',
                 ];
                     break;
                 case 1:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:20pt',
-                    'multiHargaFontSize' => 'font-size:12pt',
+                    'hargaJualCSS'       => 'font-size:30pt',
+                    'multiHargaFontSize' => 'font-size:18pt',
                     'barcodeMarginTop'   => 'margin-top:1mm',
                 ];
                     break;
                 case 2:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:18pt; margin-top:-5px',
-                    'multiHargaFontSize' => 'font-size:8pt',
+                    'hargaJualCSS'       => 'font-size:26pt; margin-top:-5px',
+                    'multiHargaFontSize' => 'font-size:13pt',
                     'barcodeMarginTop'   => 'margin-top:1mm',
                 ];
                     break;
                 case 3:
                     $customCSS = [
-                        'hargaJualCSS'      => 'font-size:14pt; margin-top:-9px',
-                        'multiHargaFontSize' => 'font-size:8pt',
+                        'hargaJualCSS'       => 'font-size:22pt; margin-top:-9px',
+                        'multiHargaFontSize' => 'font-size:10pt',
                         'barcodeMarginTop'   => 'margin-top:1mm',
                     ];
                         break;
                 default:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:12pt; margin-top:-10px',
+                    'hargaJualCSS'       => 'font-size:12pt; margin-top:-10px',
                     'multiHargaFontSize' => 'font-size:6pt',
                     'barcodeMarginTop'   => 'margin-top:0',
                 ];
                     break;
-            }
-            ?>
+            } ?>
             <div class="label-container">
                 <div class="label">
+                    <div class="nama-toko">
+                        Ahad ATK
+                    </div>
                     <div class="nama-barang">
                         <?php echo $namaBarang1; ?>
                     </div>
@@ -144,17 +153,18 @@
                                     foreach ($multiHarga as $multi) {
                                         ?>
                                 <tr>
-                                    <td class="info-harga" style="<?=$customCSS['multiHargaFontSize']?>">@ Rp. <?= number_format($multi['harga'], 0, ',', '.') ?></td>
-                                        <td width="3mm" style="<?=$customCSS['multiHargaFontSize']?>; text-align: right">/</td>
-                                        <td class="info-satuan" style="<?=$customCSS['multiHargaFontSize']?>"><?= $multi['qty'] ?> <?= $satuanBarang ?></td>
-                                    </tr>
+                                    <td style="<?=$customCSS['multiHargaFontSize']?>">Rp.</td>
+                                    <td class="info-harga" style="<?=$customCSS['multiHargaFontSize']?>"><?= number_format($multi['qty'] * $multi['harga'], 0, ',', '.') ?></td>
+                                    <td width="3mm" style="<?=$customCSS['multiHargaFontSize']?>; text-align: right">/</td>                                    
+                                    <td class="info-satuan" style="<?=$customCSS['multiHargaFontSize']?>"><?= $multi['qty'] ?> <?= $satuanBarang ?></td>
+                                </tr>
                                         <?php
                                     } ?>
                         </table>
                     </div>
                     <div class="barcode" style="<?=$customCSS['barcodeMarginTop']?>">
-                        <barcode style="margin-left: -9px;" code="<?php echo trim($labelBarang->barang->barcode); ?>" type="C128A" size="0.65" height="0.5" />
-                        <div><?php echo $labelBarang->barang->barcode; ?> <?php echo $tanggalCetak; ?></div>
+                        <barcode style="margin-left: -9px;" code="<?php echo trim($labelBarang->barang->barcode); ?>" type="C128A" size="1" height="0.75" />
+                        <div style="margin-left: 5px"><?php echo $labelBarang->barang->barcode; ?> <?php echo $tanggalCetak; ?></div>
                     </div>
                 </div>
             </div>
