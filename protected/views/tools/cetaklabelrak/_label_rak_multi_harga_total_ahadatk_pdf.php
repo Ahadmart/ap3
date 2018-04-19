@@ -33,7 +33,7 @@
             }
             .nama-barang {
                 padding: 2px 5px;
-                /*margin-top: 3px;*/
+                margin-left: 8px;
                 text-transform: uppercase;
                 /* font-weight: bold; */
                 font-family: Ubuntu;
@@ -130,8 +130,8 @@
                         break;
                 default:
                 $customCSS = [
-                    'hargaJualCSS'       => 'font-size:12pt; margin-top:-10px',
-                    'multiHargaFontSize' => 'font-size:6pt',
+                    'hargaJualCSS'       => 'font-size:19pt; margin-top:-10px',
+                    'multiHargaFontSize' => 'font-size:10pt',
                     'barcodeMarginTop'   => 'margin-top:0',
                 ];
                     break;
@@ -155,8 +155,7 @@
                                 <tr>
                                     <td style="<?=$customCSS['multiHargaFontSize']?>">Rp.</td>
                                     <td class="info-harga" style="<?=$customCSS['multiHargaFontSize']?>"><?= number_format($multi['qty'] * $multi['harga'], 0, ',', '.') ?></td>
-                                    <td width="3mm" style="<?=$customCSS['multiHargaFontSize']?>; text-align: right">/</td>                                    
-                                    <td class="info-satuan" style="<?=$customCSS['multiHargaFontSize']?>"><?= $multi['qty'] ?> <?= $satuanBarang ?></td>
+                                    <td class="info-satuan" style="<?=$customCSS['multiHargaFontSize']?>">(<?= $multi['qty'] ?> <?= $satuanBarang ?>)</td>
                                 </tr>
                                         <?php
                                     } ?>

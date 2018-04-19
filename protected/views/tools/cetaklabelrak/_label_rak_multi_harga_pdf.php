@@ -25,12 +25,13 @@
             }
 
             .nama-barang {
-                padding: 2px 5px;
+                padding: 2px 5px 0;
                 /*margin-top: 3px;*/
                 text-transform: uppercase;
-                font-weight: bold;
+                /* font-weight: bold; */
                 font-family: Ubuntu;
                 height: 15px;
+                border-bottom: 1px solid black;
             }
 
             .harga-jual {
@@ -39,6 +40,7 @@
                 float: right;
                 text-align: center;
                 margin-top: 0;
+                /* font-family: Ubuntu; */
             }
 
             .barcode,
@@ -55,15 +57,14 @@
             }
             .multi-harga-jual{
                 width: 100%;
-                /* height: 13mm; */
                 text-align: right;
+                margin-top: -1mm;
             }
             .info-harga, .info-satuan{
                 text-align: right;
-                font-size: 10pt;
             }
-            .info-satuan{
-                /* width: 12mm; */
+            small{
+                font-size: 50%;
             }
         </style>
     </head>
@@ -95,59 +96,85 @@
             switch ($jmlMultiHarga) {
                 case 0:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:21pt; margin-top:5px',
+                    'hargaJualCSS'       => 'font-size:25pt; margin-top:3mm',
                     'multiHargaFontSize' => '',
-                    'barcodeMarginTop'   => 'margin-top:5mm',
+                    'barcodeMarginTop'   => 'margin-top:5px',
                 ];
                     break;
                 case 1:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:20pt',
-                    'multiHargaFontSize' => 'font-size:12pt',
-                    'barcodeMarginTop'   => 'margin-top:1mm',
+                    'multiHjContainer'        => 'margin-top: 0;',
+                    'hargaJualCSS'            => 'font-size:17pt;',
+                    'hargaJualCSSsmall'       => 'font-size:10pt;',
+                    'multiHargaFontSize'      => 'font-size:17pt',
+                    'multiHargaFontSizesmall' => 'font-size:10pt',
+                    'barcodeMarginTop'        => 'margin-top:1mm',
                 ];
                     break;
                 case 2:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:18pt; margin-top:-5px',
-                    'multiHargaFontSize' => 'font-size:8pt',
-                    'barcodeMarginTop'   => 'margin-top:1mm',
+                    'hargaJualCSS'            => 'font-size:15pt;',
+                    'hargaJualCSSsmall'       => 'font-size:10pt;',
+                    'multiHargaFontSize'      => 'font-size:10pt',
+                    'multiHargaFontSizesmall' => 'font-size:8pt',
+                    'barcodeMarginTop'        => 'margin-top:1mm',
                 ];
                     break;
                 case 3:
                     $customCSS = [
-                        'hargaJualCSS'      => 'font-size:14pt; margin-top:-9px',
-                        'multiHargaFontSize' => 'font-size:8pt',
-                        'barcodeMarginTop'   => 'margin-top:1mm',
+                        'hargaJualCSS'            => 'font-size:12pt; margin-top:-1mm',
+                        'hargaJualCSSsmall'       => 'font-size:10pt;',
+                        'multiHargaFontSize'      => 'font-size:9pt',
+                        'multiHargaFontSizesmall' => 'font-size:6pt',
+                        'barcodeMarginTop'        => 'margin-top:0',
                     ];
                         break;
                 default:
                 $customCSS = [
-                    'hargaJualCSS'      => 'font-size:12pt; margin-top:-10px',
-                    'multiHargaFontSize' => 'font-size:6pt',
-                    'barcodeMarginTop'   => 'margin-top:0',
+                    'hargaJualCSS'            => 'font-size:11pt; margin-top:-1mm',
+                    'hargaJualCSSsmall'       => 'font-size:9pt;',
+                    'multiHargaFontSize'      => 'font-size:7pt',
+                    'multiHargaFontSizesmall' => 'font-size:5pt',
+                    'barcodeMarginTop'        => 'margin-top:1',
                 ];
                     break;
-            }
-            ?>
+            } ?>
             <div class="label-container">
                 <div class="label">
                     <div class="nama-barang">
                         <?php echo $namaBarang1; ?>
                     </div>
-                    <div class="harga-jual" style="<?=$customCSS['hargaJualCSS']?>"><small>Rp.</small>
-                        <?php echo $labelBarang->barang->hargaJual; ?>
+                    <?php 
+                    if ($jmlMultiHarga != 1) {
+                        ?>
+                    <div class="harga-jual" style="<?=$customCSS['hargaJualCSS']?>">
+                        <small>Rp.</small> <?= $labelBarang->barang->hargaJual ?>
                     </div>
-                    <div class="multi-harga-jual">
-                        <table align="center" style="border-collapse: collapse">
+                    <?php
+                    } ?>
+                    <div class="multi-harga-jual" style="<?=$customCSS['multiHjContainer']?>">
+                        <table align="<?= $jmlMultiHarga == 1 ? 'right' : 'center' ?>" style="border-collapse: collapse; margin-right: 2mm">
+                            <?php
+                            if ($jmlMultiHarga == 1) {
+                                ?>
+                                <tr>
+                                    <td></td>
+                                    <td style="<?=$customCSS['hargaJualCSSsmall']?>">Rp.</td>
+                                    <td class="info-harga" style="<?=$customCSS['hargaJualCSS']?>"><?= $labelBarang->barang->hargaJual ?></td>
+                                    <td></td>                                 
+                                    <td></td>                                 
+                                </tr>
+                                <?php
+                            } ?>
                             <?php
                                     foreach ($multiHarga as $multi) {
                                         ?>
                                 <tr>
-                                    <td class="info-harga" style="<?=$customCSS['multiHargaFontSize']?>">@ Rp. <?= number_format($multi['harga'], 0, ',', '.') ?></td>
-                                        <td width="3mm" style="<?=$customCSS['multiHargaFontSize']?>; text-align: right">/</td>
-                                        <td class="info-satuan" style="<?=$customCSS['multiHargaFontSize']?>"><?= $multi['qty'] ?> <?= $satuanBarang ?></td>
-                                    </tr>
+                                    <td style="<?=$customCSS['multiHargaFontSizesmall']?>">@</td>
+                                    <td style="<?=$customCSS['multiHargaFontSizesmall']?>">Rp.</td>
+                                    <td class="info-harga" style="<?=$customCSS['multiHargaFontSize']?>"><?= number_format($multi['harga'], 0, ',', '.') ?></td>                                   
+                                    <td class="info-satuan" style="<?=$customCSS['multiHargaFontSizesmall']?>">(<?= $multi['qty'] ?> <?= $satuanBarang ?>)</td>
+                                </tr>
                                         <?php
                                     } ?>
                         </table>
