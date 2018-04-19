@@ -14,7 +14,7 @@ class CetakLabelRakLayoutForm extends CFormModel
     const LAYOUT_DEFAULT_33                = 11;
     const LAYOUT_MULTI_HARGA               = 20;
     const LAYOUT_MULTI_HARGA_TOTAL         = 21;
-    const LAYOUT_MULTI_HARGA_TOTAL_AHADATK = 22;
+    const LAYOUT_MULTI_HARGA_TOTAL_BIG     = 22;
     const LAYOUT_AHAD_WARNA                = 30;
     /* ===================== */
     const KERTAS_LETTER           = 10;
@@ -59,22 +59,22 @@ class CetakLabelRakLayoutForm extends CFormModel
     public static function listLayout()
     {
         return [
-            self::LAYOUT_DEFAULT_3                 => 'Default, Tinggi 3cm',
-            self::LAYOUT_MULTI_HARGA               => 'Multi Harga @ (Tinggi 3cm)',
-            self::LAYOUT_MULTI_HARGA_TOTAL         => 'Multi Harga Total (Tinggi 3cm)',
-            self::LAYOUT_MULTI_HARGA_TOTAL_AHADATK => 'Multi Harga Total Ahad ATK (9,5cm x 6,5cm)',
-            self::LAYOUT_AHAD_WARNA                => 'Ahadmart Warna (Tinggi 3cm)'
+            self::LAYOUT_DEFAULT_3             => 'Default, Tinggi 3cm',
+            self::LAYOUT_MULTI_HARGA           => 'Multi Harga @ (Tinggi 3cm)',
+            self::LAYOUT_MULTI_HARGA_TOTAL     => 'Multi Harga Total (Tinggi 3cm)',
+            self::LAYOUT_MULTI_HARGA_TOTAL_BIG => 'Multi Harga Total (9,5cm x 6,5cm)',
+            self::LAYOUT_AHAD_WARNA            => 'Ahadmart Warna (Tinggi 3cm)'
         ];
     }
 
     public static function listView()
     {
         return [
-            self::LAYOUT_DEFAULT_3                 => '_label_rak_default_3_pdf',
-            self::LAYOUT_MULTI_HARGA               => '_label_rak_multi_harga_pdf',
-            self::LAYOUT_MULTI_HARGA_TOTAL         => '_label_rak_multi_harga_total_pdf',
-            self::LAYOUT_MULTI_HARGA_TOTAL_AHADATK => '_label_rak_multi_harga_total_ahadatk_pdf',
-            self::LAYOUT_AHAD_WARNA                => '_label_rak_ahad_warna_pdf'
+            self::LAYOUT_DEFAULT_3             => '_label_rak_default_3_pdf',
+            self::LAYOUT_MULTI_HARGA           => '_label_rak_multi_harga_pdf',
+            self::LAYOUT_MULTI_HARGA_TOTAL     => '_label_rak_multi_harga_total_pdf',
+            self::LAYOUT_MULTI_HARGA_TOTAL_BIG => '_label_rak_multi_harga_total_big_pdf',
+            self::LAYOUT_AHAD_WARNA            => '_label_rak_ahad_warna_pdf'
         ];
     }
 

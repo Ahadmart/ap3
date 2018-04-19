@@ -25,11 +25,12 @@
             }
 
             .nama-toko{
-                font-size: 40pt;
+                font-size: 19pt;
                 text-align: center;
                 font-family: FreeSerif;   
                 border-width: 3px;
                 border-bottom-style: double;
+                height: 20mm;
             }
             .nama-barang {
                 padding: 2px 5px;
@@ -138,8 +139,31 @@
             } ?>
             <div class="label-container">
                 <div class="label">
-                    <div class="nama-toko">
-                        Ahad ATK
+                    <?php
+                        $namaTokoStyle = '';
+                        $namaTokoSeg1 = '';
+                        $namaTokoSeg2 = '';
+                        if (strlen($namaToko)<=10){
+                            $namaTokoStyle .= 'font-size:40pt;';
+                        } else if (strlen($namaToko)<=15){
+                            $namaTokoStyle .= 'font-size:27pt; padding: 3mm 0 -3mm; overflow: hidden';
+                        }
+                        if (strlen($namaToko)>15){
+                            $namaTokoArr = explode(' ', $namaToko);
+                            $len = 0;
+                            foreach ($namaTokoArr as $namTok) {
+                                $len += strlen($namTok);
+                                if ($len <= 15) {
+                                    $namaTokoSeg1 .= $namTok . ' ';
+                                    $len++;
+                                } else {
+                                    $namaTokoSeg2 .= $namTok . ' ';
+                                }
+                            }
+                        }
+                    ?>
+                    <div class="nama-toko" style="<?= $namaTokoStyle ?>">
+                        <?= !empty($namaTokoSeg1) ? $namaTokoSeg1.'<br />'.$namaTokoSeg2 : $namaToko ?>
                     </div>
                     <div class="nama-barang">
                         <?php echo $namaBarang1; ?>
