@@ -124,8 +124,13 @@ class User extends CActiveRecord
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by);
 
+        $sort = [
+            'defaultOrder' => 't.nama'
+        ];
+
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
+            'sort' => $sort
         ));
     }
 

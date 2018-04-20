@@ -57,7 +57,7 @@ class KasirController extends Controller
                 $this->redirect('index');
         }
 
-        $listKasir = CHtml::listData(User::model()->findAll(), 'id', 'nama_lengkap');
+        $listKasir = CHtml::listData(User::model()->findAll(['order'=>'nama_lengkap']), 'id', 'nama_lengkap');
         $listPosClient = CHtml::listData(Device::model()->findAll('tipe_id=' . Device::TIPE_POS_CLIENT), 'id', 'nama');
 
         $this->render('buka', array(
