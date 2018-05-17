@@ -2,14 +2,12 @@
 
 class BarangController extends Controller
 {
-
     /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id)
     {
-
         $model = $this->loadModel($id);
         //$supplierBarang = SupplierBarang::model()->findAll('barang_id=' . $id);
 
@@ -27,25 +25,28 @@ class BarangController extends Controller
         $hargaJual->unsetAttributes();
         $hargaJual->setAttribute('barang_id', '=' . $id);
 
-        $rrp = new HargaJualRekomendasi('search');
-        $rrp->unsetAttributes();
-        $rrp->setAttribute('barang_id', '=' . $id);
+        // $rrp = new HargaJualRekomendasi('search');
+        // $rrp->unsetAttributes();
+        // $rrp->setAttribute('barang_id', '=' . $id);
+
+        $hjMultiList = HargaJualMulti::listAktif($id);
 
         $currentTags = $model->tagList;
-        $curTags = [];
+        $curTags     = [];
         foreach ($currentTags as $curTag) {
             //print_r($curTag->tag->id);
             $curTags[] = $curTag->tag->nama;
         }
 
-        $this->render('view', array(
-            'model' => $model,
-            'supplierBarang' => $supplierBarang,
+        $this->render('view', [
+            'model'            => $model,
+            'supplierBarang'   => $supplierBarang,
             'inventoryBalance' => $inventoryBalance,
-            'hargaJual' => $hargaJual,
-            'rrp' => $rrp,
-            'curTags' => $curTags
-        ));
+            'hargaJual'        => $hargaJual,
+            // 'rrp' => $rrp,
+            'hjMultiList'    => $hjMultiList,
+            'curTags'        => $curTags
+        ]);
     }
 
     /**
@@ -55,20 +56,21 @@ class BarangController extends Controller
     public function actionTambah()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new Barang;
+        $model        = new Barang;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
         if (isset($_POST['Barang'])) {
             $model->attributes = $_POST['Barang'];
-            if ($model->save())
-                $this->redirect(array('view', 'id' => $model->id));
+            if ($model->save()) {
+                $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
-        $this->render('tambah', array(
+        $this->render('tambah', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -90,39 +92,51 @@ class BarangController extends Controller
         $hargaJual->unsetAttributes();
         $hargaJual->setAttribute('barang_id', '=' . $id);
 
-        $rrp = new HargaJualRekomendasi('search');
-        $rrp->unsetAttributes();
-        $rrp->setAttribute('barang_id', '=' . $id);
+        // $rrp = new HargaJualRekomendasi('search');
+        // $rrp->unsetAttributes();
+        // $rrp->setAttribute('barang_id', '=' . $id);
+
+        $hargaJualMulti = new HargaJualMulti('search');
+        $hargaJualMulti->unsetAttributes();
+        $hargaJualMulti->setAttribute('barang_id', $id);
+
+        $hjMultiModel = new HargaJualMulti;
+
+        $hjMultiList = HargaJualMulti::listAktif($id);
 
         if (isset($_POST['Barang'])) {
             $model->attributes = $_POST['Barang'];
-            if ($model->save())
-                $this->redirect(array('view', 'id' => $id));
+            if ($model->save()) {
+                $this->redirect(['view', 'id' => $id]);
+            }
         }
 
         $currentTags = $model->tagList;
-        $curTags = [];
+        $curTags     = [];
         foreach ($currentTags as $curTag) {
             //print_r($curTag->tag->id);
             $curTags[] = $curTag->tag_id;
         }
 
-        $this->render('ubah', array(
-            'model' => $model,
-            'supplierBarang' => $supplierBarang,
+        $this->render('ubah', [
+            'model'             => $model,
+            'supplierBarang'    => $supplierBarang,
             'listBukanSupplier' => $this->_listBukanSupplier($id),
-            'hargaJual' => $hargaJual,
-            'rrp' => $rrp,
-            'curTags' => $curTags
-        ));
+            'hargaJual'         => $hargaJual,
+            // 'rrp' => $rrp,
+            'curTags'      => $curTags,
+            'hjMultiModel' => $hjMultiModel,
+            'hjMulti'      => $hargaJualMulti,
+            'hjMultiList'  => $hjMultiList,
+        ]);
     }
 
     public function actionTambahSupplier($id)
     {
         if (isset($_POST['supplier_id'])) {
-            $supplierId = $_POST['supplier_id'];
-            $model = new SupplierBarang;
-            $model->barang_id = $id;
+            $supplierId         = $_POST['supplier_id'];
+            $model              = new SupplierBarang;
+            $model->barang_id   = $id;
             $model->supplier_id = $supplierId;
             if ($model->save()) {
                 echo 'berhasil';
@@ -134,9 +148,9 @@ class BarangController extends Controller
 
     public function actionListBukanSupplier($id)
     {
-        $this->renderPartial('_supplier_opt', array(
+        $this->renderPartial('_supplier_opt', [
             'listBukanSupplier' => $this->_listBukanSupplier($id)
-        ));
+        ]);
     }
 
     public function _listBukanSupplier($id)
@@ -166,8 +180,9 @@ class BarangController extends Controller
         $this->loadModel($id)->delete();
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        if (!isset($_GET['ajax'])) {
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
+        }
     }
 
     /**
@@ -178,26 +193,28 @@ class BarangController extends Controller
         $model = new Barang('search');
         $model->unsetAttributes();  // clear any default values
       $model->setAttribute('status', Barang::STATUS_AKTIF); // default yang tampil
-        if (isset($_GET['Barang']))
+        if (isset($_GET['Barang'])) {
             $model->attributes = $_GET['Barang'];
+        }
 
-        $this->render('index', array(
+        $this->render('index', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
      * Returns the data model based on the primary key given in the GET variable.
      * If the data model is not found, an HTTP exception will be raised.
-     * @param integer $id the ID of the model to be loaded
-     * @return Barang the loaded model
+     * @param  integer        $id the ID of the model to be loaded
+     * @return Barang         the loaded model
      * @throws CHttpException
      */
     public function loadModel($id)
     {
         $model = Barang::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
         return $model;
     }
 
@@ -236,10 +253,10 @@ class BarangController extends Controller
     public function renderInventoryDocumentLinkToView($data)
     {
         $inventoryBalance = InventoryBalance::model()->findByPk($data->id);
-        $namaController = $inventoryBalance->namaAsalController();
-        $model = $inventoryBalance->modelAsal();
+        $namaController   = $inventoryBalance->namaAsalController();
+        $model            = $inventoryBalance->modelAsal();
         return '<a href="' .
-                $this->createUrl("{$namaController}/view", array('id' => $model->id)) . '">' .
+                $this->createUrl("{$namaController}/view", ['id' => $model->id]) . '">' .
                 $data->nomor_dokumen . '</a>';
     }
 
@@ -248,7 +265,7 @@ class BarangController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-                    $this->createUrl('view', array('id' => $data->id)) . '">' .
+                    $this->createUrl('view', ['id' => $data->id]) . '">' .
                     $data->nama . '</a>';
         }
         return $return;
@@ -261,4 +278,21 @@ class BarangController extends Controller
         //print_r(TagBarang::model()->findAll('barang_id=:barangId',[':barangId'=>$id]));
     }
 
+    public function actionUpdateHargaJualMulti($id)
+    {
+        $barangId   = $id;
+        $attributes = $_POST['HargaJualMulti'];
+        if (HargaJualMulti::updateHargaTrx($barangId, $attributes)) {
+            echo 'Sukses';
+        } else {
+            echo 'Fail';
+        }
+    }
+
+    public function actionListHargaJualMulti($id)
+    {
+        $hjMultiList = HargaJualMulti::listAktif($id);
+        $this->renderPartial('_harga_jual_multi_aktif', ['hjMultiList' => $hjMultiList]);
+        Yii::app()->end();
+    }
 }

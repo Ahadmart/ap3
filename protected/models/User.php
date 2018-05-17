@@ -124,8 +124,13 @@ class User extends CActiveRecord
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by);
 
+        $sort = [
+            'defaultOrder' => 't.nama'
+        ];
+
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
+            'sort' => $sort
         ));
     }
 
@@ -147,9 +152,8 @@ class User extends CActiveRecord
             $this->created_at = date('Y-m-d H:i:s');
         }
         if (!empty($this->newPassword)) {
-            $salt = $this->generateSalt(); // Ini tidak dipakai. Suatu saat akan dihapus
-            $this->password = base64_encode($this->hashPassword($this->newPassword, $salt));
-            $this->salt = base64_encode($salt);
+            $this->password = base64_encode($this->hashPassword($this->newPassword));
+            $this->salt = '';
         }
         $this->updated_at = date("Y-m-d H:i:s");
         $this->updated_by = Yii::app()->user->id;
@@ -168,19 +172,13 @@ class User extends CActiveRecord
         return password_verify($password, base64_decode($this->password));
     }
 
-    public function hashPassword($password, $salt)
+    public function hashPassword($password)
     {
         $options = array(
             'cost' => $this->findCost(),
-                //'salt' => $salt,
         );
 
         return password_hash($password, PASSWORD_BCRYPT, $options);
-    }
-
-    public function generateSalt()
-    {
-        return mcrypt_create_iv(22, MCRYPT_DEV_URANDOM);
     }
 
     public function findCost()

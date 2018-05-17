@@ -115,6 +115,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         $("#satuan").text(info['satuan']);
         $("#qty").val('');
         $("#subtotal").val('');
+        <?php // Harga Jual Multi: ?>
+        $("#HargaJualMulti_satuan_id").val('');
+        $("#HargaJualMulti_qty").val('');
+        $("#HargaJualMulti_harga").val('');
+        $('#hj-aktif').load('<?= Yii::app()->createUrl('barang/listhargajualmulti', ['id'=>'']) ?>'+$("#barang-id").val());
+        <?php // :Harga Jual Multi ?>
         $("#input-pemb-detail").slideDown(500);
         $("#qty").focus();
         $("#harga-jual-raw").html('&nbsp;');
@@ -363,7 +369,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 <?php echo CHtml::label('<u><b>J</b></u>umlah yang dibeli', 'qty') ?>
                 <div class="row collapse">
                     <div class="small-9 columns">
-                        <?php echo CHtml::textField('qty', '', array('accesskey' => 'j', 'autocomplete' => 'off')); ?>
+                        <?php echo CHtml::textField('qty', '', array('accesskey' => 'j', 'autocomplete' => 'off', 'class'=>'i-pembelian')); ?>
                     </div>
                     <div class="small-3 columns">
                         <span class="postfix"><b><span id="satuan"></span></b></span>
@@ -375,7 +381,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                         <span class="prefix"><b>Rp.</b></span>
                     </div>
                     <div class="small-9 columns">
-                        <?php echo CHtml::textField('subtotal', ''); ?>
+                        <?php echo CHtml::textField('subtotal', '', ['class'=>'i-pembelian']); ?>
                     </div>
                 </div>
             </div>
@@ -383,7 +389,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 <?php echo CHtml::label('PPN', 'ppn') ?>
                 <div class="row collapse">
                     <div class="small-9 columns">
-                        <?php echo CHtml::textField('ppn', ''); ?>
+                        <?php echo CHtml::textField('ppn', '', ['class'=>'i-pembelian']); ?>
                     </div>
                     <div class="small-3 columns">
                         <span class="postfix"><b>%</b></span>
@@ -392,7 +398,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 <?php echo CHtml::label('Profit', 'profit') ?>
                 <div class="row collapse">
                     <div class="small-9 columns">
-                        <?php echo CHtml::textField('profit', ''); ?>
+                        <?php echo CHtml::textField('profit', '', ['class'=>'i-pembelian']); ?>
                     </div>
                     <div class="small-3 columns">
                         <span class="postfix"><b>%</b></span>
@@ -403,7 +409,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 <?php echo CHtml::label('Diskon', 'diskonp') ?>
                 <div class="row collapse">
                     <div class="small-9 columns">
-                        <?php echo CHtml::textField('diskonp', ''); ?>
+                        <?php echo CHtml::textField('diskonp', '', ['class'=>'i-pembelian']); ?>
                     </div>
                     <div class="small-3 columns">
                         <span class="postfix"><b>%</b></span>
@@ -417,7 +423,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                         <span class="prefix"><b>Rp.</b></span>
                     </div>
                     <div class="small-9 columns">
-                        <?php echo CHtml::textField('diskonr', ''); ?>
+                        <?php echo CHtml::textField('diskonr', '', ['class'=>'i-pembelian']); ?>
                     </div>
                 </div>
             </div>
@@ -430,11 +436,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         <div class="row">
             <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Harga Beli', 'hargabeli', array('id' => 'label-harga-beli')) ?>
-                <?php echo CHtml::textField('hargabeli', '', array('id' => 'harga-beli', 'autocomplete' => 'off')); ?>
+                <?php echo CHtml::textField('hargabeli', '', array('id' => 'harga-beli', 'autocomplete' => 'off', 'class'=>'i-pembelian')); ?>
             </div>
             <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Harga Jual', 'hargajual', array('id' => 'label-harga-jual')) ?>
-                <?php echo CHtml::textField('hargajual', '', array('id' => 'harga-jual', 'style' => 'margin-bottom:0', 'autocomplete' => 'off')); ?>
+                <?php echo CHtml::textField('hargajual', '', array('id' => 'harga-jual', 'style' => 'margin-bottom:0', 'autocomplete' => 'off', 'class'=>'i-pembelian')); ?>
                 <?php echo CHtml::label('test', '', ['id' => 'harga-jual-raw']); ?>
             </div>
 <!--            <div class="medium-6 large-4 columns">
@@ -443,7 +449,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             </div>-->
             <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Tanggal Expire', 'tanggal_kadaluwarsa') ?>
-                <?php echo CHtml::textField('tanggal_kadaluwarsa', '', array('placeholder' => 'yyyy-mm-dd')); ?>
+                <?php echo CHtml::textField('tanggal_kadaluwarsa', '', array('placeholder' => 'yyyy-mm-dd', 'class'=>'i-pembelian')); ?>
             </div>
         </div>
         <div class="row">
@@ -468,6 +474,28 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 <a class="tiny bigfont button" id="tombol-batal" href="#" accesskey="l" onclick="$('#input-pemb-detail').slideUp(500);">Bata<span class="ak">l</span></a>
             </div>
         </div>
-    </div>
     <?php $this->endWidget(); ?>
+        <hr />
+        <div class="row">
+            <h5><small>update</small> Multi Harga Jual</h5>
+            <div class="span-12 columns">
+            <?php
+            $this->renderPartial('_input_harga_jual_multi');
+            ?>
+            </div>
+            <div class="span-12 columns" id="hj-aktif">
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+    $(document).on("keypress", "#pembelian-form", function(event) { 
+        return event.keyCode != 13;
+    });
+
+    $(".i-pembelian").keyup(function(e) {
+        if (e.keyCode === 13) {
+            $("#tombol-tambah").click();
+        }
+    });
+</script>

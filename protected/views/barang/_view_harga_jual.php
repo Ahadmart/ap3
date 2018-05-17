@@ -1,4 +1,4 @@
-<h4><small>Harga</small> Jual</h4>
+<h4>Harga <small>Jual</small></h4>
 <hr />
 <?php
 $this->widget('BGridView', array(
