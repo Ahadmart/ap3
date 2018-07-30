@@ -109,7 +109,10 @@ class ReturpenjualanController extends Controller
 
         $barang = new Barang('search');
         $barang->unsetAttributes();
+        $barang->setAttribute('id', '0');
+        
         if (isset($_GET['cariBarang'])) {
+            $barang->unsetAttributes(['id']);
             $barang->setAttribute('nama', $_GET['namaBarang']);
         }
 
@@ -118,7 +121,9 @@ class ReturpenjualanController extends Controller
          */
         $penjualanDetail = new PenjualanDetail('search');
         $penjualanDetail->unsetAttributes();
+        $penjualanDetail->setAttribute('id', '0');
         if (isset($_GET['PenjualanDetail'])) {
+            $penjualanDetail->unsetAttributes(['id']);
             $penjualanDetail->attributes = $_GET['PenjualanDetail'];
         }
         if (isset($_GET['pilih'])) {
