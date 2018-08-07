@@ -267,6 +267,7 @@ class DiskonBarang extends CActiveRecord
         /* Fixme: Pindahkan cek validasi di bawah ini ke tempat yang seharusnya */
         switch ($this->tipe_diskon_id) {
             case self::TIPE_PROMO:
+                $this->semua_barang = 0; // Belum bisa untuk semua barang
                 if (empty($this->qty_max)) {
                     return false;
                 }
