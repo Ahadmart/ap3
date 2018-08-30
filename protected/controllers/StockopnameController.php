@@ -311,8 +311,7 @@ class StockopnameController extends Controller
             $ak = 'accesskey="q"';
         }
         return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
-                Yii::app()->controller->createUrl('inputqtymanual') . '">' .
-                'Input..' . '</a>';
+                Yii::app()->controller->createUrl('inputqtymanual') . '"></a>';
     }
 
     /**

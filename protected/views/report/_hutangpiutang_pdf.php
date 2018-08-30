@@ -101,13 +101,25 @@ function namaHari($timeStamp)
                      * untuk ditampilkan
                      */
                     if ($baris['asal'] == HutangPiutang::DARI_PEMBELIAN) {
-                        $pembelian = Pembelian::model()->find("hutang_piutang_id={$baris['id']}");
+                        $noRef = Pembelian::model()->find("hutang_piutang_id={$baris['id']}")->referensi;
+                    }
+                    if ($baris['asal'] == HutangPiutang::DARI_RETUR_JUAL){
+                        $noRef = ReturPenjualan::model()->find("hutang_piutang_id={$baris['id']}")->referensi;
                     }
                     ?>
                     <tr class="<?php echo $i % 2 === 0 ? '' : 'alt'; ?>">
                         <td class="rata-kanan"><?= $i; ?></td>
                         <td><?= date_format(date_create_from_format('Y-m-d H:i:s', $baris['created_at']), 'd-m-Y H:i:s'); ?></td>
-                        <td><?= $listAsalHP[$baris['asal']] . ': ' . $baris['nomor_dokumen_asal'] . ' | R: ' . $pembelian->referensi; ?></td>
+                        <td>
+                        <?= $listAsalHP[$baris['asal']] . ': ' . $baris['nomor_dokumen_asal'] ?>
+                        <?php
+                        if (!is_null($noRef)){
+                            ?>
+                            | R: <?= $noRef ?>
+                            <?php
+                        }
+                        ?>
+                        </td>
                         <td class="rata-kanan"><?= number_format($baris['jumlah'], 0, ',', '.'); ?></td>
                         <td class="rata-kanan"><?= number_format($baris['jumlah_bayar'], 0, ',', '.'); ?></td>
                         <td class="rata-kanan"><?= number_format($baris['jumlah'] - $baris['jumlah_bayar'], 0, ',', '.'); ?></td>

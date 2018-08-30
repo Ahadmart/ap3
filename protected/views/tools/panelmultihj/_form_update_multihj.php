@@ -51,7 +51,7 @@ $form = $this->beginWidget('CActiveForm', [
 
     $("#tombol-update-hj-multi").click(function () {
         var dataKirim = $("#harga-jual-multi-form").serialize();
-        var dataUrl = '<?= Yii::app()->createUrl('barang/updatehargajualmulti ', ['id' => $barang->id]) ?>';
+        var dataUrl = '<?= Yii::app()->createUrl('barang/updatehargajualmulti', ['id' => $barang->id]) ?>';
         console.log(dataKirim);
         $.ajax({
             type: 'POST',

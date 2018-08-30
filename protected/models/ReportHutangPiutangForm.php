@@ -203,7 +203,7 @@ class ReportHutangPiutangForm extends CFormModel
 
     public function reportHutangPiutangCsv()
     {
-        $csv = '"jenis","nomor_hp","tgl","asal_dokumen","asal_nomor","jumlah","bayar","sisa"' . PHP_EOL;
+        $csv = '"jenis","nomor_hp","tgl","asal_dokumen","asal_nomor","no_ref","jumlah","bayar","sisa"' . PHP_EOL;
 
         $pilihHutang = false;
         $pilihPiutang = false;
@@ -268,12 +268,21 @@ class ReportHutangPiutangForm extends CFormModel
                 $dataHutang = $command->queryAll();
                 foreach ($dataHutang as $data) {
                     $sisa = $data['jumlah'] - $data['jumlah_bayar'];
+                    if ($data['asal'] == HutangPiutang::DARI_PEMBELIAN) {
+                        $dokAsal = Pembelian::model()->find("hutang_piutang_id={$data['id']}");
+                        $ref = $dokAsal->referensi;
+                    }
+                    if ($data['asal'] == HutangPiutang::DARI_RETUR_JUAL) {
+                        $dokAsal = ReturPenjualan::model()->find("hutang_piutang_id={$data['id']}");
+                        $ref = $dokAsal->referensi;
+                    }
                     $csv .=
                             "\"hutang\","
                             . "\"{$data['nomor']}\","
                             . "\"{$data['created_at']}\","
                             . "\"{$listAsalHP[$data['asal']]}\","
                             . "\"{$data['nomor_dokumen_asal']}\","
+                            . "\"{$ref}\","
                             . "\"{$data['jumlah']}\","
                             . "\"{$data['jumlah_bayar']}\","
                             . "\"" . $sisa . "\","
@@ -293,12 +302,20 @@ class ReportHutangPiutangForm extends CFormModel
                 $dataPiutang = $command->queryAll();
                 foreach ($dataPiutang as $data) {
                     $sisa = $data['jumlah'] - $data['jumlah_bayar'];
+                    if ($data['asal'] == HutangPiutang::DARI_PENJUALAN) {
+                        $dokAsal = Penjualan::model()->find("hutang_piutang_id={$data['id']}");
+                        $ref = $dokAsal->referensi;
+                    }
+                    if ($data['asal'] == HutangPiutang::DARI_RETUR_BELI) {
+                        $ref = '';
+                    }
                     $csv .=
                             "\"piutang\","
                             . "\"{$data['nomor']}\","
                             . "\"{$data['created_at']}\","
                             . "\"{$listAsalHP[$data['asal']]}\","
                             . "\"{$data['nomor_dokumen_asal']}\","
+                            . "\"{$ref}\","
                             . "\"{$data['jumlah']}\","
                             . "\"{$data['jumlah_bayar']}\","
                             . "\"" . $sisa . "\","

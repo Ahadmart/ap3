@@ -2,8 +2,10 @@
 
 class PoController extends Controller
 {
+
     const PROFIL_ALL      = 0;
     const PROFIL_SUPPLIER = Profil::TIPE_SUPPLIER;
+
     /* ============== */
 
     /**
@@ -74,15 +76,14 @@ class PoController extends Controller
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
-
         // Jika PO sudah disimpan (status bukan draft) maka tidak bisa diubah lagi
         if ($model->status != Po::STATUS_DRAFT) {
             $this->redirect(['view', 'id' => $id]);
         }
 
         /*  Mode untuk input item barang,
-            bisa manual, atau bisa lewat analisa PLS (Potensi Lost Sales) terlebih dahulu
-        */
+          bisa manual, atau bisa lewat analisa PLS (Potensi Lost Sales) terlebih dahulu
+         */
         $modeManual = true;
         if (isset($_GET['modepls']) && $_GET['modepls']) {
             $modeManual = false;
@@ -107,7 +108,7 @@ class PoController extends Controller
         }
 
         // Untuk menampilkan daftar barang, pada pencarian tabel
-        $barangList = new Barang('search');
+        $barangList         = new Barang('search');
         $barangList->unsetAttributes();
         $barangList->aktif();
         $barangList->setAttribute('nama', '=" "'); // Init data: agar barang tidak tampil
@@ -123,7 +124,7 @@ class PoController extends Controller
             }
         }
 
-        $PODetail = new PoDetail('search');
+        $PODetail         = new PoDetail('search');
         $PODetail->unsetAttributes();
         $PODetail->setAttribute('po_id', '=' . $id);
         $PODetail->status = PoDetail::STATUS_ORDER;
@@ -142,7 +143,7 @@ class PoController extends Controller
 
         $modelReportPls = new ReportPlsForm;
 
-        $PLSDetail = new PoDetail('search');
+        $PLSDetail         = new PoDetail('search');
         $PLSDetail->unsetAttributes();
         $PLSDetail->setAttribute('po_id', '=' . $id);
         $PLSDetail->status = PoDetail::STATUS_DRAFT;
@@ -152,7 +153,13 @@ class PoController extends Controller
 
         $pageSize = 20;
         if (isset($_GET['pageSize'])) {
-            $pageSize = (int)$_GET['pageSize'];
+            $pageSize = (int) $_GET['pageSize'];
+        }
+
+        $scanBarcode = null;
+        /* Ada scan dari aplikasi barcode scanner (android) */
+        if (isset($_GET['barcodescan'])) {
+            $scanBarcode = $_GET['barcodescan'];
         }
 
         $this->render('ubah', [
@@ -169,6 +176,7 @@ class PoController extends Controller
             'modelReportPls' => $modelReportPls,
             'plsDetail'      => $PLSDetail,
             'pageSize'       => $pageSize,
+            'scanBarcode'    => $scanBarcode
         ]);
     }
 
@@ -181,7 +189,7 @@ class PoController extends Controller
     {
         $model = $this->loadModel($id);
         if ($model->status == Po::STATUS_DRAFT) {
-            PoDetail::model()->deleteAll('po_id=:poId', [':poId'=>$id]);
+            PoDetail::model()->deleteAll('po_id=:poId', [':poId' => $id]);
             $model->delete();
         }
 
@@ -246,8 +254,8 @@ class PoController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('view', ['id' => $data->id]) . '">' .
-            $data->nomor . '</a>';
+                    $this->createUrl('view', ['id' => $data->id]) . '">' .
+                    $data->nomor . '</a>';
         }
         return $return;
     }
@@ -261,8 +269,8 @@ class PoController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
-            $data->tanggal . '</a>';
+                    $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
+                    $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -309,14 +317,14 @@ class PoController extends Controller
 
         $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
             ':filterPerSupplier' => 'po.filterpersupplier'
-            ]);
+        ]);
 
         if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
             $po          = Po::model()->findByPk($id);
             $cekSupplier = SupplierBarang::model()->find('barang_id=:barangId AND supplier_id=:supplierId', [
-                    ':barangId'   => $barangId,
-                    ':supplierId' => $po->profil_id
-                    ]);
+                ':barangId'   => $barangId,
+                ':supplierId' => $po->profil_id
+            ]);
 
             if (!is_null($cekSupplier)) {
                 $barang = Pembelian::model()->ambilDataBarang($barangId);
@@ -331,17 +339,17 @@ class PoController extends Controller
                     'satuan'         => $barang['satuan'],
                 ];
                 $this->renderJSON([
-                    'sukses'=> true,
-                    'info'  => $arr
+                    'sukses' => true,
+                    'info'   => $arr
                 ]);
             } elseif (is_null($cekSupplier)) {
                 $this->renderJSON([
-                    'sukses'=> false,
-                    'error' => [
-                        'code'=> 500,
-                        'msg' => 'Barang "' . $barang->nama . '" (' . $barang->barcode . ') tidak ditemukan di profil ini'
+                    'sukses' => false,
+                    'error'  => [
+                        'code' => 500,
+                        'msg'  => 'Barang "' . $barang->nama . '" (' . $barang->barcode . ') tidak ditemukan di profil ini'
                     ]
-                    ]);
+                ]);
             }
         } elseif ($configFilterPerSup->nilai == 0) {
             $barang = Pembelian::model()->ambilDataBarang($barangId);
@@ -356,8 +364,8 @@ class PoController extends Controller
                 'satuan'         => $barang['satuan'],
             ];
             $this->renderJSON([
-                'sukses'=> true,
-                'info'  => $arr
+                'sukses' => true,
+                'info'   => $arr
             ]);
         }
     }
@@ -367,7 +375,7 @@ class PoController extends Controller
         $return = [
             'sukses' => false,
         ];
-        $model = $this->loadModel($id);
+        $model  = $this->loadModel($id);
         if (isset($_POST['Barang'])) {
             $barang             = new Barang;
             $barang->attributes = $_POST['Barang'];
@@ -512,8 +520,8 @@ class PoController extends Controller
 
     public function exportPdf($id, $kertas = Po::KERTAS_A4, $draft = false)
     {
-        $modelHeader = $this->loadModel($id);
-        $configs     = Config::model()->findAll();
+        $modelHeader  = $this->loadModel($id);
+        $configs      = Config::model()->findAll();
         /*
          * Ubah config (object) jadi array
          */
@@ -543,19 +551,17 @@ class PoController extends Controller
         $listNamaKertas = Po::listNamaKertas();
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
 
-        $viewCetak      = '_pdf';
+        $viewCetak = '_pdf';
         if ($draft) {
             $viewCetak = '_pdf_draft';
         }
         $mpdf->WriteHTML($this->renderPartial(
-            $viewCetak,
-            [
+                        $viewCetak, [
                     'modelHeader'  => $modelHeader,
                     'branchConfig' => $branchConfig,
                     'profil'       => $profil,
                     'poDetail'     => $poDetail
-                        ],
-            true
+                        ], true
         ));
 
         $mpdf->SetDisplayMode('fullpage');
@@ -598,18 +604,18 @@ class PoController extends Controller
 
     public function actionAmbilPls($id)
     {
-        $return =[
-                'sukses'=> false,
-                'error' => [
-                    'code'=> 500,
-                    'msg' => 'UNDER CONSTRUCTION! Belum Bisa dipakai'
-                ]
-            ];
+        $return = [
+            'sukses' => false,
+            'error'  => [
+                'code' => 500,
+                'msg'  => 'UNDER CONSTRUCTION! Belum Bisa dipakai'
+            ]
+        ];
         $model  = $this->loadModel($id);
 
         $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
             ':filterPerSupplier' => 'po.filterpersupplier'
-            ]);
+        ]);
 
         $profilId = null;
         if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
@@ -628,7 +634,7 @@ class PoController extends Controller
      */
     public function actionCariBarang($profilId, $term)
     {
-        $q = new CDbCriteria();
+        $q         = new CDbCriteria();
         $q->addCondition('(barcode like :term OR nama like :term) AND status=:status');
         $q->order  = 'nama';
         $q->params = [
@@ -638,7 +644,7 @@ class PoController extends Controller
 
         $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
             ':filterPerSupplier' => 'po.filterpersupplier'
-            ]);
+        ]);
 
         if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
             $q->join                = 'JOIN supplier_barang s ON t.id=s.barang_id AND s.supplier_id=:profilId';
@@ -711,8 +717,8 @@ class PoController extends Controller
         if (isset($_POST['pk'])) {
             $pk          = $_POST['pk'];
             $rowAffected = PoDetail::model()->updateByPk($pk, [
-                'qty_order'  => $_POST['value'],
-                'status'     => PoDetail::STATUS_ORDER
+                'qty_order' => $_POST['value'],
+                'status'    => PoDetail::STATUS_ORDER
             ]);
             if ($rowAffected > 0) {
                 $return = ['sukses' => true];
@@ -757,4 +763,5 @@ class PoController extends Controller
         }
         $this->renderJSON($return);
     }
+
 }

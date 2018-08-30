@@ -6,7 +6,7 @@ $this->breadcrumbs = array(
     'Hutang Piutang',
 );
 
-$this->boxHeader['small'] = 'Hutang Piutang';
+$this->boxHeader['small']  = 'Hutang Piutang';
 $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Hutang Piutang';
 
 $this->renderPartial('_form_hutangpiutang', array('model' => $model));
@@ -29,8 +29,8 @@ if (isset($report)):
     </div>
     <?php
     $this->renderPartial('_form_hutangpiutang_cetak', array(
-        'model' => $model,
-        'printers' => $printers,
+        'model'     => $model,
+        'printers'  => $printers,
         'kertasPdf' => $kertasPdf
     ));
     ?>
@@ -56,6 +56,7 @@ if (isset($report)):
                             <th>Tanggal</th>
                             <th>Dokumen Asal</th>
                             <th>No Dokumen</th>
+                            <th>No Ref</th>
                             <th class="rata-kanan">Jumlah</th>
                             <th class="rata-kanan">Bayar</th>
                             <th class="rata-kanan">Sisa</th>
@@ -74,6 +75,15 @@ if (isset($report)):
                                 <td><?php echo $baris['created_at']; ?></td>
                                 <td><?php echo $listAsalHP[$baris['asal']]; ?></td>
                                 <td><?php echo $baris['nomor_dokumen_asal']; ?></td>
+                                <?php
+                                if ($baris['asal'] == HutangPiutang::DARI_PEMBELIAN) {
+                                    $dokAsal = Pembelian::model()->find("hutang_piutang_id={$baris['id']}");
+                                }
+                                if ($baris['asal'] == HutangPiutang::DARI_RETUR_JUAL) {
+                                    $dokAsal = ReturPenjualan::model()->find("hutang_piutang_id={$baris['id']}");
+                                }
+                                ?>
+                                <td><?php echo $dokAsal->referensi; ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah'], 0, ',', '.'); ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah_bayar'], 0, ',', '.'); ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah'] - $baris['jumlah_bayar'], 0, ',', '.'); ?></td>
@@ -109,6 +119,7 @@ if (isset($report)):
                             <th>Tanggal</th>
                             <th>Dokumen Asal</th>
                             <th>No Dokumen</th>
+                            <th>No Ref</th>
                             <th class="rata-kanan">Jumlah</th>
                             <th class="rata-kanan">Bayar</th>
                             <th class="rata-kanan">Sisa</th>
@@ -127,6 +138,15 @@ if (isset($report)):
                                 <td><?php echo $baris['created_at']; ?></td>
                                 <td><?php echo $listAsalHP[$baris['asal']]; ?></td>
                                 <td><?php echo $baris['nomor_dokumen_asal']; ?></td>
+                                <?php
+                                if ($baris['asal'] == HutangPiutang::DARI_PENJUALAN) {
+                                    $dokAsal = Penjualan::model()->find("hutang_piutang_id={$baris['id']}");
+                                }
+                                if ($baris['asal'] == HutangPiutang::DARI_RETUR_BELI) {
+                                    $dokAsal = ReturPembelian::model()->find("hutang_piutang_id={$baris['id']}");
+                                }
+                                ?>
+                                <td><?php echo!empty($dokAsal->referensi) ? $dokAsal->referensi : ''; ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah'], 0, ',', '.'); ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah_bayar'], 0, ',', '.'); ?></td>
                                 <td class="rata-kanan"><?php echo number_format($baris['jumlah'] - $baris['jumlah_bayar'], 0, ',', '.'); ?></td>

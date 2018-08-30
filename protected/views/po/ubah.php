@@ -96,6 +96,7 @@
                 'barangList'     => $barangList,
                 'curSupplierCr'  => $curSupplierCr,
                 'tipeCari'       => $tipeCari,
+                'scanBarcode'    => $scanBarcode
             ]);
         } else {
             $this->renderPartial('_pls_form', [
