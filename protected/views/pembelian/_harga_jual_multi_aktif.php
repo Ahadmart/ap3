@@ -1,4 +1,4 @@
-<table class="tabel-index">
+<table class="tabel-index" id="input-multi-hj">
     <tr>
         <th>Satuan</th>
         <th class="rata-kanan">Isi</th>

@@ -4,31 +4,6 @@ class StockopnameController extends Controller
 {
 
     /**
-     * @return array action filters
-     */
-    public function filters()
-    {
-        return array(
-            'accessControl', // perform access control for CRUD operations
-            'postOnly + delete', // we only allow deletion via POST request
-        );
-    }
-
-    /**
-     * Specifies the access control rules.
-     * This method is used by the 'accessControl' filter.
-     * @return array access control rules
-     */
-    public function accessRules()
-    {
-        return array(
-            array('deny', // deny guest
-                'users' => array('guest'),
-            ),
-        );
-    }
-
-    /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
      */
@@ -224,16 +199,18 @@ class StockopnameController extends Controller
             'sukses' => false
         );
         if (isset($_POST['scan'])) {
-            $barcode = $_POST['barcode'];
-            $barang = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
-            $qtySudahSo = StockOpnameDetail::model()->qtyYangSudahSo($id, $barang->id);
-            $return = array(
-                'sukses' => true,
-                'barcode' => $barcode,
-                'nama' => $barang->nama,
-                'stok' => $barang->getStok(),
-                'qtySudahSo' => $qtySudahSo
-            );
+            $barcode      = $_POST['barcode'];
+            $barang       = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
+            $qtySudahSo   = StockOpnameDetail::model()->qtyYangSudahSo($id, $barang->id);
+            $inputselisih = $this->loadModel($id)->input_selisih;
+            $return       = [
+                'sukses'       => true,
+                'barcode'      => $barcode,
+                'nama'         => $barang->nama,
+                'stok'         => $barang->getStok(),
+                'qtySudahSo'   => $qtySudahSo,
+                'inputselisih' => $inputselisih
+            ];
         }
 
         $this->renderJSON($return);
@@ -246,9 +223,14 @@ class StockopnameController extends Controller
         );
         if (isset($_POST['tambah'])) {
             $barcode = $_POST['barcode'];
-            $qty = $_POST['qty'];
-            $barang = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
-            $return = $this->tambahDetail($id, $barang->id, $barang->getStok(), $qty);
+            $barang  = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
+            $stok    = $barang->getStok();
+            if (isset($_POST['qty'])) {
+                $qty = $_POST['qty'];
+            } else if (isset($_POST['selisih'])) {
+                $qty = $stok + $_POST['selisih'];
+            }
+            $return = $this->tambahDetail($id, $barang->id, $stok, $qty);
         }
         $this->renderJSON($return);
     }
@@ -426,6 +408,24 @@ class StockopnameController extends Controller
             'sukses' => true,
             'rows' => $model->setInAktifAll()
         ]);
+    }
+
+    public function actionGantiInput($id)
+    {
+        $r = ['sukses' => false];
+
+        $model = $this->loadModel($id);
+        if (isset($_POST['gantiinput'])) {
+            $model->input_selisih = !$model->input_selisih;
+
+            if ($model->update(['input_selisih'])) {
+                $r = [
+                    'sukses'       => true,
+                    'inputselisih' => $model->input_selisih
+                ];
+            }
+        }
+        $this->renderJSON($r);
     }
 
 }
