@@ -90,6 +90,11 @@ class ReturpenjualanController extends Controller
         if (isset($_GET['cariBarang'])) {
             $barang->unsetAttributes(['id']);
             $barang->setAttribute('nama', $_GET['namaBarang']);
+            $criteria = new CDbCriteria;
+            $criteria->condition = 'status = :status';
+            $criteria->order = 'nama';
+            $criteria->params = [':status' => Barang::STATUS_AKTIF];
+            $barang->setDbCriteria($criteria);
         }
 
         /*

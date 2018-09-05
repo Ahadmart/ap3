@@ -90,9 +90,9 @@ class ReturPenjualanDetail extends CActiveRecord {
 
       $criteria = new CDbCriteria;
 
-      $criteria->compare('id', $this->id, true);
-      $criteria->compare('retur_penjualan_id', $this->retur_penjualan_id, true);
-      $criteria->compare('penjualan_detail_id', $this->penjualan_detail_id, true);
+      $criteria->compare('id', $this->id);
+      $criteria->compare('retur_penjualan_id', $this->retur_penjualan_id);
+      $criteria->compare('penjualan_detail_id', $this->penjualan_detail_id);
       $criteria->compare('qty', $this->qty, true);
       $criteria->compare('harga_jual', $this->harga_jual, true);
       $criteria->compare('updated_at', $this->updated_at, true);
