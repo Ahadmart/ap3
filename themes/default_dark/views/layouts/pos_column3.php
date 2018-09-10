@@ -8,6 +8,7 @@
         <li><a href="<?php echo $this->createUrl('tambah'); ?>" class="expand bigfont tiny button" accesskey="n" id="tombol-new"><span class="ak">N</span>ew</a></li>
         <li><a href="<?php echo $this->createUrl('suspended'); ?>" class="expand bigfont tiny info button" accesskey="s"><span class="ak">S</span>uspended</a></li>
         <li><a href="<?php echo $this->createUrl('cekharga'); ?>" class="expand bigfont tiny button" accesskey="h">Cek <span class="ak">H</span>arga</a></li>
+        <li><a href="<?php echo $this->createUrl('pesananpenjualan'); ?>" class="expand bigfont tiny button" accesskey="p"><span class="ak">P</span>esanan</a></li>
     </ul>
     <?php if (!is_null($this->namaProfil)) {
         ?>
