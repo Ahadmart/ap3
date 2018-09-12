@@ -3,6 +3,9 @@
 class PesananpenjualanController extends Controller
 {
 
+    const PROFIL_ALL      = 0;
+    const PROFIL_CUSTOMER = Profil::TIPE_CUSTOMER;
+
     /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
@@ -16,7 +19,7 @@ class PesananpenjualanController extends Controller
 
     /**
      * Creates a new model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
+     * If creation is successful, the browser will be redirected to the 'ubah' page.
      */
     public function actionTambah()
     {
@@ -29,7 +32,7 @@ class PesananpenjualanController extends Controller
         if (isset($_POST['PesananPenjualan'])) {
             $model->attributes = $_POST['PesananPenjualan'];
             if ($model->save())
-                $this->redirect(['view', 'id' => $model->id]);
+                $this->redirect(['ubah', 'id' => $model->id]);
         }
 
         $customerList = Profil::model()->findAll([
@@ -158,6 +161,25 @@ class PesananpenjualanController extends Controller
             $return = $data->tanggal;
         }
         return $return;
+    }
+
+    public function actionAmbilProfil($tipe)
+    {
+        /*
+         * Tampilkan daftar sesuai pilihan tipe
+         */
+        $condition  = $tipe == Profil::TIPE_CUSTOMER ? 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER : 'id>' . Profil::AWAL_ID;
+        $profilList = Profil::model()->findAll([
+            'select'    => 'id, nama',
+            'condition' => $condition,
+            'order'     => 'nama']);
+        /* FIX ME: Pindahkan ke view */
+        $string     = '<option>Pilih satu..</option>';
+        foreach ($profilList as $profil) {
+            $string .= '<option value="' . $profil->id . '">';
+            $string .= $profil->nama . '</option>';
+        }
+        echo $string;
     }
 
 }

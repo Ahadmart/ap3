@@ -39,6 +39,21 @@
             <input id="checkbox_profil" type="checkbox" name="semua_profil"><label for="checkbox_profil">Tampilkan semua profil</label>
         </div>
     </div>
+    <script>
+        $("#checkbox_profil").change(function () {
+            if (this.checked) {
+                console.log('semua');
+                $("#PesananPenjualan_profil_id").load("<?php
+            echo $this->createUrl('ambilprofil', ['tipe' => $this::PROFIL_ALL]);
+            ?>");
+            } else {
+                console.log('supplier');
+                $("#PesananPenjualan_profil_id").load("<?php
+            echo $this->createUrl('ambilprofil', ['tipe' => $this::PROFIL_CUSTOMER]);
+            ?>");
+            }
+        });
+    </script>
 
     <div class="row">
         <div class="small-12 columns">

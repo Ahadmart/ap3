@@ -43,11 +43,11 @@ class PesananPenjualan extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            ['tanggal, profil_id', 'required'],
+            ['profil_id', 'required'],
             ['status', 'numerical', 'integerOnly' => true],
             ['nomor', 'length', 'max' => 45],
             ['profil_id, penjualan_id, updated_by', 'length', 'max' => 10],
-            ['created_at, updated_at, updated_by', 'safe'],
+            ['tanggal, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             ['id, nomor, tanggal, profil_id, penjualan_id, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
@@ -135,6 +135,7 @@ class PesananPenjualan extends CActiveRecord
 
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
+            $this->tanggal = date('Y-m-d H:i:s');
         }
         $this->updated_at = null; // Trigger current timestamp
         $this->updated_by = Yii::app()->user->id;
@@ -169,6 +170,12 @@ class PesananPenjualan extends CActiveRecord
         $kodeTahunBulan = date('ym');
         $sequence       = substr('00000' . $this->cariNomor(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
+    }
+
+    public function beforeValidate()
+    {
+        $this->profil_id = empty($this->profil_id) ? Profil::PROFIL_UMUM : $this->profil_id;
+        return parent::beforeValidate();
     }
 
 }

@@ -2,45 +2,61 @@
 /* @var $this PesananpenjualanController */
 /* @var $model PesananPenjualan */
 
-$this->breadcrumbs=array(
-	'Pesanan Penjualan'=>array('index'),
-	$model->id=>array('view','id'=>$model->id),
-	'Ubah',
-);
+$this->breadcrumbs = [
+    'Pesanan Penjualan' => ['index'],
+    $model->id          => ['view', 'id' => $model->id],
+    'Ubah',
+];
 
-$this->boxHeader['small'] = 'Ubah';
-$this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nama}";
+$this->boxHeader['small']  = 'Ubah';
+$this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
 ?>
 <div class="row">
     <div class="large-6 columns">
-        <?php $this->renderPartial('_form', array('model'=>$model)); ?>
+        <?php $this->renderPartial('_form', ['model' => $model]); ?>
     </div>
 </div>
 <?php
-$this->menu = array(
-    array('itemOptions' => array('class' => 'divider'), 'label' => false),
-    array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
+$this->menu                = [
+    ['itemOptions' => ['class' => 'divider'], 'label' => false],
+    [
+        'itemOptions'    => ['class' => 'has-form hide-for-small-only'],
+        'label'          => false,
+        'items'          => [
+            [
+                'label'       => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah',
+                'url'         => $this->createUrl('tambah'),
+                'linkOptions' => [
+                    'class'     => 'button',
                     'accesskey' => 't'
-                )),
-            array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
+                ]],
+            [
+                'label'       => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex',
+                'url'         => $this->createUrl('index'),
+                'linkOptions' => [
+                    'class'     => 'success button',
                     'accesskey' => 'i'
-                ))
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    ),
-    array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
+                ]]
+        ],
+        'submenuOptions' => ['class' => 'button-group']
+    ],
+    [
+        'itemOptions'    => ['class' => 'has-form show-for-small-only'],
+        'label'          => false,
+        'items'          => [
+            [
+                'label'       => '<i class="fa fa-plus"></i>',
+                'url'         => $this->createUrl('tambah'),
+                'linkOptions' => [
                     'class' => 'button',
-                )),
-            array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
+                ]],
+            [
+                'label'       => '<i class="fa fa-asterisk"></i>',
+                'url'         => $this->createUrl('index'),
+                'linkOptions' => [
                     'class' => 'success button',
-                ))
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    )
-);
+                ]]
+        ],
+        'submenuOptions' => ['class' => 'button-group']
+    ]
+];
