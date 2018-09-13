@@ -21,8 +21,10 @@ class m180910_034955_create_table_pesanan_penjualan extends CDbMigration
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `nomor_UNIQUE` (`nomor`),
                 KEY `fk_pesanan_penjualan_updatedby_idx` (`updated_by`),
+                KEY `fk_pesanan_penjualan_profil_idx` (`profil_id`),
                 KEY `fk_pesanan_penjualan_penjualan_idx` (`penjualan_id`),			
                 CONSTRAINT `fk_pesanan_penjualan_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+                CONSTRAINT `fk_pesanan_penjualan_profil` FOREIGN KEY (`profil_id`) REFERENCES `profil` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
                 CONSTRAINT `fk_pesanan_penjualan_penjualan` FOREIGN KEY (`penjualan_id`) REFERENCES `penjualan` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
                 ",
                 ], $tableOption);

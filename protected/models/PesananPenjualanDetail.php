@@ -135,4 +135,9 @@ class PesananPenjualanDetail extends CActiveRecord
         return parent::beforeSave();
     }
 
+    public function getTotal()
+    {
+        return number_format($this->harga_jual * $this->qty, 0, ',', '.');
+    }
+
 }

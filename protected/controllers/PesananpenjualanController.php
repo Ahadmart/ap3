@@ -63,8 +63,13 @@ class PesananpenjualanController extends Controller
                 $this->redirect(['view', 'id' => $id]);
         }
 
+        $modelDetail = new PesananPenjualanDetail('search');
+        $modelDetail->unsetAttributes();
+        $modelDetail->setAttribute('pesanan_penjualan_id', '=' . $id);
+
         $this->render('ubah', [
-            'model' => $model,
+            'model'       => $model,
+            'modelDetail' => $modelDetail,
         ]);
     }
 
@@ -180,6 +185,51 @@ class PesananpenjualanController extends Controller
             $string .= $profil->nama . '</option>';
         }
         echo $string;
+    }
+
+    /**
+     * Tambah barang jual
+     * @param int $id ID Pesanan
+     * @return JSON boolean sukses, array error[code, msg]
+     */
+    public function actionTambahDetail($id)
+    {
+        $return = [
+            'sukses' => false,
+            'error'  => [
+                'code' => '500',
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
+        if (isset($_POST['tambah_barang']) && $_POST['tambah_barang']) {
+            $pesanan = $this->loadModel($id);
+            $qty     = $_POST['qty'];
+            $barcode = $_POST['barcode'];
+            $return  = $pesanan->tambahBarang($barcode, $qty);
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionHapusDetail($id)
+    {
+        $detail = PesananPenjualanDetail::model()->findByPk($id);
+        if (!$detail->delete()) {
+            throw new Exception('Gagal hapus detail penjualan');
+        }
+    }
+
+    /**
+     * Ambil total pesanan via ajax
+     */
+    public function actionTotal($id)
+    {
+        $pesanan          = $this->loadModel($id);
+        $total            = $pesanan->ambilTotal();
+        $totalF           = $pesanan->total;
+        $return['sukses'] = true;
+        $return['total']  = $total;
+        $return['totalF'] = $totalF;
+        $this->renderJSON($return);
     }
 
 }

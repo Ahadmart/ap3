@@ -12,9 +12,49 @@ $this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
 ?>
 <div class="row">
-    <div class="large-6 columns">
-        <?php $this->renderPartial('_form', ['model' => $model]); ?>
+    <div class="large-7 columns header">
+        <span class="secondary label">Customer</span><span class="label"><?= $model->profil->nama; ?></span>
+        <span class="secondary label">Total</span><span class="label" id="total-pesanan"><?= $model->total;     ?></span>
     </div>
+    <div class="large-5 columns">
+        <ul class="button-group right">
+            <li>
+                <?php
+                echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Pesanan',
+                        $this->createUrl('simpan', ['id' => $model->id]),
+                        [
+                    'data'    => "simpan=true",
+                    'type'    => 'POST',
+                    'success' => 'function(data) {
+                            if (data.sukses) {
+                                location.reload();;
+                            }
+                        }'
+                        ],
+                        [
+                    'class'     => 'tiny bigfont button',
+                    'accesskey' => 's'
+                        ]
+                );
+                ?>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <?php
+    $this->renderPartial('_input_detail', [
+        'model' => $model,
+    ]);
+    ?>
+</div>
+<div class="row" id="pesanan-penjualan-detail">
+    <?php
+    $this->renderPartial('_detail', [
+        'model'       => $model,
+        'modelDetail' => $modelDetail
+    ]);
+    ?>
 </div>
 <?php
 $this->menu                = [

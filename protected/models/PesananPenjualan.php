@@ -16,10 +16,11 @@
  *
  * The followings are the available model relations:
  * @property Penjualan $penjualan
+ * @property Profil $profil
  * @property User $updatedBy
  * @property PesananPenjualanDetail[] $pesananPenjualanDetails
  */
-class PesananPenjualan extends CActiveRecord
+class PesananPenjualan extends Penjualan
 {
 
     const STATUS_DRAFT = 0;
@@ -63,6 +64,7 @@ class PesananPenjualan extends CActiveRecord
         // class name for the relations automatically generated below.
         return [
             'penjualan'               => [self::BELONGS_TO, 'Penjualan', 'penjualan_id'],
+            'profil'                  => [self::BELONGS_TO, 'Profil', 'profil_id'],
             'updatedBy'               => [self::BELONGS_TO, 'User', 'updated_by'],
             'pesananPenjualanDetails' => [self::HAS_MANY, 'PesananPenjualanDetail', 'pesanan_penjualan_id'],
         ];
@@ -135,7 +137,7 @@ class PesananPenjualan extends CActiveRecord
 
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
-            $this->tanggal = date('Y-m-d H:i:s');
+            $this->tanggal    = date('Y-m-d H:i:s');
         }
         $this->updated_at = null; // Trigger current timestamp
         $this->updated_by = Yii::app()->user->id;
@@ -176,6 +178,117 @@ class PesananPenjualan extends CActiveRecord
     {
         $this->profil_id = empty($this->profil_id) ? Profil::PROFIL_UMUM : $this->profil_id;
         return parent::beforeValidate();
+    }
+
+    /**
+     * Tambah barang ke detail
+     * @param string $barcode
+     * @param int $qty
+     * @return array
+     * @throws Exception
+     */
+    public function tambahBarang($barcode, $qty, $cekLimit = false)
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+            $barang = Barang::model()->find('barcode=:barcode', [':barcode' => $barcode]);
+
+            /* Jika barang tidak ada */
+            if (is_null($barang)) {
+                throw new Exception('Barang tidak ditemukan', 500);
+            }
+            $this->tambahBarangProc($barang, $qty);
+
+            $transaction->commit();
+            return [
+                'sukses' => true
+            ];
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return [
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
+        }
+    }
+
+    /**
+     * Mencari jumlah barang di tabel pesanan_penjualan_detail
+     * @param int $barangId ID Barang
+     * @return int qty / jumlah barang, FALSE jika tidak ada
+     */
+    public function barangAda($barangId)
+    {
+        $detail = Yii::app()->db->createCommand("
+        select sum(qty) qty from pesanan_penjualan_detail
+        where pesanan_penjualan_id=:pesananId and barang_id=:barangId
+            ")->bindValues([':pesananId' => $this->id, ':barangId' => $barangId])
+                ->queryRow();
+
+        return $detail['qty'];
+    }
+
+    /**
+     * Hapus barang di pesanan_penjualan_detail
+     * @param ActiveRecord $barang
+     */
+    public function cleanBarang($barang)
+    {
+        PesananPenjualan::model()->deleteAll('barang_id=:barangId AND pesanan_penjualan_id=:pesananId',
+                [
+            ':barangId'  => $barang->id,
+            ':pesananId' => $this->id
+        ]);
+    }
+
+    /**
+     * Insert Pesanan Detail
+     * @param int $barangId
+     * @param int $qty
+     * @param decimal $hargaJual
+     * @param decimal $diskon
+     * @param int $tipeDiskonId
+     * @throws Exception
+     */
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [])
+    {
+        $detail                       = new PesananPenjualanDetail;
+        $detail->pesanan_penjualan_id = $this->id;
+        $detail->barang_id            = $barangId;
+        $detail->qty                  = $qty;
+        $detail->harga_jual           = $hargaJual;
+        if ($diskon > 0) {
+            $detail->diskon = $diskon;
+        }
+        if (!$detail->save()) {
+            throw new Exception("Gagal simpan pesanan detail: pesananID:{$this->id}, barangID:{$barangId}, qty:{$qty}",
+            500);
+        }
+    }
+
+    /**
+     * Total Pesanan
+     * @return int total dalam bentuk raw (belum terformat)
+     */
+    public function ambilTotal()
+    {
+        $detail = Yii::app()->db->createCommand()
+                ->select('sum(harga_jual * qty) total')
+                ->from(PesananPenjualanDetail::model()->tableName())
+                ->where('pesanan_penjualan_id=:pesananId', [':pesananId' => $this->id])
+                ->queryRow();
+        return $detail['total'];
+    }
+
+    /**
+     * Total Pesanan
+     * @return string Total dalam format 0.000
+     */
+    public function getTotal()
+    {
+        return number_format($this->ambilTotal(), 0, ',', '.');
     }
 
 }
