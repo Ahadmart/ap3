@@ -67,9 +67,19 @@ class PesananpenjualanController extends Controller
         $modelDetail->unsetAttributes();
         $modelDetail->setAttribute('pesanan_penjualan_id', '=' . $id);
 
-        $this->render('ubah', [
+        $barang = new Barang('search');
+        $barang->unsetAttributes();
+
+        if (isset($_GET['cariBarang'])) {
+            $barang->setAttribute('nama', $_GET['namaBarang']);
+            $barang->setAttribute('status', Barang::STATUS_AKTIF);
+        }
+
+        $this->render('ubah',
+                [
             'model'       => $model,
             'modelDetail' => $modelDetail,
+            'barang'      => $barang,
         ]);
     }
 

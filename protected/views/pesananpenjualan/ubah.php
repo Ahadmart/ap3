@@ -14,7 +14,7 @@ $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
 <div class="row">
     <div class="large-7 columns header">
         <span class="secondary label">Customer</span><span class="label"><?= $model->profil->nama; ?></span>
-        <span class="secondary label">Total</span><span class="label" id="total-pesanan"><?= $model->total;     ?></span>
+        <span class="secondary label">Total</span><span class="label" id="total-pesanan"><?= $model->total; ?></span>
     </div>
     <div class="large-5 columns">
         <ul class="button-group right">
@@ -53,6 +53,13 @@ $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
     $this->renderPartial('_detail', [
         'model'       => $model,
         'modelDetail' => $modelDetail
+    ]);
+    ?>
+</div>
+<div class="row" id="barang-list" style="display:none">
+    <?php
+    $this->renderPartial('_barang_list', [
+        'barang' => $barang,
     ]);
     ?>
 </div>
