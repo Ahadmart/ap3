@@ -28,6 +28,10 @@ class PesananPenjualan extends Penjualan
     const STATUS_BATAL = 20;
     const STATUS_JUAL  = 30;
 
+    public $max; // Untuk mencari untuk nomor surat;
+    public $namaProfil;
+    public $namaUser;
+
     /**
      * @return string the associated database table name
      */
@@ -51,7 +55,7 @@ class PesananPenjualan extends Penjualan
             ['tanggal, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, nomor, tanggal, profil_id, penjualan_id, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, nomor, tanggal, profil_id, penjualan_id, status, updated_at, updated_by, created_at, namaProfil', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -85,6 +89,7 @@ class PesananPenjualan extends Penjualan
             'updated_at'   => 'Updated At',
             'updated_by'   => 'Updated By',
             'created_at'   => 'Created At',
+            'namaProfil'   => 'Profil',
         ];
     }
 
@@ -116,8 +121,31 @@ class PesananPenjualan extends Penjualan
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        return new CActiveDataProvider($this, [
+        $criteria->with = ['profil', 'updatedBy'];
+        $criteria->compare('profil.nama', $this->namaProfil, true);
+        $criteria->compare('updatedBy.nama_lengkap', $this->namaUser, true);
+
+        $sort = [
+            'defaultOrder' => 'case t.status when ' . self::STATUS_DRAFT . ' then 0 '
+            . 'when ' . self::STATUS_PESAN . ' then 1 '
+            . 'when ' . self::STATUS_JUAL . ' then 2 '
+            . 'else 3 end, t.tanggal desc',
+            'attributes'   => [
+                '*',
+                'namaProfil' => [
+                    'asc'  => 'profil.nama',
+                    'desc' => 'profil.nama desc'
+                ],
+                'namaUser'   => [
+                    'asc'  => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc'
+                ],
+            ]
+        ];
+        return new CActiveDataProvider($this,
+                [
             'criteria' => $criteria,
+            'sort'     => $sort,
         ]);
     }
 
@@ -141,6 +169,12 @@ class PesananPenjualan extends Penjualan
         }
         $this->updated_at = null; // Trigger current timestamp
         $this->updated_by = Yii::app()->user->id;
+        if ($this->scenario === 'simpanPertama') {
+            $this->status  = self::STATUS_PESAN;
+            // Dapat nomor dan tanggal baru
+            $this->tanggal = date('Y-m-d H:i:s');
+            $this->nomor   = $this->generateNomor6Seq();
+        }
         return parent::beforeSave();
     }
 
@@ -164,7 +198,7 @@ class PesananPenjualan extends Penjualan
      * Membuat nomor surat
      * @return string Nomor sesuai format "[KodeCabang][kodeDokumen][Tahun][Bulan][SequenceNumber]"
      */
-    public function generateNomor()
+    public function generateNomor6Seq()
     {
         $config         = Config::model()->find("nama='toko.kode'");
         $kodeCabang     = $config->nilai;
@@ -289,6 +323,44 @@ class PesananPenjualan extends Penjualan
     public function getTotal()
     {
         return number_format($this->ambilTotal(), 0, ',', '.');
+    }
+
+    public function simpan()
+    {
+        $transaction    = $this->dbConnection->beginTransaction();
+        $this->scenario = 'simpanPertama';
+        try {
+            $this->simpanPesanan();
+            $transaction->commit();
+            return [
+                'sukses' => true
+            ];
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return [
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
+        }
+    }
+
+    public function simpanPesanan()
+    {
+        if (!$this->save()) {
+            throw new Exception('Gagal simpan Pesanan', 500);
+        }
+    }
+
+    public function listStatus()
+    {
+        return [
+            self::STATUS_DRAFT => 'Draft',
+            self::STATUS_PESAN => 'Pesan',
+            self::STATUS_JUAL  => 'Jual',
+            self::STATUS_BATAL => 'Batal',
+        ];
     }
 
 }

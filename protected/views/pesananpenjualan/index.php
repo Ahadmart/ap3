@@ -33,9 +33,19 @@ $this->widget('BGridView',
             'type'      => 'raw',
             'value'     => [$this, 'renderLinkTanggalToUbah']
         ],
-        'profil_id',
-        'status',
-        'updated_by',
+        [
+            'name'  => 'namaProfil',
+            'value' => '$data->profil->nama'
+        ],
+        [
+            'name'   => 'status',
+            'value'  => '$data->namaStatus',
+            'filter' => $model->listStatus()
+        ],
+        [
+            'name'  => 'namaUser',
+            'value' => '$data->updatedBy->nama_lengkap',
+        ],
         [
             'class' => 'BButtonColumn',
         ],

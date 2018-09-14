@@ -18,24 +18,40 @@ $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
     </div>
     <div class="large-5 columns">
         <ul class="button-group right">
-            <li>
-                <?php
-                echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Pesanan',
-                        $this->createUrl('simpan', ['id' => $model->id]),
-                        [
-                    'data'    => "simpan=true",
-                    'type'    => 'POST',
-                    'success' => 'function(data) {
+            <?php
+            if ($model->status == PesananPenjualan::STATUS_DRAFT) {
+                ?>
+                <li>
+                    <?php
+                    echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> Pe<span class="ak">s</span>an',
+                            $this->createUrl('pesan', ['id' => $model->id]),
+                            [
+                        'data'    => "pesan=true",
+                        'type'    => 'POST',
+                        'success' => 'function(data) {
                             if (data.sukses) {
                                 location.reload();;
                             }
                         }'
-                        ],
+                            ],
+                            [
+                        'class'     => 'tiny bigfont button',
+                        'accesskey' => 's'
+                            ]
+                    );
+                    ?>
+                </li>
+                <?php
+            }
+            ?>
+            <li>
+                <?php
+                echo CHtml::link('<i class="fa fa-times"></i> Bata<span class="ak">l</a>',
+                        $this->createUrl('hapus', ['id' => $model->id]),
                         [
-                    'class'     => 'tiny bigfont button',
-                    'accesskey' => 's'
-                        ]
-                );
+                    'class'     => 'alert tiny bigfont button',
+                    'accesskey' => 'l'
+                ]);
                 ?>
             </li>
         </ul>
@@ -64,7 +80,7 @@ $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
     ?>
 </div>
 <?php
-$this->menu                = [
+$this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
         'itemOptions'    => ['class' => 'has-form hide-for-small-only'],

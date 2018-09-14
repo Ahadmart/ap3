@@ -53,6 +53,11 @@ class PesananpenjualanController extends Controller
     public function actionUbah($id)
     {
         $model = $this->loadModel($id);
+        
+        // Yang bisa diubah adalah yang statusnya DRAFT dan PESAN
+        if ($model->status == PesananPenjualan::STATUS_JUAL || $model->status == PesananPenjualan::STATUS_BATAL) {
+            $this->redirect(['view', 'id' => $id]);
+        }
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
@@ -239,6 +244,24 @@ class PesananpenjualanController extends Controller
         $return['sukses'] = true;
         $return['total']  = $total;
         $return['totalF'] = $totalF;
+        $this->renderJSON($return);
+    }
+
+    public function actionPesan($id)
+    {
+        $return = [
+            'sukses' => false,
+            'error'  => [
+                'code' => '500',
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
+        if (isset($_POST['pesan']) && $_POST['pesan']) {
+            $pesanan = $this->loadModel($id);
+            if ($pesanan->status == PesananPenjualan::STATUS_DRAFT) {
+                $this->renderJSON($pesanan->simpan());
+            }
+        }
         $this->renderJSON($return);
     }
 
