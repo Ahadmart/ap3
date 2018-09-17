@@ -31,6 +31,7 @@ class PesananPenjualan extends Penjualan
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;
     public $namaUser;
+    public $nomorTanggal;
 
     /**
      * @return string the associated database table name
@@ -55,7 +56,7 @@ class PesananPenjualan extends Penjualan
             ['tanggal, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, nomor, tanggal, profil_id, penjualan_id, status, updated_at, updated_by, created_at, namaProfil', 'safe', 'on' => 'search'],
+            ['id, nomor, tanggal, profil_id, penjualan_id, status, updated_at, updated_by, created_at, namaProfil, nomorTanggal', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -90,6 +91,7 @@ class PesananPenjualan extends Penjualan
             'updated_by'   => 'Updated By',
             'created_at'   => 'Created At',
             'namaProfil'   => 'Profil',
+            'nomorTanggal' => 'Nomor/Tanggal'
         ];
     }
 
@@ -120,6 +122,7 @@ class PesananPenjualan extends Penjualan
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare("CONCAT(nomor, ' ', DATE_FORMAT(tanggal, '%Y-%m-%d %H:%i:%s'))", $this->nomorTanggal, true);
 
         $criteria->with = ['profil', 'updatedBy'];
         $criteria->compare('profil.nama', $this->namaProfil, true);

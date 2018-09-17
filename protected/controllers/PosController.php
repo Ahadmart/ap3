@@ -665,4 +665,34 @@ class PosController extends Controller
         $this->renderJSON($return);
     }
 
+    public function actionPesanan()
+    {
+
+        $model = new PesananPenjualan('search');
+        $model->unsetAttributes();  // clear any default values
+        if (isset($_GET['PesananPenjualan'])) {
+            $model->attributes = $_GET['PesananPenjualan'];
+        }
+
+        $criteria            = new CDbCriteria;
+        $criteria->condition = 'status = :sDraft OR status = :sPesan';
+        $criteria->params    = [
+            ':sDraft' => PesananPenjualan::STATUS_DRAFT,
+            ':sPesan' => PesananPenjualan::STATUS_PESAN,
+        ];
+        $model->setDbCriteria($criteria);
+
+        $this->render('pesanan', ['model' => $model]);
+    }
+
+    public function renderPesananColumn($data, $row, $dataColumn)
+    {
+        switch ($dataColumn->name) {
+            case 'nomorTanggal':
+                return CHtml::link($data->nomor . ' ' . $data->tanggal,
+                                Yii::app()->controller->createUrl('pos/pesananubah', ['id' => $data->id]));
+                break;
+        }
+    }
+
 }
