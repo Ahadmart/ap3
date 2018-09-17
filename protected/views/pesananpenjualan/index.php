@@ -43,11 +43,22 @@ $this->widget('BGridView',
             'filter' => $model->listStatus()
         ],
         [
+            'header'      => 'Total',
+            'value'       => '$data->total',
+            'htmlOptions' => ['class' => 'rata-kanan']
+        ],
+        [
             'name'  => 'namaUser',
             'value' => '$data->updatedBy->nama_lengkap',
         ],
         [
-            'class' => 'BButtonColumn',
+            'class'           => 'BButtonColumn',
+            'deleteButtonUrl' => 'Yii::app()->controller->createUrl("batal", array("id"=>$data->primaryKey))',
+            'buttons'         => [
+                'delete' => [
+                    'visible' => '$data->status == ' . PesananPenjualan::STATUS_DRAFT . ' OR $data->status == ' . PesananPenjualan::STATUS_PESAN,
+                ]
+            ]
         ],
     ],
 ]);

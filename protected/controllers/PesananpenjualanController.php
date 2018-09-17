@@ -12,8 +12,15 @@ class PesananpenjualanController extends Controller
      */
     public function actionView($id)
     {
-        $this->render('view', [
-            'model' => $this->loadModel($id),
+
+        $modelDetail = new PesananPenjualanDetail('search');
+        $modelDetail->unsetAttributes();
+        $modelDetail->setAttribute('pesanan_penjualan_id', '=' . $id);
+
+        $this->render('view',
+                [
+            'model'       => $this->loadModel($id),
+            'modelDetail' => $modelDetail,
         ]);
     }
 
@@ -53,7 +60,7 @@ class PesananpenjualanController extends Controller
     public function actionUbah($id)
     {
         $model = $this->loadModel($id);
-        
+
         // Yang bisa diubah adalah yang statusnya DRAFT dan PESAN
         if ($model->status == PesananPenjualan::STATUS_JUAL || $model->status == PesananPenjualan::STATUS_BATAL) {
             $this->redirect(['view', 'id' => $id]);
@@ -89,13 +96,20 @@ class PesananpenjualanController extends Controller
     }
 
     /**
-     * Deletes a particular model.
-     * If deletion is successful, the browser will be redirected to the 'admin' page.
+     * Deletes/Change Status a particular model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id the ID of the model to be deleted
      */
-    public function actionHapus($id)
+    public function actionBatal($id)
     {
-        $this->loadModel($id)->delete();
+        $model = $this->loadModel($id);
+        if ($model->status == PesananPenjualan::STATUS_DRAFT) {
+            PesananPenjualanDetail::model()->deleteAll('pesanan_penjualan_id = :pesananId', [':pesananId' => $id]);
+            $model->delete();
+        }
+        if ($model->status == PesananPenjualan::STATUS_PESAN) {
+            $model->updateByPk($id, ['status' => PesananPenjualan::STATUS_BATAL]);
+        }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))
@@ -153,7 +167,8 @@ class PesananpenjualanController extends Controller
     {
         switch ($data->status) {
             case PesananPenjualan::STATUS_BATAL:
-                return $data->nomor;
+                //return $data->nomor;
+                return '<a href="' . $this->createUrl('view', ['id' => $data->id]) . '">' . $data->nomor . '</a>';
                 break;
 
             case PesananPenjualan::STATUS_JUAL:

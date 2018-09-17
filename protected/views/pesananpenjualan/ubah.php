@@ -47,7 +47,7 @@ $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
             <li>
                 <?php
                 echo CHtml::link('<i class="fa fa-times"></i> Bata<span class="ak">l</a>',
-                        $this->createUrl('hapus', ['id' => $model->id]),
+                        $this->createUrl('batal', ['id' => $model->id]),
                         [
                     'class'     => 'alert tiny bigfont button',
                     'accesskey' => 'l'

@@ -113,7 +113,7 @@ class PesananPenjualan extends Penjualan
 
         $criteria->compare('id', $this->id);
         $criteria->compare('nomor', $this->nomor, true);
-        $criteria->compare('tanggal', $this->tanggal, true);
+        $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('profil_id', $this->profil_id);
         $criteria->compare('penjualan_id', $this->penjualan_id);
         $criteria->compare('status', $this->status);
