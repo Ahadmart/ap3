@@ -108,8 +108,13 @@ class PesananPenjualanDetail extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        return new CActiveDataProvider($this, [
+        $sort = [
+            'defaultOrder' => 't.id desc'
+        ];
+        return new CActiveDataProvider($this,
+                [
             'criteria' => $criteria,
+            'sort'     => $sort,
         ]);
     }
 

@@ -273,7 +273,7 @@ class PesananPenjualan extends Penjualan
      */
     public function cleanBarang($barang)
     {
-        PesananPenjualan::model()->deleteAll('barang_id=:barangId AND pesanan_penjualan_id=:pesananId',
+        PesananPenjualanDetail::model()->deleteAll('barang_id=:barangId AND pesanan_penjualan_id=:pesananId',
                 [
             ':barangId'  => $barang->id,
             ':pesananId' => $this->id

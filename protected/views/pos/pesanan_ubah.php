@@ -69,8 +69,23 @@ $this->boxHeader['normal'] = "Pesanan (Sales Order): {$model->nomorF}";
         <?php echo $model->getTotal(); ?>
     </div>
     <hr />
-    <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
-    <a href="" class="warning bigfont tiny button" id="tombol-batal">Batal</a>
+    <?php
+    if ($model->status == PesananPenjualan::STATUS_DRAFT) {
+        ?>
+        <a href="" class="success bigfont tiny button" id="tombol-simpan" accesskey="a">Pes<span class="ak">a</span>n</a>
+        <?php
+    } else {
+        ?>
+        <a href="" class="success bigfont tiny button" id="tombol-simpan" accesskey="a">Ju<span class="ak">a</span>l</a>
+        <?php
+    }
+    ?>
+    <form action="<?= $this->createUrl('pesananpenjualan/batal', ['id' => $model->id]) ?>" method="post">
+        <input type="hidden" name="returnUrl" value="<?= $this->createUrl('pesanan') ?>" />
+        <input class="warning bigfont tiny button" type="submit" name="Batal" value="Batal" />
+    </form>
+    <hr />
+    <a href="" class="bigfont tiny expand button" id="tombol-baru" accesskey="r">Pesanan Ba<span class="ak">r</span>u</a>
 </div>
 <div style="display: none" id="total-pesanan-h"><?php echo $model->ambilTotal(); ?></div>
 <?php
@@ -99,7 +114,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             data: dataKirim,
             success: function (data) {
                 if (data.sukses) {
-                    $.fn.yiiGridView.update('pesanan-penjualan-detail-grid');
+                    $.fn.yiiGridView.update('pesanan-detail-grid');
                     updateTotal();
                 } else {
                     $.gritter.add({
@@ -195,8 +210,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         });
     }
 
-$("#tombol-simpan").click(function () {
-        $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
+    $("#tombol-simpan").click(function () {
+        $(this).unbind("click").html("Proses..").attr("class", "alert bigfont tiny button");
 
         dataUrl = '<?php echo $this->createUrl('pesanansimpan', ['id' => $model->id]); ?>';
         dataKirim = {
@@ -219,30 +234,6 @@ $("#tombol-simpan").click(function () {
                         text: data.error.msg,
                         time: 3000,
                     });
-                }
-                $("#scan").val("");
-                $("#scan").focus();
-            }
-        });
-        return false;
-    });
-
-    $("#tombol-batal").click(function () {
-        dataUrl = '<?php echo $this->createUrl('hapus', ['id' => $model->id]); ?>';
-        $.ajax({
-            type: 'POST',
-            url: dataUrl,
-            success: function (data) {
-                if (data.sukses) {
-                    window.location.href = "<?php echo $this->createUrl('index'); ?>";
-                } else {
-                    $.gritter.add({
-                        title: 'Error ' + data.error.code,
-                        text: data.error.msg,
-                        time: 3000,
-                    });
-                    $("#tombol-admin-mode").addClass('geleng');
-                    $("#tombol-admin-mode").addClass('alert');
                 }
                 $("#scan").val("");
                 $("#scan").focus();

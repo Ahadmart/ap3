@@ -36,15 +36,6 @@ $this->widget('BGridView',
             'type'  => 'raw',
             'value' => [$this, 'renderNamaBarang'],
         ],
-        /*
-          array(
-          'name' => 'namaBarang',
-          'value' => '$data->barang->nama',
-          'headerHtmlOptions' => array('class' => 'show-for-large-up'),
-          'htmlOptions' => array('class' => 'show-for-large-up'),
-          ),
-         *
-         */
         [
             'header'            => 'Harga',
             'headerHtmlOptions' => ['class' => 'rata-kanan show-for-large-up'],
@@ -62,23 +53,11 @@ $this->widget('BGridView',
                 return rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',');
             }
         ],
-        /*
-          array(
-          'name' => 'harga_jual',
-          'header' => 'Net',
-          'headerHtmlOptions' => array('class' => 'rata-kanan'),
-          'htmlOptions' => array('class' => 'rata-kanan'),
-          'value' => function($data) {
-          return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',');
-          }
-          ),
-         *
-         */
         [
             'name'              => 'harga_jual',
             'header'            => 'Ne<span class="ak">t</span>',
             'type'              => 'raw',
-            //'value'             => [$this, 'renderHargaLinkEditable'],
+            'value'             => [$this, 'renderPesananDetailColumn'],
             'headerHtmlOptions' => ['class' => 'rata-kanan'],
             'htmlOptions'       => ['class' => 'rata-kanan'],
         ],
@@ -86,16 +65,16 @@ $this->widget('BGridView',
             'name'              => 'qty',
             'header'            => '<span class="ak">Q</span>ty',
             'type'              => 'raw',
-            //'value'             => [$this, 'renderQtyLinkEditable'],
+            'value'             => [$this, 'renderPesananDetailColumn'],
             'headerHtmlOptions' => ['style' => 'width:75px;', 'class' => 'rata-kanan'],
             'htmlOptions'       => ['class' => 'rata-kanan'],
         ],
         /*
-          array(
-          'type' => 'raw',
-          'value' => '"<span class=\"info label\">".$data->barang->satuan->nama."</label>"',
-          'htmlOptions' => array('style' => 'padding-left:0'),
-          ),
+          [
+          'type'        => 'raw',
+          'value'       => '"<span class=\"info label\">".$data->barang->satuan->nama."</label>"',
+          'htmlOptions' => ['style' => 'padding-left:0'],
+          ],
          */
         [
             'name'              => 'subTotal',

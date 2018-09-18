@@ -327,7 +327,7 @@ class PosController extends Controller
     }
 
     /**
-     * Update qty detail pembelian via ajax
+     * Update qty detail penjualan via ajax
      */
     public function actionUpdateQty()
     {
@@ -763,6 +763,76 @@ class PosController extends Controller
             if ($pesanan->status == PesananPenjualan::STATUS_DRAFT || $pesanan->status == PesananPenjualan::STATUS_PESAN) {
                 $barcode = $_POST['barcode'];
                 $return  = $pesanan->tambahBarang($barcode, 1);
+            }
+        }
+        $this->renderJSON($return);
+    }
+
+    /**
+     * Render Kolom Pesanan Detail
+     * @param type $data
+     * @param type $row
+     * @return type
+     */
+    public function renderPesananDetailColumn($data, $row, $dataColumn)
+    {
+        switch ($dataColumn->name) {
+            case 'harga_jual':
+                return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',');
+                break;
+
+            case 'qty':
+                $ak = [];
+                if ($row == 0) {
+                    $ak = ['accesskey' => 'q'];
+                }
+                return CHtml::link($data->qty, '#',
+                                array_merge($ak,
+                                        [
+                            'class'     => 'editable-qty',
+                            'data-type' => 'text',
+                            'data-pk'   => $data->id,
+                            'data-url'  => Yii::app()->controller->createUrl('pesananupdateqty')
+                                        ]
+                                )
+                );
+                break;
+        }
+    }
+
+    /**
+     * Update qty detail pesanan via ajax
+     */
+    public function actionPesananUpdateQty()
+    {
+        $return = [
+            'sukses' => false,
+            'error'  => [
+                'code' => '500',
+                'msg'  => 'Sempurnakan input!',
+            ]
+        ];
+        if (isset($_POST['pk'])) {
+            $pk       = $_POST['pk'];
+            $qtyInput = $_POST['value'];
+            $detail   = PesananPenjualanDetail::model()->findByPk($pk);
+            if ($qtyInput > 0) {
+                $selisih = $qtyInput - $detail->qty;
+
+                $return  = ['sukses' => false];
+                $pesanan = PesananPenjualan::model()->findByPk($detail->pesanan_penjualan_id);
+                $return  = $pesanan->tambahBarang($detail->barang->barcode, $selisih);
+            } else {
+                /* qty=0 / hapus barang */
+                $barang  = Barang::model()->findByPk($detail->barang_id);
+                $pesanan = PesananPenjualan::model()->findByPk($detail->pesanan_penjualan_id);
+                $details = PesananPenjualanDetail::model()->findAll('barang_id=:barangId AND pesanan_penjualan_id=:pesananID',
+                        [
+                    ':barangId'  => $detail->barang_id,
+                    ':pesananID' => $detail->pesanan_penjualan_id
+                ]);
+                $pesanan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
+                $return  = ['sukses' => true];
             }
         }
         $this->renderJSON($return);
