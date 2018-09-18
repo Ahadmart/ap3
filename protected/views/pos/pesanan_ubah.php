@@ -81,7 +81,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 <script>
 
     function kirimBarcode() {
-        dataUrl = '<?php echo $this->createUrl('tambahbarang', ['id' => $model->id]); ?>';
+        dataUrl = '<?php echo $this->createUrl('pesanantambahbarang', ['id' => $model->id]); ?>';
         dataKirim = {barcode: $("#scan").val()};
         console.log(dataUrl);
         /* Jika tidak ada barang, keluar! */
@@ -99,9 +99,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             data: dataKirim,
             success: function (data) {
                 if (data.sukses) {
-                    $("#tombol-admin-mode").removeClass('geleng');
-                    $("#tombol-admin-mode").removeClass('alert');
-                    $.fn.yiiGridView.update('penjualan-detail-grid');
+                    $.fn.yiiGridView.update('pesanan-penjualan-detail-grid');
                     updateTotal();
                 } else {
                     $.gritter.add({
@@ -191,7 +189,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 if (data.sukses) {
                     $("#total-pesanan-h").text(data.total);
                     $("#total-belanja").text(data.totalF);
-                    tampilkanKembalian();
                     console.log(data.totalF);
                 }
             }

@@ -743,4 +743,29 @@ class PosController extends Controller
         ]);
     }
 
+    /**
+     * Tambah barang pesan
+     * @param int $id ID Pesanan
+     * @return JSON boolean sukses, array error[code, msg]
+     */
+    public function actionPesananTambahBarang($id)
+    {
+        $return = [
+            'sukses' => false,
+            'error'  => [
+                'code' => '500',
+                'msg'  => 'Sempurnakan input!',
+            ]
+        ];
+        if (isset($_POST['barcode'])) {
+            $pesanan = PesananPenjualan::model()->findByPk($id);
+            /* Tambah barang hanya bisa jika status masih draft atau pesan */
+            if ($pesanan->status == PesananPenjualan::STATUS_DRAFT || $pesanan->status == PesananPenjualan::STATUS_PESAN) {
+                $barcode = $_POST['barcode'];
+                $return  = $pesanan->tambahBarang($barcode, 1);
+            }
+        }
+        $this->renderJSON($return);
+    }
+
 }
