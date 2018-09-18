@@ -122,7 +122,7 @@ class PesananPenjualan extends Penjualan
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
-        $criteria->compare("CONCAT(nomor, ' ', DATE_FORMAT(tanggal, '%Y-%m-%d %H:%i:%s'))", $this->nomorTanggal, true);
+        $criteria->compare("CONCAT(t.nomor, ' ', DATE_FORMAT(tanggal, '%d-%m-%Y %H:%i:%s'))", $this->nomorTanggal, true);
 
         $criteria->with = ['profil', 'updatedBy'];
         $criteria->compare('profil.nama', $this->namaProfil, true);
@@ -364,6 +364,13 @@ class PesananPenjualan extends Penjualan
             self::STATUS_JUAL  => 'Jual',
             self::STATUS_BATAL => 'Batal',
         ];
+    }
+
+    public function getNomorF()
+    {
+        return is_null($this->nomor) ? '' : substr($this->nomor, 0, 4) . ' ' .
+                substr($this->nomor, 4, 4) . ' ' .
+                substr($this->nomor, -6);
     }
 
 }

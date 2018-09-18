@@ -27,7 +27,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             [
                 'class'     => 'BDataColumn',
                 'name'      => 'nomorTanggal',
-                'header'    => 'Nomor Tang<span class="ak">g</span>al',
+                'header'    => 'Nomor / Tang<span class="ak">g</span>al',
                 'accesskey' => 'g',
                 'type'      => 'raw',
                 'value'     => [$this, 'renderPesananColumn']

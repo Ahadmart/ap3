@@ -7,6 +7,7 @@ class PosController extends Controller
     public $namaProfil  = null;
     public $profil      = null;
     public $penjualanId = null;
+    public $pesananId   = null;
 
     /**
      * Security tambahan, user yang bisa POS, adalah user dengan role kasir,
@@ -689,10 +690,57 @@ class PosController extends Controller
     {
         switch ($dataColumn->name) {
             case 'nomorTanggal':
-                return CHtml::link($data->nomor . ' ' . $data->tanggal,
+                $nomor = empty($data->nomorF) ? '' : $data->nomorF . ' / ';
+                return CHtml::link($nomor . $data->tanggal,
                                 Yii::app()->controller->createUrl('pos/pesananubah', ['id' => $data->id]));
                 break;
         }
+    }
+
+    public function actionPesananUbah($id)
+    {
+        $this->layout = '//layouts/pos_column3_pesanan';
+
+        $this->pesananId = $id;
+        $model           = PesananPenjualan::model()->findByPk($id);
+        // Penjualan tidak bisa diubah kecuali statusnya draft atau pesan
+        if ($model->status != PesananPenjualan::STATUS_DRAFT AND $model->status != PesananPenjualan::STATUS_PESAN) {
+            $this->redirect(['index']);
+        }
+
+        $this->namaProfil = $model->profil->nama;
+        $this->profil     = Profil::model()->findByPk($model->profil_id);
+
+        // Uncomment the following line if AJAX validation is needed
+        // $this->performAjaxValidation($model);
+
+        $modelDetail = new PesananPenjualanDetail('search');
+        $modelDetail->unsetAttributes();
+        $modelDetail->setAttribute('pesanan_penjualan_id', '=' . $id);
+
+        $barang = new Barang('search');
+        $barang->unsetAttributes();
+        $barang->setAttribute('id', '0');
+
+        if (isset($_GET['cariBarang'])) {
+            $barang->unsetAttributes(['id']);
+            $barang->setAttribute('nama', $_GET['namaBarang']);
+            $criteria            = new CDbCriteria;
+            $criteria->condition = 'status = :status';
+            $criteria->order     = 'nama';
+            $criteria->params    = [':status' => Barang::STATUS_AKTIF];
+            $barang->setDbCriteria($criteria);
+        }
+
+        $configCariBarang = Config::model()->find("nama='pos.caribarangmode'");
+
+        $this->render('pesanan_ubah',
+                [
+            'model'       => $model,
+            'modelDetail' => $modelDetail,
+            'barang'      => $barang,
+            'tipeCari'    => $configCariBarang->nilai
+        ]);
     }
 
 }
