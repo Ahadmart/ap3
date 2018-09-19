@@ -14,7 +14,8 @@ $this->boxHeader['normal'] = "Pesanan (Sales Order): {$model->nomorF}";
 ?>
 
 <div class="medium-7 large-7 columns" style="/*height: 100%; overflow: scroll*/">
-    <h4><small>Pesanan (Sales Order) :</small> <?= $model->nomorF ?></h4>
+    <?php $nomor                     = empty($model->nomorF) ? 'DRAFT' : $model->nomorF; ?>
+    <h4><small>Pesanan (Sales Order) :</small> <?= $nomor ?></h4>
     <div class="row collapse">
         <div class="small-2 medium-1 columns">
             <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
@@ -85,7 +86,7 @@ $this->boxHeader['normal'] = "Pesanan (Sales Order): {$model->nomorF}";
         <input class="warning bigfont tiny button" type="submit" name="Batal" value="Batal" />
     </form>
     <hr />
-    <a href="" class="bigfont tiny expand button" id="tombol-baru" accesskey="r">Pesanan Ba<span class="ak">r</span>u</a>
+    <a href="<?= $this->createUrl('pesananbaru') ?>" class="bigfont tiny expand button" id="tombol-baru" accesskey="r">Pesanan Ba<span class="ak">r</span>u</a>
 </div>
 <div style="display: none" id="total-pesanan-h"><?php echo $model->ambilTotal(); ?></div>
 <?php
@@ -225,9 +226,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             data: dataKirim,
             success: function (data) {
                 if (data.sukses) {
-                    //cetak();
-                    //printWindow.location.replace('<?php echo $this->createUrl('out', ['id' => $model->id]); ?>');
-                    //window.location.href = "<?php echo $this->createUrl('index'); ?>";
+                    if (data.penjualanId > 0) {
+                        window.location.href = "<?= $this->createUrl('ubah', ['id' => '']); ?>" + data.penjualanId;
+                    } else {
+                        location.reload();
+                    }
                 } else {
                     $.gritter.add({
                         title: 'Error ' + data.error.code,

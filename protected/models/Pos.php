@@ -108,4 +108,38 @@ class Pos extends Penjualan
         }
     }
 
+    public function inputPesanan($id)
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+
+            $tahun   = date('y');
+            $pesanan = PesananPenjualan::model()->findByPk($id);
+            if (is_null($pesanan)) {
+                throw new Exception('Pesanan tidak ditemukan', 500);
+            }
+
+            $pesananDetails = PesananPenjualanDetail::model()->findAll('pesanan_penjualan_id=:pesananId',
+                    [':pesananId' => $pesanan->id]);
+            foreach ($pesananDetails as $detail) {
+                $barang = Barang::model()->findByPk($detail->barang_id);
+                $this->tambahBarangProc($barang, $detail->qty);
+            }
+
+            PesananPenjualan::model()->updateByPk($id, ['status' => PesananPenjualan::STATUS_JUAL]);
+            $transaction->commit();
+            return [
+                'sukses' => true,
+            ];
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return [
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+            ]];
+        }
+    }
+
 }

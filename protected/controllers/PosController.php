@@ -838,4 +838,40 @@ class PosController extends Controller
         $this->renderJSON($return);
     }
 
+    public function actionPesananBaru()
+    {
+        $pesanan            = new PesananPenjualan;
+        $pesanan->profil_id = Profil::PROFIL_UMUM;
+        if ($pesanan->save()) {
+            $this->redirect(['pesananubah', 'id' => $pesanan->id]);
+        } else {
+            throw new CHttpException("Gagal simpan pesanan!");
+        }
+    }
+
+    public function actionPesananSimpan($id)
+    {
+        $return = [
+            'sukses' => false,
+            'error'  => [
+                'code' => '500',
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
+        if (isset($_POST['pesan']) && $_POST['pesan']) {
+            $pesanan = PesananPenjualan::model()->findByPk($id);
+            if ($pesanan->status == PesananPenjualan::STATUS_DRAFT) {
+                $this->renderJSON($pesanan->simpan());
+            }
+            if ($pesanan->status == PesananPenjualan::STATUS_PESAN) {
+                $penjualan            = new Pos;
+                $penjualan->profil_id = $pesanan->profil_id;
+                if ($penjualan->save()) {
+                    $this->renderJSON(array_merge($penjualan->inputPesanan($id), ['penjualanId' => $penjualan->id]));
+                }
+            }
+        }
+        $this->renderJSON($return);
+    }
+
 }

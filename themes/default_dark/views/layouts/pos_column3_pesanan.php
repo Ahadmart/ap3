@@ -12,7 +12,7 @@
     </ul>
     <?php if (!is_null($this->namaProfil)) {
         ?>
-        <form id="form-nomor-customer">
+<!--        <form id="form-nomor-customer">
             <div class="row collapse" id="ganti-customer" style="display: none">
                 <div class="small-9 large-10 columns">
                     <input type="text"  name="nomor-customer" id="nomor-customer" placeholder="Input nomor" accesskey="r" autocomplete="off"/>
@@ -22,7 +22,7 @@
                 </div>
             </div>
         </form>
-        <span class="label" id="label-customer" accesskey="e">Custom<span class="ak">e</span>r</span>
+        <span class="label" id="label-customer" accesskey="e">Custom<span class="ak">e</span>r</span>-->
         <div id="data-customer">
             <nomor>Nomor: <?php echo $this->profil->nomor; ?></nomor>
             <nama><?php echo $this->namaProfil; ?></nama>

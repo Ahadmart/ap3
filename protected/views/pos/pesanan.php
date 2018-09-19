@@ -15,6 +15,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
     });
 </script>
 <div class="medium-10 columns" style="/*height: 100%; overflow: scroll*/">
+    <a href="<?= $this->createUrl('pesananbaru') ?>" class="right bigfont tiny button" id="tombol-baru" accesskey="r">Pesanan Ba<span class="ak">r</span>u</a>
     <?php
     $this->widget('BGridView',
             [
@@ -44,7 +45,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             ],
             [
                 'class'           => 'BButtonColumn',
-                'deleteButtonUrl' => 'Yii::app()->controller->createUrl("pesananbatal", array("id"=>$data->primaryKey))',
+                'deleteButtonUrl' => 'Yii::app()->controller->createUrl("pesananpenjualan/batal", array("id"=>$data->primaryKey))',
                 'buttons'         => [
                     'delete' => [
                         'visible' => '$data->status == ' . PesananPenjualan::STATUS_DRAFT . ' OR $data->status == ' . PesananPenjualan::STATUS_PESAN,
