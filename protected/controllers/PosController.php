@@ -694,6 +694,16 @@ class PosController extends Controller
                 return CHtml::link($nomor . $data->tanggal,
                                 Yii::app()->controller->createUrl('pos/pesananubah', ['id' => $data->id]));
                 break;
+            case 'tombolJual':
+                if ($data->status == PesananPenjualan::STATUS_PESAN) {
+                    return CHtml::link('<i class="fa fa-shopping-cart fa-fw"></i>',
+                                    $this->createUrl('pesanansimpan', ['id' => $data->id]),
+                                    ['class' => 'link-jual']);
+                } else {
+                    return '';
+                }
+
+                break;
         }
     }
 

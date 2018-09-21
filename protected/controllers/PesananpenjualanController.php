@@ -320,7 +320,7 @@ class PesananpenjualanController extends Controller
             $pk     = $_POST['pk'];
             $status = $_POST['value'];
             if ($status == PesananPenjualan::STATUS_PESAN) {
-                PesananPenjualan::model()->updateByPk($pk, ['status' => $status]);
+                PesananPenjualan::model()->updateByPk($pk, ['status' => $status, 'penjualan_id' => null]);
                 $return = ['sukses' => true];
             }
         }

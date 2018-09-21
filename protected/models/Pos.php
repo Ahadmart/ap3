@@ -3,10 +3,10 @@
 class Pos extends Penjualan
 {
 
-    const KATEGORI_TRX = 3; //Kategori Penerimaan untuk POS
+    const KATEGORI_TRX      = 3; //Kategori Penerimaan untuk POS
     /* Cari barang */
     const CARI_AUTOCOMPLETE = 0;
-    const CARI_TABLE = 1;
+    const CARI_TABLE        = 1;
 
     /**
      * Simpan POS
@@ -15,36 +15,36 @@ class Pos extends Penjualan
      */
     public function simpanPOS($posData)
     {
-        $transaction = $this->dbConnection->beginTransaction();
+        $transaction    = $this->dbConnection->beginTransaction();
         $this->scenario = 'simpanPenjualan';
         try {
             $this->simpanPenjualan();
 
-            $penerimaan = new Penerimaan;
-            $penerimaan->tanggal = date('d-m-Y');
+            $penerimaan                     = new Penerimaan;
+            $penerimaan->tanggal            = date('d-m-Y');
             //$penerimaan->referensi = '[POS]';
             //$penerimaan->tanggal_referensi = date('d-m-Y');
-            $penerimaan->profil_id = $this->profil_id;
-            $penerimaan->kas_bank_id = $posData['account'];
+            $penerimaan->profil_id          = $this->profil_id;
+            $penerimaan->kas_bank_id        = $posData['account'];
             $penerimaan->jenis_transaksi_id = $posData['jenistr'];
-            $penerimaan->kategori_id = self::KATEGORI_TRX;
-            $penerimaan->uang_dibayar = $posData['uang'];
+            $penerimaan->kategori_id        = self::KATEGORI_TRX;
+            $penerimaan->uang_dibayar       = $posData['uang'];
             $penerimaan->save();
 
-            $penjualan = Penjualan::model()->findByPk($this->id);
+            $penjualan       = Penjualan::model()->findByPk($this->id);
             $hutangPiutangId = $penjualan->hutang_piutang_id;
-            $dokumen = HutangPiutang::model()->findByPk($hutangPiutangId);
+            $dokumen         = HutangPiutang::model()->findByPk($hutangPiutangId);
             if (is_null($dokumen)) {
                 die(serialize($penjualan->attributes));
             }
             $item = $dokumen->itemBayarHutang;
 
-            $penerimaanDetail = new PenerimaanDetail;
-            $penerimaanDetail->penerimaan_id = $penerimaan->id;
-            $penerimaanDetail->item_id = $item['itemId'];
+            $penerimaanDetail                    = new PenerimaanDetail;
+            $penerimaanDetail->penerimaan_id     = $penerimaan->id;
+            $penerimaanDetail->item_id           = $item['itemId'];
             $penerimaanDetail->hutang_piutang_id = $hutangPiutangId;
-            $penerimaanDetail->keterangan = '[POS] ' . $dokumen->keterangan();
-            $penerimaanDetail->jumlah = $dokumen->sisa;
+            $penerimaanDetail->keterangan        = '[POS] ' . $dokumen->keterangan();
+            $penerimaanDetail->jumlah            = $dokumen->sisa;
 
             $penerimaanDetail->save();
 
@@ -65,8 +65,8 @@ class Pos extends Penjualan
             $transaction->rollback();
             return array(
                 'sukses' => false,
-                'error' => array(
-                    'msg' => $ex->getMessage(),
+                'error'  => array(
+                    'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
             ));
         }
@@ -78,7 +78,8 @@ class Pos extends Penjualan
         try {
 
             $tahun = date('y');
-            $akm = Akm::model()->find('substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun', [
+            $akm   = Akm::model()->find('substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun',
+                    [
                 ':nomor' => $nomor,
                 ':tahun' => $tahun
             ]);
@@ -101,8 +102,8 @@ class Pos extends Penjualan
             $transaction->rollback();
             return [
                 'sukses' => false,
-                'error' => [
-                    'msg' => $ex->getMessage(),
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
             ]];
         }
@@ -126,7 +127,13 @@ class Pos extends Penjualan
                 $this->tambahBarangProc($barang, $detail->qty);
             }
 
-            PesananPenjualan::model()->updateByPk($id, ['status' => PesananPenjualan::STATUS_JUAL]);
+            PesananPenjualan::model()->updateByPk($id,
+                    [
+                'status'       => PesananPenjualan::STATUS_JUAL,
+                'penjualan_id' => $this->id
+                    ]
+            );
+            
             $transaction->commit();
             return [
                 'sukses' => true,

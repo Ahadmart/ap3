@@ -44,6 +44,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                 'headerHtmlOptions' => ['class' => 'rata-kanan']
             ],
             [
+                'class'  => 'BDataColumn',
+                'name'   => 'tombolJual',
+                'header' => '',
+                'type'   => 'raw',
+                'filter' => false,
+                'value'  => [$this, 'renderPesananColumn']
+            ],
+            [
                 'class'           => 'BButtonColumn',
                 'deleteButtonUrl' => 'Yii::app()->controller->createUrl("pesananpenjualan/batal", array("id"=>$data->primaryKey))',
                 'buttons'         => [
@@ -56,3 +64,36 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
     ]);
     ?>
 </div>
+<script>
+    $(".link-jual").click(function () {
+        $(this).unbind("click").html("Proses..");
+
+        dataUrl = $(this).attr('href');
+        dataKirim = {
+            'pesan': true,
+        };
+        console.log(dataUrl);
+        //printWindow = window.open('about:blank', '', 'left=20,top=20,width=400,height=600,toolbar=0,resizable=1');
+        $.ajax({
+            type: 'POST',
+            url: dataUrl,
+            data: dataKirim,
+            success: function (data) {
+                if (data.sukses) {
+                    if (data.penjualanId > 0) {
+                        window.location.href = "<?= $this->createUrl('ubah', ['id' => '']); ?>" + data.penjualanId;
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 3000,
+                    });
+                }
+            }
+        });
+        return false;
+    });
+</script>

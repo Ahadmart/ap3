@@ -32,6 +32,7 @@ class PesananPenjualan extends Penjualan
     public $namaProfil;
     public $namaUser;
     public $nomorTanggal;
+    public $tombolJual; // Untuk mengubah ke penjualan;
 
     /**
      * @return string the associated database table name
