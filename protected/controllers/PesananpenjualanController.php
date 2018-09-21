@@ -280,4 +280,51 @@ class PesananpenjualanController extends Controller
         $this->renderJSON($return);
     }
 
+    /**
+     * render status
+     * @param obj $data
+     * @return string link editable status
+     */
+    public function renderEditableStatus($data)
+    {
+
+        switch ($data->status) {
+            case PesananPenjualan::STATUS_DRAFT:
+                return $data->namaStatus;
+                break;
+
+            case PesananPenjualan::STATUS_PESAN:
+                return $data->namaStatus;
+                break;
+
+            case PesananPenjualan::STATUS_JUAL:
+                return '<a href="#" class="editable-status" data-type="select" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updatestatus') . '">' . $data->namaStatus . '</a>';
+                break;
+
+            case PesananPenjualan::STATUS_BATAL:
+                return '<a href="#" class="editable-status" data-type="select" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updatestatus') . '">' . $data->namaStatus . '</a>';
+                break;
+        }
+    }
+
+    public function actionUpdateStatus()
+    {
+        $return = [
+            'sukses' => false,
+            'error'  => [
+                'code' => '500',
+                'msg'  => 'Sempurnakan input!',
+            ]
+        ];
+        if (isset($_POST['pk'])) {
+            $pk     = $_POST['pk'];
+            $status = $_POST['value'];
+            if ($status == PesananPenjualan::STATUS_PESAN) {
+                PesananPenjualan::model()->updateByPk($pk, ['status' => $status]);
+                $return = ['sukses' => true];
+            }
+        }
+        $this->renderJSON($return);
+    }
+
 }

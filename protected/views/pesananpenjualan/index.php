@@ -1,7 +1,12 @@
 <?php
-
 /* @var $this PesananpenjualanController */
 /* @var $model PesananPenjualan */
+
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.poshytip.js',
+        CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery-editable-poshytip.min.js',
+        CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-editable.css');
 
 $this->breadcrumbs = [
     'Pesanan Penjualan' => ['index'],
@@ -39,8 +44,10 @@ $this->widget('BGridView',
         ],
         [
             'name'   => 'status',
+            'type'   => 'raw',
             'value'  => '$data->namaStatus',
-            'filter' => $model->listStatus()
+            'filter' => $model->listStatus(),
+            'value'  => [$this, 'renderEditableStatus']
         ],
         [
             'header'      => 'Total',
@@ -62,7 +69,34 @@ $this->widget('BGridView',
         ],
     ],
 ]);
+?>
+<script>
 
+    function enableEditable() {
+        $(".editable-status").editable({
+            mode: "inline",
+            //inputclass: "input-editable-qty",
+            success: function (response, newValue) {
+                if (response.sukses) {
+                    $.fn.yiiGridView.update("pesanan-penjualan-grid");
+                }
+            },
+            source: [
+                {value: <?= PesananPenjualan::STATUS_PESAN ?>, text: 'Pesan'}
+            ]
+        }
+        );
+    }
+
+    $(function () {
+        enableEditable();
+    });
+
+    $(document).ajaxComplete(function () {
+        enableEditable();
+    });
+</script>
+<?php
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => ''],
     [
