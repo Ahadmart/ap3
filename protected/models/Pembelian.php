@@ -42,6 +42,7 @@ class Pembelian extends CActiveRecord
     public $max; // Untuk mencari untuk nomor surat;
     public $nomorHutang;
     public $namaUpdatedBy;
+    public $hutangBayar; // Untuk menampilkan nomor hutang ATAU nomor Pembayaran jika sudah Lunas
 
     /**
      * @return string the associated database table name
@@ -66,7 +67,7 @@ class Pembelian extends CActiveRecord
             array('tanggal_referensi, created_at, updated_at, updated_by, tanggal', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, tanggal, profil_id, referensi, tanggal_referensi, hutang_piutang_id, status, updated_at, updated_by, created_at, namaSupplier, nomorHutang, namaUpdatedBy', 'safe', 'on' => 'search'),
+            array('id, nomor, tanggal, profil_id, referensi, tanggal_referensi, hutang_piutang_id, status, updated_at, updated_by, created_at, namaSupplier, nomorHutang, namaUpdatedBy, hutangBayar', 'safe', 'on' => 'search'),
         );
     }
 
@@ -103,7 +104,8 @@ class Pembelian extends CActiveRecord
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
             'nomorHutang' => 'Nomor Hutang',
-            'namaUpdatedBy' => 'User'
+            'namaUpdatedBy' => 'User',
+            'hutangBayar' => 'Hutang / Pembayaran'
         );
     }
 

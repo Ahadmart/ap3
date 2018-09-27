@@ -47,10 +47,12 @@ $this->boxHeader['normal'] = 'Pembelian';
                 ),
                 'referensi',
                 'tanggal_referensi',
+                /*
                 array(
                     'name' => 'nomorHutang',
                     'value' => 'is_null($data->hutangPiutang)?"":$data->hutangPiutang->nomor'
                 ),
+                 */
                 array(
                     'name' => 'status',
                     'value' => '$data->namaStatus',
@@ -61,6 +63,12 @@ $this->boxHeader['normal'] = 'Pembelian';
                     'value' => '$data->total',
                     'headerHtmlOptions' => array('class' => 'rata-kanan'),
                     'htmlOptions' => array('class' => 'rata-kanan')
+                ),
+                array(
+                    'name' => 'hutangBayar',
+                    'type' => 'raw',
+                    'filter' => false,
+                    'value' => [$this, 'renderHutangBayar'],
                 ),
                 array(
                     'name' => 'namaUpdatedBy',
