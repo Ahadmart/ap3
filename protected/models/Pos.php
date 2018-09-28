@@ -133,7 +133,7 @@ class Pos extends Penjualan
                 'penjualan_id' => $this->id
                     ]
             );
-            
+
             $transaction->commit();
             return [
                 'sukses' => true,
@@ -147,6 +147,20 @@ class Pos extends Penjualan
                     'code' => $ex->getCode(),
             ]];
         }
+    }
+
+    public function inputPesananByNomor($nomor)
+    {
+        $tahun   = date('y');
+        $pesanan = PesananPenjualan::model()->find('substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun',
+                [
+            ':nomor' => $nomor,
+            ':tahun' => $tahun
+        ]);
+        if (is_null($pesanan)) {
+            throw new Exception('Pesanan tidak ditemukan', 500);
+        }
+        return $this->inputPesanan($pesanan->id);
     }
 
 }

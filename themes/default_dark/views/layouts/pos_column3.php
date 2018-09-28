@@ -63,6 +63,19 @@
         <ul class="stack button-group">
             <li><a href="" class="expand bigfont tiny button" id="tombol-akm" accesskey="k">Input A<span class="ak">K</span>M</a></li>
         </ul>
+        <form id="form-pesanan">
+            <div class="row collapse pesanan-input" style="display: none">
+                <div class="small-9 large-10 columns">
+                    <input type="text"  name="pesanan-no" id="pesanan-no" placeholder="No pesanan" autocomplete="off"/>
+                </div>
+                <div class="small-3 large-2 columns">
+                    <a href="#" class="button postfix" id="tombol-pesanan-ok"><i class="fa fa-check"></i></a>
+                </div>
+            </div>
+        </form>
+        <ul class="stack button-group">
+            <li><a href="" class="expand bigfont tiny button" id="tombol-pesanan" accesskey="t">Inpu<span class="ak">t</span> Pesanan</a></li>
+        </ul>
         <script>
 
             $(function () {
@@ -135,6 +148,17 @@
                     });
                     return false;
                 });
+                
+                $(document).on('click', "#tombol-pesanan", function () {
+                    $(".pesanan-input").toggle(500, function () {
+                        if ($(".pesanan-input").is(':visible')) {
+                            $("#pesanan-no").focus();
+                        } else {
+                            $("#scan").focus();
+                        }
+                    });
+                    return false;
+                });
 
             });
 
@@ -154,6 +178,10 @@
 
             $("#tombol-akm-ok").click(function () {
                 $("#form-akm").submit();
+            });
+
+            $("#tombol-pesanan-ok").click(function () {
+                $("#form-pesanan").submit();
             });
 
             $("#form-nomor-customer").submit(function () {
@@ -242,6 +270,35 @@
                         }
                         $("#akm-no").val("");
                         $(".akm-input").hide(500);
+                        $("#scan").focus();
+                    }
+                });
+                return false;
+            });
+
+            $("#form-pesanan").submit(function () {
+                dataUrl = '<?php echo $this->createUrl('inputpesanan', ['id' => $this->penjualanId]); ?>';
+                dataKirim = {
+                    nomor: $("#pesanan-no").val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: dataUrl,
+                    data: dataKirim,
+                    success: function (data) {
+                        if (data.sukses) {
+                            $.fn.yiiGridView.update('penjualan-detail-grid');
+                            updateTotal();
+                        } else {
+                            $.gritter.add({
+                                title: 'Error ' + data.error.code,
+                                text: data.error.msg,
+                                time: 3000,
+                            });
+                        }
+                        $("#pesanan-no").val("");
+                        $(".pesanan-input").hide(500);
                         $("#scan").focus();
                     }
                 });

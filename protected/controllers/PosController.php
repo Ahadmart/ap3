@@ -697,8 +697,7 @@ class PosController extends Controller
             case 'tombolJual':
                 if ($data->status == PesananPenjualan::STATUS_PESAN) {
                     return CHtml::link('<i class="fa fa-shopping-cart fa-fw"></i>',
-                                    $this->createUrl('pesanansimpan', ['id' => $data->id]),
-                                    ['class' => 'link-jual']);
+                                    $this->createUrl('pesanansimpan', ['id' => $data->id]), ['class' => 'link-jual']);
                 } else {
                     return '';
                 }
@@ -880,6 +879,28 @@ class PosController extends Controller
                     $this->renderJSON(array_merge($penjualan->inputPesanan($id), ['penjualanId' => $penjualan->id]));
                 }
             }
+        }
+        $this->renderJSON($return);
+    }
+
+    /**
+     * Input data dari nomor Pesanan
+     * @param int $id Penjualan ID
+     * @return JSON boolean sukses, array error[code, msg]
+     */
+    public function actionInputPesanan($id)
+    {
+        $return = [
+            'sukses' => false,
+            'error'  => [
+                'code' => '500',
+                'msg'  => 'Sempurnakan input!',
+            ]
+        ];
+        if (isset($_POST['nomor']) && trim($_POST['nomor']) != '') {
+            $nomor  = trim($_POST['nomor']);
+            $model  = $this->loadModel($id);
+            $return = $model->inputPesananByNomor($nomor);
         }
         $this->renderJSON($return);
     }
