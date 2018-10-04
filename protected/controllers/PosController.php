@@ -905,4 +905,32 @@ class PosController extends Controller
         $this->renderJSON($return);
     }
 
+    public function actionPesananPrint($id)
+    {
+        $kasir   = $this->posAktif();
+        $printId = $kasir->device->default_printer_id;
+        if (is_null($printId)) {
+            throw new CHttpException("Tidak ada default Printer!");
+        }
+        $device  = Device::model()->findByPk($printId);
+        $pesanan = PesananPenjualan::model()->findByPk($id);
+        $text    = $pesanan->strukText();
+
+        $device->cashdrawer_kick = 0;
+        if ($device->tipe_id == Device::TIPE_LPR) {
+            $device->printLpr($text);
+        } else if ($device->tipe_id == Device::TIPE_TEXT_PRINTER) {
+            $nomor    = $pesanan->nomor;
+            $namaFile = "pesanan-{$nomor}";
+            header("Content-type: text/plain");
+            header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
+            header("Pragma: no-cache");
+            header("Expire: 0");
+            echo $device->revisiText($text);
+            Yii::app()->end();
+        } else if ($device->tipe_id == Device::TIPE_BROWSER_PRINTER) {
+            
+        }
+    }
+
 }

@@ -37,6 +37,7 @@ class PesananPenjualan extends Penjualan
     /**
      * @return string the associated database table name
      */
+
     public function tableName()
     {
         return 'pesanan_penjualan';
@@ -372,6 +373,58 @@ class PesananPenjualan extends Penjualan
         return is_null($this->nomor) ? '' : substr($this->nomor, 0, 4) . ' ' .
                 substr($this->nomor, 4, 4) . ' ' .
                 substr($this->nomor, -6);
+    }
+
+    /**
+     * Struk PESANAN
+     * @return text
+     */
+    public function strukText()
+    {
+        $configToko = Config::model()->find('nama=:key', [':key' => 'toko.nama']);
+        $total      = $this->getTotal();
+        $nomor      = substr($this->nomor, -6) * 1;
+
+        $struk = '';
+        //$struk = chr(27) . "@"; //Init Printer
+        //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        $struk .= chr(27) . "!" . chr(1); //font B / normal
+        //$struk .= chr(27) . chr(101) . chr(2); //1 reverse lf
+        $struk .= chr(27) . "a" . chr(48); //0 left
+        //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        $struk .= strtoupper($configToko->nilai) . "\n";
+        $struk .= "PESANAN\n";
+
+
+        $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
+        $struk .= chr(27) . "!" . chr(16); //font double width
+        $struk .= chr(27) . "a" . chr(2); //2 right
+        $struk .= "Rp. {$total}\n\n";
+
+        $struk .= chr(27) . "!" . chr(48); //font besar
+        $struk .= chr(27) . "a" . chr(1); //0 center
+        $struk .= "{$nomor}\n\n";
+        $struk .= chr(27) . "!" . chr(1); //font Normal
+        //$struk .= chr(27) . '@' . chr(29) . 'k' . chr(107) . chr(3) . $nomor . chr(0);
+        $struk .= chr(27) . "a" . chr(48); //0 left
+
+        $struk .= "Ketentuan:\n";
+        $struk .= "Struk ini ";
+
+        //    $struk .= chr(27) . "!" . chr(8); //font tebal
+        $struk .= "BUKAN bukti pembayaran\n";
+        $struk .= chr(27) . "!" . chr(1); //font normal
+        $struk .= "Silahkan melakukan pembayaran di kasir\n"
+                . "Jika ada perbedaan perhitungan,\n"
+                . "Yang benar adalah ";
+        //    $struk .= chr(27) . "!" . chr(8); //font tebal
+        $struk .= "perhitungan kasir\n";
+        $struk .= chr(27) . "!" . chr(1); //font normal
+        //$struk .= chr(29) . "V" . chr(66) . chr(48); //Feed paper & cut
+
+        return $struk;
     }
 
 }

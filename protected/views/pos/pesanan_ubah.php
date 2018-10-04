@@ -77,10 +77,11 @@ $this->boxHeader['normal'] = "Pesanan (Sales Order): {$model->nomorF}";
         <?php
     } else {
         ?>
-        <a href="" class="success bigfont tiny button" id="tombol-simpan" accesskey="a">Ju<span class="ak">a</span>l</a>
+        <a href="" class="success bigfont tiny button" id="tombol-simpan" accesskey="a"><i class="fa fa-shopping-cart"></i> Ju<span class="ak">a</span>l</a>
         <?php
     }
-    ?>
+    ?>    <a href="<?= $this->createUrl('pesananprint', ['id' => $model->id]) ?>" class="bigfont tiny right button"><i class="fa fa-print"></i> Print</a>
+
     <form action="<?= $this->createUrl('pesananpenjualan/batal', ['id' => $model->id]) ?>" method="post">
         <input type="hidden" name="returnUrl" value="<?= $this->createUrl('pesanan') ?>" />
         <input class="warning bigfont tiny button" type="submit" name="Batal" value="Batal" />
