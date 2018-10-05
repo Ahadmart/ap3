@@ -44,6 +44,29 @@ $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
                 <?php
             }
             ?>
+            <?php
+            if ($model->status == PesananPenjualan::STATUS_PESAN) {
+                ?>
+                <li>
+                    <button href="#" accesskey="k" data-dropdown="printstruk" aria-controls="printstruk" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> Print Stru<span class="ak">k</span></button><br>
+                    <ul id="printstruk" data-dropdown-content class="f-dropdown" aria-hidden="true">
+                        <?php
+                        foreach ($printerStruk as $printer) {
+                            ?>
+                            <li>
+                                <a href="<?php
+                                echo $this->createUrl('printstruk', ['id' => $model->id, 'printId' => $printer['id']])
+                                ?>">
+                                    <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
+                            </li>
+                            <?php
+                        }
+                        ?>
+                    </ul>
+                </li>
+                <?php
+            }
+            ?>
             <li>
                 <?php
                 echo CHtml::link('<i class="fa fa-times"></i> Bata<span class="ak">l</a>',

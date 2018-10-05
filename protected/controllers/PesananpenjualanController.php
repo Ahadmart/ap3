@@ -5,6 +5,8 @@ class PesananpenjualanController extends Controller
 
     const PROFIL_ALL      = 0;
     const PROFIL_CUSTOMER = Profil::TIPE_CUSTOMER;
+    /* -------- */
+    const PRINT_STRUK     = 0;
 
     /**
      * Displays a particular model.
@@ -87,11 +89,15 @@ class PesananpenjualanController extends Controller
             $barang->setAttribute('status', Barang::STATUS_AKTIF);
         }
 
+        $tipePrinterStruk = [Device::TIPE_LPR];
+        $printerStruk     = Device::model()->listDevices($tipePrinterStruk);
+
         $this->render('ubah',
                 [
-            'model'       => $model,
-            'modelDetail' => $modelDetail,
-            'barang'      => $barang,
+            'model'        => $model,
+            'modelDetail'  => $modelDetail,
+            'barang'       => $barang,
+            'printerStruk' => $printerStruk
         ]);
     }
 
@@ -325,6 +331,54 @@ class PesananpenjualanController extends Controller
             }
         }
         $this->renderJSON($return);
+    }
+
+    public function actionPrintStruk($id)
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_LPR:
+                    $this->printLpr($id, $device, self::PRINT_STRUK);
+                    break;
+                /*
+                  case Device::TIPE_PDF_PRINTER:
+                  $this->exportPdf($id);
+                  break;
+                  case Device::TIPE_CSV_PRINTER:
+                  $this->eksporCsv($id);
+                  break;
+                  case Device::TIPE_TEXT_PRINTER:
+                  $this->exportText($id, $device, self::PRINT_STRUK);
+                  break;
+                  case Device::TIPE_BROWSER_PRINTER:
+                  $this->printBrowser($id, $device, self::PRINT_STRUK);
+                  break;
+                 */
+            }
+        }
+    }
+
+    public function getText($model, $print)
+    {
+        switch ($print) {
+            case self::PRINT_STRUK:
+                return $model->strukText();
+            /*
+              case self::PRINT_INVOICE:
+              return $model->invoiceText();
+              case self::PRINT_NOTA:
+              return $model->notaText();
+             */
+        }
+    }
+
+    public function printLpr($id, $device, $print = 0)
+    {
+        $model = $this->loadModel($id);
+        $text  = $this->getText($model, $print);
+        $device->printLpr($text);
+        $this->redirect(['ubah', 'id' => $id]);
     }
 
 }

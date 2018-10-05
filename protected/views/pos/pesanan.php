@@ -44,17 +44,19 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                 'headerHtmlOptions' => ['class' => 'rata-kanan']
             ],
             [
-                'class'  => 'BDataColumn',
-                'name'   => 'tombolJual',
-                'header' => '',
-                'type'   => 'raw',
-                'filter' => false,
-                'value'  => [$this, 'renderPesananColumn']
+                'class'       => 'BDataColumn',
+                'name'        => 'tombolJual',
+                'header'      => '',
+                'type'        => 'raw',
+                'filter'      => false,
+                'value'       => [$this, 'renderPesananColumn'],
+                'htmlOptions' => ['title' => 'Jual'],
             ],
             [
-                'class'           => 'BButtonColumn',
-                'deleteButtonUrl' => 'Yii::app()->controller->createUrl("pesananpenjualan/batal", array("id"=>$data->primaryKey))',
-                'buttons'         => [
+                'class'               => 'BButtonColumn',
+                'deleteButtonUrl'     => 'Yii::app()->controller->createUrl("pesananpenjualan/batal", array("id"=>$data->primaryKey))',
+                'deleteButtonOptions' => ['title' => 'Batal'],
+                'buttons'             => [
                     'delete' => [
                         'visible' => '$data->status == ' . PesananPenjualan::STATUS_DRAFT . ' OR $data->status == ' . PesananPenjualan::STATUS_PESAN,
                     ]
