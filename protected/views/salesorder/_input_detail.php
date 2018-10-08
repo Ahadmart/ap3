@@ -58,7 +58,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             type: "POST",
             success: function (data) {
                 if (data.sukses) {
-                    $.fn.yiiGridView.update('pesanan-penjualan-detail-grid');
+                    $.fn.yiiGridView.update('sales-order-detail-grid');
                 } else {
                     $.gritter.add({
                         title: 'Error ' + data.error.code,
@@ -116,7 +116,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         $('#barang-grid').yiiGridView('update', {
             data: datakirim
         });
-        $("#pesanan-penjualan-detail").hide(100, function () {
+        $("#sales-order-detail").hide(100, function () {
             $("#barang-list").show(100, function () {
                 $("#namabarang").val("");
                 $("#cari").focus();

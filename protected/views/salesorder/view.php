@@ -23,7 +23,7 @@ $this->boxHeader['normal'] = 'Pesanan Penjualan: ' . $model->nomor;
         <?php
         $this->widget('BGridView',
                 [
-            'id'            => 'pesanan-penjualan-detail-grid',
+            'id'            => 'sales-order-detail-grid',
             'dataProvider'  => $modelDetail->search(),
             'itemsCssClass' => 'tabel-index responsive',
             //'filter' => $penjualanDetail,

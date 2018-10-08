@@ -1,9 +1,9 @@
 <?php
 
 /**
- * This is the model class for table "pesanan_penjualan".
+ * This is the model class for table "so". (Sales Order)
  *
- * The followings are the available columns in table 'pesanan_penjualan':
+ * The followings are the available columns in table 'so':
  * @property string $id
  * @property string $nomor
  * @property string $tanggal
@@ -18,9 +18,9 @@
  * @property Penjualan $penjualan
  * @property Profil $profil
  * @property User $updatedBy
- * @property PesananPenjualanDetail[] $pesananPenjualanDetails
+ * @property SoDetail[] $soDetails
  */
-class PesananPenjualan extends Penjualan
+class So extends Penjualan
 {
 
     const STATUS_DRAFT = 0;
@@ -40,7 +40,7 @@ class PesananPenjualan extends Penjualan
 
     public function tableName()
     {
-        return 'pesanan_penjualan';
+        return 'so';
     }
 
     /**
@@ -70,10 +70,10 @@ class PesananPenjualan extends Penjualan
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return [
-            'penjualan'               => [self::BELONGS_TO, 'Penjualan', 'penjualan_id'],
-            'profil'                  => [self::BELONGS_TO, 'Profil', 'profil_id'],
-            'updatedBy'               => [self::BELONGS_TO, 'User', 'updated_by'],
-            'pesananPenjualanDetails' => [self::HAS_MANY, 'PesananPenjualanDetail', 'pesanan_penjualan_id'],
+            'penjualan' => [self::BELONGS_TO, 'Penjualan', 'penjualan_id'],
+            'profil'    => [self::BELONGS_TO, 'Profil', 'profil_id'],
+            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
+            'soDetails' => [self::HAS_MANY, 'SoDetail', 'so_id'],
         ];
     }
 
@@ -158,7 +158,7 @@ class PesananPenjualan extends Penjualan
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return PesananPenjualan the static model class
+     * @return So the static model class
      */
     public static function model($className = __CLASS__)
     {
@@ -207,7 +207,7 @@ class PesananPenjualan extends Penjualan
     {
         $config         = Config::model()->find("nama='toko.kode'");
         $kodeCabang     = $config->nilai;
-        $kodeDokumen    = KodeDokumen::PESANAN_PENJUALAN;
+        $kodeDokumen    = KodeDokumen::SALES_ORDER;
         $kodeTahunBulan = date('ym');
         $sequence       = substr('00000' . $this->cariNomor(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
@@ -254,36 +254,36 @@ class PesananPenjualan extends Penjualan
     }
 
     /**
-     * Mencari jumlah barang di tabel pesanan_penjualan_detail
+     * Mencari jumlah barang di tabel so_detail
      * @param int $barangId ID Barang
      * @return int qty / jumlah barang, FALSE jika tidak ada
      */
     public function barangAda($barangId)
     {
         $detail = Yii::app()->db->createCommand("
-        select sum(qty) qty from pesanan_penjualan_detail
-        where pesanan_penjualan_id=:pesananId and barang_id=:barangId
-            ")->bindValues([':pesananId' => $this->id, ':barangId' => $barangId])
+        select sum(qty) qty from so_detail
+        where so_id=:orderId and barang_id=:barangId
+            ")->bindValues([':orderId' => $this->id, ':barangId' => $barangId])
                 ->queryRow();
 
         return $detail['qty'];
     }
 
     /**
-     * Hapus barang di pesanan_penjualan_detail
+     * Hapus barang di so_detail
      * @param ActiveRecord $barang
      */
     public function cleanBarang($barang)
     {
-        PesananPenjualanDetail::model()->deleteAll('barang_id=:barangId AND pesanan_penjualan_id=:pesananId',
+        SoDetail::model()->deleteAll('barang_id=:barangId AND so_id=:orderId',
                 [
             ':barangId'  => $barang->id,
-            ':pesananId' => $this->id
+            ':orderId' => $this->id
         ]);
     }
 
     /**
-     * Insert Pesanan Detail
+     * Insert Sales Order Detail
      * @param int $barangId
      * @param int $qty
      * @param decimal $hargaJual
@@ -293,36 +293,36 @@ class PesananPenjualan extends Penjualan
      */
     public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [])
     {
-        $detail                       = new PesananPenjualanDetail;
-        $detail->pesanan_penjualan_id = $this->id;
-        $detail->barang_id            = $barangId;
-        $detail->qty                  = $qty;
-        $detail->harga_jual           = $hargaJual;
+        $detail             = new SoDetail;
+        $detail->so_id      = $this->id;
+        $detail->barang_id  = $barangId;
+        $detail->qty        = $qty;
+        $detail->harga_jual = $hargaJual;
         if ($diskon > 0) {
             $detail->diskon = $diskon;
         }
         if (!$detail->save()) {
-            throw new Exception("Gagal simpan pesanan detail: pesananID:{$this->id}, barangID:{$barangId}, qty:{$qty}",
+            throw new Exception("Gagal simpan Sales Order detail: SO-ID:{$this->id}, barangID:{$barangId}, qty:{$qty}",
             500);
         }
     }
 
     /**
-     * Total Pesanan
+     * Total Sales Order
      * @return int total dalam bentuk raw (belum terformat)
      */
     public function ambilTotal()
     {
         $detail = Yii::app()->db->createCommand()
                 ->select('sum(harga_jual * qty) total')
-                ->from(PesananPenjualanDetail::model()->tableName())
-                ->where('pesanan_penjualan_id=:pesananId', [':pesananId' => $this->id])
+                ->from(SoDetail::model()->tableName())
+                ->where('so_id=:orderId', [':orderId' => $this->id])
                 ->queryRow();
         return $detail['total'];
     }
 
     /**
-     * Total Pesanan
+     * Total Sales Order
      * @return string Total dalam format 0.000
      */
     public function getTotal()
@@ -335,7 +335,7 @@ class PesananPenjualan extends Penjualan
         $transaction    = $this->dbConnection->beginTransaction();
         $this->scenario = 'simpanPertama';
         try {
-            $this->simpanPesanan();
+            $this->simpanOrder();
             $transaction->commit();
             return [
                 'sukses' => true
@@ -351,10 +351,10 @@ class PesananPenjualan extends Penjualan
         }
     }
 
-    public function simpanPesanan()
+    public function simpanOrder()
     {
         if (!$this->save()) {
-            throw new Exception('Gagal simpan Pesanan', 500);
+            throw new Exception('Gagal simpan Sales Order', 500);
         }
     }
 
@@ -376,7 +376,7 @@ class PesananPenjualan extends Penjualan
     }
 
     /**
-     * Struk PESANAN
+     * Struk Sales Order
      * @return text
      */
     public function strukText()
@@ -394,7 +394,7 @@ class PesananPenjualan extends Penjualan
         //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
         //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
         $struk .= strtoupper($configToko->nilai) . "\n";
-        $struk .= "PESANAN\n";
+        $struk .= "SALES ORDER\n";
 
 
         $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf

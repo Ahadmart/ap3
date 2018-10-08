@@ -1,6 +1,6 @@
 <?php
 
-class PesananpenjualanController extends Controller
+class SalesorderController extends Controller
 {
 
     const PROFIL_ALL      = 0;
@@ -15,9 +15,9 @@ class PesananpenjualanController extends Controller
     public function actionView($id)
     {
 
-        $modelDetail = new PesananPenjualanDetail('search');
+        $modelDetail = new SoDetail('search');
         $modelDetail->unsetAttributes();
-        $modelDetail->setAttribute('pesanan_penjualan_id', '=' . $id);
+        $modelDetail->setAttribute('so_id', '=' . $id);
 
         $this->render('view',
                 [
@@ -33,13 +33,13 @@ class PesananpenjualanController extends Controller
     public function actionTambah()
     {
         $this->layout = '//layouts/box_kecil';
-        $model        = new PesananPenjualan;
+        $model        = new So;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if (isset($_POST['PesananPenjualan'])) {
-            $model->attributes = $_POST['PesananPenjualan'];
+        if (isset($_POST['So'])) {
+            $model->attributes = $_POST['So'];
             if ($model->save())
                 $this->redirect(['ubah', 'id' => $model->id]);
         }
@@ -64,22 +64,22 @@ class PesananpenjualanController extends Controller
         $model = $this->loadModel($id);
 
         // Yang bisa diubah adalah yang statusnya DRAFT dan PESAN
-        if ($model->status == PesananPenjualan::STATUS_JUAL || $model->status == PesananPenjualan::STATUS_BATAL) {
+        if ($model->status == So::STATUS_JUAL || $model->status == So::STATUS_BATAL) {
             $this->redirect(['view', 'id' => $id]);
         }
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if (isset($_POST['PesananPenjualan'])) {
-            $model->attributes = $_POST['PesananPenjualan'];
+        if (isset($_POST['So'])) {
+            $model->attributes = $_POST['So'];
             if ($model->save())
                 $this->redirect(['view', 'id' => $id]);
         }
 
-        $modelDetail = new PesananPenjualanDetail('search');
+        $modelDetail = new SoDetail('search');
         $modelDetail->unsetAttributes();
-        $modelDetail->setAttribute('pesanan_penjualan_id', '=' . $id);
+        $modelDetail->setAttribute('so_id', '=' . $id);
 
         $barang = new Barang('search');
         $barang->unsetAttributes();
@@ -109,12 +109,12 @@ class PesananpenjualanController extends Controller
     public function actionBatal($id)
     {
         $model = $this->loadModel($id);
-        if ($model->status == PesananPenjualan::STATUS_DRAFT) {
-            PesananPenjualanDetail::model()->deleteAll('pesanan_penjualan_id = :pesananId', [':pesananId' => $id]);
+        if ($model->status == So::STATUS_DRAFT) {
+            SoDetail::model()->deleteAll('so_id = :orderId', [':orderId' => $id]);
             $model->delete();
         }
-        if ($model->status == PesananPenjualan::STATUS_PESAN) {
-            $model->updateByPk($id, ['status' => PesananPenjualan::STATUS_BATAL]);
+        if ($model->status == So::STATUS_PESAN) {
+            $model->updateByPk($id, ['status' => So::STATUS_BATAL]);
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -127,10 +127,10 @@ class PesananpenjualanController extends Controller
      */
     public function actionIndex()
     {
-        $model             = new PesananPenjualan('search');
+        $model             = new So('search');
         $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['PesananPenjualan']))
-            $model->attributes = $_GET['PesananPenjualan'];
+        if (isset($_GET['So']))
+            $model->attributes = $_GET['So'];
 
         $this->render('index', [
             'model' => $model,
@@ -141,12 +141,12 @@ class PesananpenjualanController extends Controller
      * Returns the data model based on the primary key given in the GET variable.
      * If the data model is not found, an HTTP exception will be raised.
      * @param integer $id the ID of the model to be loaded
-     * @return PesananPenjualan the loaded model
+     * @return So the loaded model
      * @throws CHttpException
      */
     public function loadModel($id)
     {
-        $model = PesananPenjualan::model()->findByPk($id);
+        $model = So::model()->findByPk($id);
         if ($model === null)
             throw new CHttpException(404, 'The requested page does not exist.');
         return $model;
@@ -154,11 +154,11 @@ class PesananpenjualanController extends Controller
 
     /**
      * Performs the AJAX validation.
-     * @param PesananPenjualan $model the model to be validated
+     * @param So $model the model to be validated
      */
     protected function performAjaxValidation($model)
     {
-        if (isset($_POST['ajax']) && $_POST['ajax'] === 'pesanan-penjualan-form') {
+        if (isset($_POST['ajax']) && $_POST['ajax'] === 'so-form') {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
@@ -172,16 +172,16 @@ class PesananpenjualanController extends Controller
     public function renderLinkNomor($data)
     {
         switch ($data->status) {
-            case PesananPenjualan::STATUS_BATAL:
+            case So::STATUS_BATAL:
                 //return $data->nomor;
                 return '<a href="' . $this->createUrl('view', ['id' => $data->id]) . '">' . $data->nomor . '</a>';
                 break;
 
-            case PesananPenjualan::STATUS_JUAL:
+            case So::STATUS_JUAL:
                 return '<a href="' . $this->createUrl('view', ['id' => $data->id]) . '">' . $data->nomor . '</a>';
                 break;
 
-            case PesananPenjualan::STATUS_PESAN:
+            case So::STATUS_PESAN:
                 return '<a href="' . $this->createUrl('ubah', ['id' => $data->id]) . '">' . $data->nomor . '</a>';
                 break;
         }
@@ -225,7 +225,7 @@ class PesananpenjualanController extends Controller
 
     /**
      * Tambah barang jual
-     * @param int $id ID Pesanan
+     * @param int $id ID Sales Order
      * @return JSON boolean sukses, array error[code, msg]
      */
     public function actionTambahDetail($id)
@@ -238,30 +238,30 @@ class PesananpenjualanController extends Controller
             ],
         ];
         if (isset($_POST['tambah_barang']) && $_POST['tambah_barang']) {
-            $pesanan = $this->loadModel($id);
+            $order   = $this->loadModel($id);
             $qty     = $_POST['qty'];
             $barcode = $_POST['barcode'];
-            $return  = $pesanan->tambahBarang($barcode, $qty);
+            $return  = $order->tambahBarang($barcode, $qty);
         }
         $this->renderJSON($return);
     }
 
     public function actionHapusDetail($id)
     {
-        $detail = PesananPenjualanDetail::model()->findByPk($id);
+        $detail = SoDetail::model()->findByPk($id);
         if (!$detail->delete()) {
             throw new Exception('Gagal hapus detail penjualan');
         }
     }
 
     /**
-     * Ambil total pesanan via ajax
+     * Ambil total order via ajax
      */
     public function actionTotal($id)
     {
-        $pesanan          = $this->loadModel($id);
-        $total            = $pesanan->ambilTotal();
-        $totalF           = $pesanan->total;
+        $order            = $this->loadModel($id);
+        $total            = $order->ambilTotal();
+        $totalF           = $order->total;
         $return['sukses'] = true;
         $return['total']  = $total;
         $return['totalF'] = $totalF;
@@ -277,10 +277,10 @@ class PesananpenjualanController extends Controller
                 'msg'  => 'Sempurnakan input!',
             ],
         ];
-        if (isset($_POST['pesan']) && $_POST['pesan']) {
-            $pesanan = $this->loadModel($id);
-            if ($pesanan->status == PesananPenjualan::STATUS_DRAFT) {
-                $this->renderJSON($pesanan->simpan());
+        if (isset($_POST['order']) && $_POST['order']) {
+            $order = $this->loadModel($id);
+            if ($order->status == So::STATUS_DRAFT) {
+                $this->renderJSON($order->simpan());
             }
         }
         $this->renderJSON($return);
@@ -295,19 +295,19 @@ class PesananpenjualanController extends Controller
     {
 
         switch ($data->status) {
-            case PesananPenjualan::STATUS_DRAFT:
+            case So::STATUS_DRAFT:
                 return $data->namaStatus;
                 break;
 
-            case PesananPenjualan::STATUS_PESAN:
+            case So::STATUS_PESAN:
                 return $data->namaStatus;
                 break;
 
-            case PesananPenjualan::STATUS_JUAL:
+            case So::STATUS_JUAL:
                 return '<a href="#" class="editable-status" data-type="select" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updatestatus') . '">' . $data->namaStatus . '</a>';
                 break;
 
-            case PesananPenjualan::STATUS_BATAL:
+            case So::STATUS_BATAL:
                 return '<a href="#" class="editable-status" data-type="select" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updatestatus') . '">' . $data->namaStatus . '</a>';
                 break;
         }
@@ -325,8 +325,8 @@ class PesananpenjualanController extends Controller
         if (isset($_POST['pk'])) {
             $pk     = $_POST['pk'];
             $status = $_POST['value'];
-            if ($status == PesananPenjualan::STATUS_PESAN) {
-                PesananPenjualan::model()->updateByPk($pk, ['status' => $status, 'penjualan_id' => null]);
+            if ($status == So::STATUS_PESAN) {
+                So::model()->updateByPk($pk, ['status' => $status, 'penjualan_id' => null]);
                 $return = ['sukses' => true];
             }
         }

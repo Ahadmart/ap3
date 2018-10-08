@@ -57,7 +57,7 @@
         var barcode = $(this).attr("href");
 
         $("#barang-list").hide(100, function () {
-            $("#pesanan-penjualan-detail").show(100, function () {
+            $("#sales-order-detail").show(100, function () {
                 $("#scan").val(barcode);
                 $("#qty").focus();
                 $("#qty").select();

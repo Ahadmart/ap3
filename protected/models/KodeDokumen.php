@@ -28,8 +28,8 @@ class KodeDokumen extends CActiveRecord
     const PENGELUARAN = '08';
     const PENERIMAAN = '09';
     const AKM = '10';
-    const PO = '11'; // PURCHASE ORDER
-    const PESANAN_PENJUALAN = '12'; // SALES ORDER
+    const PO = '11'; // PURCHASE ORDER (PESANAN PEMBELIAN)
+    const SALES_ORDER = '12'; // PESANAN PENJUALAN
 
     /**
      * @return string the associated database table name

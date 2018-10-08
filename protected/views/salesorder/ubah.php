@@ -1,6 +1,6 @@
 <?php
-/* @var $this PesananpenjualanController */
-/* @var $model PesananPenjualan */
+/* @var $this SalesorderController */
+/* @var $model So */
 
 $this->breadcrumbs = [
     'Pesanan Penjualan' => ['index'],
@@ -9,7 +9,7 @@ $this->breadcrumbs = [
 ];
 
 $this->boxHeader['small']  = 'Ubah';
-$this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
+$this->boxHeader['normal'] = "Sales Order: {$model->nomor}";
 ?>
 <div class="row">
     <div class="large-7 columns header">
@@ -19,14 +19,14 @@ $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
     <div class="large-5 columns">
         <ul class="button-group right">
             <?php
-            if ($model->status == PesananPenjualan::STATUS_DRAFT) {
+            if ($model->status == So::STATUS_DRAFT) {
                 ?>
                 <li>
                     <?php
                     echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> Pe<span class="ak">s</span>an',
                             $this->createUrl('pesan', ['id' => $model->id]),
                             [
-                        'data'    => "pesan=true",
+                        'data'    => "order=true",
                         'type'    => 'POST',
                         'success' => 'function(data) {
                             if (data.sukses) {
@@ -45,7 +45,7 @@ $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
             }
             ?>
             <?php
-            if ($model->status == PesananPenjualan::STATUS_PESAN) {
+            if ($model->status == So::STATUS_PESAN) {
                 ?>
                 <li>
                     <button href="#" accesskey="k" data-dropdown="printstruk" aria-controls="printstruk" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> Print Stru<span class="ak">k</span></button><br>
@@ -87,7 +87,7 @@ $this->boxHeader['normal'] = "Pesanan Penjualan: {$model->nomor}";
     ]);
     ?>
 </div>
-<div class="row" id="pesanan-penjualan-detail">
+<div class="row" id="sales-order-detail">
     <?php
     $this->renderPartial('_detail', [
         'model'       => $model,

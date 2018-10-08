@@ -1,11 +1,11 @@
 <?php
 
 /**
- * This is the model class for table "pesanan_penjualan_detail".
+ * This is the model class for table "so_detail".
  *
- * The followings are the available columns in table 'pesanan_penjualan_detail':
+ * The followings are the available columns in table 'so_detail':
  * @property string $id
- * @property string $pesanan_penjualan_id
+ * @property string $so_id
  * @property string $barang_id
  * @property string $qty
  * @property string $harga_jual
@@ -16,10 +16,10 @@
  *
  * The followings are the available model relations:
  * @property Barang $barang
- * @property PesananPenjualan $pesananPenjualan
+ * @property So $so
  * @property User $updatedBy
  */
-class PesananPenjualanDetail extends CActiveRecord
+class SoDetail extends CActiveRecord
 {
 
     /**
@@ -27,7 +27,7 @@ class PesananPenjualanDetail extends CActiveRecord
      */
     public function tableName()
     {
-        return 'pesanan_penjualan_detail';
+        return 'so_detail';
     }
 
     /**
@@ -38,13 +38,13 @@ class PesananPenjualanDetail extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            ['pesanan_penjualan_id, barang_id, harga_jual', 'required'],
-            ['pesanan_penjualan_id, barang_id, qty, updated_by', 'length', 'max' => 10],
+            ['so_id, barang_id, harga_jual', 'required'],
+            ['so_id, barang_id, qty, updated_by', 'length', 'max' => 10],
             ['harga_jual, diskon', 'length', 'max' => 18],
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, pesanan_penjualan_id, barang_id, qty, harga_jual, diskon, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, so_id, barang_id, qty, harga_jual, diskon, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -56,9 +56,9 @@ class PesananPenjualanDetail extends CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return [
-            'barang'           => [self::BELONGS_TO, 'Barang', 'barang_id'],
-            'pesananPenjualan' => [self::BELONGS_TO, 'PesananPenjualan', 'pesanan_penjualan_id'],
-            'updatedBy'        => [self::BELONGS_TO, 'User', 'updated_by'],
+            'barang'    => [self::BELONGS_TO, 'Barang', 'barang_id'],
+            'so'        => [self::BELONGS_TO, 'So', 'so_id'],
+            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
         ];
     }
 
@@ -68,15 +68,15 @@ class PesananPenjualanDetail extends CActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'                   => 'ID',
-            'pesanan_penjualan_id' => 'Pesanan Penjualan',
-            'barang_id'            => 'Barang',
-            'qty'                  => 'Qty',
-            'harga_jual'           => 'Harga Jual',
-            'diskon'               => 'Diskon',
-            'updated_at'           => 'Updated At',
-            'updated_by'           => 'Updated By',
-            'created_at'           => 'Created At',
+            'id'         => 'ID',
+            'so_id'      => 'Sales Order',
+            'barang_id'  => 'Barang',
+            'qty'        => 'Qty',
+            'harga_jual' => 'Harga Jual',
+            'diskon'     => 'Diskon',
+            'updated_at' => 'Updated At',
+            'updated_by' => 'Updated By',
+            'created_at' => 'Created At',
         ];
     }
 
@@ -99,7 +99,7 @@ class PesananPenjualanDetail extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id);
-        $criteria->compare('pesanan_penjualan_id', $this->pesanan_penjualan_id);
+        $criteria->compare('so_id', $this->so_id);
         $criteria->compare('barang_id', $this->barang_id);
         $criteria->compare('qty', $this->qty, true);
         $criteria->compare('harga_jual', $this->harga_jual, true);
@@ -122,7 +122,7 @@ class PesananPenjualanDetail extends CActiveRecord
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return PesananPenjualanDetail the static model class
+     * @return SoDetail the static model class
      */
     public static function model($className = __CLASS__)
     {
