@@ -869,7 +869,7 @@ class PosController extends Controller
         ];
         if (isset($_POST['pesan']) && $_POST['pesan']) {
             $pesanan = So::model()->findByPk($id);
-            if ($pesanan->status == So::STATUS_DRAFT) {
+            if ($pesanan->status == So::STATUS_DRAFT && $pesanan->ambilTotal() > 0) {
                 $this->renderJSON($pesanan->simpan());
             }
             if ($pesanan->status == So::STATUS_PESAN) {

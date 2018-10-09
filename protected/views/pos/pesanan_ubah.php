@@ -244,6 +244,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                         text: data.error.msg,
                         time: 3000,
                     });
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
                 }
                 $("#scan").val("");
                 $("#scan").focus();
