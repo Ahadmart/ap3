@@ -1,7 +1,7 @@
 <?php
 /* @var $this PosController */
-/* @var $model PesananPenjualan */
-/* @var $modelDetail PesananPenjualanDetail */
+/* @var $model So */
+/* @var $modelDetail SoDetail */
 
 /* $this->breadcrumbs = array(
   'Penjualan' => array('index'),
@@ -71,7 +71,7 @@ $this->boxHeader['normal'] = "Pesanan (Sales Order): {$model->nomorF}";
     </div>
     <hr />
     <?php
-    if ($model->status == PesananPenjualan::STATUS_DRAFT) {
+    if ($model->status == So::STATUS_DRAFT) {
         ?>
         <a href="" class="success bigfont tiny button" id="tombol-simpan" accesskey="a">Pes<span class="ak">a</span>n</a>
         <?php
@@ -82,13 +82,13 @@ $this->boxHeader['normal'] = "Pesanan (Sales Order): {$model->nomorF}";
     }
     ?>    
     <?php
-    if ($model->status == PesananPenjualan::STATUS_PESAN) {
+    if ($model->status == So::STATUS_PESAN) {
         ?>
         <a href="<?= $this->createUrl('pesananprint', ['id' => $model->id]) ?>" class="bigfont tiny right button"><i class="fa fa-print"></i> Print</a>
         <?php
     }
     ?>
-    <form action="<?= $this->createUrl('pesananpenjualan/batal', ['id' => $model->id]) ?>" method="post">
+    <form action="<?= $this->createUrl('salesorder/batal', ['id' => $model->id]) ?>" method="post">
         <input type="hidden" name="returnUrl" value="<?= $this->createUrl('pesanan') ?>" />
         <input class="warning bigfont tiny button" type="submit" name="Batal" value="Batal" />
     </form>
@@ -204,7 +204,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     };
 
     function updateTotal() {
-        var dataurl = "<?php echo Yii::app()->createUrl('pesananpenjualan/total', ['id' => $model->id]); ?>";
+        var dataurl = "<?php echo Yii::app()->createUrl('salesorder/total', ['id' => $model->id]); ?>";
         $.ajax({
             url: dataurl,
             type: "GET",

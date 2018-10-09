@@ -115,21 +115,21 @@ class Pos extends Penjualan
         try {
 
             $tahun   = date('y');
-            $pesanan = PesananPenjualan::model()->findByPk($id);
+            $pesanan = So::model()->findByPk($id);
             if (is_null($pesanan)) {
-                throw new Exception('Pesanan tidak ditemukan', 500);
+                throw new Exception('Pesanan (Sales Order) tidak ditemukan', 500);
             }
 
-            $pesananDetails = PesananPenjualanDetail::model()->findAll('pesanan_penjualan_id=:pesananId',
+            $pesananDetails = SoDetail::model()->findAll('so_id=:pesananId',
                     [':pesananId' => $pesanan->id]);
             foreach ($pesananDetails as $detail) {
                 $barang = Barang::model()->findByPk($detail->barang_id);
                 $this->tambahBarangProc($barang, $detail->qty);
             }
 
-            PesananPenjualan::model()->updateByPk($id,
+            So::model()->updateByPk($id,
                     [
-                'status'       => PesananPenjualan::STATUS_JUAL,
+                'status'       => So::STATUS_JUAL,
                 'penjualan_id' => $this->id
                     ]
             );
@@ -152,7 +152,7 @@ class Pos extends Penjualan
     public function inputPesananByNomor($nomor)
     {
         $tahun   = date('y');
-        $pesanan = PesananPenjualan::model()->find('substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun',
+        $pesanan = So::model()->find('substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun',
                 [
             ':nomor' => $nomor,
             ':tahun' => $tahun

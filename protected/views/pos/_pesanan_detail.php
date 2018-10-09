@@ -14,7 +14,6 @@ $this->widget('BGridView',
     'id'            => 'pesanan-detail-grid',
     'dataProvider'  => $modelDetail->search(),
     //'filter' => $modelDetail,
-    //'summaryText' => 'Poin struk ini: ' . $pesanan->getCurPoin() . ' | Poin sebelumnya: ' . $pesanan->getTotalPoinPeriodeBerjalan() . ' | {start}-{end} dari {count}',
     'itemsCssClass' => 'tabel-index responsive',
     'template'      => '{items}{pager}{summary}',
     'enableSorting' => false,
@@ -86,7 +85,6 @@ $this->widget('BGridView',
         ],
     ],
 ]);
-//echo $pesanan->getCurPoin();
 ?>
 <script>
 

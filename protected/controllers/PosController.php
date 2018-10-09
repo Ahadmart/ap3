@@ -669,17 +669,17 @@ class PosController extends Controller
     public function actionPesanan()
     {
 
-        $model = new PesananPenjualan('search');
+        $model = new So('search');
         $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['PesananPenjualan'])) {
-            $model->attributes = $_GET['PesananPenjualan'];
+        if (isset($_GET['So'])) {
+            $model->attributes = $_GET['So'];
         }
 
         $criteria            = new CDbCriteria;
         $criteria->condition = 'status = :sDraft OR status = :sPesan';
         $criteria->params    = [
-            ':sDraft' => PesananPenjualan::STATUS_DRAFT,
-            ':sPesan' => PesananPenjualan::STATUS_PESAN,
+            ':sDraft' => So::STATUS_DRAFT,
+            ':sPesan' => So::STATUS_PESAN,
         ];
         $model->setDbCriteria($criteria);
 
@@ -695,7 +695,7 @@ class PosController extends Controller
                                 Yii::app()->controller->createUrl('pos/pesananubah', ['id' => $data->id]));
                 break;
             case 'tombolJual':
-                if ($data->status == PesananPenjualan::STATUS_PESAN) {
+                if ($data->status == So::STATUS_PESAN) {
                     return CHtml::link('<i class="fa fa-shopping-cart fa-fw"></i>',
                                     $this->createUrl('pesanansimpan', ['id' => $data->id]), ['class' => 'link-jual']);
                 } else {
@@ -711,9 +711,9 @@ class PosController extends Controller
         $this->layout = '//layouts/pos_column3_pesanan';
 
         $this->pesananId = $id;
-        $model           = PesananPenjualan::model()->findByPk($id);
+        $model           = So::model()->findByPk($id);
         // Penjualan tidak bisa diubah kecuali statusnya draft atau pesan
-        if ($model->status != PesananPenjualan::STATUS_DRAFT AND $model->status != PesananPenjualan::STATUS_PESAN) {
+        if ($model->status != So::STATUS_DRAFT AND $model->status != So::STATUS_PESAN) {
             $this->redirect(['index']);
         }
 
@@ -723,9 +723,9 @@ class PosController extends Controller
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        $modelDetail = new PesananPenjualanDetail('search');
+        $modelDetail = new SoDetail('search');
         $modelDetail->unsetAttributes();
-        $modelDetail->setAttribute('pesanan_penjualan_id', '=' . $id);
+        $modelDetail->setAttribute('so_id', '=' . $id);
 
         $barang = new Barang('search');
         $barang->unsetAttributes();
@@ -767,9 +767,9 @@ class PosController extends Controller
             ]
         ];
         if (isset($_POST['barcode'])) {
-            $pesanan = PesananPenjualan::model()->findByPk($id);
+            $pesanan = So::model()->findByPk($id);
             /* Tambah barang hanya bisa jika status masih draft atau pesan */
-            if ($pesanan->status == PesananPenjualan::STATUS_DRAFT || $pesanan->status == PesananPenjualan::STATUS_PESAN) {
+            if ($pesanan->status == So::STATUS_DRAFT || $pesanan->status == So::STATUS_PESAN) {
                 $barcode = $_POST['barcode'];
                 $return  = $pesanan->tambahBarang($barcode, 1);
             }
@@ -824,21 +824,21 @@ class PosController extends Controller
         if (isset($_POST['pk'])) {
             $pk       = $_POST['pk'];
             $qtyInput = $_POST['value'];
-            $detail   = PesananPenjualanDetail::model()->findByPk($pk);
+            $detail   = SoDetail::model()->findByPk($pk);
             if ($qtyInput > 0) {
                 $selisih = $qtyInput - $detail->qty;
 
                 $return  = ['sukses' => false];
-                $pesanan = PesananPenjualan::model()->findByPk($detail->pesanan_penjualan_id);
+                $pesanan = So::model()->findByPk($detail->so_id);
                 $return  = $pesanan->tambahBarang($detail->barang->barcode, $selisih);
             } else {
                 /* qty=0 / hapus barang */
                 $barang  = Barang::model()->findByPk($detail->barang_id);
-                $pesanan = PesananPenjualan::model()->findByPk($detail->pesanan_penjualan_id);
-                $details = PesananPenjualanDetail::model()->findAll('barang_id=:barangId AND pesanan_penjualan_id=:pesananID',
+                $pesanan = So::model()->findByPk($detail->so_id);
+                $details = SoDetail::model()->findAll('barang_id=:barangId AND so_id=:pesananID',
                         [
                     ':barangId'  => $detail->barang_id,
-                    ':pesananID' => $detail->pesanan_penjualan_id
+                    ':pesananID' => $detail->so_id
                 ]);
                 $pesanan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
                 $return  = ['sukses' => true];
@@ -849,7 +849,7 @@ class PosController extends Controller
 
     public function actionPesananBaru()
     {
-        $pesanan            = new PesananPenjualan;
+        $pesanan            = new So;
         $pesanan->profil_id = Profil::PROFIL_UMUM;
         if ($pesanan->save()) {
             $this->redirect(['pesananubah', 'id' => $pesanan->id]);
@@ -868,11 +868,11 @@ class PosController extends Controller
             ],
         ];
         if (isset($_POST['pesan']) && $_POST['pesan']) {
-            $pesanan = PesananPenjualan::model()->findByPk($id);
-            if ($pesanan->status == PesananPenjualan::STATUS_DRAFT) {
+            $pesanan = So::model()->findByPk($id);
+            if ($pesanan->status == So::STATUS_DRAFT) {
                 $this->renderJSON($pesanan->simpan());
             }
-            if ($pesanan->status == PesananPenjualan::STATUS_PESAN) {
+            if ($pesanan->status == So::STATUS_PESAN) {
                 $penjualan            = new Pos;
                 $penjualan->profil_id = $pesanan->profil_id;
                 if ($penjualan->save()) {
@@ -913,12 +913,14 @@ class PosController extends Controller
             throw new CHttpException("Tidak ada default Printer!");
         }
         $device  = Device::model()->findByPk($printId);
-        $pesanan = PesananPenjualan::model()->findByPk($id);
+        $pesanan = So::model()->findByPk($id);
         $text    = $pesanan->strukText();
 
         $device->cashdrawer_kick = 0;
         if ($device->tipe_id == Device::TIPE_LPR) {
+            $device->cashdrawer_kick = 0;
             $device->printLpr($text);
+            $this->redirect(['pesananubah', 'id' => $id]);
         } else if ($device->tipe_id == Device::TIPE_TEXT_PRINTER) {
             $nomor    = $pesanan->nomor;
             $namaFile = "pesanan-{$nomor}";

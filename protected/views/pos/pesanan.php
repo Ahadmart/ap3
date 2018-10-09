@@ -1,6 +1,6 @@
 <?php
 /* @var $this PosController */
-/* @var $model PesananPenjualan */
+/* @var $model So */
 
 //$this->boxHeader['small'] = 'Suspended';
 //$this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Suspended';
@@ -54,11 +54,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             ],
             [
                 'class'               => 'BButtonColumn',
-                'deleteButtonUrl'     => 'Yii::app()->controller->createUrl("pesananpenjualan/batal", array("id"=>$data->primaryKey))',
+                'deleteButtonUrl'     => 'Yii::app()->controller->createUrl("salesorder/batal", array("id"=>$data->primaryKey))',
                 'deleteButtonOptions' => ['title' => 'Batal'],
                 'buttons'             => [
                     'delete' => [
-                        'visible' => '$data->status == ' . PesananPenjualan::STATUS_DRAFT . ' OR $data->status == ' . PesananPenjualan::STATUS_PESAN,
+                        'visible' => '$data->status == ' . So::STATUS_DRAFT . ' OR $data->status == ' . So::STATUS_PESAN,
                     ]
                 ]
             ],
