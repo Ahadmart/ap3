@@ -55,28 +55,28 @@ $this->widget('BGridView', array(
         //console.log($(this).attr("href"));
         var barangId = $(this).attr("href");
 
-        $("#barang-list").hide(100, function () {
-            var datakirim = {
-                'barangId': barangId
-            };
-            var dataurl = "<?php echo $this->createUrl('getbarang',['id'=>$poModel->id]) ?>";
+        //$("#barang-list").hide(100, function () {
+        var datakirim = {
+            'barangId': barangId
+        };
+        var dataurl = "<?php echo $this->createUrl('getbarang',['id'=>$poModel->id]) ?>";
 
-            $.ajax({
-                data: datakirim,
-                url: dataurl,
-                type: "POST",
-                dataType: "json",
-                success: function(data) {
-                    if (data.sukses) {
-                        updateFormDetail(data.info)
-                    } else {
-                        $(".response").addClass("error");
-                        $(".response").html("Error : <br />" + data.error.msg).slideDown('slow').delay(5000).slideUp('slow');
-                    }
+        $.ajax({
+            data: datakirim,
+            url: dataurl,
+            type: "POST",
+            dataType: "json",
+            success: function(data) {
+                if (data.sukses) {
+                    updateFormDetail(data.info)
+                } else {
+                    $(".response").addClass("error");
+                    $(".response").html("Error : <br />" + data.error.msg).slideDown('slow').delay(5000).slideUp('slow');
                 }
-            });
-
+            }
         });
+
+        //});
         return false;
     });
 </script>
