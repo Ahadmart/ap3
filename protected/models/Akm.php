@@ -247,7 +247,7 @@ class Akm extends Penjualan
      * @param int $tipeDiskonId
      * @throws Exception
      */
-    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null)
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [])
     {
         $detail = new AkmDetail;
         $detail->akm_id = $this->id;
