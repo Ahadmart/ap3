@@ -394,7 +394,7 @@ class So extends Penjualan
         //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
         //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
         $struk .= strtoupper($configToko->nilai) . "\n";
-        $struk .= "SALES ORDER\n";
+        $struk .= "PESANAN\n";
 
 
         $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
