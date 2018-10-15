@@ -398,7 +398,6 @@ class So extends Penjualan
 
 
         $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
-        $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
         $struk .= chr(27) . "!" . chr(16); //font double width
         $struk .= chr(27) . "a" . chr(2); //2 right
         $struk .= "Rp. {$total}\n\n";
