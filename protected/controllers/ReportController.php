@@ -1115,4 +1115,75 @@ class ReportController extends Controller
         }
     }
 
+    /**
+     * Report Penjualan dari Sales Order Form
+     */
+    public function actionPenjualanSalesOrder()
+    {
+        $model  = new ReportPenjualanSalesOrderForm;
+        $report = [];
+        if (isset($_POST['ReportPenjualanSalesOrderForm'])) {
+            $model->attributes = $_POST['ReportPenjualanSalesOrderForm'];
+            if ($model->validate()) {
+                $report = $model->report();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes(); // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes(); // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        
+        $this->render('penjualan_salesorder', [
+            'model'    => $model,
+            'profil'   => $profil,
+            'user'     => $user,
+            'report'   => $report,
+            'printers' => $printers,
+        ]);
+    }
+    
+    public function actionPrintPenjualanSo()
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_CSV_PRINTER:
+                    $this->penjualanSoCsv();
+                    break;
+            }
+        }
+    }
+
+    /* Render CSV Penjualan dari Sales Order */
+
+    public function penjualanSoCsv()
+    {
+        $report = new ReportPenjualanSalesOrderForm();
+        $csv    = $report->toCsv();
+
+        if (is_null($csv)) {
+            throw new Exception("Tidak ada data", 500);
+        }
+
+        $namaToko  = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp = date("Y-m-d-H-i");
+        $namaFile  = "Penjualan Sales Order {$namaToko->nilai} {$timeStamp}";
+
+        $this->renderPartial('_csv', [
+            'namaFile' => $namaFile,
+            'csv'      => $csv,
+        ]);
+    }
+
 }
