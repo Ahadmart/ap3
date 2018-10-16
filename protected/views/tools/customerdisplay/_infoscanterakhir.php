@@ -1,8 +1,7 @@
 <?php
-$hargaJual     = $detailModel->harga_jual;
+$hargaNet      = $detailModel->harga_jual;
 $diskon        = $detailModel->diskon;
 $hargaBukanNet = '';
-$hargaNet      = $detailModel->harga_jual;
 if ($diskon > 0) {
     $hargaBukanNet = number_format($detailModel->harga_jual + $diskon, 0, ',', '.');
 }
