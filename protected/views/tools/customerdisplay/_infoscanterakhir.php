@@ -1,16 +1,16 @@
 <?php
-$hargaJual = $detailModel->harga_jual;
-$diskon = $detailModel->diskon;
+$hargaJual     = $detailModel->harga_jual;
+$diskon        = $detailModel->diskon;
 $hargaBukanNet = '';
+$hargaNet      = $detailModel->harga_jual;
 if ($diskon > 0) {
-    $hargaBukanNet = number_format($detailModel->harga_jual, 0, ',', '.');
+    $hargaBukanNet = number_format($detailModel->harga_jual + $diskon, 0, ',', '.');
 }
-$hargaNet = $detailModel->harga_jual - $diskon;
-$totalNet = $hargaNet * $detailModel->qty;
-$qtyText = number_format($detailModel->qty, 0, ',', '.');
+$totalNet     = $hargaNet * $detailModel->qty;
+$qtyText      = number_format($detailModel->qty, 0, ',', '.');
 $totalNetText = number_format($totalNet, 0, ',', '.');
 $hargaNetText = number_format($hargaNet, 0, ',', '.');
-$hargaText = $hargaNetText . ' x ' . $qtyText . ' = ' . $totalNetText;
+$hargaText    = $hargaNetText . ' x ' . $qtyText . ' = ' . $totalNetText;
 ?>
 
 
