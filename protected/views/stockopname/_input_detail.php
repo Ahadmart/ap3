@@ -56,7 +56,7 @@
         <form>
             <div class="row collapse">
                 <div class="small-4 columns">
-                    <span class="prefix huruf"><b>Q</b>ty sebenarnya</span>
+                    <span class="prefix huruf"><b>Q</b>ty Asli</span>
                 </div>
                 <div class="small-4 columns">
                     <input id="qty" type="text" accesskey="q" autocomplete="off"/>
@@ -66,6 +66,25 @@
                 </div>
             </div>
         </form>
+        <a href="#" class="tiny bigfont button gantiinput">Ganti Input</a> menjadi Selisih
+    </div>
+</div>
+<div id="input-selisih" style="display: none">
+    <div class="small-12 medium-6 large-4 columns">
+        <form>
+            <div class="row collapse">
+                <div class="small-4 columns">
+                    <span class="prefix huruf">Se<b>l</b>isih</span>
+                </div>
+                <div class="small-4 columns">
+                    <input id="selisih" type="text" accesskey="l" autocomplete="off"/>
+                </div>
+                <div class="small-4 columns">
+                    <a id="tombol-ok-tambah-s" href="" class="button postfix">Tambah</a>
+                </div>
+            </div>
+        </form>
+        <a href="#" class="tiny bigfont button gantiinput">Ganti Input</a> ke Qty Asli
     </div>
 </div>
 
@@ -82,7 +101,9 @@
         $("#barang-info p").html();
         $("#barang-info").hide();
         $("#qty").val('');
+        $("#selisih").val('');
         $("#input-qty").hide();
+        $("#input-selisih").hide();
         $("#input-barang").show();
         $("#namabarang").val('');
         $("#scan").val('');
@@ -109,14 +130,53 @@
             success: function (data) {
                 if (data.sukses) {
                     $("#input-barang").hide();
-                    $("#input-qty").show(100, function () {
-                        isiBarangInfo(data);
-                        $("#qty").focus();
-                    });
+                    if (data.inputselisih == 1) {
+                        $("#input-selisih").show(100, function () {
+                            isiBarangInfo(data);
+                            $("#selisih").focus();
+                        });
+                    } else {
+                        $("#input-qty").show(100, function () {
+                            isiBarangInfo(data);
+                            $("#qty").focus();
+                        });
+                    }
                 }
             }
         });
     }
+    
+    $(".gantiinput").click(function () {
+        var datakirim = {
+            'gantiinput': true,
+        };
+        var dataurl = "<?php echo $this->createUrl('gantiinput', array('id' => $model->id)) ?>";
+        $.ajax({
+            data: datakirim,
+            url: dataurl,
+            type: "POST",
+            success: function (data) {
+                if (data.sukses) {
+                    $("#input-barang").hide();
+                    if (data.inputselisih) {
+                        $("#input-qty").hide(100, function () {
+                            $("#qty").val('');
+                        });
+                        $("#input-selisih").show(100, function () {
+                            $("#selisih").focus();
+                        });
+                    } else {
+                        $("#input-selisih").hide(100, function () {
+                            $("#selisih").val('');
+                        });
+                        $("#input-qty").show(100, function () {
+                            $("#qty").focus();
+                        });
+                    }
+                }
+            }
+        });
+    });
 
     $("#scan").keyup(function (e) {
         if (e.keyCode === 13) {
@@ -139,8 +199,19 @@
         }
         return false;
     });
-
+    
+    $("#selisih").keyup(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-ok-tambah-s").click();
+        }
+        return false;
+    });
+    
     $("#input-qty").on('submit', function () {
+        return false;
+    });
+    
+    $("#input-selisih").on('submit', function () {
         return false;
     });
 
@@ -154,6 +225,29 @@
         };
         var dataurl = "<?php echo $this->createUrl('tambahdetail', array('id' => $model->id)) ?>";
 
+        $.ajax({
+            data: datakirim,
+            url: dataurl,
+            type: "POST",
+            success: function (data) {
+                if (data.sukses) {
+                    $("#so-detail-grid").yiiGridView('update');
+                    resetInput();
+                }
+            }
+        });
+        return false;
+    });
+    
+    $("#tombol-ok-tambah-s").click(function () {
+        var barcode = $("#scan").val();
+        var selisih = $("#selisih").val()
+        var datakirim = {
+            'tambah': true,
+            'barcode': barcode,
+            'selisih': selisih
+        };
+        var dataurl = "<?php echo $this->createUrl('tambahdetail', array('id' => $model->id)) ?>";
         $.ajax({
             data: datakirim,
             url: dataurl,

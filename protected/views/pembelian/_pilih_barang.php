@@ -131,6 +131,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         hitungHargaBarang();
     });
 
+    $("#hitung-harga").keyup(function (e) {
+        if (e.keyCode === 13) {
+            console.log('enter dipencet');
+            hitungHargaBarang();
+        } else {
+            console.log('selain enter dipencet');
+        }
+    });
+    
     /**
      * Menghitung harga beli dan harga jual satuan
      * @returns {mixed} Mengubah value di input harga beli dan harga jual
@@ -489,9 +498,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
     </div>
 </div>
 <script>
-    $(document).on("keypress", "#pembelian-form", function(event) { 
-        return event.keyCode != 13;
-    });
+//    $(document).on("keypress", "#pembelian-form", function(event) { 
+//        return event.keyCode != 13;
+//    });
 
     $(".i-pembelian").keyup(function(e) {
         if (e.keyCode === 13) {

@@ -10,6 +10,7 @@
  * @property string $rak_id
  * @property string $keterangan
  * @property integer $status
+ * @property integer $input_selisih
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
@@ -45,7 +46,7 @@ class StockOpname extends CActiveRecord
         // will receive user inputs.
         return array(
             array('status', 'numerical', 'integerOnly' => true),
-            array('nomor', 'length', 'max' => 45),
+            array('nomor, input_selisih', 'length', 'max' => 45),
             array('rak_id, updated_by', 'length', 'max' => 10),
             array('keterangan', 'length', 'max' => 500),
             array('tanggal, created_at, updated_at, updated_by', 'safe'),

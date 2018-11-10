@@ -742,5 +742,42 @@ class PembelianController extends Controller
             echo 'Fail';
         }
     }
+    
+    public function renderHutangBayar($data)
+    {
+        if ($data->status == Pembelian::STATUS_HUTANG) {
+            return is_null($data->hutangPiutang) ? "" : $data->hutangPiutang->nomor;
+        } else if ($data->status == Pembelian::STATUS_LUNAS) {
+            /* Cek di Pengeluaran */
+            $keuDetail = PengeluaranDetail::model()->findAll('hutang_piutang_id=:hutangPiutangId',
+                    [':hutangPiutangId' => $data->hutang_piutang_id]);
+            $html      = '';
+            if (!empty($keuDetail)) {
+                $first = true;
+                foreach ($keuDetail as $detail) {
+                    if (!$first) {
+                        $html .= '<br />';
+                    }
+                    $html  .= CHtml::link($detail->pengeluaran->nomor,
+                                    Yii::app()->createUrl('pengeluaran/view', ['id' => $detail->pengeluaran_id])) . ' ' . $detail->pengeluaran->tanggal;
+                    $first = false;
+                }
+            }
+
+            /* Cek di Penerimaan */
+            $keuDetail2 = PenerimaanDetail::model()->findAll('hutang_piutang_id=:hutangPiutangId',
+                    [':hutangPiutangId' => $data->hutang_piutang_id]);
+            if (!empty($keuDetail2)) {
+                foreach ($keuDetail2 as $detail) {
+                    if (!empty($keuDetail)) {
+                        $html .= '<br />';
+                    }
+                    $html  .= CHtml::link($detail->penerimaan->nomor,
+                                    Yii::app()->createUrl('penerimaan/view', ['id' => $detail->penerimaan_id])) . ' ' . $detail->penerimaan->tanggal;
+                }
+            }
+            return $html;
+        }
+    }
 
 }

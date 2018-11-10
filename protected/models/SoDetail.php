@@ -1,42 +1,33 @@
 <?php
 
 /**
- * This is the model class for table "kode_dokumen".
+ * This is the model class for table "so_detail".
  *
- * The followings are the available columns in table 'kode_dokumen':
- * @property integer $id
- * @property string $kode
- * @property string $nama
- * @property string $created_at
+ * The followings are the available columns in table 'so_detail':
+ * @property string $id
+ * @property string $so_id
+ * @property string $barang_id
+ * @property string $qty
+ * @property string $harga_jual
+ * @property string $diskon
  * @property string $updated_at
  * @property string $updated_by
+ * @property string $created_at
+ *
+ * The followings are the available model relations:
+ * @property Barang $barang
+ * @property So $so
+ * @property User $updatedBy
  */
-class KodeDokumen extends CActiveRecord
+class SoDetail extends CActiveRecord
 {
-    /*
-     * Data disimpan sebagai konstanta, agar lebih cepat aksesnya
-     * Tapi sudah disediakan tabel jika akan disimpan di DB (jika ingin lebih fleksibel)
-     */
-
-    const PEMBELIAN = '01';
-    const RETUR_PEMBELIAN = '02';
-    const PENJUALAN = '03';
-    const RETUR_PENJUALAN = '04';
-    const SO = '05';
-    const HUTANG = '06';
-    const PIUTANG = '07';
-    const PENGELUARAN = '08';
-    const PENERIMAAN = '09';
-    const AKM = '10';
-    const PO = '11'; // PURCHASE ORDER (PESANAN PEMBELIAN)
-    const SALES_ORDER = '12'; // PESANAN PENJUALAN
 
     /**
      * @return string the associated database table name
      */
     public function tableName()
     {
-        return 'kode_dokumen';
+        return 'so_detail';
     }
 
     /**
@@ -46,16 +37,15 @@ class KodeDokumen extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('kode, nama, updated_at, updated_by', 'required'),
-            array('kode', 'length', 'max' => 2),
-            array('nama', 'length', 'max' => 45),
-            array('updated_by', 'length', 'max' => 10),
-            array('created_at', 'safe'),
+        return [
+            ['so_id, barang_id, harga_jual', 'required'],
+            ['so_id, barang_id, qty, updated_by', 'length', 'max' => 10],
+            ['harga_jual, diskon', 'length', 'max' => 18],
+            ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, kode, nama, created_at, updated_at, updated_by', 'safe', 'on' => 'search'),
-        );
+            ['id, so_id, barang_id, qty, harga_jual, diskon, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -65,8 +55,11 @@ class KodeDokumen extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-        );
+        return [
+            'barang'    => [self::BELONGS_TO, 'Barang', 'barang_id'],
+            'so'        => [self::BELONGS_TO, 'So', 'so_id'],
+            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
+        ];
     }
 
     /**
@@ -74,14 +67,17 @@ class KodeDokumen extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'kode' => 'Kode',
-            'nama' => 'Nama',
-            'created_at' => 'Created At',
+        return [
+            'id'         => 'ID',
+            'so_id'      => 'Sales Order',
+            'barang_id'  => 'Barang',
+            'qty'        => 'Qty',
+            'harga_jual' => 'Harga Jual',
+            'diskon'     => 'Diskon',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
-        );
+            'created_at' => 'Created At',
+        ];
     }
 
     /**
@@ -103,22 +99,30 @@ class KodeDokumen extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id);
-        $criteria->compare('kode', $this->kode, true);
-        $criteria->compare('nama', $this->nama, true);
-        $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('so_id', $this->so_id);
+        $criteria->compare('barang_id', $this->barang_id);
+        $criteria->compare('qty', $this->qty, true);
+        $criteria->compare('harga_jual', $this->harga_jual, true);
+        $criteria->compare('diskon', $this->diskon, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
+        $criteria->compare('created_at', $this->created_at, true);
 
-        return new CActiveDataProvider($this, array(
+        $sort = [
+            'defaultOrder' => 't.id desc'
+        ];
+        return new CActiveDataProvider($this,
+                [
             'criteria' => $criteria,
-        ));
+            'sort'     => $sort,
+        ]);
     }
 
     /**
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return KodeDokumen the static model class
+     * @return SoDetail the static model class
      */
     public static function model($className = __CLASS__)
     {
@@ -131,25 +135,14 @@ class KodeDokumen extends CActiveRecord
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = null; // Trigger current timestamp
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
 
-    public function listKodeNamaDokumen()
+    public function getTotal()
     {
-        return [
-            self::PEMBELIAN => 'Pembelian',
-            self::RETUR_PEMBELIAN => 'Retur Pembelian',
-            self::PENJUALAN => 'Penjualan',
-            self::RETUR_PENJUALAN => 'Retur Penjualan',
-            self::SO => 'Stock Opname'
-        ];
-    }
-
-    public function getNamaDokumen($kode)
-    {
-        return $this->listKodeNamaDokumen()[$kode];
+        return number_format($this->harga_jual * $this->qty, 0, ',', '.');
     }
 
 }

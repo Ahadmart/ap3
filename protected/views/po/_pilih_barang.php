@@ -87,6 +87,81 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             </div>
         </div>
     </div>
+
+    <div id="input-po-detail" class="panel" style="display: none">
+        <div class="row">
+            <?php
+            $form               = $this->beginWidget('CActiveForm',
+                    [
+                'id'                   => 'po-detail-form',
+                'action'               => $this->createUrl('tambahbarang', ['id' => $poModel->id]),
+                'enableAjaxValidation' => false,
+            ]);
+            ?>
+            <input type="hidden" name="barang-id" id="barang-id" value="" />
+            <input type="hidden" name="input-detail" value="1" />
+            <div class="small-12 columns">
+                <h5><span id="barang-info"></span></h5>
+            </div>
+            <div class="row">
+                <div class="medium-3 columns">
+                    <?= CHtml::label('Harga Beli', 'hargabeli', ['id' => 'label-harga-beli']) ?>
+                    <?=
+                    CHtml::textField('hargabeli', '', ['id' => 'harga-beli', 'autocomplete' => 'off'])
+                    ?>
+                </div>
+                <div class="medium-3 end columns">
+                    <?= CHtml::label('Harga Jual', 'hargajual', ['id' => 'label-harga-jual']) ?>
+                    <?=
+                    CHtml::textField('hargajual', '', ['id' => 'harga-jual', 'autocomplete' => 'off'])
+                    ?>
+                </div>
+                <div class="medium-6 columns">
+                    <?= CHtml::label('<u><b>J</b></u>umlah Order', 'qty'); ?>
+                    <div class="row collapse">
+                        <div class="small-9 columns">
+                            <?=
+                            CHtml::textField('qty', '', ['accesskey' => 'j', 'autocomplete' => 'off']);
+                            ?>
+                        </div>
+                        <div class="small-3 columns">
+                            <span class="postfix">
+                                <b><span id="satuan"></span></b>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="small-12 columns">
+            </div>
+            <div class="span-12 columns">
+                <?php
+                $focusSetelahTambah = $tipeCari > 1 ? '#barcode-pilih' : '#scan';
+                echo CHtml::ajaxSubmitButton('Tambah (Alt+a)',
+                        $this->createUrl('tambahbarang',
+                                [
+                            'id' => $poModel->id,
+                        ]),
+                        [
+                    'type'    => 'POST',
+                    'success' => "function () {
+                                        $.fn.yiiGridView.update('po-detail-grid');
+                                        updateTotal();
+                                        $('{$focusSetelahTambah}').focus();
+                                        $('#input-po-detail').slideUp(500);
+                                    }",
+                        ],
+                        [
+                    'id'        => 'tombol-tambah',
+                    'class'     => 'tiny bigfont button',
+                    'accesskey' => 'a',
+                ]);
+                ?>
+                <a class="tiny bigfont button" id="tombol-batal" href="#" accesskey="l" onclick="$('#input-po-detail').slideUp(500);">Bata<span class="ak">l</span></a>
+            </div>
+        </div>
+        <?php $this->endWidget(); ?>
+    </div>
 </div>
 <script>
     $("#barcode-pilih").keyup(function (e) {
@@ -347,76 +422,13 @@ if (!is_null($scanBarcode)) {
         });
     </script>
 </div>
-<div id="input-po-detail" class="medium-6 large-7 columns" style="display: none">
-    <?php
-    $form               = $this->beginWidget('CActiveForm', [
-        'id'                   => 'po-detail-form',
-        'action'               => $this->createUrl('tambahbarang', ['id' => $poModel->id]),
-        'enableAjaxValidation' => false,
-    ]);
-    ?>
-    <input type="hidden" name="barang-id" id="barang-id" value="" />
-    <input type="hidden" name="input-detail" value="1" />
-    <div class="panel">
-        <h5><span id="barang-info"></span></h5>
-        <div class="row collapse">
-            <div class="row">
-                <div class="medium-3 columns">
-                    <?= CHtml::label('Harga Beli', 'hargabeli', ['id' => 'label-harga-beli']) ?>
-                    <?= CHtml::textField('hargabeli', '', ['id' => 'harga-beli', 'autocomplete' => 'off']) ?>
-                </div>
-                <div class="medium-3 end columns">
-                    <?= CHtml::label('Harga Jual', 'hargajual', ['id' => 'label-harga-jual']) ?>
-                    <?= CHtml::textField('hargajual', '', ['id' => 'harga-jual', 'autocomplete' => 'off']) ?>
-                </div>
-            </div>
-            <div class="row">
-                <div class="medium-6 columns">
-                    <?= CHtml::label('<u><b>J</b></u>umlah Order', 'qty'); ?>
-                    <div class="row collapse">
-                        <div class="small-9 columns">
-                            <?= CHtml::textField('qty', '', ['accesskey' => 'j', 'autocomplete' => 'off']); ?>
-                        </div>
-                        <div class="small-3 columns">
-                            <span class="postfix">
-                                <b><span id="satuan"></span></b>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row collapse">
-                <div class="span-12 columns">
-                    <?php
-                    $focusSetelahTambah = $tipeCari > 1 ? '#barcode-pilih' : '#scan';
-                    echo CHtml::ajaxSubmitButton('Tambah (Alt+a)', $this->createUrl('tambahbarang', [
-                                'id' => $poModel->id,
-                            ]), [
-                        'type'    => 'POST',
-                        'success' => "function () {
-                                        $.fn.yiiGridView.update('po-detail-grid');
-                                        updateTotal();
-                                        $('{$focusSetelahTambah}').focus();
-                                        $('#input-po-detail').slideUp(500);
-                                    }",
-                            ], [
-                        'id'        => 'tombol-tambah',
-                        'class'     => 'tiny bigfont button',
-                        'accesskey' => 'a',
-                    ]);
-                    ?>
-                    <a class="tiny bigfont button" id="tombol-batal" href="#" accesskey="l" onclick="$('#input-po-detail').slideUp(500);">Bata<span class="ak">l</span></a>
-                </div>
-            </div>
-        </div>
-        <?php $this->endWidget(); ?>
-    </div> 
-    <script>
-        $("#po-detail-form").submit(function () {
-            return false;
-        });
-    </script>
-</div>
+
+<script>
+    $("#po-detail-form").submit(function () {
+        return false;
+    });
+</script>
+    
 <div id="input-po-detail" class="medium-6 large-7 columns" style="display: none">
     <?php
     $form               = $this->beginWidget('CActiveForm', [
