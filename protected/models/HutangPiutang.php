@@ -313,7 +313,8 @@ class HutangPiutang extends CActiveRecord
                 $to = 'dari';
                 break;
         }
-        return "{$judul} {$this->nomor_dokumen_asal} {$to} {$this->profil->nama}";
+        $ket = "{$judul} {$this->nomor_dokumen_asal} {$to} {$this->profil->nama}";
+        return is_null($this->getNoref()) ? $ket : $ket . ' ' . $this->getNoRef();
     }
 
     public function itemKeuanganId($asal)
