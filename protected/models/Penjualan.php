@@ -1722,13 +1722,22 @@ class Penjualan extends CActiveRecord
 
             /* Hapus dan re-insert */
 
-            $tabelPenjualanDiskon = PenjualanDiskon::model()->tableName();
-            $tabelPenjualanDetail = PenjualanDetail::model()->tableName();
+            $tabelPenjualanDiskon     = PenjualanDiskon::model()->tableName();
+            $tabelPenjualanMultiHarga = PenjualanMultiHarga::model()->tableName();
+            $tabelPenjualanDetail     = PenjualanDetail::model()->tableName();
             Yii::app()->db->createCommand("
                     DELETE {$tabelPenjualanDiskon}
                     FROM {$tabelPenjualanDiskon}
                     INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanDiskon}.penjualan_detail_id = {$tabelPenjualanDetail}.id
                     WHERE {$tabelPenjualanDetail}.penjualan_id=:penjualanId
+                        ")
+                    ->bindValues(array(
+                        ':penjualanId' => $this->id
+                    ))
+                    ->execute();
+            Yii::app()->db->createCommand("
+                    DELETE FROM {$tabelPenjualanMultiHarga}
+                    WHERE penjualan_id=:penjualanId
                         ")
                     ->bindValues(array(
                         ':penjualanId' => $this->id
