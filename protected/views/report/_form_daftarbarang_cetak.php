@@ -41,6 +41,7 @@
         var dataKirim = {
             'profilId': $("#ReportDaftarBarangForm_profilId").val(),
             'hanyaDefault': $("#ReportDaftarBarangForm_hanyaDefault").is(':checked') ? 1 : 0,
+            'filterNama': $("#ReportDaftarBarangForm_filterNama").val(),
             'sortBy0': $("#ReportDaftarBarangForm_sortBy0").val(),
             'sortBy1': $("#ReportDaftarBarangForm_sortBy1").val()
         };
