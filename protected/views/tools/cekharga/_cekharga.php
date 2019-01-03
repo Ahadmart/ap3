@@ -153,7 +153,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
     });
 
     $("#scan").autocomplete({
-        source: "<?php echo $this->createUrl('/pos/caribarang'); ?>",
+        source: "<?php echo $this->createUrl('/tools/cekharga/caribarang'); ?>",
         minLength: 3,
         delay: 1000,
         search: function (event, ui) {
