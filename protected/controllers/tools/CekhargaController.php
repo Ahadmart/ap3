@@ -32,6 +32,28 @@ class CekhargaController extends Controller
             $this->renderJSON($return);
         }
     }
+    
+    public function actionCariBarang($term)
+    {
+        $q         = new CDbCriteria();
+        $q->addCondition("(barcode like :term OR nama like :term) AND status = :status");
+        $q->order  = 'nama';
+        $q->params = [':term' => "%{$term}%", ':status' => Barang::STATUS_AKTIF];
+        $barangs   = Barang::model()->findAll($q);
+
+        $r = [];
+        foreach ($barangs as $barang) {
+            $r[] = [
+                'label'  => $barang->nama,
+                'value'  => $barang->barcode,
+                'stok'   => is_null($barang->stok) ? 'null' : $barang->stok,
+                'harga'  => $barang->hargaJual,
+                'status' => $barang->status
+            ];
+        }
+
+        $this->renderJSON($r);
+    }
 
     // Uncomment the following methods and override them if needed
     /*

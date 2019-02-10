@@ -937,12 +937,13 @@ class ReportController extends Controller
         ]);
     }
 
-    public function actionPrintDaftarBarang($printId, $profilId, $hanyaDefault, $sortBy0, $sortBy1)
+    public function actionPrintDaftarBarang($printId, $profilId, $hanyaDefault, $filterNama, $sortBy0, $sortBy1)
     {
         $model             = new ReportDaftarBarangForm;
         $model->attributes = [
             'profilId'     => $profilId,
             'hanyaDefault' => $hanyaDefault,
+            'filterNama'   => $filterNama,
             'sortBy0'      => $sortBy0,
             'sortBy1'      => $sortBy1,
         ];
@@ -970,9 +971,10 @@ class ReportController extends Controller
     public function daftarBarangCsv($model, $report, $profilId)
     {
         $profil    = Profil::model()->findByPk($profilId);
+        $namaProfil = is_null($profil) ? 'Semua-Profil' : $profil->nama;
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
         $timeStamp = date("Y-m-d-H-i");
-        $namaFile  = "Daftar Barang_{$profil->nama}_{$namaToko->nilai}_{$timeStamp}";
+        $namaFile  = "Daftar Barang_{$namaProfil}_{$namaToko->nilai}_{$timeStamp}";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,

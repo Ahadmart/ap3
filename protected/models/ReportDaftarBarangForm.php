@@ -22,6 +22,7 @@ class ReportDaftarBarangForm extends CFormModel
     public $rakId;
     public $sortBy0;
     public $sortBy1;
+    public $filterNama;
 
     /**
      * Declares the validation rules.
@@ -29,8 +30,8 @@ class ReportDaftarBarangForm extends CFormModel
     public function rules()
     {
         return [
-            ['profilId, sortBy0, sortBy1', 'required', 'message' => '{attribute} tidak boleh kosong'],
-            ['kategoriId, profilId, hanyaDefault, rakId', 'safe']
+            ['sortBy0, sortBy1', 'required', 'message' => '{attribute} tidak boleh kosong'],
+            ['kategoriId, profilId, hanyaDefault, rakId, filterNama', 'safe']
         ];
     }
 
@@ -43,6 +44,7 @@ class ReportDaftarBarangForm extends CFormModel
             'kategoriId' => 'Kategori',
             'profilId' => 'Profil / Supplier',
             'hanyaDefault' => 'Hanya Default',
+            'filterNama' => 'Nama Barang (sebagian)',
             'rakId' => 'Rak',
             'sortBy0' => 'Sort 1',
             'sortBy1' => 'Sort 2',
@@ -52,11 +54,15 @@ class ReportDaftarBarangForm extends CFormModel
     public function reportDaftarBarang()
     {
         $sqlSup = '';
-        if (!empty($this->profilId)) {
+        if (!empty($this->profilId) || $this->profilId != '') {
             $sqlSupWhere = $this->hanyaDefault ? 'AND sup.`default` = 1' : '';
             $sqlSup = "
                 JOIN
             supplier_barang sup ON sup.barang_id = barang.id AND sup.supplier_id= :supplierId {$sqlSupWhere}";
+        }
+        $sqlWhere = "";
+        if  (!empty($this->filterNama) || $this->filterNama != ''){
+            $sqlWhere = " AND barang.nama like :filterNama ";
         }
         $sqlOrder = "
                 ORDER BY {$this->listSortBy2()[$this->sortBy0]}, {$this->listSortBy2()[$this->sortBy1]}
@@ -99,7 +105,7 @@ class ReportDaftarBarangForm extends CFormModel
             barang_kategori kat ON kat.id = barang.kategori_id
             {$sqlSup}
         WHERE
-            barang.status = :statusBarang
+            barang.status = :statusBarang {$sqlWhere}
             {$sqlOrder}
                 ";
         $command = Yii::app()->db->createCommand($sql);
@@ -107,6 +113,9 @@ class ReportDaftarBarangForm extends CFormModel
         
         if (!empty($this->profilId)) {
             $command->bindValue(':supplierId', $this->profilId);
+        }
+        if (!empty($this->filterNama) || $this->filterNama != ''){
+            $command->bindValue(':filterNama', "%{$this->filterNama}%");
         }
 
         ini_set('memory_limit', '-1'); //Barang banyak akan menghabiskan memory

@@ -19,6 +19,10 @@ $form = $this->beginWidget('CActiveForm', [
     <div class="medium-6 columns">
         <div class="row">
             <div class="small-12 columns">
+                <?= $form->labelEx($model, 'filterNama'); ?>
+                <?= $form->textField($model, 'filterNama') ?>
+            </div>
+            <div class="small-12 columns">
                 <div class="row collapse">
                     <label>Profil</label>
                     <div class="small-9 columns">
