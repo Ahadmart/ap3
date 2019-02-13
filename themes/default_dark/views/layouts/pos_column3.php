@@ -47,9 +47,16 @@
                 </div>
             </div>
         </form>
-        <ul class="stack button-group">
-            <li><a href="" class="expand bigfont tiny <?php echo Yii::app()->user->getState('kasirOtorisasiAdmin') == $this->penjualanId ? 'warning' : ''; ?> button" id="tombol-admin-mode" accesskey="m">Mode Ad<span class="ak">m</span>in</a></li>
-        </ul>
+            <?php
+            $posModeAdmin = Yii::app()->user->getState('posModeAdminAlwaysON');
+            if (!$posModeAdmin) {
+                ?>
+                <ul class="stack button-group">
+                    <li><a href="" class="expand bigfont tiny <?php echo Yii::app()->user->getState('kasirOtorisasiAdmin') == $this->penjualanId ? 'warning' : ''; ?> button" id="tombol-admin-mode" accesskey="m">Mode Ad<span class="ak">m</span>in</a></li>
+                </ul>
+                <?php
+            }
+            ?>
         <form id="form-akm">
             <div class="row collapse akm-input" style="display: none">
                 <div class="small-9 large-10 columns">
@@ -74,7 +81,7 @@
             </div>
         </form>
         <ul class="stack button-group">
-            <li><a href="" class="expand bigfont tiny button" id="tombol-pesanan" accesskey="t">Inpu<span class="ak">t</span> Pesanan</a></li>
+            <li><a href="" class="expand bigfont tiny button" id="tombol-pesanan" accesskey="i"><span class="ak">I</span>nput Pesanan</a></li>
         </ul>
         <script>
 

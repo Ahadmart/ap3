@@ -28,6 +28,10 @@ class UserIdentity extends CUserIdentity {
             $this->setState('lastLogon', isset($user->last_logon) ? date_format(date_create_from_format('Y-m-d H:i:s', $user->last_logon), 'd-m-Y H:i:s') : null );
             $this->setState('lastIpaddress', long2ip($user->last_ipaddress));
             $this->setState('menuId', $user->menu_id);
+            $configPosModeAdmin = Config::model()->find('nama=:nama', [':nama' => 'pos.modeadmin'])->nilai;
+            if ($configPosModeAdmin == '1'){
+                $this->setState('posModeAdminAlwaysON', true);
+            }
             $this->errorCode = self::ERROR_NONE;
         }
         return $this->errorCode == self::ERROR_NONE;
