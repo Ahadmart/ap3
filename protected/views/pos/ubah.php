@@ -170,7 +170,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     $(function () {
         $("#scan").autocomplete("disable");
         $(document).on('click', "#tombol-tambah-barang", function () {
-            kirimBarcode();
+                kirimBarcode();
             return false;
         });
         $(document).on('click', "#tombol-cari-barang", function () {

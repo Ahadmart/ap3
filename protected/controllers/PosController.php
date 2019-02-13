@@ -100,6 +100,12 @@ class PosController extends Controller
         }
 
         $configCariBarang = Config::model()->find("nama='pos.caribarangmode'");
+        
+        $posModeAdmin = Yii::app()->user->getState('posModeAdminAlwaysON');
+        if ($posModeAdmin) {
+            Yii::app()->user->setState('kasirOtorisasiAdmin', $id);
+            Yii::app()->user->setState('kasirOtorisasiUserId', Yii::app()->user->id);
+        }
 
         $this->render('ubah',
                 [
