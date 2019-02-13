@@ -74,7 +74,7 @@
             </div>
         </form>
         <ul class="stack button-group">
-            <li><a href="" class="expand bigfont tiny button" id="tombol-pesanan" accesskey="t">Inpu<span class="ak">t</span> Pesanan</a></li>
+            <li><a href="" class="expand bigfont tiny button" id="tombol-pesanan" accesskey="i"><span class="ak">I</span>nput Pesanan</a></li>
         </ul>
         <script>
 
