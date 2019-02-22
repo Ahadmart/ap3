@@ -111,6 +111,22 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
         </div>
     </div>
+    <div class="row collapse">
+        <div class="small-3 large-2 columns">
+            <span class="prefix huruf">IDR</span>
+        </div>
+        <div class="small-9 large-10 columns">
+            <input type="text" id="infaq" placeholder="In[f]aq/Shodaqoh" accesskey="f"/>
+        </div>
+    </div>
+    <div class="row collapse">
+        <div class="small-3 large-2 columns">
+            <span class="prefix huruf">IDR</span>
+        </div>
+        <div class="small-9 large-10 columns">
+            <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r"/>
+        </div>
+    </div>
     <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
     <a href="" class="warning bigfont tiny button" id="tombol-batal">Batal</a>
 </div>
@@ -122,11 +138,20 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 <script>
     function tampilkanKembalian() {
         //console.log("this:" + $(this).val() + "; total:" + $("#total-belanja-h").text());
-        var dataKirim = {
-            total: $("#total-belanja-h").text(),
-            bayar: $("#uang-dibayar").val()
-        };
-        $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
+        $("#kembali").html("0");
+        var total = parseFloat($("#total-belanja-h").text());
+        console.log("Total: "+total);
+        if ($.isNumeric($("#uang-dibayar").val())){
+            var bayar = parseInt($("#uang-dibayar").val(), 10);
+            console.log("Bayar: "+ bayar);
+            if (bayar>=total){
+                var dataKirim = {
+                    total: total,
+                    bayar: bayar
+                };
+                $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
+            }
+        }
     }
 
     function kirimBarcode() {
