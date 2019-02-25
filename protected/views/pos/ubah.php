@@ -111,6 +111,8 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
         </div>
     </div>
+    <?php
+    /*
     <div class="row collapse">
         <div class="small-3 large-2 columns">
             <span class="prefix huruf">IDR</span>
@@ -127,6 +129,9 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r"/>
         </div>
     </div>
+     * 
+     */
+    ?>
     <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
     <a href="" class="warning bigfont tiny button" id="tombol-batal">Batal</a>
 </div>
