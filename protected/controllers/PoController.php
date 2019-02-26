@@ -621,9 +621,12 @@ class PoController extends Controller
         if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
             $profilId = $model->profil_id;
         }
-        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa'], $profilId);
+        $rakId = empty($_POST['rakId']) ? NULL : $_POST['rakId'];
 
+        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa'], $profilId, $rakId);
+        // $return['rakId'] = $_POST['rakId'];
         $this->renderJSON($return);
+        // print_r($return);
     }
 
     /**
