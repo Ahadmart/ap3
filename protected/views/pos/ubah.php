@@ -63,7 +63,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     <div id="total-belanja">
         <?php echo $model->getTotal(); ?>
     </div>
-    <div id="kembali">
+    <div id="kembali" class="negatif">
         0
     </div>
     <div class="row collapse">
@@ -111,14 +111,12 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
         </div>
     </div>
-    <?php
-    /*
     <div class="row collapse">
         <div class="small-3 large-2 columns">
             <span class="prefix huruf">IDR</span>
         </div>
         <div class="small-9 large-10 columns">
-            <input type="text" id="infaq" placeholder="In[f]aq/Shodaqoh" accesskey="f"/>
+            <input type="text" id="infaq" placeholder="In[f]ak/Sedekah" accesskey="f"/>
         </div>
     </div>
     <div class="row collapse">
@@ -129,9 +127,6 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r"/>
         </div>
     </div>
-     * 
-     */
-    ?>
     <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
     <a href="" class="warning bigfont tiny button" id="tombol-batal">Batal</a>
 </div>
@@ -145,16 +140,25 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         //console.log("this:" + $(this).val() + "; total:" + $("#total-belanja-h").text());
         $("#kembali").html("0");
         var total = parseFloat($("#total-belanja-h").text());
+        var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var infaq = parseInt($("#infaq").val(), 10) || 0;
         console.log("Total: "+total);
+        console.log("diskonNota: "+diskonNota);
+        console.log("infaq: "+infaq);
         if ($.isNumeric($("#uang-dibayar").val())){
             var bayar = parseInt($("#uang-dibayar").val(), 10);
             console.log("Bayar: "+ bayar);
-            if (bayar>=total){
+            if (bayar >=total + infaq - diskonNota){
                 var dataKirim = {
                     total: total,
-                    bayar: bayar
+                    bayar: bayar,
+                    diskonNota: diskonNota,
+                    infaq: infaq,
                 };
                 $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
+                $("#kembali").removeClass("negatif");
+            } else {
+                $("#kembali").addClass("negatif");
             }
         }
     }
@@ -286,6 +290,26 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             $("#tombol-simpan").click();
         }
     });
+    
+    $("#diskon-nota").keyup(function () {
+        tampilkanKembalian();
+    });
+
+    $("#diskon-nota").keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-simpan").click();
+        }
+    });
+    
+    $("#infaq").keyup(function () {
+        tampilkanKembalian();
+    });
+
+    $("#infaq").keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-simpan").click();
+        }
+    });
 
     $("#tombol-simpan").click(function () {
         $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
@@ -294,7 +318,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         dataKirim = {
             'pos[account]': $("#account").val(),
             'pos[jenistr]': $("#jenisbayar").val(),
-            'pos[uang]': $("#uang-dibayar").val()
+            'pos[uang]': $("#uang-dibayar").val(),
+            'pos[infaq]': $("#infaq").val(),
+            'pos[diskon-nota]': $("#diskon-nota").val(),
         };
         console.log(dataUrl);
         printWindow = window.open('about:blank', '', 'left=20,top=20,width=400,height=600,toolbar=0,resizable=1');
