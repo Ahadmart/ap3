@@ -17,7 +17,8 @@
  */
 class LaporanHarian extends CActiveRecord
 {
-
+    public $tanggalAwal;
+    public $tanggalAkhir;
     public $groupByProfil = false;
 
     /**
@@ -205,15 +206,15 @@ class LaporanHarian extends CActiveRecord
          (
             select pembelian.id, d.jumlah
             from penerimaan_detail d
-            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join pembelian on hp.id = pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')=:tanggal
+            join pembelian on hp.id = pembelian.hutang_piutang_id and pembelian.tanggal >= :tanggalAwal and pembelian.tanggal < :tanggalAkhir
             union
             select pembelian.id, d.jumlah
             from pengeluaran_detail d
-            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join pembelian on hp.id = pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')=:tanggal
+            join pembelian on hp.id = pembelian.hutang_piutang_id and pembelian.tanggal >= :tanggalAwal and pembelian.tanggal < :tanggalAkhir
          ) t
          join pembelian on t.id = pembelian.id
          join profil on pembelian.profil_id = profil.id
@@ -234,6 +235,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -249,19 +252,21 @@ class LaporanHarian extends CActiveRecord
          (
             select pembelian.id, d.jumlah
             from penerimaan_detail d
-            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join pembelian on hp.id = pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')=:tanggal
+            join pembelian on hp.id = pembelian.hutang_piutang_id and pembelian.tanggal >= :tanggalAwal and pembelian.tanggal < :tanggalAkhir
             union
             select pembelian.id, d.jumlah
             from pengeluaran_detail d
-            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join pembelian on hp.id = pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')=:tanggal
+            join pembelian on hp.id = pembelian.hutang_piutang_id and pembelian.tanggal >= :tanggalAwal and pembelian.tanggal < :tanggalAkhir
          ) t");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -287,14 +292,14 @@ class LaporanHarian extends CActiveRecord
             left join
             (
                select pd.* from penerimaan_detail pd
-               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             ) t1 on hp.id=t1.hutang_piutang_id
             left join
             (
                select pd.* from pengeluaran_detail pd
-               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             ) t2 on hp.id=t2.hutang_piutang_id
-            where date_format(pb.tanggal,'%Y-%m-%d')=:tanggal
+            where pb.tanggal >= :tanggalAwal and pb.tanggal < :tanggalAkhir
             group by pb.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3
@@ -316,6 +321,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -335,20 +342,22 @@ class LaporanHarian extends CActiveRecord
             left join
             (
                select pd.* from penerimaan_detail pd
-               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             ) t1 on hp.id=t1.hutang_piutang_id
             left join
             (
                select pd.* from pengeluaran_detail pd
-               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             ) t2 on hp.id=t2.hutang_piutang_id
-            where date_format(pb.tanggal,'%Y-%m-%d')=:tanggal
+            where pb.tanggal >= :tanggalAwal and pb.tanggal < :tanggalAkhir
             group by pb.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -373,16 +382,16 @@ class LaporanHarian extends CActiveRecord
             (
                select sum(pd.jumlah) jumlah_bayar, pembelian.id
                from pengeluaran_detail pd
-               join pengeluaran on pd.pengeluaran_id = pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran on pd.pengeluaran_id = pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
                join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-               join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
+               join pembelian on hp.id=pembelian.hutang_piutang_id and pembelian.tanggal < :tanggalAwal
                group by pembelian.id
                union
                select sum(pd.jumlah) jumlah_bayar, pembelian.id
                from penerimaan_detail pd
-               join penerimaan on pd.penerimaan_id = penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan on pd.penerimaan_id = penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
                join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-               join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
+               join pembelian on hp.id=pembelian.hutang_piutang_id and pembelian.tanggal < :tanggalAwal
                group by pembelian.id
             ) t1
             group by id
@@ -404,6 +413,7 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
             ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -420,21 +430,22 @@ class LaporanHarian extends CActiveRecord
          (
             select sum(pd.jumlah) jumlah_bayar, pembelian.id
             from pengeluaran_detail pd
-            join pengeluaran on pd.pengeluaran_id = pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran on pd.pengeluaran_id = pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            join pembelian on hp.id=pembelian.hutang_piutang_id and pembelian.tanggal < :tanggalAwal
             group by pembelian.id
             union
             select sum(pd.jumlah) jumlah_bayar, pembelian.id
             from penerimaan_detail pd
-            join penerimaan on pd.penerimaan_id = penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan on pd.penerimaan_id = penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=1
-            join pembelian on hp.id=pembelian.hutang_piutang_id and date_format(pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            join pembelian on hp.id=pembelian.hutang_piutang_id and pembelian.tanggal < :tanggalAwal
             group by pembelian.id
          ) t1");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
             ':asalHutangPiutang' => HutangPiutang::DARI_PEMBELIAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -456,15 +467,15 @@ class LaporanHarian extends CActiveRecord
          (
             select penjualan.id, d.jumlah
             from penerimaan_detail d
-            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+            join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
             union
             select penjualan.id, d.jumlah
             from pengeluaran_detail d
-            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+            join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
          ) t
          join penjualan on t.id = penjualan.id
          join profil on penjualan.profil_id = profil.id
@@ -484,6 +495,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
@@ -504,20 +517,22 @@ class LaporanHarian extends CActiveRecord
          (
             select penjualan.id, d.jumlah
             from penerimaan_detail d
-            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+            join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
             union
             select penjualan.id, d.jumlah
             from pengeluaran_detail d
-            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+            join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
          ) t
          ");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -543,14 +558,14 @@ class LaporanHarian extends CActiveRecord
             left join
             (
                select pd.* from penerimaan_detail pd
-               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             ) t1 on hp.id=t1.hutang_piutang_id
             left join
             (
                select pd.* from pengeluaran_detail pd
-               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             ) t2 on hp.id=t2.hutang_piutang_id
-            where date_format(pj.tanggal,'%Y-%m-%d')=:tanggal
+            where pj.tanggal >= :tanggalAwal and pj.tanggal < :tanggalAkhir
             group by pj.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3
@@ -570,6 +585,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -589,20 +606,22 @@ class LaporanHarian extends CActiveRecord
             left join
             (
                select pd.* from penerimaan_detail pd
-               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             ) t1 on hp.id=t1.hutang_piutang_id
             left join
             (
                select pd.* from pengeluaran_detail pd
-               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             ) t2 on hp.id=t2.hutang_piutang_id
-            where date_format(pj.tanggal,'%Y-%m-%d')=:tanggal
+            where pj.tanggal >= :tanggalAwal and pj.tanggal < :tanggalAkhir
             group by pj.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -626,16 +645,16 @@ class LaporanHarian extends CActiveRecord
              (
                 select sum(pd.jumlah) jumlah_bayar, penjualan.id
                 from penerimaan_detail pd
-                join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+                join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
                 join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-                join penjualan on hp.id=penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')<:tanggal
+                join penjualan on hp.id=penjualan.hutang_piutang_id and penjualan.tanggal < :tanggalAwal
                 group by penjualan.id
                 union
                 select sum(pd.jumlah) jumlah_bayar, penjualan.id
                 from pengeluaran_detail pd
-                join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+                join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
                 join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-                join penjualan on hp.id=penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')<:tanggal
+                join penjualan on hp.id=penjualan.hutang_piutang_id and penjualan.tanggal < :tanggalAwal
                 group by penjualan.id
              ) t
              join penjualan on t.id=penjualan.id
@@ -657,6 +676,7 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -672,16 +692,16 @@ class LaporanHarian extends CActiveRecord
          (
             select sum(pd.jumlah) jumlah_bayar, penjualan.id
             from penerimaan_detail pd
-            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join penjualan on hp.id=penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')<:tanggal
+            join penjualan on hp.id=penjualan.hutang_piutang_id and penjualan.tanggal < :tanggalAwal
             group by penjualan.id
             union
             select sum(pd.jumlah) jumlah_bayar, penjualan.id
             from pengeluaran_detail pd
-            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join penjualan on hp.id=penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')<:tanggal
+            join penjualan on hp.id=penjualan.hutang_piutang_id and penjualan.tanggal < :tanggalAwal
             group by penjualan.id
          ) t
          join penjualan on t.id=penjualan.id
@@ -689,6 +709,7 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -708,15 +729,15 @@ class LaporanHarian extends CActiveRecord
             (
                select penjualan.id, d.jumlah
                from penerimaan_detail d
-               join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal=:tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-               join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+               join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
                union
                select penjualan.id, d.jumlah
                from pengeluaran_detail d
-               join pengeluaran p on d.pengeluaran_id = p.id and p.status=1 and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran p on d.pengeluaran_id = p.id and p.status=1 and p.tanggal=:tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-               join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+               join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
             ) t1
             group by t1.id
          ) t_bayar
@@ -727,9 +748,9 @@ class LaporanHarian extends CActiveRecord
                select penjualan.id, sum(jual_detail.harga_jual * hpp.qty) harga_jual,
                sum(hpp.harga_beli * hpp.qty) harga_beli
                from penerimaan_detail d
-               join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal=:tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-               join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+               join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
                join penjualan_detail jual_detail on penjualan.id = jual_detail.penjualan_id
                join harga_pokok_penjualan hpp on jual_detail.id=hpp.penjualan_detail_id
                group by penjualan.id
@@ -737,9 +758,9 @@ class LaporanHarian extends CActiveRecord
                select penjualan.id, sum(jual_detail.harga_jual * hpp.qty) harga_jual,
                sum(hpp.harga_beli * hpp.qty) harga_beli
                from pengeluaran_detail d
-               join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal=:tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-               join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+               join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
                join penjualan_detail jual_detail on penjualan.id = jual_detail.penjualan_id
                join harga_pokok_penjualan hpp on jual_detail.id=hpp.penjualan_detail_id
                group by penjualan.id
@@ -761,6 +782,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -779,15 +802,15 @@ class LaporanHarian extends CActiveRecord
             (
                select penjualan.id, d.jumlah
                from penerimaan_detail d
-               join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal=:tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-               join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+               join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
                union
                select penjualan.id, d.jumlah
                from pengeluaran_detail d
-               join pengeluaran p on d.pengeluaran_id = p.id and p.status=1 and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran p on d.pengeluaran_id = p.id and p.status=1 and p.tanggal=:tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-               join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+               join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
             ) t1
             group by t1.id
          ) t_bayar
@@ -798,9 +821,9 @@ class LaporanHarian extends CActiveRecord
                select penjualan.id, sum(jual_detail.harga_jual * hpp.qty) harga_jual,
                sum(hpp.harga_beli * hpp.qty) harga_beli
                from penerimaan_detail d
-               join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-               join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+               join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
                join penjualan_detail jual_detail on penjualan.id = jual_detail.penjualan_id
                join harga_pokok_penjualan hpp on jual_detail.id=hpp.penjualan_detail_id
                group by penjualan.id
@@ -808,9 +831,9 @@ class LaporanHarian extends CActiveRecord
                select penjualan.id, sum(jual_detail.harga_jual * hpp.qty) harga_jual,
                sum(hpp.harga_beli * hpp.qty) harga_beli
                from pengeluaran_detail d
-               join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
                join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-               join penjualan on hp.id = penjualan.hutang_piutang_id and date_format(penjualan.tanggal,'%Y-%m-%d')=:tanggal
+               join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
                join penjualan_detail jual_detail on penjualan.id = jual_detail.penjualan_id
                join harga_pokok_penjualan hpp on jual_detail.id=hpp.penjualan_detail_id
                group by penjualan.id
@@ -819,6 +842,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -835,18 +860,20 @@ class LaporanHarian extends CActiveRecord
                         FROM
                             penjualan_detail pd
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
-                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') = :tanggal
+                            AND pj.tanggal >= :tanggalAwal and pj.tanggal < :tanggalAkhir
                         ) t_penjualan,
                         (SELECT SUM(hpp.qty * hpp.harga_beli) totalmodal
                         FROM
                             harga_pokok_penjualan hpp
                         JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
-                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') = :tanggal
+                            AND pj.tanggal >= :tanggalAwal and pj.tanggal < :tanggalAkhir
                         ) t_modal");
 
         $commandRekap->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $commandRekap->bindValue(":tanggal", $this->tanggal);
+        $commandRekap->bindValue(":tanggalAwal", $this->tanggalAwal);
+        $commandRekap->bindValue(":tanggalAkhir", $this->tanggalAkhir);
 
         $rekap = $commandRekap->queryRow();
         return $rekap['margin'];
@@ -860,14 +887,14 @@ class LaporanHarian extends CActiveRecord
         $command = Yii::app()->db->createCommand("
          select profil.nama, item.nama akun, pd.keterangan, pd.jumlah
          from penerimaan_detail pd
-         join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+         join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
          join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPenerimaan
          union all
          select profil.nama, item.nama, pd.keterangan, pd.jumlah
          from pengeluaran_detail pd
-         join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+         join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
          join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPengeluaran");
@@ -878,14 +905,14 @@ class LaporanHarian extends CActiveRecord
          (
             select sum(pd.jumlah) jumlah
             from penerimaan_detail pd
-            join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
             join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPenerimaan
             union all
             select sum(pd.jumlah) jumlah
             from pengeluaran_detail pd
-            join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
             join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPengeluaran
@@ -930,14 +957,14 @@ class LaporanHarian extends CActiveRecord
         $command = Yii::app()->db->createCommand("
          select profil.nama, item.nama akun, pd.keterangan, pd.jumlah
          from penerimaan_detail pd
-         join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+         join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
          join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPenerimaan
          union all
          select profil.nama, item.nama, pd.keterangan, pd.jumlah
          from pengeluaran_detail pd
-         join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+         join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
          join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPengeluaran");
@@ -948,14 +975,14 @@ class LaporanHarian extends CActiveRecord
          (
             select sum(pd.jumlah) jumlah
             from penerimaan_detail pd
-            join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
             join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPenerimaan
             union all
             select sum(pd.jumlah) jumlah
             from pengeluaran_detail pd
-            join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
             join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPengeluaran
@@ -1000,15 +1027,15 @@ class LaporanHarian extends CActiveRecord
          (
             select retur_pembelian.id, d.jumlah
             from penerimaan_detail d
-            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')=:tanggal
+            join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal >= :tanggalAwal and retur_pembelian.tanggal < :tanggalAkhir
             union
             select retur_pembelian.id, d.jumlah
             from pengeluaran_detail d
-            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')=:tanggal
+            join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal >= :tanggalAwal and retur_pembelian.tanggal < :tanggalAkhir
          ) t
          join retur_pembelian on t.id = retur_pembelian.id
          join profil on retur_pembelian.profil_id = profil.id
@@ -1028,6 +1055,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1043,20 +1072,22 @@ class LaporanHarian extends CActiveRecord
          (
             select retur_pembelian.id, d.jumlah
             from penerimaan_detail d
-            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')=:tanggal
+            join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal >= :tanggalAwal and retur_pembelian.tanggal < :tanggalAkhir
             union
             select retur_pembelian.id, d.jumlah
             from pengeluaran_detail d
-            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')=:tanggal
+            join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal >= :tanggalAwal and retur_pembelian.tanggal < :tanggalAkhir
          ) t
          ");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1078,14 +1109,14 @@ class LaporanHarian extends CActiveRecord
             left join
             (
                select pd.* from penerimaan_detail pd
-               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             ) t1 on hp.id=t1.hutang_piutang_id
             left join
             (
                select pd.* from pengeluaran_detail pd
-               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             ) t2 on hp.id=t2.hutang_piutang_id
-            where date_format(rp.tanggal,'%Y-%m-%d')=:tanggal
+            where rp.tanggal >= :tanggalAwal and rp.tanggal < :tanggalAkhir
             group by rp.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3
@@ -1106,6 +1137,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1125,14 +1158,14 @@ class LaporanHarian extends CActiveRecord
             left join
             (
                select pd.* from penerimaan_detail pd
-               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             ) t1 on hp.id=t1.hutang_piutang_id
             left join
             (
                select pd.* from pengeluaran_detail pd
-               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             ) t2 on hp.id=t2.hutang_piutang_id
-            where date_format(rp.tanggal,'%Y-%m-%d')=:tanggal
+            where rp.tanggal >= :tanggalAwal and rp.tanggal < :tanggalAkhir
             group by rp.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3
@@ -1140,6 +1173,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1157,16 +1192,16 @@ class LaporanHarian extends CActiveRecord
          (
             select sum(pd.jumlah) jumlah_bayar, retur_pembelian.id
             from penerimaan_detail pd
-            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal < :tanggalAwal
             group by retur_pembelian.id
             union
             select sum(pd.jumlah) jumlah_bayar, retur_pembelian.id
             from pengeluaran_detail pd
-            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal < :tanggalAwal
             group by retur_pembelian.id
          ) t
          join retur_pembelian on t.id=retur_pembelian.id
@@ -1186,6 +1221,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1201,22 +1238,23 @@ class LaporanHarian extends CActiveRecord
          (
             select sum(pd.jumlah) jumlah_bayar, retur_pembelian.id
             from penerimaan_detail pd
-            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal < :tanggalAwal
             group by retur_pembelian.id
             union
             select sum(pd.jumlah) jumlah_bayar, retur_pembelian.id
             from pengeluaran_detail pd
-            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and date_format(retur_pembelian.tanggal,'%Y-%m-%d')<:tanggal
+            join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal < :tanggalAwal
             group by retur_pembelian.id
          ) t
          ");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_BELI,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1234,15 +1272,15 @@ class LaporanHarian extends CActiveRecord
          (
             select retur_penjualan.id, d.jumlah
             from penerimaan_detail d
-            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and date_format(retur_penjualan.tanggal,'%Y-%m-%d')=:tanggal
+            join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal >= :tanggalAwal and retur_penjualan.tanggal < :tanggalAkhir
             union
             select retur_penjualan.id, d.jumlah
             from pengeluaran_detail d
-            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and date_format(retur_penjualan.tanggal,'%Y-%m-%d')=:tanggal
+            join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal >= :tanggalAwal and retur_penjualan.tanggal < :tanggalAkhir
          ) t
          join retur_penjualan on t.id = retur_penjualan.id
          join profil on retur_penjualan.profil_id = profil.id
@@ -1262,6 +1300,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1277,20 +1317,22 @@ class LaporanHarian extends CActiveRecord
          (
             select retur_penjualan.id, d.jumlah
             from penerimaan_detail d
-            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan p on d.penerimaan_id = p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and date_format(retur_penjualan.tanggal,'%Y-%m-%d')=:tanggal
+            join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal >= :tanggalAwal and retur_penjualan.tanggal < :tanggalAkhir
             union
             select retur_penjualan.id, d.jumlah
             from pengeluaran_detail d
-            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and date_format(p.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
-            join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and date_format(retur_penjualan.tanggal,'%Y-%m-%d')=:tanggal
+            join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal >= :tanggalAwal and retur_penjualan.tanggal < :tanggalAkhir
          ) t
          ");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1312,14 +1354,14 @@ class LaporanHarian extends CActiveRecord
             left join
             (
                select pd.* from penerimaan_detail pd
-               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             ) t1 on hp.id=t1.hutang_piutang_id
             left join
             (
                select pd.* from pengeluaran_detail pd
-               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             ) t2 on hp.id=t2.hutang_piutang_id
-            where date_format(rp.tanggal,'%Y-%m-%d')=:tanggal
+            where rp.tanggal >= :tanggalAwal and rp.tanggal < :tanggalAkhir
             group by rp.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3
@@ -1340,6 +1382,8 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1359,20 +1403,22 @@ class LaporanHarian extends CActiveRecord
             left join
             (
                select pd.* from penerimaan_detail pd
-               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+               join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             ) t1 on hp.id=t1.hutang_piutang_id
             left join
             (
                select pd.* from pengeluaran_detail pd
-               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+               join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             ) t2 on hp.id=t2.hutang_piutang_id
-            where date_format(rp.tanggal,'%Y-%m-%d')=:tanggal
+            where rp.tanggal >= :tanggalAwal and rp.tanggal < :tanggalAkhir
             group by rp.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1389,16 +1435,16 @@ class LaporanHarian extends CActiveRecord
          (
             select sum(pd.jumlah) jumlah_bayar, retur_penjualan.id
             from penerimaan_detail pd
-            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join retur_penjualan on hp.id=retur_penjualan.hutang_piutang_id and date_format(retur_penjualan.tanggal,'%Y-%m-%d')<:tanggal
+            join retur_penjualan on hp.id=retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal < :tanggalAwal
             group by retur_penjualan.id
             union
             select sum(pd.jumlah) jumlah_bayar, retur_penjualan.id
             from pengeluaran_detail pd
-            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join retur_penjualan on hp.id=retur_penjualan.hutang_piutang_id and date_format(retur_penjualan.tanggal,'%Y-%m-%d')<:tanggal
+            join retur_penjualan on hp.id=retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal < :tanggalAwal
             group by retur_penjualan.id
          ) t
          join retur_penjualan on t.id=retur_penjualan.id
@@ -1418,6 +1464,7 @@ class LaporanHarian extends CActiveRecord
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR
@@ -1434,22 +1481,23 @@ class LaporanHarian extends CActiveRecord
          (
             select sum(pd.jumlah) jumlah_bayar, retur_penjualan.id
             from penerimaan_detail pd
-            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and date_format(penerimaan.tanggal,'%Y-%m-%d')=:tanggal
+            join penerimaan on pd.penerimaan_id=penerimaan.id and penerimaan.status=:statusPenerimaan and penerimaan.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join retur_penjualan on hp.id=retur_penjualan.hutang_piutang_id and date_format(retur_penjualan.tanggal,'%Y-%m-%d')<:tanggal
+            join retur_penjualan on hp.id=retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal < :tanggalAwal
             group by retur_penjualan.id
             union
             select sum(pd.jumlah) jumlah_bayar, retur_penjualan.id
             from pengeluaran_detail pd
-            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and date_format(pengeluaran.tanggal,'%Y-%m-%d')=:tanggal
+            join pengeluaran on pd.pengeluaran_id=pengeluaran.id and pengeluaran.status=:statusPengeluaran and pengeluaran.tanggal=:tanggal
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=:asalHutangPiutang
-            join retur_penjualan on hp.id=retur_penjualan.hutang_piutang_id and date_format(retur_penjualan.tanggal,'%Y-%m-%d')<:tanggal
+            join retur_penjualan on hp.id=retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal < :tanggalAwal
             group by retur_penjualan.id
          ) t
          ");
 
         $command->bindValues(array(
             ':tanggal' => $this->tanggal,
+            ':tanggalAwal' => $this->tanggalAwal,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan' => Penerimaan::STATUS_BAYAR

@@ -51,16 +51,22 @@ class ReportHarianForm extends CFormModel
      */
     public function reportHarianDetail()
     {
-        $date = isset($this->tanggal) ? date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d') : NULL;
-        $laporanHarian = LaporanHarian::model()->find('tanggal=:tanggal', array(':tanggal' => $date));
+        $date        = DateTime::createFromFormat('d-m-Y', $this->tanggal);
+        $datePlusOne = DateTime::createFromFormat('d-m-Y', $this->tanggal);
+        $datePlusOne->modify('+1 day');  
+        
+        $laporanHarian = LaporanHarian::model()->find('tanggal=:tanggal', array(':tanggal' => $date->format('Y-m-d')));
         if (is_null($laporanHarian)) {
             /* Object, tidak untuk disimpan, hanya untuk mencari nilai per tanggal */
             $laporanHarian = new LaporanHarian;
-            $laporanHarian->tanggal = date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d');
+            $laporanHarian->tanggal = $date->format('Y-m-d'); // date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d');
         } else {
             /* fixme: ganti afterFind() */
             $laporanHarian->tanggal = date_format(date_create_from_format('d-m-Y', $laporanHarian->tanggal), 'Y-m-d');
         }
+        
+        $laporanHarian->tanggalAwal   = $date->format('Y-m-d') . ' 00:00:00';
+        $laporanHarian->tanggalAkhir  = $datePlusOne->format('Y-m-d') . ' 00:00:00';
         /* laporannya bisa digrup per nama profil */
         $laporanHarian->groupByProfil = $this->groupByProfil;
         return array(
