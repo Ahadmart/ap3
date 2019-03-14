@@ -51,7 +51,7 @@ class Pos extends Penjualan
             if ($posData['infaq'] > 0) {
                 $penerimaanDetail                = new PenerimaanDetail;
                 $penerimaanDetail->penerimaan_id = $penerimaan->id;
-                $penerimaanDetail->item_id       = HutangPiutang::ITEM_KEU_INFAQ_VIA_POS;
+                $penerimaanDetail->item_id       = ItemKeuangan::POS_INFAQ;
                 $penerimaanDetail->keterangan    = '[POS] Infak/Sedekah '. $dokumen->keterangan();
                 $penerimaanDetail->jumlah        = $posData['infaq'];
 
@@ -61,7 +61,7 @@ class Pos extends Penjualan
             if ($posData['diskon-nota'] > 0) {
                 $penerimaanDetail                = new PenerimaanDetail;
                 $penerimaanDetail->penerimaan_id = $penerimaan->id;
-                $penerimaanDetail->item_id       = HutangPiutang::ITEM_KEU_DISKON_PER_NOTA_POS;
+                $penerimaanDetail->item_id       = ItemKeuangan::POS_DISKON_PER_NOTA;
                 $penerimaanDetail->keterangan    = '[POS] Diskon '. $dokumen->keterangan();
                 $penerimaanDetail->jumlah        = $posData['diskon-nota'];
 

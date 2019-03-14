@@ -59,12 +59,6 @@ class HutangPiutang extends CActiveRecord
     /* Item Keuangan ID untuk mencatat pembayaran hutang retur jual */
     const ITEM_KEU_BAYAR_HUTANG_RETUR_JUAL = 6;
 
-    /* Item Keuangan ID untuk mencatat infaq/shodaqoh via transaksi POS */
-    const ITEM_KEU_INFAQ_VIA_POS = 10;
-
-    /* Item Keuangan ID untuk mencatat DISKON PER NOTA transaksi POS */
-    const ITEM_KEU_DISKON_PER_NOTA_POS = 11;
-
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;
     public $noRef;

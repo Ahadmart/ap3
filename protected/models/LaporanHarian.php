@@ -881,6 +881,18 @@ class LaporanHarian extends CActiveRecord
 
     public function itemPengeluaran()
     {
+        $itemKhusus = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA];
+        $condForItemKhusus    = 'item.id in (';
+        $f = true;
+        foreach ($itemKhusus as $value) {
+            if (!$f){
+                $condForItemKhusus .= ',';
+            }
+            $condForItemKhusus .= $value;
+            $f = false;
+        }
+        $condForItemKhusus .= ')';
+        
         $parents = ItemKeuangan::model()->findAll('parent_id is null');
         $itemArr = array();
 
@@ -888,14 +900,14 @@ class LaporanHarian extends CActiveRecord
          select profil.nama, item.nama akun, pd.keterangan, pd.jumlah
          from penerimaan_detail pd
          join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
-         join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+         join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPenerimaan
          union all
          select profil.nama, item.nama, pd.keterangan, pd.jumlah
          from pengeluaran_detail pd
          join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
-         join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+         join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPengeluaran");
 
@@ -906,14 +918,14 @@ class LaporanHarian extends CActiveRecord
             select sum(pd.jumlah) jumlah
             from penerimaan_detail pd
             join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
-            join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+            join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPenerimaan
             union all
             select sum(pd.jumlah) jumlah
             from pengeluaran_detail pd
             join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
-            join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+            join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPengeluaran
          ) t");
@@ -951,6 +963,19 @@ class LaporanHarian extends CActiveRecord
 
     public function itemPenerimaan()
     {
+        $itemKhusus = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA];
+        $condForItemKhusus    = 'item.id in (';
+        $f = true;
+        foreach ($itemKhusus as $value) {
+            if (!$f){
+                $condForItemKhusus .= ',';
+            }
+            $condForItemKhusus .= $value;
+            $f = false;
+        }
+        $condForItemKhusus .= ')';
+        // echo $condForItemKhusus;        Yii::app()->end();
+        
         $parents = ItemKeuangan::model()->findAll('parent_id is null');
         $itemArr = array();
 
@@ -958,14 +983,14 @@ class LaporanHarian extends CActiveRecord
          select profil.nama, item.nama akun, pd.keterangan, pd.jumlah
          from penerimaan_detail pd
          join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
-         join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+         join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPenerimaan
          union all
          select profil.nama, item.nama, pd.keterangan, pd.jumlah
          from pengeluaran_detail pd
          join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
-         join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+         join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPengeluaran");
 
@@ -976,14 +1001,14 @@ class LaporanHarian extends CActiveRecord
             select sum(pd.jumlah) jumlah
             from penerimaan_detail pd
             join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
-            join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+            join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPenerimaan
             union all
             select sum(pd.jumlah) jumlah
             from pengeluaran_detail pd
             join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
-            join item_keuangan item on pd.item_id=item.id and item.id > :itemTrx and parent_id = :parentId
+            join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
             join profil on p.profil_id=profil.id
             where pd.posisi=:posisiPengeluaran
          ) t");
