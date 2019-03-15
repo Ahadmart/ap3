@@ -1307,7 +1307,7 @@ class Penjualan extends CActiveRecord
                 ->queryAll();
 
         $penerimaan = Yii::app()->db->createCommand("
-            select penerimaan.uang_dibayar
+            select penerimaan.id, penerimaan.uang_dibayar
             from penerimaan
             join penerimaan_detail pd on pd.penerimaan_id = penerimaan.id
             join penjualan on penjualan.hutang_piutang_id = pd.hutang_piutang_id
@@ -1315,6 +1315,15 @@ class Penjualan extends CActiveRecord
             ")
                 ->bindValue(':penjualanId', $this->id)
                 ->queryRow();
+        
+        $penerimaanDetail = Yii::app()->db->createCommand("
+            SELECT 
+                item_id, jumlah
+            FROM
+                penerimaan_detail
+            WHERE
+                penerimaan_id = :penerimaanId            
+            ")->bindValue(':penerimaanId', $penerimaan['id'])->queryAll();
 
         $struk = '';
         $struk .= str_pad($branchConfig['toko.nama'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL;
@@ -1360,22 +1369,50 @@ class Penjualan extends CActiveRecord
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
         $txtTotal = 'Total      : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+        
+        $diskonNota = 0;
+        $infaq = 0;
+        if (!empty($penerimaanDetail)) {
+            foreach ($penerimaanDetail as $strukItem) {
+                switch ($strukItem['item_id']) {
+                    case ItemKeuangan::POS_DISKON_PER_NOTA:
+                        $diskonNota = $strukItem['jumlah'];
+                        $txtDiskonNotaNominal = str_pad('(' . number_format($strukItem['jumlah'], 0, ',', '.') . ')',
+                                12, ' ', STR_PAD_LEFT);
+                        $txtDiskonNota        = str_pad('Diskon     : ' . $txtDiskonNotaNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
+                        break;
+                    case ItemKeuangan::POS_INFAQ:
+                        $infaq = $strukItem['jumlah'];
+                        $txtInfaq = 'Infak      : ' . str_pad(number_format($strukItem['jumlah'], 0, ',', '.'),
+                                        11, ' ', STR_PAD_LEFT);
+                        break;
+                }
+            }
+        }
 
         $dibayar = is_null($penerimaan['uang_dibayar']) ? NULL : $penerimaan['uang_dibayar'];
         if (!is_null($dibayar)) {
             $txtBayar = 'Dibayar    : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-            $txtKbali = 'Kembali    : ' . str_pad(number_format($dibayar - $total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtKbali = 'Kembali    : ' . str_pad(number_format($dibayar - $total + $diskonNota - $infaq, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
         }
 
         $struk .= str_pad($txtTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        if (isset($txtDiskonNota)) {
+            $struk .= str_pad($txtDiskonNota, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+        if (isset($txtInfaq)) {
+            $struk .= str_pad($txtInfaq, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+
         if (!is_null($dibayar)) {
             $struk .= str_pad($txtBayar, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
             $struk .= str_pad($txtKbali, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
-
+        
         if ($totalDiskon > 0) {
-            $txtDiskon = 'Anda Hemat : ' . str_pad(number_format($totalDiskon, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-            $struk .= str_pad($txtDiskon, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+            $txtDiskon = 'Anda Hemat : ' . str_pad(number_format($totalDiskon + $diskonNota, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $struk     .= PHP_EOL;
+            $struk     .= str_pad($txtDiskon, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
 
         if ($this->getCurPoin() > 0) {
