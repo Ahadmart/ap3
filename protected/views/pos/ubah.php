@@ -60,6 +60,9 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     </div>
 </div>
 <div class="medium-3 large-3 columns sidebar kanan">
+    <div id="subtotal-belanja" style="opacity: 0; display: none">
+        <span class="left">Sub Total</span><span class="angka"><?php echo $model->getTotal(); ?></span>        
+    </div>
     <div id="total-belanja">
         <?php echo $model->getTotal(); ?>
     </div>
@@ -105,6 +108,14 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     </div>
     <div class="row collapse">
         <div class="small-3 large-2 columns">
+            <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
+        </div>
+        <div class="small-9 large-10 columns">
+            <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r"/>
+        </div>
+    </div>
+    <div class="row collapse">
+        <div class="small-3 large-2 columns">
             <span class="prefix huruf">IDR</span>
         </div>
         <div class="small-9 large-10 columns">
@@ -113,18 +124,10 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     </div>
     <div class="row collapse">
         <div class="small-3 large-2 columns">
-            <span class="prefix huruf">IDR</span>
+            <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
         </div>
         <div class="small-9 large-10 columns">
             <input type="text" id="infaq" placeholder="In[f]ak/Sedekah" accesskey="f"/>
-        </div>
-    </div>
-    <div class="row collapse">
-        <div class="small-3 large-2 columns">
-            <span class="prefix huruf">IDR</span>
-        </div>
-        <div class="small-9 large-10 columns">
-            <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r"/>
         </div>
     </div>
     <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
@@ -142,12 +145,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
-        console.log("Total: "+total);
-        console.log("diskonNota: "+diskonNota);
-        console.log("infaq: "+infaq);
+        // console.log("Total: "+total);
+        // console.log("diskonNota: "+diskonNota);
+        // console.log("infaq: "+infaq);
         if ($.isNumeric($("#uang-dibayar").val())){
             var bayar = parseInt($("#uang-dibayar").val(), 10);
-            console.log("Bayar: "+ bayar);
+            // console.log("Bayar: "+ bayar);
             if (bayar >=total + infaq - diskonNota){
                 var dataKirim = {
                     total: total,
@@ -280,6 +283,22 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             }
         });
     }
+    
+    function showSubTotal(){
+        if ($("#diskon-nota").val() > 0) {
+            $("#subtotal-belanja").slideDown(200, function(){ 
+                $(this).fadeTo(200, 1.00, function() {
+                });
+            });
+        } else {
+            //$("#subtotal-belanja").slideUp(500);
+            $("#subtotal-belanja").fadeTo("slow", 0.00, function(){ //fade
+                $(this).slideUp("slow", function() { //slide up
+                    //$(this).remove(); //then remove from the DOM
+                });
+            });
+        }
+    }
 
     $("#uang-dibayar").keyup(function () {
         tampilkanKembalian();
@@ -293,6 +312,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     
     $("#diskon-nota").keyup(function () {
         tampilkanKembalian();
+        showSubTotal();
     });
 
     $("#diskon-nota").keydown(function (e) {
