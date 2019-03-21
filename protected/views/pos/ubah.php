@@ -60,7 +60,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     </div>
 </div>
 <div class="medium-3 large-3 columns sidebar kanan">
-    <div id="subtotal-belanja" style="opacity: 0; display: none">
+    <div id="subtotal-belanja" style=" display: none; opacity: 0">
         <span class="left">Sub Total</span><span class="angka"><?php echo $model->getTotal(); ?></span>        
     </div>
     <div id="total-belanja">
@@ -277,6 +277,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 if (data.sukses) {
                     $("#total-belanja-h").text(data.total);
                     $("#total-belanja").text(data.totalF);
+                    $("#subtotal-belanja > .angka").text(data.totalF);
+                    showSubTotal(); 
                     tampilkanKembalian();
                     console.log(data.totalF);
                 }
@@ -284,19 +286,31 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         });
     }
     
+    function hitungYangHarusDibayar(){
+        var total = parseFloat($("#total-belanja-h").text());
+        var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var infaq = parseInt($("#infaq").val(), 10) || 0;
+        return total - diskonNota + infaq;
+    }
+    
     function showSubTotal(){
-        if ($("#diskon-nota").val() > 0) {
+        if ($("#diskon-nota").val() > 0 || $("#infaq").val() > 0) {
+            console.log("Besar dari 0");
             $("#subtotal-belanja").slideDown(200, function(){ 
                 $(this).fadeTo(200, 1.00, function() {
+                    var net = hitungYangHarusDibayar();            
+                    $("#total-belanja").text(net.toLocaleString('id-ID'));
                 });
             });
         } else {
-            //$("#subtotal-belanja").slideUp(500);
-            $("#subtotal-belanja").fadeTo("slow", 0.00, function(){ //fade
-                $(this).slideUp("slow", function() { //slide up
-                    //$(this).remove(); //then remove from the DOM
+            if ($("#subtotal-belanja").css("opacity") != 0){
+                $("#subtotal-belanja").fadeTo(200, 0.00, function(){ 
+                    $(this).slideUp(200, function() { 
+                        var net = hitungYangHarusDibayar();            
+                        $("#total-belanja").text(net.toLocaleString('id-ID'));
+                    });
                 });
-            });
+            }
         }
     }
 
@@ -311,8 +325,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     });
     
     $("#diskon-nota").keyup(function () {
-        tampilkanKembalian();
         showSubTotal();
+        tampilkanKembalian();
     });
 
     $("#diskon-nota").keydown(function (e) {
@@ -322,6 +336,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     });
     
     $("#infaq").keyup(function () {
+        showSubTotal();
         tampilkanKembalian();
     });
 
