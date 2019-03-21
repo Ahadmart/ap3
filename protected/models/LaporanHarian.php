@@ -898,7 +898,7 @@ class LaporanHarian extends CActiveRecord
         $parents = ItemKeuangan::model()->findAll('parent_id is null');
         $itemArr = [];
 
-        $command = Yii::app()->db->createCommand("
+        $sql = "
          select profil.nama, item.nama akun, pd.keterangan, pd.jumlah
          from penerimaan_detail pd
          join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
@@ -911,7 +911,18 @@ class LaporanHarian extends CActiveRecord
          join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
          join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
          join profil on p.profil_id=profil.id
-         where pd.posisi=:posisiPengeluaran");
+         where pd.posisi=:posisiPengeluaran";
+
+        if ($this->groupByProfil) {
+            $sql = "
+                    select nama, akun, sum(jumlah) jumlah
+                    from ({$sql}) t
+                    group by nama, akun
+                    order by nama, akun
+            ";
+        } 
+
+        $command = Yii::app()->db->createCommand($sql);
 
         $commandTotal = Yii::app()->db->createCommand("
          select sum(jumlah) total
@@ -981,7 +992,7 @@ class LaporanHarian extends CActiveRecord
         $parents = ItemKeuangan::model()->findAll('parent_id is null');
         $itemArr = [];
 
-        $command = Yii::app()->db->createCommand("
+        $sql = "
          select profil.nama, item.nama akun, pd.keterangan, pd.jumlah
          from penerimaan_detail pd
          join penerimaan p on pd.penerimaan_id=p.id and p.status=:statusPenerimaan and p.tanggal = :tanggal
@@ -994,7 +1005,19 @@ class LaporanHarian extends CActiveRecord
          join pengeluaran p on pd.pengeluaran_id=p.id and p.status=:statusPengeluaran and p.tanggal = :tanggal
          join item_keuangan item on pd.item_id=item.id and (item.id > :itemTrx or {$condForItemKhusus}) and parent_id = :parentId
          join profil on p.profil_id=profil.id
-         where pd.posisi=:posisiPengeluaran");
+         where pd.posisi=:posisiPengeluaran";
+
+        if ($this->groupByProfil) {
+            $sql = "
+                    select nama, akun, sum(jumlah) jumlah
+                    from ({$sql}) t
+                    group by nama, akun
+                    order by nama, akun
+            ";
+        } 
+         
+
+        $command = Yii::app()->db->createCommand($sql);
 
         $commandTotal = Yii::app()->db->createCommand("
          select sum(jumlah) total

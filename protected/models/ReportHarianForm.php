@@ -41,7 +41,7 @@ class ReportHarianForm extends CFormModel
     {
         return array(
             'tanggal' => 'Tanggal',
-            'groupByProfil' => 'Grup per nama profil'
+            'groupByProfil' => 'Rekap per nama profil'
         );
     }
 
