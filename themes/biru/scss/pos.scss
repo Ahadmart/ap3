@@ -1,13 +1,13 @@
 
 /* Samakan dengan setting foundation */
- $primary-color: #0874bc; 
- $secondary-color: #0da1df;
- $alert-color: #f55c57;
- $success-color: #5bab54; 
- $warning-color: #ffcc9f;
- $info-color: #e8f0fd;
- /* ================================ */
- 
+$primary-color: #0874bc; 
+$secondary-color: #0da1df;
+$alert-color: #f55c57;
+$success-color: #5bab54; 
+$warning-color: #ffcc9f;
+$info-color: #e8f0fd;
+/* ================================ */
+
 $bg: #f0f4ff;
 $warna-text: #6b8ed0;
 $warna-text-menu: #126cb8;
@@ -52,6 +52,14 @@ body, html {
 .tabel-detail-jual{
     width: 100%;
 }
+#subtotal-belanja{
+    font-size: 2rem;
+    color: $primary-color;
+    text-align: right;
+    padding: 5px 0px;
+    width: 100%;
+
+}
 #total-belanja{
     font-size: 3.5rem;
     color: $primary-color;
@@ -78,7 +86,9 @@ body, html {
     //text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
     border-bottom: 1px solid rgba(0,0,0,0.5);
     margin-bottom: 15px;
-
+    &.negatif{
+        color: $alert-color;
+    }
 }
 
 #logo{
@@ -250,14 +260,16 @@ table tr th, table tr td {
     animation: flash 2s infinite;
 }
 
-#scan, #uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password{
+#scan, #uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password, #akm-no, 
+#pesanan-no, #infaq, #diskon-nota{
     //background-color: #eff1f3;
     //color: 546e7a;
     border-color: transparent;
 }
 
 #scan:focus, #uang-dibayar:focus, #account:focus,
-#jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus{
+#jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus, #akm-no:focus, 
+#pesanan-no:focus, #infaq:focus, #diskon-nota:focus{
     border-top-color: $warna-menu-border;
     border-bottom-color: $warna-menu-border;
     box-shadow: 0px 0px 15px $input-shadow;
