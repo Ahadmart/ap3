@@ -20,7 +20,7 @@ class LaporanHarian extends CActiveRecord
 
     public $tanggalAwal;
     public $tanggalAkhir;
-    public $groupByProfil = false;
+    public $groupByProfil = ['inv' => false, 'keu' => false];
 
     /**
      * @return string the associated database table name
@@ -223,7 +223,7 @@ class LaporanHarian extends CActiveRecord
          group by t.id
          order by pembelian.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
@@ -309,7 +309,7 @@ class LaporanHarian extends CActiveRecord
          join profil on pembelian.profil_id=profil.id
          order by pembelian.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
@@ -402,7 +402,7 @@ class LaporanHarian extends CActiveRecord
          join profil on pembelian.profil_id = profil.id
          order by pembelian.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(total_bayar) total_bayar
                     from ({$sql}) t
@@ -484,7 +484,7 @@ class LaporanHarian extends CActiveRecord
          group by t.id
          order by penjualan.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
@@ -575,7 +575,7 @@ class LaporanHarian extends CActiveRecord
          join profil on penjualan.profil_id=profil.id
          order by penjualan.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah) jumlah, sum(jml_bayar) jml_bayar
                     from ({$sql}) t
@@ -665,7 +665,7 @@ class LaporanHarian extends CActiveRecord
         join penjualan on t1.id = penjualan.id
         join profil on penjualan.profil_id = profil.id";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah_bayar) jumlah_bayar
                     from ({$sql}) t
@@ -771,7 +771,7 @@ class LaporanHarian extends CActiveRecord
          join penjualan on t_bayar.id=penjualan.id
          join profil on penjualan.profil_id=profil.id";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(margin) margin
                     from ({$sql}) t
@@ -913,7 +913,7 @@ class LaporanHarian extends CActiveRecord
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPengeluaran";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['keu']) {
             $sql = "
                     select nama, akun, sum(jumlah) jumlah
                     from ({$sql}) t
@@ -1007,7 +1007,7 @@ class LaporanHarian extends CActiveRecord
          join profil on p.profil_id=profil.id
          where pd.posisi=:posisiPengeluaran";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['keu']) {
             $sql = "
                     select nama, akun, sum(jumlah) jumlah
                     from ({$sql}) t
@@ -1092,7 +1092,7 @@ class LaporanHarian extends CActiveRecord
          group by t.id
          order by retur_pembelian.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
@@ -1174,7 +1174,7 @@ class LaporanHarian extends CActiveRecord
          join profil on rb.profil_id=profil.id
          order by rb.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
@@ -1258,7 +1258,7 @@ class LaporanHarian extends CActiveRecord
          join profil on retur_pembelian.profil_id=profil.id
          order by retur_pembelian.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah_bayar) jumlah_bayar
                     from ({$sql}) t
@@ -1337,7 +1337,7 @@ class LaporanHarian extends CActiveRecord
          group by t.id
          order by retur_penjualan.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
@@ -1419,7 +1419,7 @@ class LaporanHarian extends CActiveRecord
          join profil on rb.profil_id=profil.id
          order by rb.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah) jumlah
                     from ({$sql}) t
@@ -1501,7 +1501,7 @@ class LaporanHarian extends CActiveRecord
          join profil on retur_penjualan.profil_id=profil.id
          order by retur_penjualan.nomor";
 
-        if ($this->groupByProfil) {
+        if ($this->groupByProfil['inv']) {
             $sql = "
                     select distinct nama, sum(jumlah_bayar) jumlah_bayar
                     from ({$sql}) t
