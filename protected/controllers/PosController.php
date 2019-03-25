@@ -127,6 +127,7 @@ class PosController extends Controller
             $model = $this->loadModel($id);
             if ($model->status == Penjualan::STATUS_DRAFT) {
                 PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
+                PenjualanMultiHarga::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
                 $this->simpanHapus($id);
                 PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
                 $model->delete();
