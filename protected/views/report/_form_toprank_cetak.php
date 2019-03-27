@@ -17,6 +17,7 @@ $form = $this->beginWidget('CActiveForm', array(
     )
         ));
 
+echo $form->hiddenField($model, 'profilId');
 echo $form->hiddenField($model, 'dari');
 echo $form->hiddenField($model, 'sampai');
 echo $form->hiddenField($model, 'kategoriId');
