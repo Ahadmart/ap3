@@ -48,7 +48,7 @@ class Pos extends Penjualan
 
             $penerimaanDetail->save();
             
-            if ($posData['infaq'] > 0) {
+            if (isset($posData['infaq']) && $posData['infaq'] > 0) {
                 $penerimaanDetail                = new PenerimaanDetail;
                 $penerimaanDetail->penerimaan_id = $penerimaan->id;
                 $penerimaanDetail->item_id       = ItemKeuangan::POS_INFAQ;
@@ -58,7 +58,7 @@ class Pos extends Penjualan
                 $penerimaanDetail->save();
             }
 
-            if ($posData['diskon-nota'] > 0) {
+            if (isset($posData['diskon-nota']) && $posData['diskon-nota'] > 0) {
                 $penerimaanDetail                = new PenerimaanDetail;
                 $penerimaanDetail->penerimaan_id = $penerimaan->id;
                 $penerimaanDetail->item_id       = ItemKeuangan::POS_DISKON_PER_NOTA;
