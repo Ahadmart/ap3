@@ -20,7 +20,8 @@ class ReportHarianForm extends CFormModel
     const KERTAS_FOLIO_NAMA = 'Folio';
 
     public $tanggal;
-    public $groupByProfil = true;
+    public $trxInvGroupByProfil = true;
+    public $trxKeuGroupByProfil = true;
     public $kertas;
 
     /**
@@ -30,7 +31,7 @@ class ReportHarianForm extends CFormModel
     {
         return array(
             array('tanggal', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            array('groupByProfil', 'safe'),
+            array('trxInvGroupByProfil, trxKeuGroupByProfil', 'safe'),
         );
     }
 
@@ -41,7 +42,8 @@ class ReportHarianForm extends CFormModel
     {
         return array(
             'tanggal' => 'Tanggal',
-            'groupByProfil' => 'Grup per nama profil'
+            'trxInvGroupByProfil' => 'Rekap Trx Inventory per Profil',
+            'trxKeuGroupByProfil' => 'Rekap Trx Keuangan per Profil'
         );
     }
 
@@ -51,18 +53,24 @@ class ReportHarianForm extends CFormModel
      */
     public function reportHarianDetail()
     {
-        $date = isset($this->tanggal) ? date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d') : NULL;
-        $laporanHarian = LaporanHarian::model()->find('tanggal=:tanggal', array(':tanggal' => $date));
+        $date        = DateTime::createFromFormat('d-m-Y', $this->tanggal);
+        $datePlusOne = DateTime::createFromFormat('d-m-Y', $this->tanggal);
+        $datePlusOne->modify('+1 day');  
+        
+        $laporanHarian = LaporanHarian::model()->find('tanggal=:tanggal', array(':tanggal' => $date->format('Y-m-d')));
         if (is_null($laporanHarian)) {
             /* Object, tidak untuk disimpan, hanya untuk mencari nilai per tanggal */
             $laporanHarian = new LaporanHarian;
-            $laporanHarian->tanggal = date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d');
+            $laporanHarian->tanggal = $date->format('Y-m-d'); // date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d');
         } else {
             /* fixme: ganti afterFind() */
             $laporanHarian->tanggal = date_format(date_create_from_format('d-m-Y', $laporanHarian->tanggal), 'Y-m-d');
         }
+        
+        $laporanHarian->tanggalAwal   = $date->format('Y-m-d') . ' 00:00:00';
+        $laporanHarian->tanggalAkhir  = $datePlusOne->format('Y-m-d') . ' 00:00:00';
         /* laporannya bisa digrup per nama profil */
-        $laporanHarian->groupByProfil = $this->groupByProfil;
+        $laporanHarian->groupByProfil = ['inv' => $this->trxInvGroupByProfil, 'keu' => $this->trxKeuGroupByProfil];
         return array(
             'saldoAwal' => $laporanHarian->saldoAwal(),
             'saldoAkhir' => $laporanHarian->saldoAkhir(),

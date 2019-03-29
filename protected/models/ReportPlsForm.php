@@ -47,6 +47,7 @@ class ReportPlsForm extends CFormModel
             'jumlahHari'  => 'Range Analisa Penjualan',
             'profilId'    => 'Profil (Opsional)',
             'sisaHariMax' => 'Limit Estimasi Sisa Hari <=',
+            'rakId'       => 'Rak (Opsional)',
             'sortBy'      => 'Urut berdasarkan',
         ];
     }
@@ -91,12 +92,26 @@ class ReportPlsForm extends CFormModel
         if (!empty($this->profilId)) {
             $command->join('supplier_barang sb', 'sb.barang_id = t_jualan.barang_id');
             $command->andWhere('sb.supplier_id=:profilId');
-            $command->bindValue(":profilId", $this->profilId);
         }
+
+        if (!empty($this->rakId)) {
+            $command->andWhere("barang.rak_id = ".$this->rakId);
+        } 
+        
+        $command->andWhere("barang.status = :statusBarang");
 
         $command->bindValue(":range", $this->jumlahHari);
         $command->bindValue(":sisaHariMax", $this->sisaHariMax);
+        $command->bindValue(":statusBarang", Barang::STATUS_AKTIF);
+        
+        if (!empty($this->profilId)) {
+            $command->bindValue(":profilId", $this->profilId);
+        }
+        if (!empty($this->rakId)) {
+            $command->bindValue(":rakId", $this->rakId);
+        }
 
+        // return $command->getText();
         return $command->queryAll();
     }
 

@@ -60,10 +60,13 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     </div>
 </div>
 <div class="medium-3 large-3 columns sidebar kanan">
+    <div id="subtotal-belanja" style=" display: none; opacity: 0">
+        <span class="left">Sub Total</span><span class="angka"><?php echo $model->getTotal(); ?></span>        
+    </div>
     <div id="total-belanja">
         <?php echo $model->getTotal(); ?>
     </div>
-    <div id="kembali">
+    <div id="kembali" class="negatif">
         0
     </div>
     <div class="row collapse">
@@ -103,6 +106,20 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <span class="postfix">[D]</span>
         </div>
     </div>
+    <?php
+    if ($showDiskonPerNota) {
+        ?>
+        <div class="row collapse">
+            <div class="small-3 large-2 columns">
+                <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
+            </div>
+            <div class="small-9 large-10 columns">
+                <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r"/>
+            </div>
+        </div>
+        <?php
+    }
+    ?>
     <div class="row collapse">
         <div class="small-3 large-2 columns">
             <span class="prefix huruf">IDR</span>
@@ -111,6 +128,20 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
         </div>
     </div>
+    <?php
+    if ($showInfaq) {
+        ?>
+        <div class="row collapse">
+            <div class="small-3 large-2 columns">
+                <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
+            </div>
+            <div class="small-9 large-10 columns">
+                <input type="text" id="infaq" placeholder="In[f]ak/Sedekah" accesskey="f"/>
+            </div>
+        </div>
+        <?php
+    }
+    ?>
     <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
     <a href="" class="warning bigfont tiny button" id="tombol-batal">Batal</a>
 </div>
@@ -122,11 +153,29 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 <script>
     function tampilkanKembalian() {
         //console.log("this:" + $(this).val() + "; total:" + $("#total-belanja-h").text());
-        var dataKirim = {
-            total: $("#total-belanja-h").text(),
-            bayar: $("#uang-dibayar").val()
-        };
-        $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
+        $("#kembali").html("0");
+        var total = parseFloat($("#total-belanja-h").text());
+        var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var infaq = parseInt($("#infaq").val(), 10) || 0;
+        // console.log("Total: "+total);
+        // console.log("diskonNota: "+diskonNota);
+        // console.log("infaq: "+infaq);
+        if ($.isNumeric($("#uang-dibayar").val())){
+            var bayar = parseInt($("#uang-dibayar").val(), 10);
+            // console.log("Bayar: "+ bayar);
+            if (bayar >=total + infaq - diskonNota){
+                var dataKirim = {
+                    total: total,
+                    bayar: bayar,
+                    diskonNota: diskonNota,
+                    infaq: infaq,
+                };
+                $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
+                $("#kembali").removeClass("negatif");
+            } else {
+                $("#kembali").addClass("negatif");
+            }
+        }
     }
 
     function kirimBarcode() {
@@ -240,11 +289,41 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 if (data.sukses) {
                     $("#total-belanja-h").text(data.total);
                     $("#total-belanja").text(data.totalF);
+                    $("#subtotal-belanja > .angka").text(data.totalF);
+                    showSubTotal(); 
                     tampilkanKembalian();
                     console.log(data.totalF);
                 }
             }
         });
+    }
+    
+    function hitungYangHarusDibayar(){
+        var total = parseFloat($("#total-belanja-h").text());
+        var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var infaq = parseInt($("#infaq").val(), 10) || 0;
+        return total - diskonNota + infaq;
+    }
+    
+    function showSubTotal(){
+        if ($("#diskon-nota").val() > 0 || $("#infaq").val() > 0) {
+            console.log("Besar dari 0");
+            $("#subtotal-belanja").slideDown(200, function(){ 
+                $(this).fadeTo(200, 1.00, function() {
+                    var net = hitungYangHarusDibayar();            
+                    $("#total-belanja").text(net.toLocaleString('id-ID'));
+                });
+            });
+        } else {
+            if ($("#subtotal-belanja").css("opacity") != 0){
+                $("#subtotal-belanja").fadeTo(200, 0.00, function(){ 
+                    $(this).slideUp(200, function() { 
+                        var net = hitungYangHarusDibayar();            
+                        $("#total-belanja").text(net.toLocaleString('id-ID'));
+                    });
+                });
+            }
+        }
     }
 
     $("#uang-dibayar").keyup(function () {
@@ -252,6 +331,28 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     });
 
     $("#uang-dibayar").keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-simpan").click();
+        }
+    });
+    
+    $("#diskon-nota").keyup(function () {
+        showSubTotal();
+        tampilkanKembalian();
+    });
+
+    $("#diskon-nota").keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-simpan").click();
+        }
+    });
+    
+    $("#infaq").keyup(function () {
+        showSubTotal();
+        tampilkanKembalian();
+    });
+
+    $("#infaq").keydown(function (e) {
         if (e.keyCode === 13) {
             $("#tombol-simpan").click();
         }
@@ -264,7 +365,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         dataKirim = {
             'pos[account]': $("#account").val(),
             'pos[jenistr]': $("#jenisbayar").val(),
-            'pos[uang]': $("#uang-dibayar").val()
+            'pos[uang]': $("#uang-dibayar").val(),
+            'pos[infaq]': $("#infaq").val(),
+            'pos[diskon-nota]': $("#diskon-nota").val(),
         };
         console.log(dataUrl);
         printWindow = window.open('about:blank', '', 'left=20,top=20,width=400,height=600,toolbar=0,resizable=1');

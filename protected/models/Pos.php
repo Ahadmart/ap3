@@ -47,6 +47,26 @@ class Pos extends Penjualan
             $penerimaanDetail->jumlah            = $dokumen->sisa;
 
             $penerimaanDetail->save();
+            
+            if (isset($posData['infaq']) && $posData['infaq'] > 0) {
+                $penerimaanDetail                = new PenerimaanDetail;
+                $penerimaanDetail->penerimaan_id = $penerimaan->id;
+                $penerimaanDetail->item_id       = ItemKeuangan::POS_INFAQ;
+                $penerimaanDetail->keterangan    = '[POS] Infak/Sedekah (' . $dokumen->keterangan() . ')';
+                $penerimaanDetail->jumlah        = $posData['infaq'];
+
+                $penerimaanDetail->save();
+            }
+
+            if (isset($posData['diskon-nota']) && $posData['diskon-nota'] > 0) {
+                $penerimaanDetail                = new PenerimaanDetail;
+                $penerimaanDetail->penerimaan_id = $penerimaan->id;
+                $penerimaanDetail->item_id       = ItemKeuangan::POS_DISKON_PER_NOTA;
+                $penerimaanDetail->keterangan    = '[POS] Diskon (' . $dokumen->keterangan() . ')';
+                $penerimaanDetail->jumlah        = $posData['diskon-nota'];
+
+                $penerimaanDetail->save();
+            }
 
             $penerimaanLoad = Penerimaan::model()->findByPk($penerimaan->id);
             if (!$penerimaanLoad->prosesP()) {

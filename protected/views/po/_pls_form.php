@@ -6,11 +6,18 @@
                     // echo $form->error($model, 'jumlahHari', ['class' => 'error']);
         ?>
     </div>
-    <div class="small-12 medium-4 large-2 columns end">
+    <div class="small-12 medium-4 large-2 columns">
         <?php
                     echo CHtml::activeLabelEx($modelReportPls, 'sisaHariMax',['data-tooltip', 'title'=>"Hitung jumlah stok yang musti dipesan untuk ketersediaan jangka waktu ini"]);
                     echo CHtml::activeTextField($modelReportPls, 'sisaHariMax', ['value' => empty($modelReportPls->sisaHariMax) ? '7' : $model->sisaHariMax, 'data-tooltip','class'=>'has-tip', 'title'=>"Hitung jumlah stok yang musti dipesan untuk ketersediaan jangka waktu ini"]);
                     // echo $form->error($model, 'sisaHariMax', ['class' => 'error']);
+        ?>
+    </div>
+    <div class="small-12 medium-4 large-2 columns end">
+        <?php
+                    echo CHtml::activeLabelEx($modelReportPls, 'rakId',['data-tooltip', 'title'=>"Pilih Rak Barang (Opsional)"]);
+                    echo CHtml::activeDropDownList($modelReportPls, 'rakId', RakBarang::listPerSupplier($model->profil_id), ['data-tooltip','class'=>'has-tip', 'title'=>"Pilih Rak Barang (Opsional)", 'prompt' => '[SEMUA]']);
+                    // echo $form->error($model, 'rakId', ['class' => 'error']);
         ?>
     </div>
 </div>
@@ -39,6 +46,7 @@ var handler = function(e) {
         'ambil': true,
         'hariPenjualan': $("#ReportPlsForm_jumlahHari").val(),
         'hariSisa': $("#ReportPlsForm_sisaHariMax").val(),
+        'rakId': $("#ReportPlsForm_rakId").val(),
     };
     $.ajax({
         type: 'POST',
@@ -50,7 +58,7 @@ var handler = function(e) {
         },
         success: function(data) {
             if (data.sukses) {
-                $.fn.yiiGridView.update('pls-detail-grid')
+                $.fn.yiiGridView.update('pls-detail-grid'); 
             } else {
                 $(".error").html("Error " + data.error.code + ": " + data.error.msg).slideDown(500);
             }

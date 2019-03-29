@@ -413,7 +413,7 @@ class Po extends CActiveRecord
         return $this->array2csv($report);
     }
 
-    public function analisaPLS($hariPenjualan, $sisaHari, $profilId)
+    public function analisaPLS($hariPenjualan, $sisaHari, $profilId, $rakId)
     {
         /* Analisa PLS
            Kode diambil dari Report PLS
@@ -425,7 +425,16 @@ class Po extends CActiveRecord
         if (!is_null($profilId)) {
             $model->profilId = $profilId;
         }
-        $hasil              = $model->reportPls();
+        if (!is_null($rakId)) {
+            $model->rakId = $rakId;
+        }
+        
+        $hasil = $model->reportPls();
+        // return $hasil;
+        if (empty($hasil)) {
+            // return ['sukses' => true, 'data' => 0];
+            return ['sukses' => false, 'error' => ['msg' => 'Data tidak ditemukan!', 'code' => 404]];
+        }
 
         /* Hapus data yang masih draft */
         PoDetail::model()->deleteAll('po_id=:poId AND status=:sDraft', [':poId'=>$this->id, ':sDraft'=>PoDetail::STATUS_DRAFT]);

@@ -674,3 +674,8 @@ select {
 .text-total {
     font-weight: bold;
 }
+
+input[type="checkbox"] + label, input[type="radio"] + label{
+    vertical-align: middle;
+    margin-top: -0.5rem;
+}

@@ -112,5 +112,29 @@ class RakBarang extends CActiveRecord {
       $this->updated_by = Yii::app()->user->id;
       return parent::beforeSave();
    }
+   
+   public static function listPerSupplier($profilId)
+    {
+        $sql = "
+        SELECT DISTINCT
+            barang_rak.id, barang_rak.nama
+        FROM
+            supplier_barang
+                JOIN
+            barang ON barang.id = supplier_barang.barang_id
+                JOIN
+            barang_rak ON barang_rak.id = barang.rak_id
+        WHERE
+            supplier_barang.supplier_id = :supplierId
+        ORDER BY barang_rak.nama;           
+               ";
+
+        $hasil = Yii::app()->db->createCommand($sql)->bindValue(':supplierId', $profilId)->queryAll();
+        $r     = [];
+        foreach ($hasil as $rak) {
+            $r[$rak['id']] = $rak['nama'];
+        }
+        return $r;
+    }
 
 }

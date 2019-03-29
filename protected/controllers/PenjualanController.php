@@ -162,6 +162,8 @@ class PenjualanController extends Controller
     {
         $model = $this->loadModel($id);
         if ($model->status == Penjualan::STATUS_DRAFT) {
+            PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
+            PenjualanMultiHarga::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
             PenjualanDetail::model()->deleteAll('penjualan_id=:id', [':id' => $id]);
             $model->delete();
         }

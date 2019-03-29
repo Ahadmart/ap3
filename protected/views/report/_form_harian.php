@@ -23,13 +23,19 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->textField($model, 'tanggal', array('class' => 'tanggalan rata-kanan', 'value' => empty($model->tanggal) ? date('d-m-Y') : $model->tanggal)); ?>
         <?php echo $form->error($model, 'tanggal', array('class' => 'error')); ?>
     </div>
-    <div class="small-12 columns">
-<!--        <input id="checkbox_g_profil" name="groupby_profil" type="checkbox">
-        <label for="checkbox_g_profil">Grup per nama profil</label>-->
-        <?php echo $form->labelEx($model, 'groupByProfil'); ?>
-        <?php echo $form->checkBox($model, 'groupByProfil'); ?>
-        <?php echo $form->error($model, 'groupByProfil', array('class' => 'error')); ?>
-
+    <div class="small-12 medium-6 columns">
+        <div class="row">
+            <?php echo $form->checkBox($model, 'trxInvGroupByProfil'); ?>
+            <?php echo $form->labelEx($model, 'trxInvGroupByProfil'); ?>
+            <?php echo $form->error($model, 'trxInvGroupByProfil', array('class' => 'error')); ?>
+        </div>
+        <div class="row">
+            <?php echo $form->checkBox($model, 'trxKeuGroupByProfil'); ?>
+            <?php echo $form->labelEx($model, 'trxKeuGroupByProfil'); ?>
+            <?php echo $form->error($model, 'trxKeuGroupByProfil', array('class' => 'error')); ?>
+        </div>
+    </div>
+    <div class="small-12 medium-6 columns">
         <ul class="button-group right">
             <li>
                 <a href="#" accesskey="p" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
@@ -96,7 +102,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
     $(".tombol-cetak").click(function () {
         var dataKirim = {
             'tanggal': $("#ReportHarianForm_tanggal").val(),
-            'group': $("#ReportHarianForm_groupByProfil").is(':checked') ? 1 : 0
+            'invGroup': $("#ReportHarianForm_trxInvGroupByProfil").is(':checked') ? 1 : 0,
+            'keuGroup': $("#ReportHarianForm_trxKeuGroupByProfil").is(':checked') ? 1 : 0
         };
         var dataUrl = $(this).attr('href');
         window.open(dataUrl + '&' + $.param(dataKirim), '_blank');

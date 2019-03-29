@@ -196,11 +196,12 @@ class ReportController extends Controller
         ]);
     }
 
-    public function actionPrintHarian($printId, $kertas, $tanggal, $group)
+    public function actionPrintHarian($printId, $kertas, $tanggal, $invGroup, $keuGroup)
     {
-        $model                = new ReportHarianForm;
-        $model->tanggal       = $tanggal;
-        $model->groupByProfil = $group;
+        $model                      = new ReportHarianForm;
+        $model->tanggal             = $tanggal;
+        $model->trxInvGroupByProfil = $invGroup;
+        $model->trxKeuGroupByProfil = $keuGroup;
         if ($model->validate()) {
             $report             = $model->reportHarianDetail();
             $report['tanggal']  = $tanggal;
@@ -217,11 +218,12 @@ class ReportController extends Controller
         }
     }
 
-    public function actionPrintHarian2($printId, $kertas, $tanggal, $group)
+    public function actionPrintHarian2($printId, $kertas, $tanggal, $invGroup, $keuGroup)
     {
-        $model                = new ReportHarianForm;
-        $model->tanggal       = $tanggal;
-        $model->groupByProfil = $group;
+        $model                      = new ReportHarianForm;
+        $model->tanggal             = $tanggal;
+        $model->trxInvGroupByProfil = $invGroup;
+        $model->trxKeuGroupByProfil = $keuGroup;
         if ($model->validate()) {
             $report             = $model->reportHarianDetail();
             $report['tanggal']  = $tanggal;
