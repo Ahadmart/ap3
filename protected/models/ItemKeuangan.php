@@ -27,6 +27,12 @@ class ItemKeuangan extends CActiveRecord
     const STATUS_TIDAK_AKTIF = 0;
     const STATUS_AKTIF = 1;
 
+    /* Item Keuangan ID untuk mencatat infaq/shodaqoh via transaksi POS */
+    const POS_INFAQ = 10;
+
+    /* Item Keuangan ID untuk mencatat DISKON PER NOTA transaksi POS */
+    const POS_DISKON_PER_NOTA = 11;
+
     public $jenisTrx;
     public $namaParent;
 

@@ -145,7 +145,8 @@ function namaBulan($i)
                     foreach ($pengeluaran['items'] as $items):
                         ?>
                         <tr>
-                            <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$items['keterangan']}"; ?></td>
+                            <?php $itemKeterangan = isset($items['keterangan']) ? $items['keterangan'] : '' ?>
+                            <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$itemKeterangan}"; ?></td>
                             <td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?></td>
                         </tr>
                         <?php
@@ -165,7 +166,8 @@ function namaBulan($i)
                     foreach ($penerimaan['items'] as $items):
                         ?>
                         <tr>
-                            <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$items['keterangan']}"; ?></td>
+                            <?php $itemKeterangan = isset($items['keterangan']) ? $items['keterangan'] : '' ?>
+                            <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$itemKeterangan}"; ?></td>
                             <td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?></td>
                         </tr>
                         <?php

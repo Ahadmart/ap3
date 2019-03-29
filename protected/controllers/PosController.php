@@ -106,13 +106,21 @@ class PosController extends Controller
             Yii::app()->user->setState('kasirOtorisasiAdmin', $id);
             Yii::app()->user->setState('kasirOtorisasiUserId', Yii::app()->user->id);
         }
+        
+        $configShowDiskonNota = Config::model()->find("nama='pos.showdiskonpernota'");
+        $configShowInfaq      = Config::model()->find("nama='pos.showinfak'");
+
+        $showDiskonPerNota = is_null($configShowDiskonNota) ? 0 : $configShowDiskonNota->nilai;
+        $showInfaq         = is_null($configShowInfaq) ? 0 : $configShowInfaq->nilai;
 
         $this->render('ubah',
                 [
-            'model'           => $model,
-            'penjualanDetail' => $penjualanDetail,
-            'barang'          => $barang,
-            'tipeCari'        => $configCariBarang->nilai
+            'model'             => $model,
+            'penjualanDetail'   => $penjualanDetail,
+            'barang'            => $barang,
+            'tipeCari'          => $configCariBarang->nilai,
+            'showDiskonPerNota' => $showDiskonPerNota,
+            'showInfaq'         => $showInfaq,
         ]);
     }
 
@@ -296,8 +304,11 @@ class PosController extends Controller
 
     public function actionKembalian()
     {
-        echo ($_POST['bayar'] - $_POST['total']) < 0 ? '&nbsp' : number_format($_POST['bayar'] - $_POST['total'], 0,
-                        ',', '.');
+        /*
+          echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
+          number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
+         */
+        echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
     }
 
     public function renderQtyLinkEditable($data, $row)
