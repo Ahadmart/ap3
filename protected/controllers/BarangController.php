@@ -139,6 +139,7 @@ class BarangController extends Controller
             $model->barang_id   = $id;
             $model->supplier_id = $supplierId;
             if ($model->save()) {
+                $model->assignDefaultSupplier($model->id, $id); // $id adalah barangId 
                 echo 'berhasil';
             } else {
                 echo 'tidak berhasil';
