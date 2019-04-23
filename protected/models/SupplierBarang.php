@@ -193,5 +193,41 @@ class SupplierBarang extends CActiveRecord
                         ->order('b.nama')
                         ->queryAll();
     }
+    
+    public static function belumAdaSupDefault($barangId)
+    {
+        $sql = "
+        SELECT 
+            id
+        FROM
+            supplier_barang
+        WHERE
+            barang_id = :barangId AND `default` = :nilaiDefault
+                ";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValues([':barangId' => $barangId, ':nilaiDefault' => self::SUPPLIER_DEFAULT]);
+        return $command->queryRow() == false ? true : false;
+    }
+    
+    public static function ambilSupplierTerakhir($barangId)
+    {
+        $sql = "
+        SELECT 
+            MAX(id) max_id
+        FROM
+            supplier_barang
+        WHERE
+            barang_id = :barangId
+                ";
+
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValue(':barangId', $barangId);
+        $r = $command->queryRow();
+        if ($r == FALSE) {
+            return false;
+        }
+        return $r['max_id'];
+    }
 
 }
