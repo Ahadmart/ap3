@@ -1190,4 +1190,42 @@ class ReportController extends Controller
         ]);
     }
 
+    /**
+     * Report Penjualan per Kategori Form
+     */
+    public function actionPenjualanPerKategori()
+    {
+        $model  = new ReportPenjualanPerKategoriForm();
+        $report = [];
+        if (isset($_POST['ReportPenjualanPerKategoriForm'])) {
+            $model->attributes = $_POST['ReportPenjualanPerKategoriForm'];
+            if ($model->validate()) {
+                $report = $model->report();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes(); // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes(); // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        //$kertasUntukPdf = ReportPenjualanForm::listKertas();
+        $this->render('penjualan_per_kategori', [
+            'model'    => $model,
+            'profil'   => $profil,
+            'user'     => $user,
+            'report'   => $report,
+            'printers' => $printers,
+        ]);
+    }
+
 }
