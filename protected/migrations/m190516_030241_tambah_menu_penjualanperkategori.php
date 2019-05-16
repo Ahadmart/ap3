@@ -6,7 +6,7 @@ class m190516_030241_tambah_menu_penjualanperkategori extends CDbMigration
 	{
         $now = date('Y-m-d H:i:s');
 
-        // Geser urutan semua yang ada di menu laporan penjualan kecuali urutan 1
+        // Geser urutan semua yang ada di menu laporan penjualan kecuali urutan <= 2
         $sql = '
 		UPDATE menu 
 		SET 
@@ -25,7 +25,7 @@ class m190516_030241_tambah_menu_penjualanperkategori extends CDbMigration
             'link'       => '/report/penjualanperkategori',
             'keterangan' => 'Laporan Penjualan per Item per Kategori per Tanggal',
             'level'      => 3,
-            'urutan'     => 2,
+            'urutan'     => 3,
             'status'     => 1,
             'updated_at' => $now,
             'updated_by' => 1,
