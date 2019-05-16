@@ -11,6 +11,7 @@ $form = $this->beginWidget('CActiveForm', [
     // See class documentation of CActiveForm for details on this,
     // you need to use the performAjaxValidation()-method described there.
     'enableAjaxValidation' => false,
+    'action' => $this->createUrl('penjualanperkategoricsv'),
         ]);
 ?>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, ['class' => 'panel callout']); ?>
@@ -59,7 +60,7 @@ $form = $this->beginWidget('CActiveForm', [
 
 <div class="row">
     <div class="small-12 columns">
-        <?php echo CHtml::submitButton('Submit', ['class' => 'tiny bigfont button right']); ?>
+        <?php echo CHtml::submitButton('Export to CSV', ['class' => 'right tiny bigfont success button']); ?>
     </div>
 </div>
 

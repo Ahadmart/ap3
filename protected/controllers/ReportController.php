@@ -1196,13 +1196,16 @@ class ReportController extends Controller
     public function actionPenjualanPerKategori()
     {
         $model  = new ReportPenjualanPerKategoriForm();
+        /*
         $report = [];
         if (isset($_POST['ReportPenjualanPerKategoriForm'])) {
             $model->attributes = $_POST['ReportPenjualanPerKategoriForm'];
             if ($model->validate()) {
-                $report = $model->report();
-            }
+                $report = $model->report();                
+            }            
         }
+         * 
+         */
 
         $profil = new Profil('search');
         $profil->unsetAttributes(); // clear any default values
@@ -1216,15 +1219,35 @@ class ReportController extends Controller
             $user->attributes = $_GET['User'];
         }
 
-        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
-        $printers             = Device::model()->listDevices($tipePrinterAvailable);
-        //$kertasUntukPdf = ReportPenjualanForm::listKertas();
+        // $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        // $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        // $kertasUntukPdf = ReportPenjualanForm::listKertas();
         $this->render('penjualan_per_kategori', [
             'model'    => $model,
             'profil'   => $profil,
             'user'     => $user,
-            'report'   => $report,
-            'printers' => $printers,
+            //'report'   => $report,
+        ]);
+    }
+    
+    public function actionPenjualanPerKategoriCsv()
+    {
+        $model  = new ReportPenjualanPerKategoriForm();
+        $report = [];
+        if (isset($_POST['ReportPenjualanPerKategoriForm'])) {
+            $model->attributes = $_POST['ReportPenjualanPerKategoriForm'];
+            if ($model->validate()) {
+                $report = $model->toCSV();
+            }
+        }
+        
+        $namaToko  = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp = date("Y-m-d-H-i");
+        $namaFile  = "Penjualan per Kategori {$namaToko->nilai} {$model->dari}_{$model->sampai} {$timeStamp}";
+
+        $this->renderPartial('_csv', [
+            'namaFile' => $namaFile,
+            'csv'      => $report,
         ]);
     }
 

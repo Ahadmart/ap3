@@ -26,6 +26,7 @@ $this->renderPartial('_form_penjualan_per_kategori', ['model' => $model]);
     </div>
 </div>
 <?php
+/*
 if (isset($report['rekap']) && $report['rekap']) {
     ?>
     <div class="row">
@@ -100,6 +101,8 @@ if (!empty($report['detail'])):
     </div>
     <?php
 endif;
+ * 
+ */
 ?>
 <script>
 
@@ -135,14 +138,14 @@ endif;
         console.log(data);
         $("#profil").val(data.nama);
         $("#tabel-profil").slideUp(500);
-        $("#ReportPenjualanForm_profilId").val(data.id);
+        $("#ReportPenjualanPerKategoriForm_profilId").val(data.id);
     }
 
     function isiUser(data) {
         console.log(data);
         $("#user").val(data.namaLengkap + ' (' + data.nama + ')');
         $("#tabel-user").slideUp(500);
-        $("#ReportPenjualanForm_userId").val(data.id);
+        $("#ReportPenjualanPerKategoriForm_userId").val(data.id);
     }
 
     $("body").on("focusin", "a.pilih", function () {

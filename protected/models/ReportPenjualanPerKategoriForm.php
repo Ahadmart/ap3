@@ -32,7 +32,7 @@ class ReportPenjualanPerKategoriForm extends CFormModel
     public function attributeLabels()
     {
         return [
-            'profilId'   => 'Profil',
+            'profilId'   => 'Profil (Customer)',
             'userId'     => 'User',
             'dari'       => 'Dari',
             'sampai'     => 'Sampai',
@@ -45,23 +45,22 @@ class ReportPenjualanPerKategoriForm extends CFormModel
         $dari   = DateTime::createFromFormat('d-m-Y', $this->dari);
         $sampai = DateTime::createFromFormat('d-m-Y', $this->sampai);
         $sampai->modify('+1 day');
-        
-        $tanggalAwal   = $dari->format('Y-m-d') . ' 00:00:00';
-        $tanggalAkhir  = $sampai->format('Y-m-d') . ' 00:00:00';
+
+        $tanggalAwal  = $dari->format('Y-m-d') . ' 00:00:00';
+        $tanggalAkhir = $sampai->format('Y-m-d') . ' 00:00:00';
 
         $kategoriQuery = '';
-//        if (!empty($this->kategoriId)) {
-//            $kategoriQuery = 'JOIN barang ON pd.barang_id = barang.id
-//                                AND barang.kategori_id = :kategoriId';
-//        }
+        if (!empty($this->kategoriId)) {
+            $kategoriQuery = ' AND k.id = :kategoriId';
+        }
 
         $whereSub = '';
-//        if (!empty($this->profilId)) {
-//            $whereSub .=" AND pj.profil_id = :profilId";
-//        }
-//        if (!empty($this->userId)) {
-//            $whereSub.=" AND pj.updated_by = :userId";
-//        }
+        if (!empty($this->profilId)) {
+            $whereSub .=" AND p.profil_id = :profilId";
+        }
+        if (!empty($this->userId)) {
+            $whereSub.=" AND p.updated_by = :userId";
+        }
 
         $userId    = Yii::app()->user->id;
         $sqlSelect = "
@@ -85,6 +84,7 @@ class ReportPenjualanPerKategoriForm extends CFormModel
                 AND p.tanggal >= :tanggalAwal
                 AND p.tanggal < :tanggalAkhir
                 AND p.`status` != :penjualanDraft
+                {$whereSub}
             GROUP BY barang_id) AS t_penjualan
                 LEFT JOIN
             (SELECT 
@@ -98,11 +98,12 @@ class ReportPenjualanPerKategoriForm extends CFormModel
                 AND p.tanggal >= :tanggalAwal
                 AND p.tanggal < :tanggalAkhir
                 AND p.`status` != :penjualanDraft
+                {$whereSub}
             GROUP BY barang_id) AS t_hpp ON t_hpp.barang_id = t_penjualan.barang_id
                 JOIN
             barang b ON b.id = t_penjualan.barang_id
                 JOIN
-            barang_kategori k ON k.id = b.kategori_id
+            barang_kategori k ON k.id = b.kategori_id {$kategoriQuery}
                 JOIN
             barang_satuan s ON s.id = b.satuan_id
         ORDER BY k.nama , t_penjualan.total_jual DESC , b.nama
@@ -115,21 +116,21 @@ class ReportPenjualanPerKategoriForm extends CFormModel
         $command->bindValue(":tanggalAwal", $tanggalAwal);
         $command->bindValue(":tanggalAkhir", $tanggalAkhir);
 
-//        if (!empty($this->profilId)) {
-//            $command->bindValue(":profilId", $this->profilId);
-//        }
-//        if (!empty($this->userId)) {
-//            $command->bindValue(":userId", $this->userId);
-//        }
-//        if (!empty($this->kategoriId)) {
-//            $command->bindValue(':kategoriId', $this->kategoriId);
-//        }
+        if (!empty($this->profilId)) {
+            $command->bindValue(":profilId", $this->profilId);
+        }
+        if (!empty($this->userId)) {
+            $command->bindValue(":userId", $this->userId);
+        }
+        if (!empty($this->kategoriId)) {
+            $command->bindValue(':kategoriId', $this->kategoriId);
+        }
 
         $penjualan = $command->queryAll();
         //$rekap     = '';//$commandRekap->queryRow();
         return [
             'detail' => $penjualan,
-            //'rekap'  => $rekap
+                //'rekap'  => $rekap
         ];
     }
 
@@ -140,15 +141,7 @@ class ReportPenjualanPerKategoriForm extends CFormModel
 
     public function toCsv()
     {
-        $penjualan = Yii::app()->db->createCommand()
-                ->select(['tanggal', 'nama', 'penjualan_nomor', 'so_nomor', 'total', 'total_modal', 'margin'])
-                ->from($this->tableName())->where('user_id=:userId',
-                        [
-                            ':userId' => Yii::app()->user->id
-                ])
-                ->queryAll();
-
-        return $this->array2csv($penjualan);
+        return $this->array2csv($this->report()['detail']);
     }
 
     public function array2csv(array &$array)
@@ -164,6 +157,18 @@ class ReportPenjualanPerKategoriForm extends CFormModel
         }
         fclose($df);
         return ob_get_clean();
+    }
+
+    public function getNamaProfil()
+    {
+        $profil = Profil::model()->findByPk($this->profilId);
+        return $profil->nama;
+    }
+
+    public function getNamaUser()
+    {
+        $user = User::model()->findByPk($this->userId);
+        return $user->nama;
     }
 
 }
