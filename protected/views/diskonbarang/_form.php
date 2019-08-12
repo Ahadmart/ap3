@@ -7,27 +7,27 @@
 <div class="form">
 
     <?php
-    $form = $this->beginWidget('CActiveForm', array(
-        'id' => 'diskon-barang-form',
+    $form = $this->beginWidget('CActiveForm', [
+        'id'                   => 'diskon-barang-form',
         // Please note: When you enable ajax validation, make sure the corresponding
         // controller action is handling ajax validation correctly.
         // There is a call to performAjaxValidation() commented in generated controller code.
         // See class documentation of CActiveForm for details on this.
         'enableAjaxValidation' => false,
-    ));
+    ]);
     ?>
 
-    <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
+    <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, ['class' => 'panel callout']); ?>
 
     <div class="row">
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'tipe_diskon_id'); ?>
             <?php
-            echo $form->dropDownList($model, 'tipe_diskon_id', $model->listTipe(), array(
-                'prompt' => 'Pilih Satu..',
-                'autofocus' => 'autofocus'));
+            echo $form->dropDownList($model, 'tipe_diskon_id', $model->listTipe(), [
+                'prompt'    => 'Pilih Satu..',
+                'autofocus' => 'autofocus']);
             ?>
-            <?php echo $form->error($model, 'tipe_diskon_id', array('class' => 'error')); ?>
+            <?php echo $form->error($model, 'tipe_diskon_id', ['class' => 'error']); ?>
         </div>
     </div>
 
@@ -36,7 +36,7 @@
             <?php echo $form->hiddenField($model, 'barang_id'); ?>
             <?php
             if (!$model->isNewRecord) {
-                $hargaJualRaw = is_null($model->barang) ? 0 : $model->barang->getHargaJualRaw();
+                $hargaJualRaw            = is_null($model->barang) ? 0 : $model->barang->getHargaJualRaw();
                 $barangBonusHargaJualRaw = is_null($model->barangBonus) ? 0 : $model->barangBonus->getHargaJualRaw();
             }
             ?>
@@ -61,7 +61,7 @@
                 </div>
                 <div class="small-6 large-8 columns">
                     <?php
-                    $barcode = !is_null($model->barang) ? $model->barang->barcode : ''
+                    $barcode      = !is_null($model->barang) ? $model->barang->barcode : ''
                     ?>
                     <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b"<?php echo $model->isNewRecord ? '' : 'value="' . $barcode . '"' ?>/>
                 </div>
@@ -71,7 +71,20 @@
             </div>
         </div>
     </div>
-
+    <div class="row" id="list-kategori" style="display:none">
+        <div class="small-12 columns">
+            <?php echo $form->labelEx($model, 'barang_kategori_id'); ?>
+            <?php
+            echo $form->dropDownList($model, 'barang_kategori_id',
+                    CHtml::listData(KategoriBarang::model()->orderByNama()->FindAll(['select' => 'id, nama']),
+                            'id', 'nama'), [
+                'prompt'    => 'Pilih Satu..',
+                'autofocus' => 'autofocus']
+            );
+            ?>
+            <?php echo $form->error($model, 'barang_kategori_id', ['class' => 'error']); ?>
+        </div>
+    </div>
     <div class="row">
         <div class="panel" id="info-barang" style="display: none; padding-bottom: 15px; margin-left: none; margin-right: none">
 
@@ -82,8 +95,8 @@
         <div class="small-6 columns">
             <div class="row-nilai-diskon" id="nominal-diskon" style="display: none">
                 <?php echo $form->labelEx($model, 'nominal'); ?>
-                <?php echo $form->textField($model, 'nominal', array('size' => 18, 'maxlength' => 18, 'autocomplete' => 'off')); ?>
-                <?php echo $form->error($model, 'nominal', array('class' => 'error')); ?>
+                <?php echo $form->textField($model, 'nominal', ['size' => 18, 'maxlength' => 18, 'autocomplete' => 'off']); ?>
+                <?php echo $form->error($model, 'nominal', ['class' => 'error']); ?>
             </div>
         </div>
         <div class="small-6 columns">
@@ -99,24 +112,24 @@
             <div class="row-nilai-diskon" style="display: none">
                 <?php echo $form->labelEx($model, 'persen'); ?>
                 <?php echo $form->textField($model, 'persen', ['autocomplete' => 'off']); ?>
-                <?php echo $form->error($model, 'persen', array('class' => 'error')); ?>
+                <?php echo $form->error($model, 'persen', ['class' => 'error']); ?>
             </div>
         </div>
         <div class="small-6 columns">
             <div  id="row-qty" style="display: none">
                 <?php echo $form->labelEx($model, 'qty'); ?>
-                <?php echo $form->textField($model, 'qty', array('size' => 10, 'maxlength' => 10, 'autocomplete' => 'off')); ?>
-                <?php echo $form->error($model, 'qty', array('class' => 'error')); ?>
+                <?php echo $form->textField($model, 'qty', ['size' => 10, 'maxlength' => 10, 'autocomplete' => 'off']); ?>
+                <?php echo $form->error($model, 'qty', ['class' => 'error']); ?>
             </div>
             <div  id="row-qty-min" style="display: none">
                 <?php echo $form->labelEx($model, 'qty_min'); ?>
-                <?php echo $form->textField($model, 'qty_min', array('size' => 10, 'maxlength' => 10, 'autocomplete' => 'off')); ?>
-                <?php echo $form->error($model, 'qty_min', array('class' => 'error')); ?>
+                <?php echo $form->textField($model, 'qty_min', ['size' => 10, 'maxlength' => 10, 'autocomplete' => 'off']); ?>
+                <?php echo $form->error($model, 'qty_min', ['class' => 'error']); ?>
             </div>
             <div  id="row-qty-max" style="display: none">
                 <?php echo $form->labelEx($model, 'qty_max'); ?>
-                <?php echo $form->textField($model, 'qty_max', array('size' => 10, 'maxlength' => 10, 'autocomplete' => 'off')); ?>
-                <?php echo $form->error($model, 'qty_max', array('class' => 'error')); ?>
+                <?php echo $form->textField($model, 'qty_max', ['size' => 10, 'maxlength' => 10, 'autocomplete' => 'off']); ?>
+                <?php echo $form->error($model, 'qty_max', ['class' => 'error']); ?>
             </div>
         </div>
     </div>
@@ -151,8 +164,8 @@
             <div class="small-6 columns">
                 <div class="row-bonus-nilai" id="bonus-nominal-diskon" style="display: none">
                     <?php echo $form->labelEx($model, 'barang_bonus_diskon_nominal'); ?>
-                    <?php echo $form->textField($model, 'barang_bonus_diskon_nominal', array('size' => 18, 'maxlength' => 18, 'autocomplete' => 'off')); ?>
-                    <?php echo $form->error($model, 'barang_bonus_diskon_nominal', array('class' => 'error')); ?>
+                    <?php echo $form->textField($model, 'barang_bonus_diskon_nominal', ['size' => 18, 'maxlength' => 18, 'autocomplete' => 'off']); ?>
+                    <?php echo $form->error($model, 'barang_bonus_diskon_nominal', ['class' => 'error']); ?>
                 </div>
             </div>
             <div class="small-6 columns">
@@ -167,14 +180,14 @@
                 <div class="row-bonus-nilai" style="display: none">
                     <?php echo $form->labelEx($model, 'barang_bonus_diskon_persen'); ?>
                     <?php echo $form->textField($model, 'barang_bonus_diskon_persen', ['autocomplete' => 'off']); ?>
-                    <?php echo $form->error($model, 'barang_bonus_diskon_persen', array('class' => 'error')); ?>
+                    <?php echo $form->error($model, 'barang_bonus_diskon_persen', ['class' => 'error']); ?>
                 </div>
             </div>
             <div class="small-6 columns">
                 <div  id="row-qty-bonus">
                     <?php echo $form->labelEx($model, 'barang_bonus_qty'); ?>
-                    <?php echo $form->textField($model, 'barang_bonus_qty', array('size' => 10, 'maxlength' => 10, 'autocomplete' => 'off')); ?>
-                    <?php echo $form->error($model, 'barang_bonus_qty', array('class' => 'error')); ?>
+                    <?php echo $form->textField($model, 'barang_bonus_qty', ['size' => 10, 'maxlength' => 10, 'autocomplete' => 'off']); ?>
+                    <?php echo $form->error($model, 'barang_bonus_qty', ['class' => 'error']); ?>
                 </div>
             </div>
         </div>
@@ -183,13 +196,13 @@
     <div class="row">
         <div class="small-6 columns">
             <?php echo $form->labelEx($model, 'dari'); ?>
-            <?php echo $form->textField($model, 'dari', array('class' => 'tanggal-waktu', 'value' => $model->isNewRecord ? date('d-m-Y H:i') : $model->dari)); ?>
-            <?php echo $form->error($model, 'dari', array('class' => 'error')); ?>
+            <?php echo $form->textField($model, 'dari', ['class' => 'tanggal-waktu', 'value' => $model->isNewRecord ? date('d-m-Y H:i') : $model->dari]); ?>
+            <?php echo $form->error($model, 'dari', ['class' => 'error']); ?>
         </div>
         <div class="small-6 columns">
             <?php echo $form->labelEx($model, 'sampai'); ?>
-            <?php echo $form->textField($model, 'sampai', array('class' => 'tanggal-waktu', 'value' => empty($model->sampai) ? '' : $model->sampai)); ?>
-            <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
+            <?php echo $form->textField($model, 'sampai', ['class' => 'tanggal-waktu', 'value' => empty($model->sampai) ? '' : $model->sampai]); ?>
+            <?php echo $form->error($model, 'sampai', ['class' => 'error']); ?>
         </div>
     </div>
 
@@ -197,13 +210,13 @@
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'status'); ?>
             <?php echo $form->dropDownList($model, 'status', $model->listStatus()); ?>
-            <?php echo $form->error($model, 'status', array('class' => 'error')); ?>
+            <?php echo $form->error($model, 'status', ['class' => 'error']); ?>
         </div>
     </div>
 
     <div class="row">
         <div class="small-12 columns">
-            <?php echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', array('class' => 'tiny bigfont button')); ?>
+            <?php echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', ['class' => 'tiny bigfont button']); ?>
         </div>
     </div>
 
@@ -263,10 +276,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
             case '<?= DiskonBarang::TIPE_NOMINAL_GET_BARANG; ?>':
                 nominalGetBarangFields();
                 break;
+            case '<?= DiskonBarang::TIPE_PROMO_PERKATEGORI; ?>':
+                promoPerKategoriFields();
+                break;
         }
     }
 
     function promoFields() {
+        $("#list-kategori").hide(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -276,7 +293,19 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         enDisScan(false);
     }
 
+    function promoPerKategoriFields() {
+        $("#row-qty").hide(500);
+        $("#row-qty-min").hide(500);
+        $("#cb_semua_barang").hide(500);
+        $("#row-qty-max").show(500);
+        $(".row-nilai-diskon").show(500);
+        $("#list-kategori").show(500);
+        $("#input-barang-bonus").hide(500);
+        enDisScan(true);
+    }
+
     function promoMemberFields() {
+        $("#list-kategori").hide(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").show(500);
@@ -288,6 +317,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function grosirFields() {
+        $("#list-kategori").hide(500);
         $("#row-qty").hide(500);
         $("#cb_semua_barang").hide(500);
         $("#row-qty-max").hide(500);
@@ -298,6 +328,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function bandedFields() {
+        $("#list-kategori").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -308,6 +339,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function qtyGetBarangFields() {
+        $("#list-kategori").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").show(500);
         $("#cb_semua_barang").hide(500);
@@ -319,6 +351,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function nominalGetBarangFields() {
+        $("#list-kategori").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").hide(500);
         $("#row-qty").hide(500);

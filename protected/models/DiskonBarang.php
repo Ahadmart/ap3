@@ -89,7 +89,7 @@ class DiskonBarang extends CActiveRecord
         return [
             'barang'         => [self::BELONGS_TO, 'Barang', 'barang_id'],
             'barangBonus'    => [self::BELONGS_TO, 'Barang', 'barang_bonus_id'],
-            'barangKategori' => [self::BELONGS_TO, 'BarangKategori', 'barang_kategori_id'],
+            'barangKategori' => [self::BELONGS_TO, 'KategoriBarang', 'barang_kategori_id'],
             'updatedBy'      => [self::BELONGS_TO, 'User', 'updated_by'],
         ];
     }
@@ -213,6 +213,7 @@ class DiskonBarang extends CActiveRecord
     {
         return [
             self::TIPE_PROMO              => 'Promo (diskon per waktu tertentu)',
+            self::TIPE_PROMO_PERKATEGORI  => 'Promo per Kategori Barang',
             self::TIPE_PROMO_MEMBER       => 'Promo Member',
             self::TIPE_GROSIR             => 'Grosir (beli banyak harga turun)',
             self::TIPE_BANDED             => 'Banded (beli qty tertentu harga turun)',
@@ -225,6 +226,7 @@ class DiskonBarang extends CActiveRecord
     {
         return [
             self::TIPE_PROMO              => 'Promo',
+            self::TIPE_PROMO_PERKATEGORI  => 'Promo per Kategori',
             self::TIPE_PROMO_MEMBER       => 'Promo Member',
             self::TIPE_GROSIR             => 'Grosir',
             self::TIPE_BANDED             => 'Banded',
@@ -259,6 +261,7 @@ class DiskonBarang extends CActiveRecord
     public function beforeValidate()
     {
         $this->barang_id                   = $this->semua_barang ? NULL : $this->barang_id;
+        $this->barang_id                   = $this->tipe_diskon_id == self::TIPE_PROMO_PERKATEGORI ? NULL : $this->barang_id;
         $this->dari                        = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s') : NULL;
         $this->sampai                      = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s') : NULL;
         $this->qty                         = empty($this->qty) ? NULL : $this->qty;
@@ -306,6 +309,9 @@ class DiskonBarang extends CActiveRecord
             case self::TIPE_NOMINAL_GET_BARANG:
                 $this->semua_barang = 1;
                 break;
+            case self::TIPE_PROMO_PERKATEGORI:
+                // Nothing to do
+                break;
         }
         return parent::beforeValidate();
     }
@@ -343,6 +349,7 @@ class DiskonBarang extends CActiveRecord
     {
         return [
             self::TIPE_PROMO              => 'Promo',
+            self::TIPE_PROMO_PERKATEGORI  => 'Promo perKategori',
             self::TIPE_PROMO_MEMBER       => 'Promo Member',
             self::TIPE_MANUAL             => 'Manual/Admin',
             self::TIPE_GROSIR             => 'Grosir',

@@ -31,6 +31,10 @@ $this->boxHeader['normal'] = $headerBoxSmall;
                     'label' => 'Barcode'
                 ),
                 array(
+                    'name' => 'barangKategori.nama',
+                    'label' => 'Kategori Barang'
+                ),
+                array(
                     'label' => 'Tipe',
                     'value' => $model->getNamaTipe()
                 ),

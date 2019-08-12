@@ -206,7 +206,12 @@ class DiskonbarangController extends Controller
             $return = '<a href="' .
                     $this->createUrl('view', ['id' => $data->id]) . '">' .
                     $data->barang->nama . '</a>';
-        } else {
+        } else if ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERKATEGORI ) {
+            $return = '<a href="' .
+                    $this->createUrl('view', ['id' => $data->id]) . '">' .
+                    $data->barangKategori->nama . '</a>';            
+        }        
+        else {
             $return = '<a href="' .
                     $this->createUrl('view', ['id' => $data->id]) . '">[SEMUA BARANG]</a>';
         }
