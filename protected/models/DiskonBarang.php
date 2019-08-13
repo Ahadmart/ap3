@@ -310,7 +310,10 @@ class DiskonBarang extends CActiveRecord
                 $this->semua_barang = 1;
                 break;
             case self::TIPE_PROMO_PERKATEGORI:
-                // Nothing to do
+                $this->semua_barang = 1;
+                if (empty($this->qty_max)) {
+                    return false;
+                }
                 break;
         }
         return parent::beforeValidate();
