@@ -4,40 +4,15 @@ class DiskonbarangController extends Controller
 {
 
     /**
-     * @return array action filters
-     */
-    public function filters()
-    {
-        return array(
-            'accessControl', // perform access control for CRUD operations
-            'postOnly + delete', // we only allow deletion via POST request
-        );
-    }
-
-    /**
-     * Specifies the access control rules.
-     * This method is used by the 'accessControl' filter.
-     * @return array access control rules
-     */
-    public function accessRules()
-    {
-        return array(
-            array('deny', // deny guest
-                'users' => array('guest'),
-            ),
-        );
-    }
-
-    /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id)
     {
         $this->layout = '//layouts/box_kecil';
-        $this->render('view', array(
+        $this->render('view', [
             'model' => $this->loadModel($id),
-        ));
+        ]);
     }
 
     /**
@@ -47,7 +22,7 @@ class DiskonbarangController extends Controller
     public function actionTambah()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new DiskonBarang;
+        $model        = new DiskonBarang;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
@@ -55,12 +30,12 @@ class DiskonbarangController extends Controller
         if (isset($_POST['DiskonBarang'])) {
             $model->attributes = $_POST['DiskonBarang'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $model->id));
+                $this->redirect(['view', 'id' => $model->id]);
         }
 
-        $this->render('tambah', array(
+        $this->render('tambah', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -69,10 +44,10 @@ class DiskonbarangController extends Controller
      */
     public function actionUbah($id)
     {
-        $this->redirect(array('view', 'id' => $id));
+        $this->redirect(['view', 'id' => $id]);
         /* Update: tidak bisa ubah, harus dinonaktifkan dan buat baru */
         $this->layout = '//layouts/box_kecil';
-        $model = $this->loadModel($id);
+        $model        = $this->loadModel($id);
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
@@ -80,12 +55,12 @@ class DiskonbarangController extends Controller
         if (isset($_POST['DiskonBarang'])) {
             $model->attributes = $_POST['DiskonBarang'];
             if ($model->save())
-                $this->redirect(array('view', 'id' => $id));
+                $this->redirect(['view', 'id' => $id]);
         }
 
-        $this->render('ubah', array(
+        $this->render('ubah', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -111,7 +86,7 @@ class DiskonbarangController extends Controller
      */
     public function actionIndex()
     {
-        $model = new DiskonBarang('search');
+        $model         = new DiskonBarang('search');
         $model->unsetAttributes();  // clear any default values
         $model->status = 1;
         if (isset($_GET['DiskonBarang'])) {
@@ -152,73 +127,73 @@ class DiskonbarangController extends Controller
 
     public function actionGetDataBarang()
     {
-        $return = array(
+        $return  = [
             'sukses' => false
-        );
+        ];
         $barcode = $_POST['barcode'];
-        $barang = Barang::model()->find('barcode=:barcode', array(
+        $barang  = Barang::model()->find('barcode=:barcode', [
             ':barcode' => $barcode
-        ));
+        ]);
 
         if (is_null($barang)) {
 
-            $this->renderJSON(array_merge($return, array('error' => array(
+            $this->renderJSON(array_merge($return, ['error' => [
                     'code' => '500',
-                    'msg' => 'Barang tidak ditemukan'))));
+                    'msg'  => 'Barang tidak ditemukan']]));
         }
-        $return = array(
-            'sukses' => true,
-            'barangId' => $barang->id,
-            'barcode' => $barang->barcode,
-            'nama' => $barang->nama,
-            'satuan' => $barang->satuan->nama,
-            'hargaJual' => $barang->getHargaJual(),
+        $return = [
+            'sukses'       => true,
+            'barangId'     => $barang->id,
+            'barcode'      => $barang->barcode,
+            'nama'         => $barang->nama,
+            'satuan'       => $barang->satuan->nama,
+            'hargaJual'    => $barang->getHargaJual(),
             'hargaJualRaw' => $barang->getHargaJualRaw(),
-            'hargaBeli' => $barang->getHargaBeli(),
-            'stok' => $barang->getStok()
-        );
+            'hargaBeli'    => $barang->getHargaBeli(),
+            'stok'         => $barang->getStok()
+        ];
 
         $this->renderJSON($return);
     }
 
     public function actionCariBarang($term)
     {
-        $arrTerm = explode(' ', $term);
+        $arrTerm  = explode(' ', $term);
         $wBarcode = '(';
-        $wNama = '(';
-        $pBarcode = array();
-        $param = array();
+        $wNama    = '(';
+        $pBarcode = [];
+        $param    = [];
         $firstRow = true;
-        $i = 1;
+        $i        = 1;
         foreach ($arrTerm as $bTerm) {
             if (!$firstRow) {
-                $wBarcode.=' AND ';
-                $wNama.=' AND ';
+                $wBarcode .= ' AND ';
+                $wNama    .= ' AND ';
             }
-            $wBarcode.="barcode like :term{$i}";
-            $wNama.="nama like :term{$i}";
+            $wBarcode           .= "barcode like :term{$i}";
+            $wNama              .= "nama like :term{$i}";
             $param[":term{$i}"] = "%{$bTerm}%";
-            $firstRow = FALSE;
+            $firstRow           = FALSE;
             $i++;
         }
         $wBarcode .= ')';
-        $wNama .= ')';
+        $wNama    .= ')';
         //      echo $wBarcode.' AND '.$wNama;
         //      print_r($param);
 
-        $q = new CDbCriteria();
+        $q         = new CDbCriteria();
         $q->addCondition("{$wBarcode} OR {$wNama}");
         $q->params = $param;
-        $barangs = Barang::model()->findAll($q);
+        $barangs   = Barang::model()->aktif()->findAll($q);
 
-        $r = array();
+        $r = [];
         foreach ($barangs as $barang) {
-            $r[] = array(
+            $r[] = [
                 'label' => $barang->nama,
                 'value' => $barang->barcode,
-                'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
+                'stok'  => is_null($barang->stok) ? 'null' : $barang->stok,
                 'harga' => $barang->hargaJual
-            );
+            ];
         }
 
         $this->renderJSON($r);
@@ -229,11 +204,16 @@ class DiskonbarangController extends Controller
         $return = '';
         if (!is_null($data->barang)) {
             $return = '<a href="' .
-                    $this->createUrl('view', array('id' => $data->id)) . '">' .
+                    $this->createUrl('view', ['id' => $data->id]) . '">' .
                     $data->barang->nama . '</a>';
-        } else {
+        } else if ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERKATEGORI ) {
             $return = '<a href="' .
-                    $this->createUrl('view', array('id' => $data->id)) . '">[SEMUA BARANG]</a>';
+                    $this->createUrl('view', ['id' => $data->id]) . '">' .
+                    $data->barangKategori->nama . '</a>';            
+        }        
+        else {
+            $return = '<a href="' .
+                    $this->createUrl('view', ['id' => $data->id]) . '">[SEMUA BARANG]</a>';
         }
         return $return;
     }
@@ -244,10 +224,10 @@ class DiskonbarangController extends Controller
         if (!is_null($data->barangBonus)) {
             $text = $data->barangBonus->nama . ' (' . $data->barangBonus->barcode . ') ' . $data->barang_bonus_qty . ' x';
             if (!is_null($data->barang_bonus_diskon_nominal)) {
-                $hargaJual = number_format($data->barangBonus->hargaJualRaw, 0, ',', '.');
+                $hargaJual     = number_format($data->barangBonus->hargaJualRaw, 0, ',', '.');
                 $diskonNominal = number_format($data->barang_bonus_diskon_nominal, 0, ',', '.');
-                $net = number_format($data->barangBonus->hargaJualRaw - $data->barang_bonus_diskon_nominal, 0, ',', '.');
-                $text .= "<br />" . $hargaJual . ' - ' . $diskonNominal . ' = ' . $net;
+                $net           = number_format($data->barangBonus->hargaJualRaw - $data->barang_bonus_diskon_nominal, 0, ',', '.');
+                $text          .= "<br />" . $hargaJual . ' - ' . $diskonNominal . ' = ' . $net;
             }
         }
         return $text;
@@ -264,9 +244,9 @@ class DiskonbarangController extends Controller
     public function actionUpdateStatus()
     {
         if (isset($_POST['pk'])) {
-            $pk = $_POST['pk'];
-            $status = $_POST['value'];
-            $diskon = DiskonBarang::model()->findByPk($pk);
+            $pk             = $_POST['pk'];
+            $status         = $_POST['value'];
+            $diskon         = DiskonBarang::model()->findByPk($pk);
             $diskon->status = $status;
 
             $return = ['sukses' => false];
