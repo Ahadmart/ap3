@@ -184,7 +184,7 @@ class DiskonbarangController extends Controller
         $q         = new CDbCriteria();
         $q->addCondition("{$wBarcode} OR {$wNama}");
         $q->params = $param;
-        $barangs   = Barang::model()->findAll($q);
+        $barangs   = Barang::model()->aktif()->findAll($q);
 
         $r = [];
         foreach ($barangs as $barang) {

@@ -262,6 +262,7 @@ class DiskonBarang extends CActiveRecord
     {
         $this->barang_id                   = $this->semua_barang ? NULL : $this->barang_id;
         $this->barang_id                   = $this->tipe_diskon_id == self::TIPE_PROMO_PERKATEGORI ? NULL : $this->barang_id;
+        $this->barang_kategori_id          = empty($this->barang_kategori_id) ? NULL : $this->barang_kategori_id;
         $this->dari                        = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s') : NULL;
         $this->sampai                      = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s') : NULL;
         $this->qty                         = empty($this->qty) ? NULL : $this->qty;
