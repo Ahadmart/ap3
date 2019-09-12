@@ -849,14 +849,21 @@ class ReportController extends Controller
             }
         }
 
+        $scanBarcode = null;
+        /* Ada scan dari aplikasi barcode scanner (android) */
+        if (isset($_GET['barcodescan'])) {
+            $scanBarcode = $_GET['barcodescan'];
+        }
+
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $kertasUntukPdf       = ReportKartuStokForm::listKertas();
         $this->render('kartustok', [
-            'model'     => $model,
-            'report'    => $report,
-            'printers'  => $printers,
-            'kertasPdf' => $kertasUntukPdf,
+            'model'       => $model,
+            'report'      => $report,
+            'printers'    => $printers,
+            'kertasPdf'   => $kertasUntukPdf,
+            'scanBarcode' => $scanBarcode,
         ]);
     }
 

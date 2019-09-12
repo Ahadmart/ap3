@@ -20,7 +20,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
 <div class="row">
     <div class="large-4 columns" style="padding-left: 0; padding-right: 0">
         <?php
-        $this->renderPartial('_form_kartustok', array('model' => $model));
+        $this->renderPartial('_form_kartustok', array('model' => $model, 'scanBarcode' => $scanBarcode));
         ?>
     </div>
 
