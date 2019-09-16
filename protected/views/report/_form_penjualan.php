@@ -33,7 +33,12 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->dropDownList($model, 'kategoriId', $model->filterKategori()); ?>
         <?php echo $form->error($model, 'kategoriId', array('class' => 'error')); ?>
     </div>
-    <div class="medium-6 large-3 columns">
+    <div class="small-12 medium-4 large-2 columns">
+        <?php echo $form->labelEx($model, 'transferMode'); ?>
+        <?php echo $form->dropDownList($model, 'transferMode', $model->filterTransfer()); ?>
+        <?php echo $form->error($model, 'transferMode', array('class' => 'error')); ?>
+    </div>
+    <div class="medium-6 large-2 columns">
         <div class="row collapse">
             <label>Profil</label>
             <div class="small-9 columns">
@@ -44,7 +49,7 @@ $form = $this->beginWidget('CActiveForm', array(
             </div>
         </div>
     </div>
-    <div class="medium-6 large-3 columns">
+    <div class="medium-6 large-2 columns">
         <div class="row collapse">
             <label>User</label>
             <div class="small-9 columns">

@@ -31,6 +31,10 @@ class Penjualan extends CActiveRecord
     const STATUS_LUNAS = 2;
     /* ========== */
     const CUSTOMER_UMUM = 2; // ID di DB untuk customer UMUM (non member)
+    /* ========== */
+    // nilai field transfer_mode
+    const JENIS_PENJUALAN = 0;
+    const JENIS_TRANSFER  = 1;
 
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;

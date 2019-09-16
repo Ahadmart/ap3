@@ -11,11 +11,15 @@
 class ReportPenjualanForm extends CFormModel
 {
 
+    const JENIS_PENJUALAN = 1;
+    const JENIS_TRANSFER  = 2;
+
     public $profilId;
     public $userId;
     public $dari;
     public $sampai;
     public $kategoriId;
+    public $transferMode;
 
     /**
      * Declares the validation rules.
@@ -24,7 +28,7 @@ class ReportPenjualanForm extends CFormModel
     {
         return array(
             array('dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            array('profilId, userId, kategoriId', 'safe')
+            array('profilId, userId, kategoriId, transferMode', 'safe')
         );
     }
 
@@ -38,7 +42,8 @@ class ReportPenjualanForm extends CFormModel
             'userId' => 'User',
             'dari' => 'Dari',
             'sampai' => 'Sampai',
-            'kategoriId' => 'Kategori'
+            'kategoriId' => 'Kategori',
+            'transferMode' => 'Jenis'
         );
     }
 
@@ -90,6 +95,10 @@ class ReportPenjualanForm extends CFormModel
 
         if (!empty($this->userId)) {
             $whereSub.=" AND pj.updated_by = :userId";
+        }
+        
+        if ($this->transferMode > 0) {
+            $whereSub .= " AND pj.transfer_mode = :transferMode";
         }
 
         $userId = Yii::app()->user->id;
@@ -163,6 +172,19 @@ class ReportPenjualanForm extends CFormModel
         if (!empty($this->kategoriId)) {
             $command->bindValue(':kategoriId', $this->kategoriId);
         }
+        
+        if ($this->transferMode > 0) {
+            switch ($this->transferMode) {
+                case self::JENIS_PENJUALAN:
+                    $q = Penjualan::JENIS_PENJUALAN;
+                    break;
+
+                case self::JENIS_TRANSFER:
+                    $q = Penjualan::JENIS_TRANSFER;
+                    break;
+            }
+            $command->bindValue(':transferMode', $q);
+        }
 
         $command->execute();
 
@@ -184,6 +206,14 @@ class ReportPenjualanForm extends CFormModel
     public function filterKategori()
     {
         return ['' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+    }
+    
+    public function filterTransfer(){
+        return [
+            ''                    => '[SEMUA]',
+            self::JENIS_PENJUALAN => 'Penjualan',
+            self::JENIS_TRANSFER  => 'Transfer Barang',
+        ];
     }
 
     public function toCsv()
