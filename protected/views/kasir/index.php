@@ -9,6 +9,7 @@ $this->breadcrumbs = array(
 
 $this->boxHeader['small'] = 'Kasir';
 $this->boxHeader['normal'] = 'Kasir';
+$showHistory = true;
 ?>
 
 <div class="row">
@@ -30,7 +31,10 @@ $this->boxHeader['normal'] = 'Kasir';
                     'value' => '$data->device->keterangan'
                 ),
                 'waktu_buka',
-                //'waktu_tutup',
+                [
+                  'name' => 'waktu_tutup',
+                    'visible' => $showHistory,
+                ],
                 'saldo_awal',
                 /*
                   'saldo_akhir_seharusnya',
@@ -50,6 +54,7 @@ $this->boxHeader['normal'] = 'Kasir';
                         'tutup' => array(
                             'label' => '<i class="fa fa-2x fa-sign-out"></i>',
                             'url' => 'Yii::app()->controller->createUrl("tutup", array("id"=>$data->primaryKey))',
+                            'visible' => 'empty($data->waktu_tutup)',
                             'options' => array(
                                 'title' => 'Tutup Kasir'
                             )
@@ -67,7 +72,7 @@ $this->boxHeader['normal'] = 'Kasir';
             <li>
                 <a href="#" accesskey="c" data-dropdown="cdkick" aria-controls="cdkick" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-microchip fa-fw"></i> Buka <span class="ak">C</span>ash Drawer</a>
                 <ul id="cdkick" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
-                    <?php
+                    <?php                    
                     foreach ($printerLpr as $printer) {
                         ?>                      
                         <li>

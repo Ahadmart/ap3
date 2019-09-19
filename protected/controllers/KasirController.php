@@ -88,7 +88,7 @@ class KasirController extends Controller
             $model->attributes  = $_POST['Kasir'];
             $model->waktu_tutup = date('Y-m-d H:i:s');
             if ($model->save())
-                $this->redirect(['index', 'id' => $id]);
+                $this->redirect(['cetak', 'id' => $id]);
         }
 
         $this->render('tutup', [
@@ -178,6 +178,13 @@ class KasirController extends Controller
             ];
         }
         $this->renderJSON($return);
+    }
+
+    public function actionCetak($id)
+    {
+        $model = $this->loadModel($id);
+        $text = $model->rekapText();
+        $this->renderPartial('cetak', ['text' => $text]);
     }
 
 }
