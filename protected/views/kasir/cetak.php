@@ -1,21 +1,19 @@
-<!DOCTYPE html>
-<html>
-    <head>
-
-    </head>
-    <body style="background-color : #0D47A1;">
-        <h1 style="
-            margin-top: 10px;
-            font-size: 3.5rem;
-            text-align: center;
-            color: #fff;
-            font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-style: normal;
-            font-weight: 300;">Cetak Rekap Kasir</h1>
-        <div style="background-color: #fff; color: #000; text-align: center; padding: 5px 0;">
-            <div style="display: inline-block;text-align: left">
-                <pre><?php echo $text; ?></pre>
-            </div>
+<div class="row">
+    <div class="small-12 columns">
+        <div class="panel" style="overflow: visible">
+            <h4><small>Cetak</small> Rekap Kasir</h4>
+            <hr/>
+            <pre><?php echo $text; ?></pre>
         </div>
-    </body>
-</html>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <?php
+        echo CHtml::link('<i class="fa fa-times"></i> Kemba<span class="ak">l</span>i', $this->createUrl('index'), [
+            'class'     => 'secondary tiny bigfont button',
+            'accesskey' => 'l'
+        ]);
+        ?>
+    </div>
+</div>

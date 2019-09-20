@@ -184,7 +184,7 @@ class KasirController extends Controller
     {
         $model = $this->loadModel($id);
         $text = $model->rekapText();
-        $this->renderPartial('cetak', ['text' => $text]);
+        $this->render   ('cetak', ['text' => $text]);
     }
 
 }

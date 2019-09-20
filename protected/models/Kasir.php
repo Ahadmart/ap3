@@ -234,27 +234,47 @@ class Kasir extends CActiveRecord
     public function rekapText()
     {
         $jumlahKolom = 40;
-        
-        $text = '';
+
+        $text            = '';
+        $terPanjang      = 0;
+        $saldoAwal       = is_null($this->saldo_awal) ? '0' : number_format($this->saldo_awal, 0, ',', '.');
+        $terPanjang      = strlen($saldoAwal) > $terPanjang ? strlen($saldoAwal) : $terPanjang;
+        $totalPenjualan  = is_null($this->total_penjualan) ? '0' : number_format($this->total_penjualan, 0, ',', '.');
+        $terPanjang      = strlen($totalPenjualan) > $terPanjang ? strlen($totalPenjualan) : $terPanjang;
+        $totalMargin     = is_null($this->total_margin) ? '0' : number_format($this->total_margin, 0, ',', '.');
+        $terPanjang      = strlen($totalMargin) > $terPanjang ? strlen($totalMargin) : $terPanjang;
+        $totalRetur      = is_null($this->total_retur) ? '0' : number_format($this->total_retur, 0, ',', '.');
+        $terPanjang      = strlen($totalRetur) > $terPanjang ? strlen($totalRetur) : $terPanjang;
+        $saldoAkhir      = is_null($this->saldo_akhir_seharusnya) ? '0' : number_format($this->saldo_akhir_seharusnya, 0, ',', '.');
+        $terPanjang      = strlen($saldoAkhir) > $terPanjang ? strlen($saldoAkhir) : $terPanjang;
+        $saldoAkhirFisik = is_null($this->saldo_akhir) ? '0' : number_format($this->saldo_akhir, 0, ',', '.');
+        $terPanjang      = strlen($saldoAkhirFisik) > $terPanjang ? strlen($saldoAkhirFisik) : $terPanjang;
+        $selisihSaldo    = is_null($this->saldo_akhir - $this->saldo_akhir_seharusnya) ? '0' : number_format($this->saldo_akhir - $this->saldo_akhir_seharusnya, 0, ',', '.');
+        $terPanjang      = strlen($selisihSaldo) > $terPanjang ? strlen($selisihSaldo) : $terPanjang;
+
         $text .= str_pad('Login', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama . PHP_EOL;
         $text .= str_pad('Nama', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama_lengkap . PHP_EOL;
         $text .= str_pad('POS Client', 19, ' ', STR_PAD_LEFT) . ': ' . $this->device->nama . PHP_EOL;
-        $text .= str_pad('Buka', 19, ' ', STR_PAD_LEFT) . ': ' . $this->waktu_buka . PHP_EOL;
-        $text .= str_pad('Tutup', 19, ' ', STR_PAD_LEFT) . ': ' . $this->waktu_tutup . PHP_EOL;
-        $text .= str_pad('Saldo Awal', 19, ' ', STR_PAD_LEFT) . ': ' . $this->saldo_awal . PHP_EOL;
-        $text .= str_pad('Total Penjualan', 19, ' ', STR_PAD_LEFT) . ': ' . $this->total_penjualan . PHP_EOL;
+        $text .= str_pad('Buka', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_buka), 'd-m-Y H:i:s') . PHP_EOL;
+        $text .= str_pad('Tutup', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_tutup), 'd-m-Y H:i:s') . PHP_EOL;
+        $text .= str_pad('Saldo Awal', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAwal, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Total Penjualan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenjualan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
 
         $penjualanPerAkun = $this->penjualanPerAkun();
         if (count($penjualanPerAkun) > 1) {
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
             foreach ($penjualanPerAkun as $akun) {
-                $text .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . $akun['jumlah'] . PHP_EOL;
+                $jumlahAkun = is_null($akun['jumlah']) ? '0' : number_format($akun['jumlah'], 0, ',', '.');
+                $text       .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
             }
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
         }
 
-        $text .= str_pad('Total Margin', 19, ' ', STR_PAD_LEFT) . ': ' . $this->total_margin . PHP_EOL;
-        $text .= str_pad('Total Retur Jual', 19, ' ', STR_PAD_LEFT) . ': ' . $this->total_retur . PHP_EOL;
-        $text .= str_pad('Saldo Akhir', 19, ' ', STR_PAD_LEFT) . ': ' . $this->saldo_akhir_seharusnya . PHP_EOL;
-        $text .= str_pad('Saldo Akhir Fisik', 19, ' ', STR_PAD_LEFT) . ': ' . $this->saldo_akhir . PHP_EOL;
+        $text .= str_pad('Total Margin', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalMargin, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Total Retur Jual', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalRetur, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Saldo Akhir', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAkhir, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Saldo Akhir Fisik', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAkhirFisik, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Selisih', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($selisihSaldo, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         return $text;
     }
     
