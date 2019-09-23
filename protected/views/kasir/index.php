@@ -30,9 +30,13 @@ $showHistory               = true;
                     'name'  => 'device_id',
                     'value' => '$data->device->keterangan'
                 ],
-                'waktu_buka',
+                [
+                    'name'  => 'waktu_buka',
+                    'value' => 'date_format(date_create_from_format(\'Y-m-d H:i:s\', $data->waktu_buka), \'d-m-Y H:i:s\')',
+                ],
                 [
                     'name'    => 'waktu_tutup',
+                    'value'   => 'isset($data->waktu_tutup) ? date_format(date_create_from_format(\'Y-m-d H:i:s\', $data->waktu_tutup), \'d-m-Y H:i:s\') : ""',
                     'visible' => $showHistory,
                 ],
                 'saldo_awal',
@@ -48,8 +52,8 @@ $showHistory               = true;
                  */
                 [
                     'class'    => 'BButtonColumn',
-                    'header'   => 'Tutup / Cetak',
-                    'template' => '{tutup} {cetak}',
+                    'header'   => 'Tutup / View',
+                    'template' => '{tutup} {rekap}',
                     'buttons'  => [
                         'tutup' => [
                             'label'   => '<i class="fa fa-2x fa-sign-out"></i>',
@@ -59,12 +63,13 @@ $showHistory               = true;
                                 'title' => 'Tutup Kasir'
                             ]
                         ],
-                        'cetak' => [
-                            'label'   => '<i class="fa fa-2x fa-print success"></i>',
-                            'url'     => 'Yii::app()->controller->createUrl("cetak", ["id"=>$data->primaryKey])',
+                        'rekap' => [
+                            'label'   => '<i class="fa fa-file-text"></i>
+                                          </span>',
+                            'url'     => 'Yii::app()->controller->createUrl("rekap", ["id"=>$data->primaryKey])',
                             'visible' => '!empty($data->waktu_tutup)',
                             'options' => [
-                                'title' => 'Cetak'
+                                'title' => 'Rekap'
                             ]
                         ],
                     ]

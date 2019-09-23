@@ -88,7 +88,7 @@ class KasirController extends Controller
             $model->attributes  = $_POST['Kasir'];
             $model->waktu_tutup = date('Y-m-d H:i:s');
             if ($model->save())
-                $this->redirect(['cetak', 'id' => $id]);
+                $this->redirect(['rekap', 'id' => $id]);
         }
 
         $this->render('tutup', [
@@ -180,11 +180,43 @@ class KasirController extends Controller
         $this->renderJSON($return);
     }
 
+    public function actionRekap($id)
+    {
+        $this->layout = '//layouts/box_kecil';
+
+        $model = $this->loadModel($id);
+        $text  = $model->rekapText();
+
+        $tipePrinterAvailable = [Device::TIPE_LPR];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf            = Pembelian::model()->listNamaKertas();
+
+        $this->render('rekap', [
+            'model'     => $model,
+            'text'      => $text,
+            'printers'  => $printers,
+            'kertasPdf' => $kertasPdf,
+        ]);
+    }
+    
     public function actionCetak($id)
     {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_LPR:
+                    $this->printLpr($id, $device);
+                    break;
+            }
+        }
+    }
+
+    public function printLpr($id, $device)
+    {
         $model = $this->loadModel($id);
-        $text = $model->rekapText();
-        $this->render   ('cetak', ['text' => $text]);
+        $text  = $model->rekapText();
+        //$device->printLpr($text);
+        $this->renderPartial('_print_autoclose', ['text' => $text]);
     }
 
 }
