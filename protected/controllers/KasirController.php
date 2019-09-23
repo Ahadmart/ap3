@@ -85,10 +85,18 @@ class KasirController extends Controller
         $model->saldo_akhir_seharusnya = $model->saldo_awal + $model->total_penjualan - $model->total_retur;
 
         if (isset($_POST['Kasir'])) {
+            $config        = Config::model()->find('nama=:nama', [':nama' => 'kasir.showautosummary']);
+            $autoShowRekap = isset($config) ? $config->nilai : 0;
+
             $model->attributes  = $_POST['Kasir'];
             $model->waktu_tutup = date('Y-m-d H:i:s');
-            if ($model->save())
-                $this->redirect(['rekap', 'id' => $id]);
+            if ($model->save()) {
+                if ($config->nilai) {
+                    $this->redirect(['rekap', 'id' => $id]);
+                } else {
+                    $this->redirect(['index']);
+                }
+            }
         }
 
         $this->render('tutup', [
@@ -121,11 +129,15 @@ class KasirController extends Controller
             $model->attributes = $_GET['Kasir'];
         //$model->waktu_tutup = 'isnull';
 
+        $config      = Config::model()->find('nama=:nama', [':nama' => 'kasir.showhistory']);
+        $showHistory = isset($config) ? $config->nilai : 0;
+
         $printerLpr = Device::model()->listDevices([Device::TIPE_LPR]);
 
         $this->render('index', [
-            'model'      => $model,
-            'printerLpr' => $printerLpr
+            'model'       => $model,
+            'printerLpr'  => $printerLpr,
+            'showHistory' => $showHistory,
         ]);
     }
 

@@ -9,7 +9,6 @@ $this->breadcrumbs = [
 
 $this->boxHeader['small']  = 'Kasir';
 $this->boxHeader['normal'] = 'Kasir';
-$showHistory               = true;
 ?>
 
 <div class="row">

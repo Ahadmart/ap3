@@ -123,7 +123,8 @@ class Kasir extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        $showHistory = true;
+        $config      = Config::model()->find('nama=:nama', [':nama' => 'kasir.showhistory']);
+        $showHistory = isset($config) ? $config->nilai : 0;
         /* Tampilkan hanya kasir yang masih buka (belum ditutup) */
         if (!$showHistory) {
             $criteria->addCondition('waktu_tutup is null');
