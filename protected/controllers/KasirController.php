@@ -227,7 +227,7 @@ class KasirController extends Controller
     {
         $model = $this->loadModel($id);
         $text  = $model->rekapText();
-        //$device->printLpr($text);
+        $device->printLpr($text);
         $this->renderPartial('_print_autoclose', ['text' => $text]);
     }
 
