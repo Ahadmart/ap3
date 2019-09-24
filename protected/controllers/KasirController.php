@@ -91,7 +91,7 @@ class KasirController extends Controller
             $model->attributes  = $_POST['Kasir'];
             $model->waktu_tutup = date('Y-m-d H:i:s');
             if ($model->save()) {
-                if ($config->nilai) {
+                if ($autoShowRekap) {
                     $this->redirect(['rekap', 'id' => $id]);
                 } else {
                     $this->redirect(['index']);
