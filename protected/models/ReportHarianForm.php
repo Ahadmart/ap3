@@ -79,6 +79,7 @@ class ReportHarianForm extends CFormModel
             /* ========================================================== */
             'penjualanTunai' => $laporanHarian->penjualanTunai(),
             'totalPenjualanTunai' => $laporanHarian->totalPenjualanTunai(),
+            'totalPenjualanTunaiPerAkun' => $laporanHarian->totalPenjualanTunaiPerAkun(),
             'penjualanPiutang' => $laporanHarian->penjualanPiutang(),
             'totalPenjualanPiutang' => $laporanHarian->totalPenjualanPiutang(),
             'penjualanBayar' => $laporanHarian->penjualanBayar(),

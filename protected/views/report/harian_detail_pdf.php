@@ -2,10 +2,10 @@
 
 function toIndoDate($timeStamp)
 {
-    $tanggal = date_format(date_create($timeStamp), 'j');
-    $bulan = date_format(date_create($timeStamp), 'n');
+    $tanggal   = date_format(date_create($timeStamp), 'j');
+    $bulan     = date_format(date_create($timeStamp), 'n');
     $namabulan = namaBulan($bulan);
-    $tahun = date_format(date_create($timeStamp), 'Y');
+    $tahun     = date_format(date_create($timeStamp), 'Y');
     return $tanggal . ' ' . $namabulan . ' ' . $tahun;
 }
 
@@ -93,7 +93,7 @@ function namaBulan($i)
                     <tr>
                         <td class="level-1">
                             <?php
-                                $pembayaranNomor = isset($pembayaran['nomor']) ? $pembayaran['nomor'] : '';
+                            $pembayaranNomor = isset($pembayaran['nomor']) ? $pembayaran['nomor'] : '';
                             ?>
                             <?php echo "{$pembayaranNomor} {$pembayaran['nama']} "; ?>
                             <?php echo isset($pembayaran['tanggal']) ? date('d-m-Y', strtotime($pembayaran['tanggal'])) : ''; ?>
@@ -121,9 +121,9 @@ function namaBulan($i)
                 foreach ($report['pembelianTunai'] as $pembelianTunai):
                     ?>
                     <tr>
-                            <?php
-                                $pembelianTunaiNomor = isset($pembelianTunai['nomor']) ? $pembelianTunai['nomor'] : '';
-                            ?>
+                        <?php
+                        $pembelianTunaiNomor = isset($pembelianTunai['nomor']) ? $pembelianTunai['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$pembelianTunaiNomor} {$pembelianTunai['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($pembelianTunai['jumlah'], 0, ',', '.'); ?></td>
                     </tr>
@@ -193,23 +193,37 @@ function namaBulan($i)
                 <?php
             }
             ?>
-            <?php
-            if (!empty($report['penjualanTunai'])):
-                foreach ($report['penjualanTunai'] as $penjualanTunai):
-                    ?>
-                    <tr>
-                            <?php
-                                $penjualanTunaiNomor = isset($penjualanTunai['nomor']) ? $penjualanTunai['nomor'] : '';
-                            ?>
-                        <td class="level-1"><?php echo "{$penjualanTunaiNomor} {$penjualanTunai['nama']}"; ?></td>
-                        <td class="kanan"><?php echo number_format($penjualanTunai['jumlah'], 0, ',', '.'); ?></td>
-                    </tr>
-                    <?php
-                endforeach;
-                ?>
                 <?php
-            endif;
-            ?>
+                if (!empty($report['penjualanTunai'])):
+                    $headerAkun   = '';
+                    $totalPerAkun = [];
+                    foreach ($report['totalPenjualanTunaiPerAkun'] as $perAkun) {
+                        $totalPerAkun[$perAkun['nama_akun']] = $perAkun['jumlah'];
+                    }
+                    foreach ($report['penjualanTunai'] as $penjualanTunai):
+                        ?>
+                        <?php
+                        if ($headerAkun != $penjualanTunai['nama_akun']) {
+                            ?>
+                            <tr>
+                                <td class="level-1 tebal"><?= "{$penjualanTunai['nama_akun']}"; ?></td>
+                                <td class="kanan tebal"><?= number_format($totalPerAkun[$penjualanTunai['nama_akun']], 0, ',', '.') ?></td>
+                            </tr>
+                            <?php
+                            $headerAkun = $penjualanTunai['nama_akun'];
+                        }
+                        ?>
+                        <tr>
+                            <?php
+                            $penjualanTunaiNomor   = isset($penjualanTunai['nomor']) ? $penjualanTunai['nomor'] : '';
+                            ?>
+                            <td class="level-2"><?php echo "{$penjualanTunaiNomor} {$penjualanTunai['nama']}  "; ?></td>
+                            <td class="kanan"><?php echo number_format($penjualanTunai['jumlah'], 0, ',', '.'); ?></td>
+                        </tr>
+                        <?php
+                    endforeach;
+                endif;
+                ?>
             <?php
             if ($report['totalMargin']) {
                 ?>
@@ -225,9 +239,9 @@ function namaBulan($i)
                 foreach ($report['margin'] as $marginPenjualan):
                     ?>
                     <tr>
-                            <?php
-                                $marginPenjualanNomor = isset($marginPenjualan['nomor']) ? $marginPenjualan['nomor'] : '';
-                            ?>
+                        <?php
+                        $marginPenjualanNomor = isset($marginPenjualan['nomor']) ? $marginPenjualan['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$marginPenjualanNomor} {$marginPenjualan['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($marginPenjualan['margin'], 0, ',', '.'); ?></td>
                     </tr>
@@ -252,9 +266,9 @@ function namaBulan($i)
                 foreach ($report['penjualanBayar'] as $penerimaanPiutang):
                     ?>
                     <tr>
-                            <?php
-                                $penerimaanPiutangNomor = isset($penerimaanPiutang['nomor']) ? $penerimaanPiutang['nomor'] : '';
-                            ?>
+                        <?php
+                        $penerimaanPiutangNomor = isset($penerimaanPiutang['nomor']) ? $penerimaanPiutang['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$penerimaanPiutangNomor} {$penerimaanPiutang['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($penerimaanPiutang['jumlah_bayar'], 0, ',', '.'); ?></td>
                     </tr>
@@ -279,9 +293,9 @@ function namaBulan($i)
                 foreach ($report['penjualanPiutang'] as $piutangPenjualan):
                     ?>
                     <tr>
-                            <?php
-                                $piutangPenjualanNomor = isset($piutangPenjualan['nomor']) ? $piutangPenjualan['nomor'] : '';
-                            ?>
+                        <?php
+                        $piutangPenjualanNomor = isset($piutangPenjualan['nomor']) ? $piutangPenjualan['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$piutangPenjualanNomor} {$piutangPenjualan['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format(abs($piutangPenjualan['jml_bayar'] - $piutangPenjualan['jumlah']), 0, ',', '.'); ?></td>
                     </tr>
@@ -306,9 +320,9 @@ function namaBulan($i)
                 foreach ($report['returJualTunai'] as $returJual):
                     ?>
                     <tr>
-                            <?php
-                                $returJualNomor = isset($returJual['nomor']) ? $returJual['nomor'] : '';
-                            ?>
+                        <?php
+                        $returJualNomor = isset($returJual['nomor']) ? $returJual['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$returJualNomor} {$returJual['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($returJual['jumlah'], 0, ',', '.'); ?></td>
                     </tr>
@@ -333,9 +347,9 @@ function namaBulan($i)
                 foreach ($report['returBeliTunai'] as $returBeli):
                     ?>
                     <tr>
-                            <?php
-                                $returBeliNomor = isset($returBeli['nomor']) ? $returBeli['nomor'] : '';
-                            ?>
+                        <?php
+                        $returBeliNomor = isset($returBeli['nomor']) ? $returBeli['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$returBeliNomor} {$returBeli['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($returBeli['jumlah'], 0, ',', '.'); ?></td>
                     </tr>
@@ -359,9 +373,9 @@ function namaBulan($i)
                 foreach ($report['returBeliBayar'] as $penerimaanPiutangReturBeli):
                     ?>
                     <tr>
-                            <?php
-                                $penerimaanPiutangReturBeliNomor = isset($penerimaanPiutangReturBeli['nomor']) ? $penerimaanPiutangReturBeli['nomor'] : '';
-                            ?>
+                        <?php
+                        $penerimaanPiutangReturBeliNomor = isset($penerimaanPiutangReturBeli['nomor']) ? $penerimaanPiutangReturBeli['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$penerimaanPiutangReturBeliNomor} {$penerimaanPiutangReturBeli['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($penerimaanPiutangReturBeli['jumlah_bayar'], 0, ',', '.'); ?></td>
                     </tr>
@@ -385,9 +399,9 @@ function namaBulan($i)
                 foreach ($report['returJualBayar'] as $pembayaran):
                     ?>
                     <tr>
-                            <?php
-                                $pembayaranNomor = isset($pembayaran['nomor']) ? $pembayaran['nomor'] : '';
-                            ?>
+                        <?php
+                        $pembayaranNomor = isset($pembayaran['nomor']) ? $pembayaran['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$pembayaranNomor} {$pembayaran['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($pembayaran['jumlah_bayar'], 0, ',', '.'); ?></td>
                     </tr>
@@ -411,9 +425,9 @@ function namaBulan($i)
                 foreach ($report['returBeliPiutang'] as $piutangReturBeli):
                     ?>
                     <tr>
-                            <?php
-                                $piutangReturBeliNomor = isset($piutangReturBeli['nomor']) ? $piutangReturBeli['nomor'] : '';
-                            ?>
+                        <?php
+                        $piutangReturBeliNomor = isset($piutangReturBeli['nomor']) ? $piutangReturBeli['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$piutangReturBeliNomor} {$piutangReturBeli['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($piutangReturBeli['jumlah'], 0, ',', '.'); ?></td>
                     </tr>
@@ -437,9 +451,9 @@ function namaBulan($i)
                 foreach ($report['returJualHutang'] as $hutangReturJual):
                     ?>
                     <tr>
-                            <?php
-                                $hutangReturJualNomor = isset($hutangReturJual['nomor']) ? $hutangReturJual['nomor'] : '';
-                            ?>
+                        <?php
+                        $hutangReturJualNomor = isset($hutangReturJual['nomor']) ? $hutangReturJual['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$hutangReturJualNomor} {$hutangReturJual['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($hutangReturJual['jumlah'], 0, ',', '.'); ?></td>
                     </tr>
@@ -463,9 +477,9 @@ function namaBulan($i)
                 foreach ($report['pembelianHutang'] as $hutang):
                     ?>
                     <tr>
-                            <?php
-                                $hutangNomor = isset($hutang['nomor']) ? $hutang['nomor'] : '';
-                            ?>
+                        <?php
+                        $hutangNomor = isset($hutang['nomor']) ? $hutang['nomor'] : '';
+                        ?>
                         <td class="level-1"><?php echo "{$hutangNomor} {$hutang['nama']}"; ?></td>
                         <td class="kanan"><?php echo number_format($hutang['jumlah'], 0, ',', '.'); ?></td>
                     </tr>

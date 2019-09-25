@@ -463,6 +463,7 @@ class LaporanHarian extends CActiveRecord
      */
     public function penjualanTunai()
     {
+        /*
         $sql = "
          select penjualan.nomor, sum(jumlah) jumlah, profil.nama
          FROM
@@ -483,13 +484,35 @@ class LaporanHarian extends CActiveRecord
          join profil on penjualan.profil_id = profil.id
          group by t.id
          order by penjualan.nomor";
+         * 
+         */
+        $sql = "
+         SELECT penjualan.nomor, jumlah, profil.nama, kb.nama nama_akun
+         FROM
+         (
+            SELECT penjualan.id, p.kas_bank_id, d.jumlah
+            FROM penerimaan_detail d
+            JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status=:statusPenerimaan AND p.tanggal=:tanggal
+            JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id AND hp.asal=:asalHutangPiutang
+            JOIN penjualan ON hp.id = penjualan.hutang_piutang_id AND penjualan.tanggal >= :tanggalAwal AND penjualan.tanggal < :tanggalAkhir
+            UNION
+            SELECT penjualan.id, p.kas_bank_id, d.jumlah
+            FROM pengeluaran_detail d
+            JOIN pengeluaran p ON d.pengeluaran_id = p.id AND p.status=:statusPengeluaran AND p.tanggal=:tanggal
+            JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id AND hp.asal=:asalHutangPiutang
+            JOIN penjualan ON hp.id = penjualan.hutang_piutang_id AND penjualan.tanggal >= :tanggalAwal AND penjualan.tanggal < :tanggalAkhir
+         ) t
+         JOIN penjualan ON t.id = penjualan.id
+         JOIN profil ON penjualan.profil_id = profil.id
+         JOIN kas_bank kb ON kb.id = t.kas_bank_id
+         ORDER BY kb.nama, penjualan.nomor";
 
         if ($this->groupByProfil['inv']) {
             $sql = "
-                    select distinct nama, sum(jumlah) jumlah
+                    select nama_akun, nama, sum(jumlah) jumlah
                     from ({$sql}) t
-                    group by nama
-                    order by nama
+                    group by nama_akun, nama
+                    order by nama_akun, nama
             ";
         }
 
@@ -505,6 +528,48 @@ class LaporanHarian extends CActiveRecord
         ]);
 
         return $command->queryAll();
+    }
+    
+    /**
+     * Sub Total per Akun dari Penjualan tunai yang terjadi pada tanggal tsb
+     * @return array nama akun, jumlah dari penjualan tunai
+     */
+    public function totalPenjualanTunaiPerAkun()
+    {
+        $sql = "
+         SELECT sum(jumlah) jumlah, kb.nama nama_akun
+         FROM
+         (
+            SELECT penjualan.id, p.kas_bank_id, d.jumlah
+            FROM penerimaan_detail d
+            JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status=:statusPenerimaan AND p.tanggal=:tanggal
+            JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id AND hp.asal=:asalHutangPiutang
+            JOIN penjualan ON hp.id = penjualan.hutang_piutang_id AND penjualan.tanggal >= :tanggalAwal AND penjualan.tanggal < :tanggalAkhir
+            UNION
+            SELECT penjualan.id, p.kas_bank_id, d.jumlah
+            FROM pengeluaran_detail d
+            JOIN pengeluaran p ON d.pengeluaran_id = p.id AND p.status=:statusPengeluaran AND p.tanggal=:tanggal
+            JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id AND hp.asal=:asalHutangPiutang
+            JOIN penjualan ON hp.id = penjualan.hutang_piutang_id AND penjualan.tanggal >= :tanggalAwal AND penjualan.tanggal < :tanggalAkhir
+         ) t
+         JOIN penjualan ON t.id = penjualan.id
+         JOIN profil ON penjualan.profil_id = profil.id
+         JOIN kas_bank kb ON kb.id = t.kas_bank_id
+         GROUP BY kb.nama
+         ORDER BY kb.nama";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':tanggal'           => $this->tanggal,
+            ':tanggalAwal'       => $this->tanggalAwal,
+            ':tanggalAkhir'      => $this->tanggalAkhir,
+            ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
+            ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
+            ':statusPenerimaan'  => Penerimaan::STATUS_BAYAR,
+        ]);
+
+        return $command->queryAll();        
     }
 
     /**
