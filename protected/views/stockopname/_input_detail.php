@@ -59,7 +59,7 @@
                     <span class="prefix huruf"><b>Q</b>ty Asli</span>
                 </div>
                 <div class="small-4 columns">
-                    <input id="qty" type="text" accesskey="q" autocomplete="off"/>
+                    <input id="qty" type="number" accesskey="q" autocomplete="off"/>
                 </div>
                 <div class="small-4 columns">
                     <a id="tombol-ok-tambah" href="" class="button postfix">Tambah</a>
@@ -77,7 +77,7 @@
                     <span class="prefix huruf">Se<b>l</b>isih</span>
                 </div>
                 <div class="small-4 columns">
-                    <input id="selisih" type="text" accesskey="l" autocomplete="off"/>
+                    <input id="selisih" type="number" accesskey="l" autocomplete="off"/>
                 </div>
                 <div class="small-4 columns">
                     <a id="tombol-ok-tambah-s" href="" class="button postfix">Tambah</a>

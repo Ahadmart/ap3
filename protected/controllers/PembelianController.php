@@ -444,6 +444,7 @@ class PembelianController extends Controller
                 $supplierBarang = new SupplierBarang;
                 $supplierBarang->supplier_id = $model->profil_id;
                 $supplierBarang->barang_id = $barang->id;
+                $supplierBarang->default = SupplierBarang::SUPPLIER_DEFAULT;
                 if ($supplierBarang->save()) {
                     $return = array(
                         'sukses' => true,

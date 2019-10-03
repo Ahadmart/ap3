@@ -206,23 +206,35 @@ function namaBulan($i)
             }
             ?>
             <?php
-            if (!empty($report['penjualanTunai'])):
-                foreach ($report['penjualanTunai'] as $penjualanTunai):
-                    ?>
-                    <tr>
-                        <td class="level-1">
-                            <?php
-                            echo isset($penjualanTunai['nomor']) ? $penjualanTunai['nomor'] : '';
-                            echo " {$penjualanTunai['nama']}";
+                if (!empty($report['penjualanTunai'])):
+                    $headerAkun   = '';
+                    $totalPerAkun = [];
+                    foreach ($report['totalPenjualanTunaiPerAkun'] as $perAkun) {
+                        $totalPerAkun[$perAkun['nama_akun']] = $perAkun['jumlah'];
+                    }
+                    foreach ($report['penjualanTunai'] as $penjualanTunai):
+                        ?>
+                        <?php
+                        if ($headerAkun != $penjualanTunai['nama_akun']) {
                             ?>
-                        </td>
-                        <td class="kanan"><?php echo number_format($penjualanTunai['jumlah'], 0, ',', '.'); ?></td>
-                    </tr>
-                    <?php
-                endforeach;
-                ?>
-                <?php
-            endif;
+                            <tr>
+                                <td class="level-1 tebal"><?= "{$penjualanTunai['nama_akun']}"; ?></td>
+                                <td class="kanan tebal"><?= number_format($totalPerAkun[$penjualanTunai['nama_akun']], 0, ',', '.') ?></td>
+                            </tr>
+                            <?php
+                            $headerAkun = $penjualanTunai['nama_akun'];
+                        }
+                        ?>
+                        <tr>
+                            <?php
+                            $penjualanTunaiNomor   = isset($penjualanTunai['nomor']) ? $penjualanTunai['nomor'] : '';
+                            ?>
+                            <td class="level-2"><?php echo "{$penjualanTunaiNomor} {$penjualanTunai['nama']}  "; ?></td>
+                            <td class="kanan"><?php echo number_format($penjualanTunai['jumlah'], 0, ',', '.'); ?></td>
+                        </tr>
+                        <?php
+                    endforeach;
+                endif;
             ?>
 
             <?php

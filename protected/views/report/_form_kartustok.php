@@ -4,6 +4,11 @@
 /* @var $form CActiveForm */
 ?>
 <?php
+if (is_null($scanBarcode)) {
+    $initBarcode = '';
+} else {
+    $initBarcode = $scanBarcode;
+}
 $form = $this->beginWidget('CActiveForm', array(
     'id' => 'report-penjualan-form',
     // Please note: When you enable ajax validation, make sure the corresponding
@@ -19,7 +24,11 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->labelEx($model, 'barcode'); ?>
         <div class="row collapse">
             <div class="small-2 medium-1 large-2 columns">
-                <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+                <?php
+                /* https://github.com/zxing/zxing/wiki/Scanning-From-Web-Pages */
+                /* http://stackoverflow.com/questions/26356626/using-zxing-barcode-scanner-within-a-web-page */
+                ?>
+                <a class="prefix secondary button" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('kartustok', ['barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a> 
             </div>
             <div class="small-10 medium-11 large-10 columns">
                 <!--<input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>-->
@@ -28,7 +37,8 @@ $form = $this->beginWidget('CActiveForm', array(
                     'placeholder' => 'Scan [B]arcode / Input nama',
                     'accesskey' => 'b',
                     'autofocus' => 'autofocus',
-                    'id' => 'scan'
+                    'id' => 'scan',
+                    'value' => $initBarcode,
                 ]);
                 ?>
             </div>

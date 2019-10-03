@@ -139,6 +139,7 @@ class BarangController extends Controller
             $model->barang_id   = $id;
             $model->supplier_id = $supplierId;
             if ($model->save()) {
+                $model->assignDefaultSupplier($model->id, $id); // $id adalah barangId 
                 echo 'berhasil';
             } else {
                 echo 'tidak berhasil';
@@ -166,7 +167,21 @@ class BarangController extends Controller
     public function actionRemoveSupplier($id)
     {
         if (isset($_GET['ajax']) && $_GET['ajax'] === 'supplier-barang-grid') {
-            $model = SupplierBarang::model()->deleteByPk($id);
+            $model    = SupplierBarang::model()->findByPk($id);
+            $barangId = $model->barang_id;
+            $model->delete();
+            echo "model deleted; ";
+
+            // Jika belum ada supplier default
+            if (SupplierBarang::belumAdaSupDefault($barangId)) {
+                echo "belum ada sup default; ";
+                // Set default supplier terakhir
+                $maxSB = SupplierBarang::ambilSupplierTerakhir($barangId);
+                if ($maxSB > 0) {
+                    echo "set default ke id: " . $maxSB;
+                    SupplierBarang::model()->assignDefaultSupplier($maxSB, $barangId);
+                }
+            }
         }
     }
 

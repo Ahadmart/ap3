@@ -123,11 +123,20 @@ class Kasir extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $config      = Config::model()->find('nama=:nama', [':nama' => 'kasir.showhistory']);
+        $showHistory = isset($config) ? $config->nilai : 0;
         /* Tampilkan hanya kasir yang masih buka (belum ditutup) */
-        $criteria->addCondition('waktu_tutup is null');
+        if (!$showHistory) {
+            $criteria->addCondition('waktu_tutup is null');
+        }
+
+        $sort = [
+            'defaultOrder' => 'id desc'
+        ];
 
         return new CActiveDataProvider($this, array(
             'criteria' => $criteria,
+            'sort' => $sort,
         ));
     }
 
@@ -221,6 +230,89 @@ class Kasir extends CActiveRecord
         ));
 
         return $command->queryRow();
+    }
+    
+    public function rekapText()
+    {
+        $jumlahKolom = 40;
+
+        $text            = '';
+        $terPanjang      = 0;
+        $saldoAwal       = is_null($this->saldo_awal) ? '0' : number_format($this->saldo_awal, 0, ',', '.');
+        $terPanjang      = strlen($saldoAwal) > $terPanjang ? strlen($saldoAwal) : $terPanjang;
+        $totalPenjualan  = is_null($this->total_penjualan) ? '0' : number_format($this->total_penjualan, 0, ',', '.');
+        $terPanjang      = strlen($totalPenjualan) > $terPanjang ? strlen($totalPenjualan) : $terPanjang;
+        $totalMargin     = is_null($this->total_margin) ? '0' : number_format($this->total_margin, 0, ',', '.');
+        $terPanjang      = strlen($totalMargin) > $terPanjang ? strlen($totalMargin) : $terPanjang;
+        $totalRetur      = is_null($this->total_retur) ? '0' : number_format($this->total_retur, 0, ',', '.');
+        $terPanjang      = strlen($totalRetur) > $terPanjang ? strlen($totalRetur) : $terPanjang;
+        $saldoAkhir      = is_null($this->saldo_akhir_seharusnya) ? '0' : number_format($this->saldo_akhir_seharusnya, 0, ',', '.');
+        $terPanjang      = strlen($saldoAkhir) > $terPanjang ? strlen($saldoAkhir) : $terPanjang;
+        $saldoAkhirFisik = is_null($this->saldo_akhir) ? '0' : number_format($this->saldo_akhir, 0, ',', '.');
+        $terPanjang      = strlen($saldoAkhirFisik) > $terPanjang ? strlen($saldoAkhirFisik) : $terPanjang;
+        $selisihSaldo    = is_null($this->saldo_akhir - $this->saldo_akhir_seharusnya) ? '0' : number_format($this->saldo_akhir - $this->saldo_akhir_seharusnya, 0, ',', '.');
+        $terPanjang      = strlen($selisihSaldo) > $terPanjang ? strlen($selisihSaldo) : $terPanjang;
+
+        $text .= str_pad('Login', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama . PHP_EOL;
+        $text .= str_pad('Nama', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama_lengkap . PHP_EOL;
+        $text .= str_pad('POS Client', 19, ' ', STR_PAD_LEFT) . ': ' . $this->device->nama . PHP_EOL;
+        $text .= str_pad('Buka', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_buka), 'd-m-Y H:i:s') . PHP_EOL;
+        $text .= str_pad('Tutup', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_tutup), 'd-m-Y H:i:s') . PHP_EOL;
+        $text .= str_pad('Saldo Awal', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAwal, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Total Penjualan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenjualan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+
+        $penjualanPerAkun = $this->penjualanPerAkun();
+        if (count($penjualanPerAkun) > 1) {
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+            foreach ($penjualanPerAkun as $akun) {
+                $jumlahAkun = is_null($akun['jumlah']) ? '0' : number_format($akun['jumlah'], 0, ',', '.');
+                $text       .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+            }
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+        }
+
+        $text .= str_pad('Total Margin', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalMargin, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Total Retur Jual', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalRetur, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Saldo Akhir', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAkhir, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Saldo Akhir Fisik', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAkhirFisik, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Selisih', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($selisihSaldo, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        return $text;
+    }
+    
+    public function penjualanPerAkun()
+    {
+        $sql = "
+        SELECT 
+            kas_bank.id, kas_bank.nama, t_rekap.jumlah
+        FROM
+            (SELECT 
+                p.kas_bank_id, SUM(d.jumlah) jumlah
+            FROM
+                penerimaan_detail d
+            JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
+            JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                AND hp.asal = :hpAsal
+            JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
+                AND penjualan.tanggal >= :waktuBuka
+                AND penjualan.tanggal <= :waktuTutup
+                AND penjualan.updated_by = :userId
+            GROUP BY p.kas_bank_id) AS t_rekap
+                JOIN
+            kas_bank ON kas_bank.id = t_rekap.kas_bank_id
+            order by kas_bank.nama  
+        ";
+        
+        $command = Yii::app()->db->createCommand($sql);
+        
+        $command->bindValues([
+            ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
+            ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
+            ':waktuBuka'        => $this->waktu_buka,
+            ':waktuTutup'       => $this->waktu_tutup,
+            ':userId'           => $this->user_id,
+        ]);
+        
+        return $command->queryAll();
     }
 
 }

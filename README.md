@@ -33,3 +33,4 @@ Lihat INSTALL.txt
 
 ## User Guide / Screenshot
 [AhadPOS ٣ User Guide](https://ahadpos.files.wordpress.com/2018/07/ahadpos-3-user-guides-juli-2018.pdf) - oleh Bpk. Muhamad Arya Kurniawan
+![pos screenshot default](/images/screenshot/pos-default.jpg?raw=true "POS Screenshot - Default")

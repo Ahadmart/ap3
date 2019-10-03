@@ -69,7 +69,7 @@ class ReportRekapDiskonForm extends CFormModel
                     det.barang_id,
                     det.qty,
                     det.harga_jual,
-                    dis.harga_normal,
+                    (det.qty * dis.harga_normal) harga_normal,
                     dis.tipe_diskon_id,
                     (det.qty * det.harga_jual) total,
                     (SELECT 

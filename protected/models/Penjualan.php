@@ -31,6 +31,10 @@ class Penjualan extends CActiveRecord
     const STATUS_LUNAS = 2;
     /* ========== */
     const CUSTOMER_UMUM = 2; // ID di DB untuk customer UMUM (non member)
+    /* ========== */
+    // nilai field transfer_mode
+    const JENIS_PENJUALAN = 0;
+    const JENIS_TRANSFER  = 1;
 
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;
@@ -446,6 +450,11 @@ class Penjualan extends CActiveRecord
             //terapkan diskon promo
             //ambil sisanya (yang tidak didiskon)
             $sisa = $this->aksiDiskonPromo($barang->id, $qty, $hargaJualNormal);
+        } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO_PERKATEGORI))) {
+            //terapkan diskon promo
+            //ambil sisanya (yang tidak didiskon)
+            $sisa = $this->aksiDiskonPromoPerKategori($barang->id, $qty, $hargaJualNormal);
+        
         } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_GROSIR))) {
             //terapkan diskon grosir
             //ambil sisanya (yang tidak didiskon)
@@ -494,6 +503,40 @@ class Penjualan extends CActiveRecord
         }
         $hargaJualSatuan = $hargaJualNormal - $diskonPromo->nominal;
         $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonPromo->nominal, DiskonBarang::TIPE_PROMO);
+        return $sisa;
+    }
+
+    public function aksiDiskonPromoPerKategori($barangId, $qty, $hargaJualNormal)
+    {
+        $barang              = Barang::model()->findByPk($barangId);
+        $waktu               = date("Y-m-d H:i:s");
+        $diskonPromoKategori = DiskonBarang::model()->find(array(
+            'condition' => 'barang_kategori_id=:kategoriBarangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= :waktu and (sampai >= :waktu or sampai is null)',
+            'order'     => 'id desc',
+            'params'    => [
+                'kategoriBarangId' => $barang->kategori_id,
+                'status'           => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERKATEGORI,
+                'waktu'            => $waktu
+            ]
+        ));
+
+        $sisa = $qty;
+        if ($qty > $diskonPromoKategori->qty_max) {
+            $qtyPromo = $diskonPromoKategori->qty_max;
+            $sisa     -= $diskonPromoKategori->qty_max;
+        } else {
+            $qtyPromo = $qty;
+            $sisa     = 0;
+        }
+
+        $diskonNominal = $diskonPromoKategori->nominal;
+        if ($diskonPromoKategori->persen > 0) {
+            $diskonNominal = ($diskonPromoKategori->persen / 100) * $hargaJualNormal;
+        }
+        $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
+
+        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonNominal, DiskonBarang::TIPE_PROMO_PERKATEGORI);
         return $sisa;
     }
 
@@ -761,6 +804,21 @@ class Penjualan extends CActiveRecord
                             'status' => DiskonBarang::STATUS_AKTIF,
                             'tipeDiskon' => $tipeDiskonId]
             ]);
+        }
+        
+        if ($tipeDiskonId == DiskonBarang::TIPE_PROMO_PERKATEGORI) {
+            $barang = Barang::model()->findByPk($barangId);
+            $waktu  = date("Y-m-d H:i:s");
+            return DiskonBarang::model()->find(array(
+                        'condition' => 'barang_kategori_id=:kategoriBarangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= :waktu and (sampai >= :waktu or sampai is null)',
+                        'order'     => 'id desc',
+                        'params'    => [
+                            'kategoriBarangId' => $barang->kategori_id,
+                            'status'           => DiskonBarang::STATUS_AKTIF,
+                            'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERKATEGORI,
+                            'waktu'            => $waktu
+                        ]
+            ));
         }
 
         /* Diskon lainnya */

@@ -8,10 +8,10 @@ class KasirController extends Controller
      */
     public function filters()
     {
-        return array(
+        return [
             'accessControl', // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
-        );
+        ];
     }
 
     /**
@@ -21,11 +21,11 @@ class KasirController extends Controller
      */
     public function accessRules()
     {
-        return array(
-            array('deny', // deny guest
-                'users' => array('guest'),
-            ),
-        );
+        return [
+            ['deny', // deny guest
+                'users' => ['guest'],
+            ],
+        ];
     }
 
     /**
@@ -34,9 +34,9 @@ class KasirController extends Controller
      */
     public function actionView($id)
     {
-        $this->render('view', array(
+        $this->render('view', [
             'model' => $this->loadModel($id),
-        ));
+        ]);
     }
 
     /**
@@ -46,7 +46,7 @@ class KasirController extends Controller
     public function actionBuka()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new Kasir;
+        $model        = new Kasir;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
@@ -57,14 +57,14 @@ class KasirController extends Controller
                 $this->redirect('index');
         }
 
-        $listKasir = CHtml::listData(User::model()->findAll(['order'=>'nama_lengkap']), 'id', 'nama_lengkap');
+        $listKasir     = CHtml::listData(User::model()->findAll(['order' => 'nama_lengkap']), 'id', 'nama_lengkap');
         $listPosClient = CHtml::listData(Device::model()->findAll('tipe_id=' . Device::TIPE_POS_CLIENT), 'id', 'nama');
 
-        $this->render('buka', array(
-            'model' => $model,
-            'listKasir' => $listKasir,
+        $this->render('buka', [
+            'model'         => $model,
+            'listKasir'     => $listKasir,
             'listPosClient' => $listPosClient
-        ));
+        ]);
     }
 
     /**
@@ -74,26 +74,34 @@ class KasirController extends Controller
     public function actionTutup($id)
     {
         $this->layout = '//layouts/box_kecil';
-        $model = $this->loadModel($id);
+        $model        = $this->loadModel($id);
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
         $model->total_penjualan = $model->totalPenjualan()['jumlah'];
-        $model->total_margin = $model->totalMargin()['jumlah'];
-        $model->total_retur = $model->totalReturJual()['jumlah'];
+        $model->total_margin    = $model->totalMargin()['jumlah'];
+        $model->total_retur     = $model->totalReturJual()['jumlah'];
 
         $model->saldo_akhir_seharusnya = $model->saldo_awal + $model->total_penjualan - $model->total_retur;
 
         if (isset($_POST['Kasir'])) {
-            $model->attributes = $_POST['Kasir'];
+            $config        = Config::model()->find('nama=:nama', [':nama' => 'kasir.showautosummary']);
+            $autoShowRekap = isset($config) ? $config->nilai : 0;
+
+            $model->attributes  = $_POST['Kasir'];
             $model->waktu_tutup = date('Y-m-d H:i:s');
-            if ($model->save())
-                $this->redirect(array('index', 'id' => $id));
+            if ($model->save()) {
+                if ($autoShowRekap) {
+                    $this->redirect(['rekap', 'id' => $id]);
+                } else {
+                    $this->redirect(['index']);
+                }
+            }
         }
 
-        $this->render('tutup', array(
+        $this->render('tutup', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -107,7 +115,7 @@ class KasirController extends Controller
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
         if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
     }
 
     /**
@@ -115,18 +123,22 @@ class KasirController extends Controller
      */
     public function actionIndex()
     {
-        $model = new Kasir('search');
+        $model             = new Kasir('search');
         $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Kasir']))
             $model->attributes = $_GET['Kasir'];
         //$model->waktu_tutup = 'isnull';
 
+        $config      = Config::model()->find('nama=:nama', [':nama' => 'kasir.showhistory']);
+        $showHistory = isset($config) ? $config->nilai : 0;
+
         $printerLpr = Device::model()->listDevices([Device::TIPE_LPR]);
 
-        $this->render('index', array(
-            'model' => $model,
-            'printerLpr' => $printerLpr
-        ));
+        $this->render('index', [
+            'model'       => $model,
+            'printerLpr'  => $printerLpr,
+            'showHistory' => $showHistory,
+        ]);
     }
 
     /**
@@ -171,13 +183,52 @@ class KasirController extends Controller
         } else {
             $return = [
                 'sukses' => false,
-                'error' => [
+                'error'  => [
                     'code' => 500,
-                    'msg' => 'Device tidak ditemukan!'
+                    'msg'  => 'Device tidak ditemukan!'
                 ]
             ];
         }
         $this->renderJSON($return);
+    }
+
+    public function actionRekap($id)
+    {
+        $this->layout = '//layouts/box_kecil';
+
+        $model = $this->loadModel($id);
+        $text  = $model->rekapText();
+
+        $tipePrinterAvailable = [Device::TIPE_LPR];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf            = Pembelian::model()->listNamaKertas();
+
+        $this->render('rekap', [
+            'model'     => $model,
+            'text'      => $text,
+            'printers'  => $printers,
+            'kertasPdf' => $kertasPdf,
+        ]);
+    }
+    
+    public function actionCetak($id)
+    {
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_LPR:
+                    $this->printLpr($id, $device);
+                    break;
+            }
+        }
+    }
+
+    public function printLpr($id, $device)
+    {
+        $model = $this->loadModel($id);
+        $text  = $model->rekapText();
+        $device->printLpr($text);
+        $this->renderPartial('_print_autoclose', ['text' => $text]);
     }
 
 }

@@ -2,35 +2,42 @@
 /* @var $this KasirController */
 /* @var $model Kasir */
 
-$this->breadcrumbs = array(
-    'Kasir' => array('index'),
+$this->breadcrumbs = [
+    'Kasir' => ['index'],
     'Index',
-);
+];
 
-$this->boxHeader['small'] = 'Kasir';
+$this->boxHeader['small']  = 'Kasir';
 $this->boxHeader['normal'] = 'Kasir';
 ?>
 
 <div class="row">
     <div class="small-12 columns">
         <?php
-        $this->widget('BGridView', array(
-            'id' => 'kasir-grid',
+        $this->widget('BGridView', [
+            'id'           => 'kasir-grid',
             'dataProvider' => $model->search(),
             //'filter' => $model,
-            'columns' => array(
+            'columns'      => [
                 //'id',
                 //'user_id',
-                array(
-                    'name' => 'user_id',
+                [
+                    'name'  => 'user_id',
                     'value' => '$data->user->nama_lengkap'
-                ),
-                array(
-                    'name' => 'device_id',
+                ],
+                [
+                    'name'  => 'device_id',
                     'value' => '$data->device->keterangan'
-                ),
-                'waktu_buka',
-                //'waktu_tutup',
+                ],
+                [
+                    'name'  => 'waktu_buka',
+                    'value' => 'date_format(date_create_from_format(\'Y-m-d H:i:s\', $data->waktu_buka), \'d-m-Y H:i:s\')',
+                ],
+                [
+                    'name'    => 'waktu_tutup',
+                    'value'   => 'isset($data->waktu_tutup) ? date_format(date_create_from_format(\'Y-m-d H:i:s\', $data->waktu_tutup), \'d-m-Y H:i:s\') : ""',
+                    'visible' => $showHistory,
+                ],
                 'saldo_awal',
                 /*
                   'saldo_akhir_seharusnya',
@@ -42,22 +49,32 @@ $this->boxHeader['normal'] = 'Kasir';
                   'updated_by',
                   'created_at',
                  */
-                array(
-                    'class' => 'BButtonColumn',
-                    'header' => 'Tutup',
-                    'template' => '{tutup}',
-                    'buttons' => array(
-                        'tutup' => array(
-                            'label' => '<i class="fa fa-2x fa-sign-out"></i>',
-                            'url' => 'Yii::app()->controller->createUrl("tutup", array("id"=>$data->primaryKey))',
-                            'options' => array(
+                [
+                    'class'    => 'BButtonColumn',
+                    'header'   => 'Tutup / View',
+                    'template' => '{tutup} {rekap}',
+                    'buttons'  => [
+                        'tutup' => [
+                            'label'   => '<i class="fa fa-2x fa-sign-out"></i>',
+                            'url'     => 'Yii::app()->controller->createUrl("tutup", ["id"=>$data->primaryKey])',
+                            'visible' => 'empty($data->waktu_tutup)',
+                            'options' => [
                                 'title' => 'Tutup Kasir'
-                            )
-                        )
-                    )
-                ),
-            ),
-        ));
+                            ]
+                        ],
+                        'rekap' => [
+                            'label'   => '<i class="fa fa-file-text"></i>
+                                          </span>',
+                            'url'     => 'Yii::app()->controller->createUrl("rekap", ["id"=>$data->primaryKey])',
+                            'visible' => '!empty($data->waktu_tutup)',
+                            'options' => [
+                                'title' => 'Rekap'
+                            ]
+                        ],
+                    ]
+                ],
+            ],
+        ]);
         ?>
     </div>
 </div>
@@ -114,23 +131,23 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     });
 </script>
 <?php
-$this->menu = array(
-    array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-    array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => '',
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i> Buka (<span class="ak">t</span>)', 'url' => $this->createUrl('buka'), 'linkOptions' => array(
-                    'class' => 'button',
+$this->menu = [
+    ['itemOptions' => ['class' => 'divider'], 'label' => ''],
+    ['itemOptions'    => ['class' => 'has-form hide-for-small-only'], 'label'          => '',
+        'items'          => [
+            ['label'       => '<i class="fa fa-plus"></i> Buka (<span class="ak">t</span>)', 'url'         => $this->createUrl('buka'), 'linkOptions' => [
+                    'class'     => 'button',
                     'accesskey' => 't'
-                )),
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    ),
-    array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => '',
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('buka'), 'linkOptions' => array(
+                ]],
+        ],
+        'submenuOptions' => ['class' => 'button-group']
+    ],
+    ['itemOptions'    => ['class' => 'has-form show-for-small-only'], 'label'          => '',
+        'items'          => [
+            ['label'       => '<i class="fa fa-plus"></i>', 'url'         => $this->createUrl('buka'), 'linkOptions' => [
                     'class' => 'button',
-                )),
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    )
-);
+                ]],
+        ],
+        'submenuOptions' => ['class' => 'button-group']
+    ]
+];
