@@ -60,7 +60,26 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
         $selectProfil = '';
         $queryProfil = '';
         if (!empty($this->itemKeuId)) {
-            $queryItem = 'AND item.id = :itemId';
+            $itemK = ItemKeuangan::model()->findByPk($this->itemKeuId);
+            if (empty($itemK->parent_id)) {
+                /* Parent ID = null, berarti punya anak. 
+                 * Cari dan masukkan ke kondisi query
+                 */
+                $queryItem = 'AND item.id IN (';
+                $itemsK    = ItemKeuangan::model()->findAll('parent_id = :parentId', [':parentId' => $this->itemKeuId]);
+                $first     = true;
+                foreach ($itemsK as $item) {
+                    if (!$first) {
+                        $queryItem .= ',';
+                    }
+                    $queryItem .= $item->id;
+                    $first     = false;
+                }
+                $queryItem .= ')';
+            } else {
+                /* Punya parent, berarti item transaksi */
+                $queryItem = 'AND item.id = :itemId';
+            }
         }
         if (!empty($this->profilId)) {
             $selectProfil = 'profil.nama profil,';
@@ -97,7 +116,7 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
                 JOIN
             pengeluaran p ON detail.pengeluaran_id = p.id
                 AND p.status = :statusPengeluaran
-                AND DATE_FORMAT(p.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                AND p.tanggal BETWEEN :dari AND :sampai
                 JOIN
            profil ON p.profil_id = profil.id
                 {$queryProfil}
@@ -134,7 +153,7 @@ class ReportPengeluaranPenerimaanForm extends CFormModel
                 JOIN
             penerimaan p ON detail.penerimaan_id = p.id
                 AND p.status = :statusPenerimaan
-                AND DATE_FORMAT(p.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                AND p.tanggal BETWEEN :dari AND :sampai
                 JOIN
             profil ON p.profil_id = profil.id
                 {$queryProfil}
