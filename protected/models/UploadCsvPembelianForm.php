@@ -118,7 +118,10 @@ class UploadCsvPembelianForm extends CFormModel
                                 throw new Exception("Gagal simpan Supplier Barang", 500);
                             }
                         } else {
-                            $barangId = $barangAda->id;
+                            $barangId = $barangAda->id;/*
+                            if ($barangAda->nama != $line[2]) {
+                                Barang::model()->updateByPk($barangId, ['nama' => $line[2]]);
+                            }*/
                         }
 
                         $detail = new PembelianDetail;
