@@ -981,6 +981,9 @@ class Penjualan extends CActiveRecord
         $details = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', array(':penjualanId' => $this->id));
         foreach ($details as $detail) {
             $inventoryTerpakai = InventoryBalance::model()->jual($detail->barang_id, $detail->qty);
+            if (empty($inventoryTerpakai)){
+                throw new Exception("Gagal mengambil data inventory. Coba ulangi proses simpan!. Barang ID: " . $detail->barang_id . "; Qty: " . $detail->qty);
+            }
             $count = 1;
             foreach ($inventoryTerpakai as $layer) {
                 $hpp = new HargaPokokPenjualan;
