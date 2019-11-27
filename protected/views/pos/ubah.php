@@ -86,32 +86,6 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <span class="postfix">[D]</span>
         </div>
     </div>
-    <div class="row collapse">
-        <?php /* Company account */ ?>
-        <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
-        </div>
-        <div class="small-3 large-3 columns">
-  <!--         <select accesskey="a">
-              <option value="1">Cash</option>
-           </select>-->
-            <?php
-            echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), array(
-                'accesskey' => 'a',
-                'id' => 'account'
-            ));
-            ?>
-        </div>
-<!--        <div class="small-3 large-2 columns">
-            <span class="postfix">[A]</span>
-        </div>-->
-        <div class="small-3 large-5 columns">
-            <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
-        </div>
-        <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-plus"></i></span>
-        </div>
-    </div>
     <?php
     if ($showDiskonPerNota) {
         ?>
@@ -124,8 +98,38 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             </div>
         </div>
         <?php
-    }/*
+    }
     ?>
+    <!--<div class="row">-->
+        <!--<a class="tombol-tambah-kb"><i class="fa fa-2x fa-plus"></i></a>-->
+        <!--<span class="label right" id="tombol-tambah-kb" accesskey="t"><i class="fa fa-plus"></i></span>-->
+    <!--</div>-->
+    <div id="uang-dibayar-group">
+        <div class="row collapse">
+            <?php /* Company account */ ?>
+            <div class="small-3 large-2 columns">
+                <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
+            </div>
+            <div class="small-4 large-5 columns">
+      <!--         <select accesskey="a">
+                  <option value="1">Cash</option>
+               </select>-->
+                <?php
+                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
+                    'accesskey' => 'a',
+                    'id'        => 'account'
+                ]);
+                ?>
+            </div>
+            <!--        <div class="small-3 large-2 columns">
+                        <span class="postfix">[A]</span>
+                    </div>-->
+            <div class="small-5 large-5 columns">
+                <input type="text" class="uang-dibayar" name="kasbank[]"placeholder="[U]ang Dibayar" accesskey="u"/>
+            </div>
+        </div>
+    </div>
+    <?php /*
     <div class="row collapse">
         <div class="small-3 large-2 columns">
             <span class="prefix huruf">IDR</span>
@@ -134,7 +138,9 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
         </div>
     </div>
-    <?php*/
+     * 
+     */?>
+    <?php
     if ($showInfaq) {
         ?>
         <div class="row collapse">
