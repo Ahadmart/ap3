@@ -431,9 +431,16 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
+            'post' => $_POST['pos'],
         ];
-
+        /*
+        foreach ($_POST['pos']['bayar'] as $key => $value){
+            echo "AkunID: ".$key." = ".$value;
+        }
+         * 
+         */
+        
         if (isset($_POST['pos'])) {
             $pos = Pos::model('Pos')->findByPk($id);
 

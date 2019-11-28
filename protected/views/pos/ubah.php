@@ -117,7 +117,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
                 <?php
                 echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
                     'accesskey' => 'a',
-                    'id'        => 'account'
+                    'class'        => 'account'
                 ]);
                 ?>
             </div>
@@ -170,9 +170,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     function tampilkanKembalian(input) {
         //console.log("this:" + $(this).val() + "; total:" + $("#total-belanja-h").text());
         $("#kembali").html("0");
-//        if ($.isNumeric($(input).val())){
-//            
-//        }
         console.log("tampilkanKembalian dieksekusi");
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
@@ -190,37 +187,17 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         if ($.isNumeric(uangDibayar)){
             var bayar = uangDibayar;
             // console.log("Bayar: "+ bayar);
+            var dataKirim = {
+                total: total,
+                bayar: bayar,
+                diskonNota: diskonNota,
+                infaq: infaq,
+            };
+            $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
             if (bayar >=total + infaq - diskonNota){
-                var dataKirim = {
-                    total: total,
-                    bayar: bayar,
-                    diskonNota: diskonNota,
-                    infaq: infaq,
-                };
-                $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
                 $("#kembali").removeClass("negatif");
-                if (input != null){
-                    if ($(input).parent().parent(".input-uang-dibayar").next().length > 0){
-                        $(input).parent().parent(".input-uang-dibayar").next().remove();
-                        console.log("Input setelah ini dihapus");
-                    } else {
-                        console.log("Input setelah ini tidak ada, biarkan saja");
-                    }
-                }
             } else {
                 $("#kembali").addClass("negatif");
-                if (input != null){
-                    if ($(input).parent().parent(".input-uang-dibayar").next().length > 0){
-                        // Jika sudah ada, biarkan saja
-                        console.log("Input kas bank sudah ada, biarkan saja");
-                    } else {
-                        $( "#uang-dibayar-master > .input-uang-dibayar" ).clone(true).appendTo( "#uang-dibayar-clone");
-                        $("#uang-dibayar-clone").find(".uang-dibayar").last().val(total + infaq - diskonNota - uangDibayar);
-                        //$(".uang-dibayar").last().val("");
-                        tampilkanKembalian();
-                        console.log("Tambah input kas bank");
-                    }
-                }
             }
         }
     }
@@ -229,29 +206,31 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
-        // console.log("Total: "+total);
-        // console.log("diskonNota: "+diskonNota);
-        // console.log("infaq: "+infaq);
         var inputUangDibayar =  $("input.uang-dibayar");
         var uangDibayar = 0;
         var cukup = false;
         console.log("sesuaikanInput.. dieksekusi!");
         $.each(inputUangDibayar, function(index, el){
-            var bayar = uangDibayar + parseInt($(el).val(), 10);
+            var curValue = parseInt($(el).val(),10);
+            var bayar = uangDibayar + curValue;
             var total1 = total + infaq - diskonNota;
             console.log("bayar= "+ bayar+", total= "+ total1);
             if (cukup == false){
                 uangDibayar += parseInt($(el).val(), 10);
-                console.log("uangDibayar= "+uangDibayar);
-                $( "#uang-dibayar-master > .input-uang-dibayar" ).clone(true).appendTo( "#uang-dibayar-clone");
+                console.log("uangDibayar= " + uangDibayar);
             } else {
-                $(el).remove();
+                $(el).parent().parent().remove();
             }
-            if (bayar >= total + infaq - diskonNota){
+            if (bayar >= total + infaq - diskonNota || $(el).val() == 0){
                 cukup = true;
             } 
             console.log("cukup= "+ cukup);
         });
+        if (cukup == false){            
+            $("#uang-dibayar-master > .input-uang-dibayar" ).clone(true).appendTo( "#uang-dibayar-clone");
+            $("#uang-dibayar-clone").find(".uang-dibayar").last().val("0");
+        }
+        tampilkanKembalian();
     }
 
     function kirimBarcode() {
@@ -403,11 +382,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     }
     
     $(".uang-dibayar").bindWithDelay("keyup", function() {
-        tampilkanKembalian();
         sesuaikanInputUangDibayar();
     }, 1000);
 
-    $("#uang-dibayar").keydown(function (e) {
+    $(".uang-dibayar").keydown(function (e) {
         if (e.keyCode === 13) {
             $("#tombol-simpan").click();
         }
@@ -437,12 +415,18 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
 
     $("#tombol-simpan").click(function () {
         $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
-
+        var inputUangDibayar =  $("input.uang-dibayar");
+        var bayar = new Object;
+        $.each(inputUangDibayar, function(index, el){
+            //bayar.push(['akun' : $(el).parent().parent().find(".account").val(), 'jumlah' : $(el).val()]);
+            bayar[$(el).parent().parent().find(".account").val()]=$(el).val();
+        })
         dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
         dataKirim = {
             'pos[account]': $("#account").val(),
             'pos[jenistr]': $("#jenisbayar").val(),
             'pos[uang]': $("#uang-dibayar").val(),
+            'pos[bayar]': bayar,
             'pos[infaq]': $("#infaq").val(),
             'pos[diskon-nota]': $("#diskon-nota").val(),
         };
