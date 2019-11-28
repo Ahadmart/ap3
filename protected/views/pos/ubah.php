@@ -104,8 +104,8 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         <!--<a class="tombol-tambah-kb"><i class="fa fa-2x fa-plus"></i></a>-->
         <!--<span class="label right" id="tombol-tambah-kb" accesskey="t"><i class="fa fa-plus"></i></span>-->
     <!--</div>-->
-    <div id="uang-dibayar-group">
-        <div class="row collapse">
+    <div id="uang-dibayar-master">
+        <div class="row collapse input-uang-dibayar">
             <?php /* Company account */ ?>
             <div class="small-3 large-2 columns">
                 <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
@@ -128,6 +128,8 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
                 <input type="text" class="uang-dibayar" name="kasbank[]"placeholder="[U]ang Dibayar" accesskey="u"/>
             </div>
         </div>
+    </div>
+    <div id="uang-dibayar-clone">
     </div>
     <?php /*
     <div class="row collapse">
@@ -161,19 +163,32 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 <?php
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwithdelay.js', CClientScript::POS_HEAD);
 ?>
 <script>
-    function tampilkanKembalian() {
+    function tampilkanKembalian(input) {
         //console.log("this:" + $(this).val() + "; total:" + $("#total-belanja-h").text());
         $("#kembali").html("0");
+//        if ($.isNumeric($(input).val())){
+//            
+//        }
+        console.log("tampilkanKembalian dieksekusi");
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
         // console.log("Total: "+total);
         // console.log("diskonNota: "+diskonNota);
         // console.log("infaq: "+infaq);
-        if ($.isNumeric($("#uang-dibayar").val())){
-            var bayar = parseInt($("#uang-dibayar").val(), 10);
+        var inputUangDibayar =  $("input.uang-dibayar");//$('input[name^=kasbank]');
+        var uangDibayar = 0;
+        $.each(inputUangDibayar, function(index, el){
+            uangDibayar += parseInt($(el).val(), 10);
+        });
+        console.log(uangDibayar);
+        ///$(input).addClass("Sedang di sini");
+        if ($.isNumeric(uangDibayar)){
+            var bayar = uangDibayar;
             // console.log("Bayar: "+ bayar);
             if (bayar >=total + infaq - diskonNota){
                 var dataKirim = {
@@ -184,10 +199,59 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 };
                 $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
                 $("#kembali").removeClass("negatif");
+                if (input != null){
+                    if ($(input).parent().parent(".input-uang-dibayar").next().length > 0){
+                        $(input).parent().parent(".input-uang-dibayar").next().remove();
+                        console.log("Input setelah ini dihapus");
+                    } else {
+                        console.log("Input setelah ini tidak ada, biarkan saja");
+                    }
+                }
             } else {
                 $("#kembali").addClass("negatif");
+                if (input != null){
+                    if ($(input).parent().parent(".input-uang-dibayar").next().length > 0){
+                        // Jika sudah ada, biarkan saja
+                        console.log("Input kas bank sudah ada, biarkan saja");
+                    } else {
+                        $( "#uang-dibayar-master > .input-uang-dibayar" ).clone(true).appendTo( "#uang-dibayar-clone");
+                        $("#uang-dibayar-clone").find(".uang-dibayar").last().val(total + infaq - diskonNota - uangDibayar);
+                        //$(".uang-dibayar").last().val("");
+                        tampilkanKembalian();
+                        console.log("Tambah input kas bank");
+                    }
+                }
             }
         }
+    }
+    
+    function sesuaikanInputUangDibayar(){    
+        var total = parseFloat($("#total-belanja-h").text());
+        var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var infaq = parseInt($("#infaq").val(), 10) || 0;
+        // console.log("Total: "+total);
+        // console.log("diskonNota: "+diskonNota);
+        // console.log("infaq: "+infaq);
+        var inputUangDibayar =  $("input.uang-dibayar");
+        var uangDibayar = 0;
+        var cukup = false;
+        console.log("sesuaikanInput.. dieksekusi!");
+        $.each(inputUangDibayar, function(index, el){
+            var bayar = uangDibayar + parseInt($(el).val(), 10);
+            var total1 = total + infaq - diskonNota;
+            console.log("bayar= "+ bayar+", total= "+ total1);
+            if (cukup == false){
+                uangDibayar += parseInt($(el).val(), 10);
+                console.log("uangDibayar= "+uangDibayar);
+                $( "#uang-dibayar-master > .input-uang-dibayar" ).clone(true).appendTo( "#uang-dibayar-clone");
+            } else {
+                $(el).remove();
+            }
+            if (bayar >= total + infaq - diskonNota){
+                cukup = true;
+            } 
+            console.log("cukup= "+ cukup);
+        });
     }
 
     function kirimBarcode() {
@@ -337,10 +401,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             }
         }
     }
-
-    $("#uang-dibayar").keyup(function () {
+    
+    $(".uang-dibayar").bindWithDelay("keyup", function() {
         tampilkanKembalian();
-    });
+        sesuaikanInputUangDibayar();
+    }, 1000);
 
     $("#uang-dibayar").keydown(function (e) {
         if (e.keyCode === 13) {
