@@ -90,7 +90,7 @@ return array(
         'superuser' => 'admin',
 
         // dipakai untuk jabatan user yang berstatus admin secara SOP
-        'useradmin' => 'admin',
+        'useradmin' => 'KEPALA_TOKO',
 
         // this is used in contact page
         'adminEmail' => 'webmaster@example.com',
