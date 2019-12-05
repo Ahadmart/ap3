@@ -20,6 +20,16 @@ class Pos extends Penjualan
         try {
             $this->simpanPenjualan();
 
+            $uangDibayar = 0;
+            $bayar = [];
+            foreach ($_POST['pos']['bayar'] as $key => $value) {
+                $bayar[]= [
+                    'akun' => $key,
+                    'jumlah' => $value,
+                ];
+                $uangDibayar += $value;
+            }
+
             $penerimaan                     = new Penerimaan;
             $penerimaan->tanggal            = date('d-m-Y');
             //$penerimaan->referensi = '[POS]';
@@ -28,8 +38,11 @@ class Pos extends Penjualan
             $penerimaan->kas_bank_id        = $posData['account'];
             $penerimaan->jenis_transaksi_id = $posData['jenistr'];
             $penerimaan->kategori_id        = self::KATEGORI_TRX;
-            $penerimaan->uang_dibayar       = $posData['uang'];
-            $penerimaan->save();
+
+            $penerimaan->uang_dibayar       = $uangDibayar;
+            if (!$penerimaan->save()){
+                throw new Exception("Gagal simpan penerimaan", 500);
+            }
 
             $penjualan       = Penjualan::model()->findByPk($this->id);
             $hutangPiutangId = $penjualan->hutang_piutang_id;
@@ -38,6 +51,16 @@ class Pos extends Penjualan
                 die(serialize($penjualan->attributes));
             }
             $item = $dokumen->itemBayarHutang;
+            
+            foreach ($bayar as $b) {
+                $penerimaanKasBank                = new PenerimaanKasBank;
+                $penerimaanKasBank->penerimaan_id = $penerimaan->id;
+                $penerimaanKasBank->kas_bank_id   = $b['akun'];
+                $penerimaanKasBank->jumlah        = $b['jumlah'];
+                if (!$penerimaanKasBank->save()) {
+                    throw new Exception("Gagal simpan penerimaan akun:" . $b['akun'] . ", jml:" . $b['jumlah'], 500);
+                }
+            }
 
             $penerimaanDetail                    = new PenerimaanDetail;
             $penerimaanDetail->penerimaan_id     = $penerimaan->id;
