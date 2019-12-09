@@ -314,5 +314,64 @@ class Kasir extends CActiveRecord
         
         return $command->queryAll();
     }
+    
+    public function penjualanPerAkun2()
+    {
+        $sql = "
+        SELECT 
+            t.kb, kas_bank.nama, t.total
+        FROM
+            (SELECT 
+                tr.kb, SUM(tr.nominal) total
+            FROM
+                (SELECT 
+                tp.nomor,
+                    CASE kb2
+                        WHEN kb2 > 0 THEN kb2
+                        ELSE kb1
+                    END kb,
+                    CASE jumlah
+                        WHEN jumlah > 0 THEN jumlah
+                        ELSE uang_dibayar
+                    END nominal
+            FROM
+                (SELECT 
+                p.nomor,
+                    p.kas_bank_id kb1,
+                    p.uang_dibayar,
+                    pkb.kas_bank_id kb2,
+                    pkb.jumlah
+            FROM
+                penerimaan p
+            LEFT JOIN penerimaan_kas_bank pkb ON p.id = pkb.penerimaan_id
+            WHERE
+                p.id IN (SELECT DISTINCT
+                        p.id
+                    FROM
+                        penerimaan_detail d
+                    JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status = 1
+                    JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = 3
+                    JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= '2019-12-05 10:27:46'
+                        AND penjualan.tanggal <= '2019-12-06 06:25:11'
+                        AND penjualan.updated_by = 1)) AS tp) AS tr
+            GROUP BY tr.kb) AS t
+                JOIN
+            kas_bank ON t.kb = kas_bank.id
+        ";
+        
+        $command = Yii::app()->db->createCommand($sql);
+        
+        $command->bindValues([
+            ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
+            ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
+            ':waktuBuka'        => $this->waktu_buka,
+            ':waktuTutup'       => $this->waktu_tutup,
+            ':userId'           => $this->user_id,
+        ]);
+        
+        return $command->queryAll();
+    }
 
 }
