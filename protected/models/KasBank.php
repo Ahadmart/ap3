@@ -17,7 +17,7 @@
  */
 class KasBank extends CActiveRecord
 {
-
+    const KAS_ID = 1; // Sementara di sini, nanti pindahkan ke config!
     /**
      * @return string the associated database table name
      */
