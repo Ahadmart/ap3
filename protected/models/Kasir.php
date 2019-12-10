@@ -13,6 +13,10 @@
  * @property string $saldo_akhir_seharusnya
  * @property string $saldo_akhir
  * @property string $total_penjualan
+ * @property string $total_infaq
+ * @property string $total_diskon_pernota
+ * @property string $total_tarik_tunai
+ * @property string $total_penerimaan
  * @property string $total_margin
  * @property string $total_retur
  * @property string $updated_at
@@ -45,11 +49,11 @@ class Kasir extends CActiveRecord
         return array(
             array('user_id, device_id, waktu_buka, saldo_awal', 'required', 'message' => '{attribute} harus diisi!'),
             array('user_id, device_id, updated_by', 'length', 'max' => 10),
-            array('saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_margin, total_retur', 'length', 'max' => 18),
+            array('saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_infaq, total_diskon_pernota, total_tarik_tunai, total_penerimaan, total_margin, total_retur', 'length', 'max' => 18),
             array('waktu_tutup, created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, user_id, device_id, waktu_buka, waktu_tutup, saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_margin, total_retur, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
+            array('id, user_id, device_id, waktu_buka, waktu_tutup, saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_infaq, total_diskon_pernota, total_tarik_tunai, total_penerimaan, total_margin, total_retur, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
         );
     }
 
@@ -82,6 +86,10 @@ class Kasir extends CActiveRecord
             'saldo_akhir_seharusnya' => 'Saldo Akhir Seharusnya',
             'saldo_akhir'            => 'Saldo Akhir',
             'total_penjualan'        => 'Total Penjualan',
+            'total_infaq'            => 'Total Infaq',
+            'total_diskon_pernota'   => 'Total Diskon Pernota',
+            'total_tarik_tunai'      => 'Total Tarik Tunai',
+            'total_penerimaan'       => 'Total Penerimaan',
             'total_margin'           => 'Total Margin',
             'total_retur'            => 'Total Retur Jual',
             'updated_at'             => 'Updated At',
@@ -117,6 +125,10 @@ class Kasir extends CActiveRecord
         $criteria->compare('saldo_akhir_seharusnya', $this->saldo_akhir_seharusnya, true);
         $criteria->compare('saldo_akhir', $this->saldo_akhir, true);
         $criteria->compare('total_penjualan', $this->total_penjualan, true);
+        $criteria->compare('total_infaq', $this->total_infaq, true);
+        $criteria->compare('total_diskon_pernota', $this->total_diskon_pernota, true);
+        $criteria->compare('total_tarik_tunai', $this->total_tarik_tunai, true);
+        $criteria->compare('total_penerimaan', $this->total_penerimaan, true);
         $criteria->compare('total_margin', $this->total_margin, true);
         $criteria->compare('total_retur', $this->total_retur, true);
         $criteria->compare('updated_at', $this->updated_at, true);
@@ -252,6 +264,8 @@ class Kasir extends CActiveRecord
         $terPanjang      = strlen($saldoAkhirFisik) > $terPanjang ? strlen($saldoAkhirFisik) : $terPanjang;
         $selisihSaldo    = is_null($this->saldo_akhir - $this->saldo_akhir_seharusnya) ? '0' : number_format($this->saldo_akhir - $this->saldo_akhir_seharusnya, 0, ',', '.');
         $terPanjang      = strlen($selisihSaldo) > $terPanjang ? strlen($selisihSaldo) : $terPanjang;
+        $totalPenerimaan = is_null($this->total_penerimaan) ? number_format($this->penerimaanNet()['total'], 0, ',', '.') : number_format($this->total_penerimaan, 0, ',', '.');
+        $terPanjang      = strlen($totalPenerimaan) > $terPanjang ? strlen($totalPenerimaan) : $terPanjang;
 
         $text .= str_pad('Login', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama . PHP_EOL;
         $text .= str_pad('Nama', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama_lengkap . PHP_EOL;
@@ -260,6 +274,7 @@ class Kasir extends CActiveRecord
         $text .= str_pad('Tutup', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_tutup), 'd-m-Y H:i:s') . PHP_EOL;
         $text .= str_pad('Saldo Awal', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAwal, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         $text .= str_pad('Total Penjualan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenjualan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Total Penerimaan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenerimaan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
 
         $penjualanPerAkun = $this->penjualanPerAkun();
         if (count($penjualanPerAkun) > 1) {
@@ -270,9 +285,30 @@ class Kasir extends CActiveRecord
             }
             $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
         }
+        
+        $uangDibayarPerAkun = $this->uangDibayarPerAkun();
+        if (count($uangDibayarPerAkun) > 1) {
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+            foreach ($uangDibayarPerAkun as $akun) {
+                if ($akun['kb'] == KasBank::KAS_ID) {
+                    // Jika total_penerimaan null berarti dibuat sebelum update ini, maka hitung ulang
+                    $totalPenerimaan = is_null($this->total_penerimaan) ? $this->penerimaanNet()['total'] : $this->total_penerimaan;
+                    $kas             = $akun['total'] - ($totalPenerimaan - $this->total_penjualan);
+//                    $kas             = $akun['total'];
+                    $jumlahAkun      = is_null($kas) ? '0' : number_format($kas, 0, ',', '.');
+                    $text            .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+                } else {
+                    $jumlahAkun = is_null($akun['total']) ? '0' : number_format($akun['total'], 0, ',', '.');
+                    $text       .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+                }
+            }
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+        }
 
         $text .= str_pad('Total Margin', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalMargin, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
-        $text .= str_pad('Total Retur Jual', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalRetur, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        if ($totalRetur > 0) {
+            $text .= str_pad('Total Retur Jual', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalRetur, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
         $text .= str_pad('Saldo Akhir', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAkhir, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         $text .= str_pad('Saldo Akhir Fisik', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAkhirFisik, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         $text .= str_pad('Selisih', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($selisihSaldo, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
