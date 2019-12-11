@@ -285,17 +285,18 @@ class Kasir extends CActiveRecord
         if ($totalInfaq > 0) {
             $text .= str_pad('Total Infaq', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad(number_format($totalInfaq, 0, ',', '.'), $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
-        $text .= str_pad('Total Penerimaan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenerimaan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
-
-        $penjualanPerAkun = $this->penjualanPerAkun();
-        if (count($penjualanPerAkun) > 1) {
-            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
-            foreach ($penjualanPerAkun as $akun) {
-                $jumlahAkun = is_null($akun['jumlah']) ? '0' : number_format($akun['jumlah'], 0, ',', '.');
-                $text       .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
-            }
-            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+        if ($totalPenjualan != $totalPenerimaan) {
+            $text .= str_pad('Total Penerimaan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenerimaan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
+//        $penjualanPerAkun = $this->penjualanPerAkun();
+//        if (count($penjualanPerAkun) > 1) {
+//            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+//            foreach ($penjualanPerAkun as $akun) {
+//                $jumlahAkun = is_null($akun['jumlah']) ? '0' : number_format($akun['jumlah'], 0, ',', '.');
+//                $text       .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+//            }
+//            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+//        }
         
         $uangDibayarPerAkun = $this->uangDibayarPerAkun();
         if (count($uangDibayarPerAkun) > 1) {
@@ -327,6 +328,7 @@ class Kasir extends CActiveRecord
         return $text;
     }
 
+    /*
     public function penjualanPerAkun()
     {
         $sql = "
@@ -362,6 +364,8 @@ class Kasir extends CActiveRecord
 
         return $command->queryAll();
     }
+     * 
+     */
 
     public function uangDibayarPerAkun()
     {
