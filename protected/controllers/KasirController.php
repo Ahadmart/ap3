@@ -78,11 +78,14 @@ class KasirController extends Controller
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
-        $model->total_penjualan = $model->totalPenjualan()['jumlah'];
-        $model->total_margin    = $model->totalMargin()['jumlah'];
-        $model->total_retur     = $model->totalReturJual()['jumlah'];
+        $model->total_penjualan      = $model->totalPenjualan()['jumlah'];
+        $model->total_margin         = $model->totalMargin()['jumlah'];
+        $model->total_retur          = $model->totalReturJual()['jumlah'];
+        $model->total_infaq          = $model->totalInfaq()['total'];
+        $model->total_diskon_pernota = $model->totalDiskonPerNota()['total'];
+        $model->total_penerimaan     = $model->penerimaanNet()['total'];
 
-        $model->saldo_akhir_seharusnya = $model->saldo_awal + $model->total_penjualan - $model->total_retur;
+        $model->saldo_akhir_seharusnya = $model->saldo_awal + $model->total_penjualan + $model->total_infaq - $model->total_retur - $model->total_diskon_pernota;
 
         if (isset($_POST['Kasir'])) {
             $config        = Config::model()->find('nama=:nama', [':nama' => 'kasir.showautosummary']);
@@ -210,7 +213,7 @@ class KasirController extends Controller
             'kertasPdf' => $kertasPdf,
         ]);
     }
-    
+
     public function actionCetak($id)
     {
         if (isset($_GET['printId'])) {

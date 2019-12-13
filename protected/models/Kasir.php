@@ -47,15 +47,15 @@ class Kasir extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('user_id, device_id, waktu_buka, saldo_awal', 'required', 'message' => '{attribute} harus diisi!'),
-            array('user_id, device_id, updated_by', 'length', 'max' => 10),
-            array('saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_infaq, total_diskon_pernota, total_tarik_tunai, total_penerimaan, total_uang_dibayar, total_margin, total_retur', 'length', 'max' => 18),
-            array('waktu_tutup, created_at, updated_at, updated_by', 'safe'),
+        return [
+            ['user_id, device_id, waktu_buka, saldo_awal', 'required', 'message' => '{attribute} harus diisi!'],
+            ['user_id, device_id, updated_by', 'length', 'max' => 10],
+            ['saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_infaq, total_diskon_pernota, total_tarik_tunai, total_penerimaan, total_uang_dibayar, total_margin, total_retur', 'length', 'max' => 18],
+            ['waktu_tutup, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, user_id, device_id, waktu_buka, waktu_tutup, saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_infaq, total_diskon_pernota, total_tarik_tunai, total_penerimaan, total_uang_dibayar, total_margin, total_retur, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
-        );
+            ['id, user_id, device_id, waktu_buka, waktu_tutup, saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_infaq, total_diskon_pernota, total_tarik_tunai, total_penerimaan, total_uang_dibayar, total_margin, total_retur, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -65,11 +65,11 @@ class Kasir extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-            'device'    => array(self::BELONGS_TO, 'Device', 'device_id'),
-            'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
-            'user'      => array(self::BELONGS_TO, 'User', 'user_id'),
-        );
+        return [
+            'device'    => [self::BELONGS_TO, 'Device', 'device_id'],
+            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
+            'user'      => [self::BELONGS_TO, 'User', 'user_id'],
+        ];
     }
 
     /**
@@ -77,7 +77,7 @@ class Kasir extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
+        return [
             'id'                     => 'ID',
             'user_id'                => 'User',
             'device_id'              => 'Device',
@@ -97,7 +97,7 @@ class Kasir extends CActiveRecord
             'updated_at'             => 'Updated At',
             'updated_by'             => 'Updated By',
             'created_at'             => 'Created At',
-        );
+        ];
     }
 
     /**
@@ -149,10 +149,10 @@ class Kasir extends CActiveRecord
             'defaultOrder' => 'id desc'
         ];
 
-        return new CActiveDataProvider($this, array(
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
             'sort'     => $sort,
-        ));
+        ]);
     }
 
     /**
@@ -195,12 +195,12 @@ class Kasir extends CActiveRecord
             join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal>=:waktu and penjualan.updated_by=:userId
         ");
 
-        $command->bindValues(array(
+        $command->bindValues([
             ':waktu'             => $this->waktu_buka,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPenerimaan'  => Penerimaan::STATUS_BAYAR,
             ':userId'            => $this->user_id
-        ));
+        ]);
 
         return $command->queryRow();
     }
@@ -217,12 +217,12 @@ class Kasir extends CActiveRecord
             join harga_pokok_penjualan hpp on jual_detail.id=hpp.penjualan_detail_id
         ");
 
-        $command->bindValues(array(
+        $command->bindValues([
             ':waktu'             => $this->waktu_buka,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPenerimaan'  => Penerimaan::STATUS_BAYAR,
             ':userId'            => $this->user_id
-        ));
+        ]);
 
         return $command->queryRow();
     }
@@ -237,12 +237,12 @@ class Kasir extends CActiveRecord
             join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal>=:waktu and retur_penjualan.updated_by=:userId
         ");
 
-        $command->bindValues(array(
+        $command->bindValues([
             ':waktu'             => $this->waktu_buka,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':userId'            => $this->user_id
-        ));
+        ]);
 
         return $command->queryRow();
     }
@@ -270,13 +270,13 @@ class Kasir extends CActiveRecord
         $totalPenerimaan = is_null($this->total_penerimaan) ? number_format($this->penerimaanNet()['total'], 0, ',', '.') : number_format($this->total_penerimaan, 0, ',', '.');
         $terPanjang      = strlen($totalPenerimaan) > $terPanjang ? strlen($totalPenerimaan) : $terPanjang;
 
-        $text .= str_pad('Login', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama . PHP_EOL;
-        $text .= str_pad('Nama', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama_lengkap . PHP_EOL;
-        $text .= str_pad('POS Client', 19, ' ', STR_PAD_LEFT) . ': ' . $this->device->nama . PHP_EOL;
-        $text .= str_pad('Buka', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_buka), 'd-m-Y H:i:s') . PHP_EOL;
-        $text .= str_pad('Tutup', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_tutup), 'd-m-Y H:i:s') . PHP_EOL;
-        $text .= str_pad('Saldo Awal', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAwal, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
-        $text .= str_pad('Total Penjualan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenjualan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text               .= str_pad('Login', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama . PHP_EOL;
+        $text               .= str_pad('Nama', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama_lengkap . PHP_EOL;
+        $text               .= str_pad('POS Client', 19, ' ', STR_PAD_LEFT) . ': ' . $this->device->nama . PHP_EOL;
+        $text               .= str_pad('Buka', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_buka), 'd-m-Y H:i:s') . PHP_EOL;
+        $text               .= str_pad('Tutup', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_tutup), 'd-m-Y H:i:s') . PHP_EOL;
+        $text               .= str_pad('Saldo Awal', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAwal, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text               .= str_pad('Total Penjualan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenjualan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         $totalDiskonPerNota = is_null($this->total_diskon_pernota) ? $this->totalDiskonPerNota()['total'] : $this->total_diskon_pernota;
         if ($totalDiskonPerNota > 0) {
             $text .= str_pad('Total Dis Nota', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad(number_format($totalDiskonPerNota, 0, ',', '.'), $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
@@ -297,7 +297,7 @@ class Kasir extends CActiveRecord
 //            }
 //            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
 //        }
-        
+
         $uangDibayarPerAkun = $this->uangDibayarPerAkun();
         if (count($uangDibayarPerAkun) > 1) {
             $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
@@ -329,41 +329,41 @@ class Kasir extends CActiveRecord
     }
 
     /*
-    public function penjualanPerAkun()
-    {
-        $sql = "
-        SELECT 
-            kas_bank.id, kas_bank.nama, t_rekap.jumlah
-        FROM
-            (SELECT 
-                p.kas_bank_id, SUM(d.jumlah) jumlah
-            FROM
-                penerimaan_detail d
-            JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
-            JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
-                AND hp.asal = :hpAsal
-            JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
-                AND penjualan.tanggal >= :waktuBuka
-                AND penjualan.tanggal <= :waktuTutup
-                AND penjualan.updated_by = :userId
-            GROUP BY p.kas_bank_id) AS t_rekap
-                JOIN
-            kas_bank ON kas_bank.id = t_rekap.kas_bank_id
-            order by kas_bank.nama  
-        ";
+      public function penjualanPerAkun()
+      {
+      $sql = "
+      SELECT
+      kas_bank.id, kas_bank.nama, t_rekap.jumlah
+      FROM
+      (SELECT
+      p.kas_bank_id, SUM(d.jumlah) jumlah
+      FROM
+      penerimaan_detail d
+      JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
+      JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
+      AND hp.asal = :hpAsal
+      JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
+      AND penjualan.tanggal >= :waktuBuka
+      AND penjualan.tanggal <= :waktuTutup
+      AND penjualan.updated_by = :userId
+      GROUP BY p.kas_bank_id) AS t_rekap
+      JOIN
+      kas_bank ON kas_bank.id = t_rekap.kas_bank_id
+      order by kas_bank.nama
+      ";
 
-        $command = Yii::app()->db->createCommand($sql);
+      $command = Yii::app()->db->createCommand($sql);
 
-        $command->bindValues([
-            ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
-            ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
-            ':waktuBuka'        => $this->waktu_buka,
-            ':waktuTutup'       => $this->waktu_tutup,
-            ':userId'           => $this->user_id,
-        ]);
+      $command->bindValues([
+      ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
+      ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
+      ':waktuBuka'        => $this->waktu_buka,
+      ':waktuTutup'       => $this->waktu_tutup,
+      ':userId'           => $this->user_id,
+      ]);
 
-        return $command->queryAll();
-    }
+      return $command->queryAll();
+      }
      * 
      */
 
@@ -411,6 +411,7 @@ class Kasir extends CActiveRecord
             GROUP BY tr.kb) AS t
                 JOIN
             kas_bank ON t.kb = kas_bank.id
+            ORDER BY t.kb
         ";
 
         $command = Yii::app()->db->createCommand($sql);
@@ -428,7 +429,10 @@ class Kasir extends CActiveRecord
 
     public function penerimaanNet()
     {
-
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND penjualan.tanggal <= :waktuTutup";
+        }
         $sql = "
         SELECT 
             SUM(CASE posisi WHEN 0 THEN jumlah ELSE -jumlah END) total
@@ -447,7 +451,7 @@ class Kasir extends CActiveRecord
                         JOIN
                     penjualan ON hp.id = penjualan.hutang_piutang_id
                         AND penjualan.tanggal >= :waktuBuka
-                        AND penjualan.tanggal <= :waktuTutup
+                        {$kondisiTutup}
                         AND penjualan.updated_by = :userId)
         ";
 
@@ -457,14 +461,21 @@ class Kasir extends CActiveRecord
             ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
             ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
             ':waktuBuka'        => $this->waktu_buka,
-            ':waktuTutup'       => $this->waktu_tutup,
             ':userId'           => $this->user_id,
         ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
 
         return $command->queryRow();
     }
-    
-    public function totalUangDibayar(){
+
+    public function totalUangDibayar()
+    {
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND penjualan.tanggal <= :waktuTutup";
+        }
         $sql = "
         SELECT 
             SUM(uang_dibayar) total
@@ -483,7 +494,7 @@ class Kasir extends CActiveRecord
                         JOIN
                     penjualan ON hp.id = penjualan.hutang_piutang_id
                         AND penjualan.tanggal >= :waktuBuka
-                        AND penjualan.tanggal <= :waktuTutup
+                        {$kondisiTutup}
                         AND penjualan.updated_by = :userId)
         ";
 
@@ -493,14 +504,21 @@ class Kasir extends CActiveRecord
             ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
             ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
             ':waktuBuka'        => $this->waktu_buka,
-            ':waktuTutup'       => $this->waktu_tutup,
             ':userId'           => $this->user_id,
         ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
 
         return $command->queryRow();
     }
-    
-    public function totalInfaq(){
+
+    public function totalInfaq()
+    {
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND penjualan.tanggal <= :waktuTutup";
+        }
         $sql = "
         SELECT 
             SUM(jumlah) total
@@ -519,7 +537,7 @@ class Kasir extends CActiveRecord
                         JOIN
                     penjualan ON hp.id = penjualan.hutang_piutang_id
                         AND penjualan.tanggal >= :waktuBuka
-                        AND penjualan.tanggal <= :waktuTutup
+                        {$kondisiTutup}
                         AND penjualan.updated_by = :userId)
         AND item_id = :itemInfaq
         ";
@@ -530,15 +548,22 @@ class Kasir extends CActiveRecord
             ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
             ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
             ':waktuBuka'        => $this->waktu_buka,
-            ':waktuTutup'       => $this->waktu_tutup,
             ':userId'           => $this->user_id,
             ':itemInfaq'        => ItemKeuangan::POS_INFAQ,
         ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
 
         return $command->queryRow();
     }
-    
-    public function totalDiskonPerNota(){
+
+    public function totalDiskonPerNota()
+    {
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND penjualan.tanggal <= :waktuTutup";
+        }
         $sql = "
         SELECT 
             SUM(jumlah) total
@@ -557,7 +582,7 @@ class Kasir extends CActiveRecord
                         JOIN
                     penjualan ON hp.id = penjualan.hutang_piutang_id
                         AND penjualan.tanggal >= :waktuBuka
-                        AND penjualan.tanggal <= :waktuTutup
+                        {$kondisiTutup}
                         AND penjualan.updated_by = :userId)
         AND item_id = :itemInfaq
         ";
@@ -568,11 +593,14 @@ class Kasir extends CActiveRecord
             ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
             ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
             ':waktuBuka'        => $this->waktu_buka,
-            ':waktuTutup'       => $this->waktu_tutup,
             ':userId'           => $this->user_id,
             ':itemInfaq'        => ItemKeuangan::POS_DISKON_PER_NOTA,
         ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
 
         return $command->queryRow();
     }
+
 }
