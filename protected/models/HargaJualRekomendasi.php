@@ -197,6 +197,6 @@ class HargaJualRekomendasi extends CActiveRecord {
 				  ->where('id = (select max(id) from '.$this->tableName().' where barang_id = :barangId)')
 				  ->bindValues(array(':barangId' => $barangId))
 				  ->queryRow();
-		return $query['harga'];
-	}
+        return $query ? $query['harga'] : null;
+    }
 }
