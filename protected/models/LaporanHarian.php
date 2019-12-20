@@ -539,13 +539,18 @@ class LaporanHarian extends CActiveRecord
             kas_bank.nama nama_akun,
             CASE
                 WHEN uang_dibayar > 0 THEN uang_dibayar_perakun - (uang_dibayar - penjualan)
+                WHEN count IS NULL OR count = 1 THEN penjualan
                 ELSE uang_dibayar_perakun
             END jumlah
         FROM
             (SELECT 
                 t.*,
-                    CASE t.kb
-                        WHEN 1 THEN tp.jumlah
+                    CASE
+                        WHEN
+                            t.kb = 1 OR t.count IS NULL
+                                OR t.count = 1
+                        THEN
+                            tp.jumlah
                     END penjualan,
                     CASE t.kb
                         WHEN 1 THEN penerimaan.uang_dibayar
@@ -562,7 +567,8 @@ class LaporanHarian extends CActiveRecord
                     CASE
                         WHEN tr.jumlah > 0 THEN tr.jumlah
                         ELSE uang_dibayar
-                    END uang_dibayar_perakun
+                    END uang_dibayar_perakun,
+                    tr.count
             FROM
                 (SELECT 
                 p.id,
@@ -571,10 +577,18 @@ class LaporanHarian extends CActiveRecord
                     p.kas_bank_id kb1,
                     p.uang_dibayar,
                     pkb.kas_bank_id kb2,
-                    pkb.jumlah
+                    pkb.jumlah,
+                    tc.count
             FROM
                 penerimaan p
             LEFT JOIN penerimaan_kas_bank pkb ON p.id = pkb.penerimaan_id
+            LEFT JOIN (SELECT 
+                penerimaan_kas_bank.penerimaan_id, COUNT(*) count
+            FROM
+                penerimaan_kas_bank
+            WHERE
+                penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})
+            GROUP BY penerimaan_id) tc ON tc.penerimaan_id = p.id
             WHERE
                 p.id IN ({$listPenerimaan})
             ORDER BY p.nomor) tr) t
@@ -587,8 +601,12 @@ class LaporanHarian extends CActiveRecord
             GROUP BY penerimaan_id) tp ON tp.penerimaan_id = t.id
             JOIN penerimaan ON t.id = penerimaan.id UNION SELECT 
                 t.*,
-                    CASE t.kb
-                        WHEN 1 THEN tp.jumlah
+                    CASE
+                        WHEN
+                            t.kb = 1 OR t.count IS NULL
+                                OR t.count = 1
+                        THEN
+                            tp.jumlah
                     END penjualan,
                     CASE t.kb
                         WHEN 1 THEN pengeluaran.uang_dibayar
@@ -605,7 +623,8 @@ class LaporanHarian extends CActiveRecord
                     CASE
                         WHEN tr.jumlah > 0 THEN tr.jumlah
                         ELSE uang_dibayar
-                    END uang_dibayar_perakun
+                    END uang_dibayar_perakun,
+                    tr.count
             FROM
                 (SELECT 
                 p.id,
@@ -614,10 +633,18 @@ class LaporanHarian extends CActiveRecord
                     p.kas_bank_id kb1,
                     p.uang_dibayar,
                     pkb.kas_bank_id kb2,
-                    pkb.jumlah
+                    pkb.jumlah,
+                    tc.count
             FROM
                 pengeluaran p
             LEFT JOIN pengeluaran_kas_bank pkb ON p.id = pkb.pengeluaran_id
+            LEFT JOIN (SELECT 
+                pengeluaran_kas_bank.pengeluaran_id, COUNT(*) count
+            FROM
+                pengeluaran_kas_bank
+            WHERE
+                pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})
+            GROUP BY pengeluaran_id) tc ON tc.pengeluaran_id = p.id
             WHERE
                 p.id IN ({$listPengeluaran})
             ORDER BY p.nomor) tr) t
