@@ -26,6 +26,9 @@ class ItemKeuangan extends CActiveRecord
     const ITEM_TRX_SAJA = 100; //Item keuangan ID, selain bersumber dari dokumen, dimulai dari nomor ini
     const STATUS_TIDAK_AKTIF = 0;
     const STATUS_AKTIF = 1;
+    
+    /* Item Keuangan ID untuk mencatat penjualan */
+    const ITEM_PENJUALAN = 4;
 
     /* Item Keuangan ID untuk mencatat infaq/shodaqoh via transaksi POS */
     const POS_INFAQ = 10;

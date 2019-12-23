@@ -594,7 +594,12 @@ class LaporanHarian extends CActiveRecord
                 p.id IN ({$listPenerimaan})
             ORDER BY p.nomor) tr) t
             JOIN (SELECT 
-                penerimaan_id, SUM(jumlah) jumlah
+                penerimaan_id,
+                    SUM(CASE
+                        WHEN item_id = :itemDiskonPerNota THEN - jumlah
+                        WHEN item_id = :itemInfaq OR item_id = :itemPenjualan THEN jumlah
+                        ELSE 0
+                    END) jumlah
             FROM
                 penerimaan_detail
             WHERE
@@ -659,7 +664,12 @@ class LaporanHarian extends CActiveRecord
                 p.id IN ({$listPengeluaran})
             ORDER BY p.nomor) tr) t
             JOIN (SELECT 
-                pengeluaran_id, SUM(jumlah) jumlah
+                pengeluaran_id,
+                    SUM(CASE
+                        WHEN item_id = :itemDiskonPerNota THEN - jumlah
+                        WHEN item_id = :itemInfaq OR item_id = :itemPenjualan THEN jumlah
+                        ELSE 0
+                    END) jumlah
             FROM
                 pengeluaran_detail
             WHERE
@@ -699,6 +709,9 @@ class LaporanHarian extends CActiveRecord
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan'  => Penerimaan::STATUS_BAYAR,
+            ':itemDiskonPerNota' => ItemKeuangan::POS_DISKON_PER_NOTA,
+            ':itemInfaq'         => ItemKeuangan::POS_INFAQ,
+            ':itemPenjualan'     => ItemKeuangan::ITEM_PENJUALAN
         ]);
 
         return $command->queryAll();
@@ -824,7 +837,12 @@ class LaporanHarian extends CActiveRecord
                 p.id IN ({$listPenerimaan})
             ORDER BY p.nomor) tr) t
             JOIN (SELECT 
-                penerimaan_id, SUM(jumlah) jumlah
+                penerimaan_id,
+                    SUM(CASE
+                        WHEN item_id = :itemDiskonPerNota THEN - jumlah
+                        WHEN item_id = :itemInfaq OR item_id = :itemPenjualan THEN jumlah
+                        ELSE 0
+                    END) jumlah
             FROM
                 penerimaan_detail
             WHERE
@@ -889,7 +907,12 @@ class LaporanHarian extends CActiveRecord
                 p.id IN ({$listPengeluaran})
             ORDER BY p.nomor) tr) t
             JOIN (SELECT 
-                pengeluaran_id, SUM(jumlah) jumlah
+                pengeluaran_id,
+                    SUM(CASE
+                        WHEN item_id = :itemDiskonPerNota THEN - jumlah
+                        WHEN item_id = :itemInfaq OR item_id = :itemPenjualan THEN jumlah
+                        ELSE 0
+                    END) jumlah
             FROM
                 pengeluaran_detail
             WHERE
@@ -928,6 +951,9 @@ class LaporanHarian extends CActiveRecord
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan'  => Penerimaan::STATUS_BAYAR,
+            ':itemDiskonPerNota' => ItemKeuangan::POS_DISKON_PER_NOTA,
+            ':itemInfaq'         => ItemKeuangan::POS_INFAQ,
+            ':itemPenjualan'     => ItemKeuangan::ITEM_PENJUALAN
         ]);
 
         return $command->queryAll();        
