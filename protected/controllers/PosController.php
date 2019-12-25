@@ -431,9 +431,9 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
-
+             
         if (isset($_POST['pos'])) {
             $pos = Pos::model('Pos')->findByPk($id);
 

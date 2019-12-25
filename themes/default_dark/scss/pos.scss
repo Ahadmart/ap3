@@ -10,12 +10,12 @@ $toska: #afd8f8;
 $oranye: #edc240;
 $merah: #cb4b4b;
 $violet: #9440ed;
- $primary-color: #1976D2; 
- $secondary-color: #e7e7e7;
- $alert-color: #d32f2f;
- $success-color: #388E3C; 
- $warning-color: #F57C00;
- $info-color: #03A9F4;
+$primary-color: #1976D2; 
+$secondary-color: #e7e7e7;
+$alert-color: #d32f2f;
+$success-color: #388E3C; 
+$warning-color: #F57C00;
+$info-color: #03A9F4;
 
 body, html {
     height: 100%;
@@ -295,14 +295,14 @@ table tr th, table tr td {
     animation: flash 2s infinite;
 }
 
-#scan, #uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password, #akm-no, 
+#scan, input[name="kasbank[]"].uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password, #akm-no, 
 #pesanan-no, #infaq, #diskon-nota{
     background-color: rgba(0, 0, 0, 0.5);
     color: rgb(255, 255, 0);
     border-color: transparent;
 }
 
-#scan:focus, #uang-dibayar:focus, #account:focus,
+#scan:focus, .uang-dibayar:focus, #account:focus,
 #jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus, #akm-no:focus, 
 #pesanan-no:focus, #infaq:focus, #diskon-nota:focus{
     border-color: #00BCD4;

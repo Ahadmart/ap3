@@ -1,29 +1,32 @@
 <?php
 
 /**
- * This is the model class for table "kas_bank".
+ * This is the model class for table "pengeluaran_kas_bank".
  *
- * The followings are the available columns in table 'kas_bank':
+ * The followings are the available columns in table 'pengeluaran_kas_bank':
  * @property string $id
- * @property string $nama
- * @property string $kode_akun_id
- * @property string $created_at
+ * @property string $pengeluaran_id
+ * @property string $kas_bank_id
+ * @property string $keterangan
+ * @property string $jumlah
  * @property string $updated_at
  * @property string $updated_by
+ * @property string $created_at
  *
  * The followings are the available model relations:
- * @property KodeAkun $kodeAkun
+ * @property Pengeluaran $pengeluaran
+ * @property KasBank $kasBank
  * @property User $updatedBy
  */
-class KasBank extends CActiveRecord
+class PengeluaranKasBank extends CActiveRecord
 {
-    const KAS_ID = 1; // Sementara di sini, nanti pindahkan ke config!
+
     /**
      * @return string the associated database table name
      */
     public function tableName()
     {
-        return 'kas_bank';
+        return 'pengeluaran_kas_bank';
     }
 
     /**
@@ -34,13 +37,14 @@ class KasBank extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            ['nama', 'required'],
-            ['nama', 'length', 'max' => 45],
-            ['kode_akun_id, updated_by', 'length', 'max' => 10],
+            ['pengeluaran_id, kas_bank_id', 'required'],
+            ['pengeluaran_id, kas_bank_id, updated_by', 'length', 'max' => 10],
+            ['keterangan', 'length', 'max' => 255],
+            ['jumlah', 'length', 'max' => 18],
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, nama, kode_akun_id, created_at, updated_at, updated_by', 'safe', 'on' => 'search'],
+            ['id, pengeluaran_id, kas_bank_id, keterangan, jumlah, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -52,8 +56,9 @@ class KasBank extends CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return [
-            'kodeAkun'  => [self::BELONGS_TO, 'KodeAkun', 'kode_akun_id'],
-            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
+            'pengeluaran' => [self::BELONGS_TO, 'Pengeluaran', 'pengeluaran_id'],
+            'kasBank'     => [self::BELONGS_TO, 'KasBank', 'kas_bank_id'],
+            'updatedBy'   => [self::BELONGS_TO, 'User', 'updated_by'],
         ];
     }
 
@@ -63,12 +68,14 @@ class KasBank extends CActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'           => 'ID',
-            'nama'         => 'Nama',
-            'kode_akun_id' => 'Kode Akun',
-            'created_at'   => 'Created At',
-            'updated_at'   => 'Updated At',
-            'updated_by'   => 'Updated By',
+            'id'             => 'ID',
+            'pengeluaran_id' => 'Pengeluaran',
+            'kas_bank_id'    => 'Kas Bank',
+            'keterangan'     => 'Keterangan',
+            'jumlah'         => 'Jumlah',
+            'updated_at'     => 'Updated At',
+            'updated_by'     => 'Updated By',
+            'created_at'     => 'Created At',
         ];
     }
 
@@ -91,11 +98,13 @@ class KasBank extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id, true);
-        $criteria->compare('nama', $this->nama, true);
-        $criteria->compare('kode_akun_id', $this->kode_akun_id, true);
-        $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('pengeluaran_id', $this->pengeluaran_id, true);
+        $criteria->compare('kas_bank_id', $this->kas_bank_id, true);
+        $criteria->compare('keterangan', $this->keterangan, true);
+        $criteria->compare('jumlah', $this->jumlah, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
+        $criteria->compare('created_at', $this->created_at, true);
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
@@ -106,7 +115,7 @@ class KasBank extends CActiveRecord
      * Returns the static model of the specified AR class.
      * Please note that you should have this exact method in all your CActiveRecord descendants!
      * @param string $className active record class name.
-     * @return KasBank the static model class
+     * @return PengeluaranKasBank the static model class
      */
     public static function model($className = __CLASS__)
     {
@@ -119,17 +128,9 @@ class KasBank extends CActiveRecord
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
-    }
-
-    public function beforeValidate()
-    {
-        if (empty($this->kode_akun_id)) {
-            $this->kode_akun_id = null;
-        }
-        return parent::beforeValidate();
     }
 
 }

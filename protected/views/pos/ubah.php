@@ -70,26 +70,6 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         0
     </div>
     <div class="row collapse">
-        <?php /* Company account */ ?>
-        <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
-        </div>
-        <div class="small-6 large-7 columns">
-  <!--         <select accesskey="a">
-              <option value="1">Cash</option>
-           </select>-->
-            <?php
-            echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), array(
-                'accesskey' => 'a',
-                'id' => 'account'
-            ));
-            ?>
-        </div>
-        <div class="small-3 large-3 columns">
-            <span class="postfix">[A]</span>
-        </div>
-    </div>
-    <div class="row collapse">
         <?php /* Jenis Pembayaran */ ?>
         <div class="small-3 large-2 columns">
             <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
@@ -120,6 +100,38 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         <?php
     }
     ?>
+    <!--<div class="row">-->
+        <!--<a class="tombol-tambah-kb"><i class="fa fa-2x fa-plus"></i></a>-->
+        <!--<span class="label right" id="tombol-tambah-kb" accesskey="t"><i class="fa fa-plus"></i></span>-->
+    <!--</div>-->
+    <div id="uang-dibayar-master">
+        <div class="row collapse input-uang-dibayar">
+            <?php /* Company account */ ?>
+            <div class="small-3 large-2 columns">
+                <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
+            </div>
+            <div class="small-4 large-5 columns">
+      <!--         <select accesskey="a">
+                  <option value="1">Cash</option>
+               </select>-->
+                <?php
+                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
+                    'accesskey' => 'a',
+                    'class'        => 'account'
+                ]);
+                ?>
+            </div>
+            <!--        <div class="small-3 large-2 columns">
+                        <span class="postfix">[A]</span>
+                    </div>-->
+            <div class="small-5 large-5 columns">
+                <input type="text" class="uang-dibayar" name="kasbank[]"placeholder="[U]ang Dibayar" accesskey="u"/>
+            </div>
+        </div>
+    </div>
+    <div id="uang-dibayar-clone">
+    </div>
+    <?php /*
     <div class="row collapse">
         <div class="small-3 large-2 columns">
             <span class="prefix huruf">IDR</span>
@@ -128,6 +140,8 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
         </div>
     </div>
+     * 
+     */?>
     <?php
     if ($showInfaq) {
         ?>
@@ -149,33 +163,74 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 <?php
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwithdelay.js', CClientScript::POS_HEAD);
 ?>
 <script>
-    function tampilkanKembalian() {
+    function tampilkanKembalian(input) {
         //console.log("this:" + $(this).val() + "; total:" + $("#total-belanja-h").text());
         $("#kembali").html("0");
+        console.log("tampilkanKembalian dieksekusi");
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
         // console.log("Total: "+total);
         // console.log("diskonNota: "+diskonNota);
         // console.log("infaq: "+infaq);
-        if ($.isNumeric($("#uang-dibayar").val())){
-            var bayar = parseInt($("#uang-dibayar").val(), 10);
+        var inputUangDibayar =  $("input.uang-dibayar");//$('input[name^=kasbank]');
+        var uangDibayar = 0;
+        $.each(inputUangDibayar, function(index, el){
+            uangDibayar += parseInt($(el).val(), 10);
+        });
+        console.log(uangDibayar);
+        ///$(input).addClass("Sedang di sini");
+        if ($.isNumeric(uangDibayar)){
+            var bayar = uangDibayar;
             // console.log("Bayar: "+ bayar);
+            var dataKirim = {
+                total: total,
+                bayar: bayar,
+                diskonNota: diskonNota,
+                infaq: infaq,
+            };
+            $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
             if (bayar >=total + infaq - diskonNota){
-                var dataKirim = {
-                    total: total,
-                    bayar: bayar,
-                    diskonNota: diskonNota,
-                    infaq: infaq,
-                };
-                $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
                 $("#kembali").removeClass("negatif");
             } else {
                 $("#kembali").addClass("negatif");
             }
         }
+    }
+    
+    function sesuaikanInputUangDibayar(){    
+        var total = parseFloat($("#total-belanja-h").text());
+        var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var infaq = parseInt($("#infaq").val(), 10) || 0;
+        var inputUangDibayar =  $("input.uang-dibayar");
+        var uangDibayar = 0;
+        var cukup = false;
+        console.log("sesuaikanInput.. dieksekusi!");
+        $.each(inputUangDibayar, function(index, el){
+            var curValue = parseInt($(el).val(),10);
+            var bayar = uangDibayar + curValue;
+            var total1 = total + infaq - diskonNota;
+            console.log("bayar= "+ bayar+", total= "+ total1);
+            if (cukup == false){
+                uangDibayar += parseInt($(el).val(), 10);
+                console.log("uangDibayar= " + uangDibayar);
+            } else {
+                $(el).parent().parent().remove();
+            }
+            if (bayar >= total + infaq - diskonNota || $(el).val() == 0){
+                cukup = true;
+            } 
+            console.log("cukup= "+ cukup);
+        });
+        if (cukup == false){            
+            $("#uang-dibayar-master > .input-uang-dibayar" ).clone(true).appendTo( "#uang-dibayar-clone");
+            $("#uang-dibayar-clone").find(".uang-dibayar").last().val("0");
+        }
+        tampilkanKembalian();
     }
 
     function kirimBarcode() {
@@ -325,12 +380,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
             }
         }
     }
+    
+    $(".uang-dibayar").bindWithDelay("keyup", function() {
+        sesuaikanInputUangDibayar();
+    }, 1000);
 
-    $("#uang-dibayar").keyup(function () {
-        tampilkanKembalian();
-    });
-
-    $("#uang-dibayar").keydown(function (e) {
+    $(".uang-dibayar").keydown(function (e) {
         if (e.keyCode === 13) {
             $("#tombol-simpan").click();
         }
@@ -360,12 +415,18 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 
     $("#tombol-simpan").click(function () {
         $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
-
+        var inputUangDibayar =  $("input.uang-dibayar");
+        var bayar = new Object;
+        $.each(inputUangDibayar, function(index, el){
+            //bayar.push(['akun' : $(el).parent().parent().find(".account").val(), 'jumlah' : $(el).val()]);
+            bayar[$(el).parent().parent().find(".account").val()]=$(el).val();
+        })
         dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
         dataKirim = {
             'pos[account]': $("#account").val(),
             'pos[jenistr]': $("#jenisbayar").val(),
             'pos[uang]': $("#uang-dibayar").val(),
+            'pos[bayar]': bayar,
             'pos[infaq]': $("#infaq").val(),
             'pos[diskon-nota]': $("#diskon-nota").val(),
         };
