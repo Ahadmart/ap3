@@ -17,7 +17,9 @@
  */
 class KasBank extends CActiveRecord
 {
+
     const KAS_ID = 1; // Sementara di sini, nanti pindahkan ke config!
+
     /**
      * @return string the associated database table name
      */
@@ -130,6 +132,15 @@ class KasBank extends CActiveRecord
             $this->kode_akun_id = null;
         }
         return parent::beforeValidate();
+    }
+
+    public function scopes()
+    {
+        return [
+            'kecualiKas' => [
+                'condition' => 'id != ' . self::KAS_ID
+            ]
+        ];
     }
 
 }
