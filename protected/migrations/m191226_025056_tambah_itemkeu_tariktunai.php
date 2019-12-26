@@ -10,8 +10,8 @@ class m191226_025056_tambah_itemkeu_tariktunai extends CDbMigration
         $data = [
                 'id'         => 12,
                 'nama'       => 'Tarik Tunai via POS',
-                'parent_id'  => 9,
-                'jenis'      => 1,
+                'parent_id'  => 8,
+                'jenis'      => 0,
                 'updated_at' => $now,
                 'updated_by' => 1,
                 'created_at' => $now,            
