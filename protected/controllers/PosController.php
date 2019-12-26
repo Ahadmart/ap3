@@ -109,18 +109,21 @@ class PosController extends Controller
         
         $configShowDiskonNota = Config::model()->find("nama='pos.showdiskonpernota'");
         $configShowInfaq      = Config::model()->find("nama='pos.showinfak'");
+        $configShowTarikTunai = Config::model()->find("nama='pos.showtariktunai'");
 
         $showDiskonPerNota = is_null($configShowDiskonNota) ? 0 : $configShowDiskonNota->nilai;
         $showInfaq         = is_null($configShowInfaq) ? 0 : $configShowInfaq->nilai;
+        $showTarikTunai    = is_null($configShowTarikTunai) ? 0 : $configShowTarikTunai->nilai;
 
         $this->render('ubah',
                 [
-            'model'             => $model,
-            'penjualanDetail'   => $penjualanDetail,
-            'barang'            => $barang,
-            'tipeCari'          => $configCariBarang->nilai,
-            'showDiskonPerNota' => $showDiskonPerNota,
-            'showInfaq'         => $showInfaq,
+                    'model'             => $model,
+                    'penjualanDetail'   => $penjualanDetail,
+                    'barang'            => $barang,
+                    'tipeCari'          => $configCariBarang->nilai,
+                    'showDiskonPerNota' => $showDiskonPerNota,
+                    'showInfaq'         => $showInfaq,
+                    'showTarikTunai'    => $showTarikTunai,
         ]);
     }
 

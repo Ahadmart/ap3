@@ -100,6 +100,29 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         <?php
     }
     ?>
+    <?php
+    if ($showTarikTunai) {
+        ?>
+        <div class="row collapse input-tarik-tunai">
+            <?php /* Company account */ ?>
+            <div class="small-3 large-2 columns">
+                <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
+            </div>
+            <div class="small-4 large-5 columns">
+                <?php
+                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
+                    'accesskey' => 'a',
+                    'class'        => 'account'
+                ]);
+                ?>
+            </div>
+            <div class="small-5 large-5 columns">
+                <input type="text" class="tarik-tunai" name="tarik-tunai"placeholder="Tarik Tunai"/>
+            </div>
+        </div>
+        <?php
+    }
+    ?>
     <!--<div class="row">-->
         <!--<a class="tombol-tambah-kb"><i class="fa fa-2x fa-plus"></i></a>-->
         <!--<span class="label right" id="tombol-tambah-kb" accesskey="t"><i class="fa fa-plus"></i></span>-->
