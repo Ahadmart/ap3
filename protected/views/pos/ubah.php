@@ -91,8 +91,14 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         ?>
         <div class="row collapse">
             <div class="small-3 large-2 columns">
-                <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
-            </div>
+                <!--<span class="prefix"><i class="fa fa-2x fa-chevron-down"></i></span>-->
+                    <span class="prefix">
+                        <span class="fa-stack fa-lg">
+                            <i class="fa fa-tag fa-stack-2x"></i>
+                            <i class="fa fa-percent fa-inverse fa-stack-1x" style="transform: rotate(-45deg)"></i>
+                        </span>
+                    </span>
+                </div>
             <div class="small-9 large-10 columns">
                 <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r"/>
             </div>
@@ -106,18 +112,18 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         <div class="row collapse input-tarik-tunai">
             <?php /* Company account */ ?>
             <div class="small-3 large-2 columns">
-                <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
+                <span class="prefix"><i class="fa fa-2x fa-exchange"></i></span>
             </div>
             <div class="small-4 large-5 columns">
                 <?php
-                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
+                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
                     'accesskey' => 'a',
                     'class'        => 'account'
                 ]);
                 ?>
             </div>
             <div class="small-5 large-5 columns">
-                <input type="text" class="tarik-tunai" name="tarik-tunai"placeholder="Tarik Tunai"/>
+                <input type="text" id="tarik-tunai" class="tarik-tunai" name="tarik-tunai" placeholder="Tarik Tunai"/>
             </div>
         </div>
         <?php
@@ -131,7 +137,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         <div class="row collapse input-uang-dibayar">
             <?php /* Company account */ ?>
             <div class="small-3 large-2 columns">
-                <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
+                <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
             </div>
             <div class="small-4 large-5 columns">
       <!--         <select accesskey="a">
@@ -170,7 +176,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         ?>
         <div class="row collapse">
             <div class="small-3 large-2 columns">
-                <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
+                <span class="prefix"><i class="fa fa-2x fa-chevron-up"></i></span>
             </div>
             <div class="small-9 large-10 columns">
                 <input type="text" id="infaq" placeholder="In[f]ak/Sedekah" accesskey="f"/>
@@ -197,6 +203,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
+        var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
         // console.log("Total: "+total);
         // console.log("diskonNota: "+diskonNota);
         // console.log("infaq: "+infaq);
@@ -215,9 +222,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                 bayar: bayar,
                 diskonNota: diskonNota,
                 infaq: infaq,
+                tarikTunai: tarikTunai,
             };
             $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
-            if (bayar >=total + infaq - diskonNota){
+            if (bayar >=total + infaq - diskonNota + tarikTunai){
                 $("#kembali").removeClass("negatif");
             } else {
                 $("#kembali").addClass("negatif");
@@ -380,11 +388,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
-        return total - diskonNota + infaq;
+        var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
+        return total - diskonNota + infaq + tarikTunai;
     }
     
     function showSubTotal(){
-        if ($("#diskon-nota").val() > 0 || $("#infaq").val() > 0) {
+        if ($("#diskon-nota").val() > 0 || $("#infaq").val() > 0 || $("#tarik-tunai").val() > 0) {
             console.log("Besar dari 0");
             $("#subtotal-belanja").slideDown(200, function(){ 
                 $(this).fadeTo(200, 1.00, function() {
@@ -435,6 +444,17 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             $("#tombol-simpan").click();
         }
     });
+    
+    $("#tarik-tunai").keyup(function () {
+        showSubTotal();
+        tampilkanKembalian();
+    });
+
+    $("#tarik-tunai").keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-simpan").click();
+        }
+    });
 
     $("#tombol-simpan").click(function () {
         $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
@@ -452,6 +472,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             'pos[bayar]': bayar,
             'pos[infaq]': $("#infaq").val(),
             'pos[diskon-nota]': $("#diskon-nota").val(),
+            'pos[tarik-tunai]': $("#tarik-tunai").val(),
         };
         console.log(dataUrl);
         printWindow = window.open('about:blank', '', 'left=20,top=20,width=400,height=600,toolbar=0,resizable=1');
