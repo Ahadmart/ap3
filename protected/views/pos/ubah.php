@@ -210,7 +210,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         var inputUangDibayar =  $("input.uang-dibayar");//$('input[name^=kasbank]');
         var uangDibayar = 0;
         $.each(inputUangDibayar, function(index, el){
-            uangDibayar += parseInt($(el).val(), 10);
+            uangDibayar += parseInt($(el).val(), 10) || 0;
         });
         console.log(uangDibayar);
         ///$(input).addClass("Sedang di sini");
@@ -238,21 +238,22 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
         var inputUangDibayar =  $("input.uang-dibayar");
+        var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
         var uangDibayar = 0;
         var cukup = false;
         console.log("sesuaikanInput.. dieksekusi!");
         $.each(inputUangDibayar, function(index, el){
             var curValue = parseInt($(el).val(),10);
             var bayar = uangDibayar + curValue;
-            var total1 = total + infaq - diskonNota;
+            var total1 = total + infaq - diskonNota + tarikTunai;
             console.log("bayar= "+ bayar+", total= "+ total1);
             if (cukup == false){
-                uangDibayar += parseInt($(el).val(), 10);
+                uangDibayar += parseInt($(el).val(), 10) || 0;
                 console.log("uangDibayar= " + uangDibayar);
             } else {
                 $(el).parent().parent().remove();
             }
-            if (bayar >= total + infaq - diskonNota || $(el).val() == 0){
+            if (bayar >= total + infaq - diskonNota + tarikTunai || $(el).val() == 0){
                 cukup = true;
             } 
             console.log("cukup= "+ cukup);
