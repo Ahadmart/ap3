@@ -480,6 +480,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             });
             return false;
         }
+        if (!(totalYangHarusDibayar() > 0)) {
+            $.gritter.add({
+                title: 'Error! ',
+                text: "Belum ada penjualan!",
+                time: 5000,
+            });
+            return false;
+        }
 
         var inputUangDibayar = $("input.uang-dibayar");
         var bayar = new Object;
@@ -507,7 +515,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             return false;
         }
 <?php /* Jika akun bank tarik tunai tidak ditemukan, tampilkan error, kemudian exit */ ?>
-        if (akunTarikTunaiAda == false) {
+        if (akunTarikTunaiAda == false && $("#tarik-tunai").val() > 0) {
             $.gritter.add({
                 title: 'Error! ',
                 text: "Akun Bank Tarik Tunai tidak ditemukan pada pembayaran!",
