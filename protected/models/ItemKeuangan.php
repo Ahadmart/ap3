@@ -35,6 +35,11 @@ class ItemKeuangan extends CActiveRecord
 
     /* Item Keuangan ID untuk mencatat DISKON PER NOTA transaksi POS */
     const POS_DISKON_PER_NOTA = 11;
+    
+    /* Item Keuangan ID untuk mencatat Pengeluaran Kas pada transaksi Tarik Tunai di POS */
+    const POS_TARIK_TUNAI_PENGELUARAN = 12;
+    /* Item Keuangan ID untuk mencatat Penerimaan Bank pada transaksi Tarik Tunai di POS */
+    const POS_TARIK_TUNAI_PENERIMAAN = 13;
 
     public $jenisTrx;
     public $namaParent;
