@@ -92,7 +92,7 @@ class KasirController extends Controller
         
         $penerimaanKas = $model->totalPenerimaanKas();
 
-        $model->saldo_akhir_seharusnya = $model->saldo_awal + $penerimaanKas + $model->total_infaq - $model->total_retur - $model->total_diskon_pernota - $model->total_tarik_tunai;
+        $model->saldo_akhir_seharusnya = $model->saldo_awal + $penerimaanKas - $model->total_tarik_tunai;
 
         if (isset($_POST['Kasir'])) {
             $config        = Config::model()->find('nama=:nama', [':nama' => 'kasir.showautosummary']);
