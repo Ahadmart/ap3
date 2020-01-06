@@ -61,12 +61,22 @@
                     'visible' => $model->total_infaq != 0,
                 ],
                 [
-                    'name'    => 'total_penerimaan',
+                    'name'    => 'total_tarik_tunai',
+                    'value'   => number_format($model->total_tarik_tunai, 0, ',', '.'),
+                    'visible' => $model->total_tarik_tunai != 0,
+                ],
+                [
+                    'label'   => 'Total Penerimaan',
                     'value'   => number_format($model->total_penerimaan, 0, ',', '.'),
                     'visible' => $model->total_penerimaan != $model->total_penjualan,
                 ],
                 [
-                    'name'  => 'saldo_akhir_seharusnya',
+                    'label'   => 'Total Penerimaan Kas',
+                    'value'   => number_format($penerimaanKas, 0, ',', '.'),
+                    //'visible' => $model->total_penerimaan != $model->total_penjualan,
+                ],
+                [
+                    'label' => 'Saldo Akhir (Kas) Seharusnya',
                     'value' => number_format($model->saldo_akhir_seharusnya, 0, ',', '.')
                 ],
             /*

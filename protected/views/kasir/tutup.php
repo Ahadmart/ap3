@@ -14,8 +14,9 @@ $this->boxHeader['normal'] = "Tutup Kasir: {$model->user->nama_lengkap}";
 
 $this->renderPartial('_form_tutup', array(
     'model' => $model,
+    'penerimaanKas' => $penerimaanKas,
 ));
-
+ 
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,

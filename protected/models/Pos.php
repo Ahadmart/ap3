@@ -92,9 +92,9 @@ class Pos extends Penjualan
             }
 
             //$tarikTunai = $posData['tarik-tunai'];
-            $tarikTunaiAkun = KasBank::model()->findByPk($posData['tarik-tunai-acc']);
 
             if (isset($posData['tarik-tunai']) && $posData['tarik-tunai'] > 0) {
+                $tarikTunaiAkun = KasBank::model()->findByPk($posData['tarik-tunai-acc']);
                 $penerimaanDetail                = new PenerimaanDetail;
                 $penerimaanDetail->penerimaan_id = $penerimaan->id;
                 $penerimaanDetail->item_id       = ItemKeuangan::POS_TARIK_TUNAI_PENERIMAAN;
