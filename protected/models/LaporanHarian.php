@@ -1315,7 +1315,7 @@ class LaporanHarian extends CActiveRecord
 
     public function itemPengeluaran()
     {
-        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA];
+        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA, ItemKeuangan::POS_TARIK_TUNAI_PENGELUARAN];
         $condForItemKhusus = 'item.id in (';
         $f                 = true;
         foreach ($itemKhusus as $value) {
@@ -1408,7 +1408,7 @@ class LaporanHarian extends CActiveRecord
 
     public function itemPenerimaan()
     {
-        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA];
+        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA, ItemKeuangan::POS_TARIK_TUNAI_PENGELUARAN];
         $condForItemKhusus = 'item.id in (';
         $f                 = true;
         foreach ($itemKhusus as $value) {
