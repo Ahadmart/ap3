@@ -325,27 +325,38 @@ class Kasir extends CActiveRecord
 
         $uangDibayarPerAkun = $this->uangDibayarPerAkun();
 //        if (count($uangDibayarPerAkun) > 1) {
-            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
-            foreach ($uangDibayarPerAkun as $akun) {
-                if ($akun['kb'] == KasBank::KAS_ID) {
-                    // Jika total_penerimaan null berarti dibuat sebelum update ini, maka hitung ulang
-                    $totalUangDibayar = is_null($this->total_uang_dibayar) ? $this->totalUangDibayar()['total'] : $this->total_uang_dibayar;
-                    $totalPenerimaan  = is_null($this->total_penerimaan) ? $this->penerimaanNet()['total'] : $this->total_penerimaan;
-                    $kas              = $akun['total'] - ($totalUangDibayar - $totalPenerimaan);
+        $text               .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+        foreach ($uangDibayarPerAkun as $akun) {
+            if ($akun['kb'] == KasBank::KAS_ID) {
+                // Jika total_penerimaan null berarti dibuat sebelum update ini, maka hitung ulang
+                $totalUangDibayar = is_null($this->total_uang_dibayar) ? $this->totalUangDibayar()['total'] : $this->total_uang_dibayar;
+                $totalPenerimaan  = is_null($this->total_penerimaan) ? $this->penerimaanNet()['total'] : $this->total_penerimaan;
+                $kas              = $akun['total'] - ($totalUangDibayar - $totalPenerimaan);
 //                    $kas             = $akun['total'];
-                    $jumlahAkun       = is_null($kas) ? '0' : number_format($kas, 0, ',', '.');
-                    $text             .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
-                } else {
-                    $jumlahAkun = is_null($akun['total']) ? '0' : number_format($akun['total'], 0, ',', '.');
-                    $text       .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
-                }
+                $jumlahAkun       = is_null($kas) ? '0' : number_format($kas, 0, ',', '.');
+                $text             .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+            } else {
+                $jumlahAkun = is_null($akun['total']) ? '0' : number_format($akun['total'], 0, ',', '.');
+                $text       .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
             }
-            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+        }
+        $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
 //        }
 
         if ($totalTarikTunai > 0) {
             $text .= str_pad('Total Tarik Tunai', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalTarikTunai, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
+
+        $tarikTunaiPerAkun = $this->tarikTunaiPerAkun();
+        if (!empty($tarikTunaiPerAkun)) {
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+            foreach ($tarikTunaiPerAkun as $trkTunai) {
+                $jumlahAkun = number_format($trkTunai['jumlah'], 0, ',', '.');
+                $text       .= str_pad($trkTunai['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+            }
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+        }
+
         if ($totalRetur > 0) {
             $text .= str_pad('Total Retur Jual', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalRetur, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
@@ -639,18 +650,56 @@ class Kasir extends CActiveRecord
     public function totalPenerimaanKas()
     {
         $uangDibayarPerAkun = $this->uangDibayarPerAkun();
-        $jumlahAkun = 0;
+        $jumlahAkun         = 0;
         // print_r($uangDibayarPerAkun);
-        foreach ($uangDibayarPerAkun as $akun) {            
-                if ($akun['kb'] == KasBank::KAS_ID) {
-                    // Jika total_penerimaan null berarti dibuat sebelum update ini, maka hitung ulang
-                    $totalUangDibayar = is_null($this->total_uang_dibayar) ? $this->totalUangDibayar()['total'] : $this->total_uang_dibayar;
-                    $totalPenerimaan  = is_null($this->total_penerimaan) ? $this->penerimaanNet()['total'] : $this->total_penerimaan;
-                    $kas              = $akun['total'] - ($totalUangDibayar - $totalPenerimaan);
-                    $jumlahAkun       = is_null($kas) ? '0' : $kas;
-                }
+        foreach ($uangDibayarPerAkun as $akun) {
+            if ($akun['kb'] == KasBank::KAS_ID) {
+                // Jika total_penerimaan null berarti dibuat sebelum update ini, maka hitung ulang
+                $totalUangDibayar = is_null($this->total_uang_dibayar) ? $this->totalUangDibayar()['total'] : $this->total_uang_dibayar;
+                $totalPenerimaan  = is_null($this->total_penerimaan) ? $this->penerimaanNet()['total'] : $this->total_penerimaan;
+                $kas              = $akun['total'] - ($totalUangDibayar - $totalPenerimaan);
+                $jumlahAkun       = is_null($kas) ? '0' : $kas;
+            }
         }
         return $jumlahAkun;
+    }
+
+    public function tarikTunaiPerAkun()
+    {
+
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND t.updated_at <= :waktuTutup";
+        }
+        $sql = "
+        SELECT 
+            t_rekap_akun.kas_bank_id, t_rekap_akun.jumlah, kas_bank.nama
+        FROM
+            (SELECT 
+                kas_bank_id, SUM(jumlah) jumlah
+            FROM
+                penjualan_tarik_tunai t
+            WHERE
+                t.updated_by = :userId
+                    AND t.updated_at >= :waktuBuka
+                    {$kondisiTutup}
+            GROUP BY kas_bank_id) t_rekap_akun
+                JOIN
+            kas_bank ON kas_bank.id = t_rekap_akun.kas_bank_id
+        ORDER BY kas_bank.id
+        ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':waktuBuka' => $this->waktu_buka,
+            ':userId'    => $this->user_id,
+        ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
+
+        return $command->queryAll();
     }
 
 }
