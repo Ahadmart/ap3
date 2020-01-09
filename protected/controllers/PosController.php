@@ -100,6 +100,7 @@ class PosController extends Controller
         }
 
         $configCariBarang = Config::model()->find("nama='pos.caribarangmode'");
+        $configTarikTunaiMinBelanja = Config::model()->find("nama='pos.tariktunaiminlimit'");
         
         $posModeAdmin = Yii::app()->user->getState('posModeAdminAlwaysON');
         if ($posModeAdmin) {
@@ -117,13 +118,14 @@ class PosController extends Controller
 
         $this->render('ubah',
                 [
-                    'model'             => $model,
-                    'penjualanDetail'   => $penjualanDetail,
-                    'barang'            => $barang,
-                    'tipeCari'          => $configCariBarang->nilai,
-                    'showDiskonPerNota' => $showDiskonPerNota,
-                    'showInfaq'         => $showInfaq,
-                    'showTarikTunai'    => $showTarikTunai,
+                    'model'                => $model,
+                    'penjualanDetail'      => $penjualanDetail,
+                    'barang'               => $barang,
+                    'tipeCari'             => $configCariBarang->nilai,
+                    'showDiskonPerNota'    => $showDiskonPerNota,
+                    'showInfaq'            => $showInfaq,
+                    'showTarikTunai'       => $showTarikTunai,
+                    'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
         ]);
     }
 

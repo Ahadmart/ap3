@@ -109,7 +109,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     <?php
     if ($showTarikTunai) {
         ?>
-        <div class="row collapse input-tarik-tunai">
+        <div class="row collapse input-tarik-tunai" style="display: none">
             <?php /* Company account */ ?>
             <div class="small-3 large-2 columns">
                 <span class="prefix"><i class="fa fa-2x fa-exchange"></i></span>
@@ -392,7 +392,18 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                     $("#subtotal-belanja > .angka").text(data.totalF);
                     showSubTotal();
                     tampilkanKembalian();
-                    console.log(data.totalF);
+                    // console.log(data.totalF);
+    <?php
+    if ($showTarikTunai) {
+        ?>
+                   if (data.total >= <?= $tarikTunaiBelanjaMin ?>){
+                       $(".input-tarik-tunai").show(500);
+                   } else {
+                       $(".input-tarik-tunai").hide(500);
+                   }
+        <?php
+    }
+    ?>
                 }
             }
         });
