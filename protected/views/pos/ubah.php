@@ -397,10 +397,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     if ($showTarikTunai) {
         ?>
                    if (data.total >= <?= $tarikTunaiBelanjaMin ?>){
-                       $(".input-tarik-tunai").show(500);
-                   } else {
-                       $(".input-tarik-tunai").hide(500);
-                   }
+                           $(".input-tarik-tunai").show(500);
+                       } else {
+                           $(".input-tarik-tunai").hide(500);
+                           $("#tarik-tunai").val("");
+                           showSubTotal();
+                            tampilkanKembalian();
+                       }
         <?php
     }
     ?>
