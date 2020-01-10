@@ -279,15 +279,10 @@ class Pengeluaran extends CActiveRecord
         $this->scenario = 'proses';
         $transaction    = $this->dbConnection->beginTransaction();
         try {
-            if ($this->save()) {
-
-                if ($this->prosesP()) {
-                    $transaction->commit();
-                    return true;
-                }
-            } else {
-                throw new Exception("Gagal Proses");
-            }
+            if ($this->prosesP()) {
+                $transaction->commit();
+                return true;
+            } 
         } catch (Exception $e) {
             $transaction->rollback();
             throw $e;
