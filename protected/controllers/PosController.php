@@ -100,6 +100,7 @@ class PosController extends Controller
         }
 
         $configCariBarang = Config::model()->find("nama='pos.caribarangmode'");
+        $configTarikTunaiMinBelanja = Config::model()->find("nama='pos.tariktunaiminlimit'");
         
         $posModeAdmin = Yii::app()->user->getState('posModeAdminAlwaysON');
         if ($posModeAdmin) {
@@ -109,18 +110,22 @@ class PosController extends Controller
         
         $configShowDiskonNota = Config::model()->find("nama='pos.showdiskonpernota'");
         $configShowInfaq      = Config::model()->find("nama='pos.showinfak'");
+        $configShowTarikTunai = Config::model()->find("nama='pos.showtariktunai'");
 
         $showDiskonPerNota = is_null($configShowDiskonNota) ? 0 : $configShowDiskonNota->nilai;
         $showInfaq         = is_null($configShowInfaq) ? 0 : $configShowInfaq->nilai;
+        $showTarikTunai    = is_null($configShowTarikTunai) ? 0 : $configShowTarikTunai->nilai;
 
         $this->render('ubah',
                 [
-            'model'             => $model,
-            'penjualanDetail'   => $penjualanDetail,
-            'barang'            => $barang,
-            'tipeCari'          => $configCariBarang->nilai,
-            'showDiskonPerNota' => $showDiskonPerNota,
-            'showInfaq'         => $showInfaq,
+                    'model'                => $model,
+                    'penjualanDetail'      => $penjualanDetail,
+                    'barang'               => $barang,
+                    'tipeCari'             => $configCariBarang->nilai,
+                    'showDiskonPerNota'    => $showDiskonPerNota,
+                    'showInfaq'            => $showInfaq,
+                    'showTarikTunai'       => $showTarikTunai,
+                    'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
         ]);
     }
 
@@ -308,7 +313,7 @@ class PosController extends Controller
           echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
           number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
          */
-        echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
+        echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'] - $_POST['tarikTunai'], 0, ',', '.');
     }
 
     public function renderQtyLinkEditable($data, $row)

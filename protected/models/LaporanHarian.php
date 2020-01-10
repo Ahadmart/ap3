@@ -1315,7 +1315,7 @@ class LaporanHarian extends CActiveRecord
 
     public function itemPengeluaran()
     {
-        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA];
+        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA, ItemKeuangan::POS_TARIK_TUNAI_PENGELUARAN];
         $condForItemKhusus = 'item.id in (';
         $f                 = true;
         foreach ($itemKhusus as $value) {
@@ -1408,7 +1408,7 @@ class LaporanHarian extends CActiveRecord
 
     public function itemPenerimaan()
     {
-        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA];
+        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA, ItemKeuangan::POS_TARIK_TUNAI_PENGELUARAN];
         $condForItemKhusus = 'item.id in (';
         $f                 = true;
         foreach ($itemKhusus as $value) {
@@ -1987,6 +1987,116 @@ class LaporanHarian extends CActiveRecord
 
         $bayarReturJual = $command->queryRow();
         return $bayarReturJual['total'];
+    }
+    
+    /**
+     * Tarik tunai yang terjadi pada tanggal tsb
+     * @return array nama akun, nomor penjualan, nama, jumlah dari tarik tunai
+     */
+    public function tarikTunai()
+    {
+        $sql = "
+        SELECT 
+            kas_bank.nama nama_akun,
+            penjualan.nomor,
+            profil.nama,
+            t.jumlah
+        FROM
+            penjualan_tarik_tunai t
+                JOIN
+            penjualan ON penjualan.id = t.penjualan_id
+                JOIN
+            profil ON profil.id = penjualan.profil_id
+                JOIN
+            kas_bank ON kas_bank.id = t.kas_bank_id
+        WHERE
+            t.updated_at >= :tanggalAwal
+                AND t.updated_at < :tanggalAkhir
+        ORDER BY kas_bank.nama , penjualan.nomor            
+            ";
+
+        if ($this->groupByProfil['inv']) {
+            $sql = "
+                    select nama_akun, nama, sum(jumlah) jumlah
+                    from ({$sql}) t
+                    group by nama_akun, nama
+                    order by nama_akun, nama
+            ";
+        }
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':tanggalAwal'  => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir
+        ]);
+        
+        return $command->queryAll();
+    }
+    
+    public function totalTarikTunaiPerAkun()
+    {
+
+        $sql = "
+        SELECT 
+            kas_bank.nama nama_akun,
+            penjualan.nomor,
+            profil.nama,
+            t.jumlah
+        FROM
+            penjualan_tarik_tunai t
+                JOIN
+            penjualan ON penjualan.id = t.penjualan_id
+                JOIN
+            profil ON profil.id = penjualan.profil_id
+                JOIN
+            kas_bank ON kas_bank.id = t.kas_bank_id
+        WHERE
+            t.updated_at >= :tanggalAwal
+                AND t.updated_at < :tanggalAkhir
+        ORDER BY kas_bank.nama , penjualan.nomor            
+            ";
+
+        $sql = "
+        SELECT 
+            nama_akun, SUM(jumlah) jumlah
+        FROM
+            ({$sql}) t
+        GROUP BY nama_akun
+        ORDER BY nama_akun
+            ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':tanggalAwal'  => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir
+        ]);
+
+        return $command->queryAll();
+    }
+
+    public function totalTarikTunai()
+    {
+        $sql = "
+        SELECT 
+            sum(t.jumlah) total
+        FROM
+            penjualan_tarik_tunai t
+        WHERE
+            t.updated_at >= :tanggalAwal
+                AND t.updated_at < :tanggalAkhir           
+            ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':tanggalAwal'  => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir
+        ]);
+        
+        return $command->queryRow()['total'];
+        
     }
 
 }

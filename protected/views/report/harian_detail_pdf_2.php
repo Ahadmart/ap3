@@ -236,7 +236,6 @@ function namaBulan($i)
                     endforeach;
                 endif;
             ?>
-
             <?php
             if ($report['totalPenjualanBayar']) {
                 ?>
@@ -492,6 +491,47 @@ function namaBulan($i)
                 ?>
                 <?php
             endif;
+            ?>
+            <?php
+            if ($report['totalTarikTunai']) {
+                ?>
+                <tr>
+                    <td class="trx-header tebal">TARIK TUNAI</td>
+                    <td class="kanan tebal trx-header"><?php echo number_format($report['totalTarikTunai'], 0, ',', '.'); ?></td>
+                </tr>
+                <?php
+            }
+            ?>
+            <?php
+                if (!empty($report['tarikTunai'])):
+                    $headerAkun   = '';
+                    $totalPerAkun = [];
+                    foreach ($report['totalTarikTunaiPerAkun'] as $perAkun) {
+                        $totalPerAkun[$perAkun['nama_akun']] = $perAkun['jumlah'];
+                    }
+                    foreach ($report['tarikTunai'] as $tarikTunai):
+                        ?>
+                        <?php
+                        if ($headerAkun != $tarikTunai['nama_akun']) {
+                            ?>
+                            <tr>
+                                <td class="level-1 tebal"><?= "{$tarikTunai['nama_akun']}"; ?></td>
+                                <td class="kanan tebal"><?= number_format($totalPerAkun[$tarikTunai['nama_akun']], 0, ',', '.') ?></td>
+                            </tr>
+                            <?php
+                            $headerAkun = $tarikTunai['nama_akun'];
+                        }
+                        ?>
+                        <tr>
+                            <?php
+                            $penjualanNomor   = isset($tarikTunai['nomor']) ? $tarikTunai['nomor'] : '';
+                            ?>
+                            <td class="level-2"><?php echo "{$penjualanNomor} {$tarikTunai['nama']}  "; ?></td>
+                            <td class="kanan"><?php echo number_format($tarikTunai['jumlah'], 0, ',', '.'); ?></td>
+                        </tr>
+                        <?php
+                    endforeach;
+                endif;
             ?>
         </table>
         <?php

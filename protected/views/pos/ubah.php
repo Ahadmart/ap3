@@ -4,11 +4,11 @@
 
 $this->breadcrumbs = array(
     'Penjualan' => array('index'),
-    $model->id => array('view', 'id' => $model->id),
+    $model->id  => array('view', 'id' => $model->id),
     'Ubah',
 );
 
-$this->boxHeader['small'] = 'Ubah';
+$this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 ?>
 
@@ -46,7 +46,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     <div id="transaksi">
         <?php
         $this->renderPartial('_detail', array(
-            'penjualan' => $model,
+            'penjualan'       => $model,
             'penjualanDetail' => $penjualanDetail
         ));
         ?>
@@ -78,7 +78,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <?php
             echo CHtml::dropDownList('jenisbayar', 1, CHtml::listData(JenisTransaksi::model()->findAll(), 'id', 'nama'), array(
                 'accesskey' => 'd',
-                'id' => 'jenisbayar'
+                'id'        => 'jenisbayar'
             ));
             ?>
         </div>
@@ -91,10 +91,39 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         ?>
         <div class="row collapse">
             <div class="small-3 large-2 columns">
-                <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
+                <!--<span class="prefix"><i class="fa fa-2x fa-chevron-down"></i></span>-->
+                <span class="prefix">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-tag fa-stack-2x"></i>
+                        <i class="fa fa-percent fa-inverse fa-stack-1x" style="transform: rotate(-45deg)"></i>
+                    </span>
+                </span>
             </div>
             <div class="small-9 large-10 columns">
                 <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r"/>
+            </div>
+        </div>
+        <?php
+    }
+    ?>
+    <?php
+    if ($showTarikTunai) {
+        ?>
+        <div class="row collapse input-tarik-tunai" style="display: none">
+            <?php /* Company account */ ?>
+            <div class="small-3 large-2 columns">
+                <span class="prefix"><i class="fa fa-2x fa-exchange"></i></span>
+            </div>
+            <div class="small-4 large-5 columns">
+                <?php
+                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
+                    'accesskey' => 'a',
+                    'class'     => 'account'
+                ]);
+                ?>
+            </div>
+            <div class="small-5 large-5 columns">
+                <input type="text" id="tarik-tunai" class="tarik-tunai" name="tarik-tunai" placeholder="Tarik Tunai"/>
             </div>
         </div>
         <?php
@@ -108,7 +137,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
         <div class="row collapse input-uang-dibayar">
             <?php /* Company account */ ?>
             <div class="small-3 large-2 columns">
-                <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
+                <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
             </div>
             <div class="small-4 large-5 columns">
       <!--         <select accesskey="a">
@@ -117,7 +146,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
                 <?php
                 echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
                     'accesskey' => 'a',
-                    'class'        => 'account'
+                    'class'     => 'account'
                 ]);
                 ?>
             </div>
@@ -132,22 +161,22 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     <div id="uang-dibayar-clone">
     </div>
     <?php /*
-    <div class="row collapse">
-        <div class="small-3 large-2 columns">
-            <span class="prefix huruf">IDR</span>
-        </div>
-        <div class="small-9 large-10 columns">
-            <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
-        </div>
-    </div>
+      <div class="row collapse">
+      <div class="small-3 large-2 columns">
+      <span class="prefix huruf">IDR</span>
+      </div>
+      <div class="small-9 large-10 columns">
+      <input type="text" id="uang-dibayar" placeholder="[U]ang Dibayar" accesskey="u"/>
+      </div>
+      </div>
      * 
-     */?>
+     */ ?>
     <?php
     if ($showInfaq) {
         ?>
         <div class="row collapse">
             <div class="small-3 large-2 columns">
-                <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
+                <span class="prefix"><i class="fa fa-2x fa-chevron-up"></i></span>
             </div>
             <div class="small-9 large-10 columns">
                 <input type="text" id="infaq" placeholder="In[f]ak/Sedekah" accesskey="f"/>
@@ -167,6 +196,23 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwithdelay.js', CClientScript::POS_HEAD);
 ?>
 <script>
+    function totalUangDibayar() {
+        var inputUangDibayar = $("input.uang-dibayar");//$('input[name^=kasbank]');
+        var uangDibayar = 0;
+        $.each(inputUangDibayar, function (index, el) {
+            uangDibayar += parseInt($(el).val(), 10) || 0;
+        });
+        return uangDibayar;
+    }
+
+    function totalYangHarusDibayar() {
+        var total = parseFloat($("#total-belanja-h").text());
+        var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var infaq = parseInt($("#infaq").val(), 10) || 0;
+        var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
+        return total + infaq - diskonNota + tarikTunai;
+    }
+
     function tampilkanKembalian(input) {
         //console.log("this:" + $(this).val() + "; total:" + $("#total-belanja-h").text());
         $("#kembali").html("0");
@@ -174,17 +220,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
+        var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
         // console.log("Total: "+total);
         // console.log("diskonNota: "+diskonNota);
         // console.log("infaq: "+infaq);
-        var inputUangDibayar =  $("input.uang-dibayar");//$('input[name^=kasbank]');
-        var uangDibayar = 0;
-        $.each(inputUangDibayar, function(index, el){
-            uangDibayar += parseInt($(el).val(), 10);
-        });
+        var uangDibayar = totalUangDibayar();
         console.log(uangDibayar);
         ///$(input).addClass("Sedang di sini");
-        if ($.isNumeric(uangDibayar)){
+        if ($.isNumeric(uangDibayar)) {
             var bayar = uangDibayar;
             // console.log("Bayar: "+ bayar);
             var dataKirim = {
@@ -192,42 +235,44 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                 bayar: bayar,
                 diskonNota: diskonNota,
                 infaq: infaq,
+                tarikTunai: tarikTunai,
             };
             $("#kembali").load('<?php echo $this->createUrl('kembalian'); ?>', dataKirim);
-            if (bayar >=total + infaq - diskonNota){
+            if (bayar >= totalYangHarusDibayar()) {
                 $("#kembali").removeClass("negatif");
             } else {
                 $("#kembali").addClass("negatif");
             }
         }
     }
-    
-    function sesuaikanInputUangDibayar(){    
+
+    function sesuaikanInputUangDibayar() {
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
-        var inputUangDibayar =  $("input.uang-dibayar");
+        var inputUangDibayar = $("input.uang-dibayar");
+        var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
         var uangDibayar = 0;
         var cukup = false;
         console.log("sesuaikanInput.. dieksekusi!");
-        $.each(inputUangDibayar, function(index, el){
-            var curValue = parseInt($(el).val(),10);
+        $.each(inputUangDibayar, function (index, el) {
+            var curValue = parseInt($(el).val(), 10);
             var bayar = uangDibayar + curValue;
-            var total1 = total + infaq - diskonNota;
-            console.log("bayar= "+ bayar+", total= "+ total1);
-            if (cukup == false){
-                uangDibayar += parseInt($(el).val(), 10);
+            var total1 = total + infaq - diskonNota + tarikTunai;
+            console.log("bayar= " + bayar + ", total= " + total1);
+            if (cukup == false) {
+                uangDibayar += parseInt($(el).val(), 10) || 0;
                 console.log("uangDibayar= " + uangDibayar);
             } else {
                 $(el).parent().parent().remove();
             }
-            if (bayar >= total + infaq - diskonNota || $(el).val() == 0){
+            if (bayar >= total + infaq - diskonNota + tarikTunai || $(el).val() == 0) {
                 cukup = true;
-            } 
-            console.log("cukup= "+ cukup);
+            }
+            console.log("cukup= " + cukup);
         });
-        if (cukup == false){            
-            $("#uang-dibayar-master > .input-uang-dibayar" ).clone(true).appendTo( "#uang-dibayar-clone");
+        if (cukup == false) {
+            $("#uang-dibayar-master > .input-uang-dibayar").clone(true).appendTo("#uang-dibayar-clone");
             $("#uang-dibayar-clone").find(".uang-dibayar").last().val("0");
         }
         tampilkanKembalian();
@@ -274,7 +319,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     $(function () {
         $("#scan").autocomplete("disable");
         $(document).on('click', "#tombol-tambah-barang", function () {
-                kirimBarcode();
+            kirimBarcode();
             return false;
         });
         $(document).on('click', "#tombol-cari-barang", function () {
@@ -345,43 +390,58 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                     $("#total-belanja-h").text(data.total);
                     $("#total-belanja").text(data.totalF);
                     $("#subtotal-belanja > .angka").text(data.totalF);
-                    showSubTotal(); 
+                    showSubTotal();
                     tampilkanKembalian();
-                    console.log(data.totalF);
+                    // console.log(data.totalF);
+    <?php
+    if ($showTarikTunai) {
+        ?>
+                   if (data.total >= <?= $tarikTunaiBelanjaMin ?>){
+                           $(".input-tarik-tunai").show(500);
+                       } else {
+                           $(".input-tarik-tunai").hide(500);
+                           $("#tarik-tunai").val("");
+                           showSubTotal();
+                            tampilkanKembalian();
+                       }
+        <?php
+    }
+    ?>
                 }
             }
         });
     }
-    
-    function hitungYangHarusDibayar(){
+
+    function hitungYangHarusDibayar() {
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
-        return total - diskonNota + infaq;
+        var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
+        return total - diskonNota + infaq + tarikTunai;
     }
-    
-    function showSubTotal(){
-        if ($("#diskon-nota").val() > 0 || $("#infaq").val() > 0) {
+
+    function showSubTotal() {
+        if ($("#diskon-nota").val() > 0 || $("#infaq").val() > 0 || $("#tarik-tunai").val() > 0) {
             console.log("Besar dari 0");
-            $("#subtotal-belanja").slideDown(200, function(){ 
-                $(this).fadeTo(200, 1.00, function() {
-                    var net = hitungYangHarusDibayar();            
+            $("#subtotal-belanja").slideDown(200, function () {
+                $(this).fadeTo(200, 1.00, function () {
+                    var net = hitungYangHarusDibayar();
                     $("#total-belanja").text(net.toLocaleString('id-ID'));
                 });
             });
         } else {
-            if ($("#subtotal-belanja").css("opacity") != 0){
-                $("#subtotal-belanja").fadeTo(200, 0.00, function(){ 
-                    $(this).slideUp(200, function() { 
-                        var net = hitungYangHarusDibayar();            
+            if ($("#subtotal-belanja").css("opacity") != 0) {
+                $("#subtotal-belanja").fadeTo(200, 0.00, function () {
+                    $(this).slideUp(200, function () {
+                        var net = hitungYangHarusDibayar();
                         $("#total-belanja").text(net.toLocaleString('id-ID'));
                     });
                 });
             }
         }
     }
-    
-    $(".uang-dibayar").bindWithDelay("keyup", function() {
+
+    $(".uang-dibayar").bindWithDelay("keyup", function () {
         sesuaikanInputUangDibayar();
     }, 1000);
 
@@ -390,7 +450,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             $("#tombol-simpan").click();
         }
     });
-    
+
     $("#diskon-nota").keyup(function () {
         showSubTotal();
         tampilkanKembalian();
@@ -401,7 +461,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             $("#tombol-simpan").click();
         }
     });
-    
+
     $("#infaq").keyup(function () {
         showSubTotal();
         tampilkanKembalian();
@@ -413,14 +473,71 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         }
     });
 
+    $("#tarik-tunai").keyup(function () {
+        showSubTotal();
+        tampilkanKembalian();
+    });
+
+    $("#tarik-tunai").keydown(function (e) {
+        if (e.keyCode === 13) {
+            $("#tombol-simpan").click();
+        }
+    });
+
     $("#tombol-simpan").click(function () {
-        $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
-        var inputUangDibayar =  $("input.uang-dibayar");
+<?php /* Jika total pembayaran kurang tampilkan error, kemudian exit */ ?>
+        if (totalYangHarusDibayar() > totalUangDibayar()) {
+            $.gritter.add({
+                title: 'Error! ',
+                text: "Uang dibayar tidak mencukupi!",
+                time: 5000,
+            });
+            return false;
+        }
+        if (!(totalYangHarusDibayar() > 0)) {
+            $.gritter.add({
+                title: 'Error! ',
+                text: "Belum ada penjualan!",
+                time: 5000,
+            });
+            return false;
+        }
+
+        var inputUangDibayar = $("input.uang-dibayar");
         var bayar = new Object;
-        $.each(inputUangDibayar, function(index, el){
+        var akunTarikTunaiAda = false;
+        var pembayaranCukup = true;
+        $.each(inputUangDibayar, function (index, el) {
             //bayar.push(['akun' : $(el).parent().parent().find(".account").val(), 'jumlah' : $(el).val()]);
-            bayar[$(el).parent().parent().find(".account").val()]=$(el).val();
+            if ($(el).parent().parent().find(".account").val() == $("#tarik-tunai").parent().parent().find(".account").val()) {
+                akunTarikTunaiAda = true;
+                var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
+                var jmlBayarAkunIni = parseInt($(el).val(), 10) || 0;
+                if (jmlBayarAkunIni < tarikTunai) {
+                    pembayaranCukup = false;
+                }
+            }
+            bayar[$(el).parent().parent().find(".account").val()] = $(el).val();
         })
+<?php /* Jika pembayaran pada akun tarik tunai kurang, tampilkan error, kemudian exit */ ?>
+        if (pembayaranCukup == false) {
+            $.gritter.add({
+                title: 'Error! ',
+                text: "Pembayaran untuk tarik tunai tidak cukup!",
+                time: 5000,
+            });
+            return false;
+        }
+<?php /* Jika akun bank tarik tunai tidak ditemukan, tampilkan error, kemudian exit */ ?>
+        if (akunTarikTunaiAda == false && $("#tarik-tunai").val() > 0) {
+            $.gritter.add({
+                title: 'Error! ',
+                text: "Akun Bank Tarik Tunai tidak ditemukan pada pembayaran!",
+                time: 5000,
+            });
+            return false;
+        }
+        $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
         dataUrl = '<?php echo $this->createUrl('simpan', array('id' => $model->id)); ?>';
         dataKirim = {
             'pos[account]': $("#account").val(),
@@ -429,6 +546,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             'pos[bayar]': bayar,
             'pos[infaq]': $("#infaq").val(),
             'pos[diskon-nota]': $("#diskon-nota").val(),
+            'pos[tarik-tunai]': $("#tarik-tunai").val(),
+            'pos[tarik-tunai-acc]': $("#tarik-tunai").parent().parent().find(".account").val(),
         };
         console.log(dataUrl);
         printWindow = window.open('about:blank', '', 'left=20,top=20,width=400,height=600,toolbar=0,resizable=1');
@@ -482,25 +601,25 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
-    array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
+    array('itemOptions'    => array('class' => 'has-form hide-for-small-only'), 'label'          => false,
+        'items'          => array(
+            array('label'       => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url'         => $this->createUrl('tambah'), 'linkOptions' => array(
+                    'class'     => 'button',
                     'accesskey' => 't'
                 )),
-            array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
+            array('label'       => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url'         => $this->createUrl('index'), 'linkOptions' => array(
+                    'class'     => 'success button',
                     'accesskey' => 'i'
                 ))
         ),
         'submenuOptions' => array('class' => 'button-group')
     ),
-    array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
+    array('itemOptions'    => array('class' => 'has-form show-for-small-only'), 'label'          => false,
+        'items'          => array(
+            array('label'       => '<i class="fa fa-plus"></i>', 'url'         => $this->createUrl('tambah'), 'linkOptions' => array(
                     'class' => 'button',
                 )),
-            array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
+            array('label'       => '<i class="fa fa-asterisk"></i>', 'url'         => $this->createUrl('index'), 'linkOptions' => array(
                     'class' => 'success button',
                 ))
         ),
