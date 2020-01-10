@@ -18,6 +18,12 @@ class Pos extends Penjualan
         $transaction    = $this->dbConnection->beginTransaction();
         $this->scenario = 'simpanPenjualan';
         try {
+            if (isset($posData['tarik-tunai']) && $posData['tarik-tunai'] > 0) {
+                $tarikTunaiMinBelanja = Config::model()->find("nama='pos.tariktunaiminlimit'")->nilai;
+                if ($posData['tarik-tunai'] < $tarikTunaiMinBelanja) {
+                    throw new Exception("Tarik Tunai belum boleh dilakukan!");
+                }
+            }
             $this->simpanPenjualan();
 
             $uangDibayar = 0;
