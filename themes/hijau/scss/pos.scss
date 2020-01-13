@@ -253,14 +253,14 @@ table thead tr th, table thead tr td {
     animation: flash 2s infinite;
 }
 
-#scan, #uang-dibayar, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password, #akm-no, 
+#scan, input[name="kasbank[]"].uang-dibayar, input[name="tarik-tunai"].tarik-tunai, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password, #akm-no, 
 #pesanan-no, #infaq, #diskon-nota{
     background-color: #fff;
     color: 546e7a;
     border-color: transparent;
 }
 
-#scan:focus, #uang-dibayar:focus, #account:focus,
+#scan:focus, input[name="kasbank[]"].uang-dibayar:focus, #account:focus,
 #jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus, #akm-no:focus, 
 #pesanan-no:focus, #infaq:focus, #diskon-nota:focus{
     /*    border-top-color: #ff5722;
@@ -331,4 +331,7 @@ div.summary{
     100% {
         background-color: inherit;
     }
+}
+.prefix .fa-inverse{
+    color: lighten(#546e7a, 30%);
 }

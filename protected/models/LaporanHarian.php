@@ -485,7 +485,6 @@ class LaporanHarian extends CActiveRecord
          group by t.id
          order by penjualan.nomor";
          * 
-         */
         $sql = "
          SELECT penjualan.nomor, jumlah, profil.nama, kb.nama nama_akun
          FROM
@@ -506,6 +505,183 @@ class LaporanHarian extends CActiveRecord
          JOIN profil ON penjualan.profil_id = profil.id
          JOIN kas_bank kb ON kb.id = t.kas_bank_id
          ORDER BY kb.nama, penjualan.nomor";
+         */
+        $listPenerimaan = "
+                    SELECT DISTINCT
+                        p.id
+                    FROM
+                        penerimaan_detail d
+                    JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status = :statusPenerimaan
+                        AND p.tanggal = :tanggal
+                    JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = :asalHutangPiutang
+                    JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= :tanggalAwal
+                        AND penjualan.tanggal < :tanggalAkhir            
+                ";
+        $listPengeluaran = "
+                    SELECT DISTINCT
+                        p.id
+                    FROM
+                        pengeluaran_detail d
+                    JOIN pengeluaran p ON d.pengeluaran_id = p.id AND p.status = :statusPengeluaran
+                        AND p.tanggal = :tanggal
+                    JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = :asalHutangPiutang
+                    JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= :tanggalAwal
+                        AND penjualan.tanggal < :tanggalAkhir
+            ";
+        $sql = "
+        SELECT 
+            tabel_detail.*,
+            profil.nama nama,
+            kas_bank.nama nama_akun,
+            CASE
+                WHEN uang_dibayar > 0 THEN uang_dibayar_perakun - (uang_dibayar - penjualan)
+                WHEN count IS NULL OR count = 1 THEN penjualan
+                ELSE uang_dibayar_perakun
+            END jumlah
+        FROM
+            (SELECT 
+                t.*,
+                    CASE
+                        WHEN
+                            t.kb = 1 OR t.count IS NULL
+                                OR t.count = 1
+                        THEN
+                            tp.jumlah
+                    END penjualan,
+                    CASE t.kb
+                        WHEN 1 THEN penerimaan.uang_dibayar
+                    END uang_dibayar,
+                    t_penjualan.nomor
+            FROM
+                (SELECT 
+                tr.id,
+                    tr.nomor nomor_bayar,
+                    tr.profil_id,
+                    CASE
+                        WHEN kb2 > 0 THEN kb2
+                        ELSE kb1
+                    END kb,
+                    CASE
+                        WHEN tr.jumlah > 0 THEN tr.jumlah
+                        ELSE uang_dibayar
+                    END uang_dibayar_perakun,
+                    tr.count
+            FROM
+                (SELECT 
+                p.id,
+                    p.nomor,
+                    p.profil_id,
+                    p.kas_bank_id kb1,
+                    p.uang_dibayar,
+                    pkb.kas_bank_id kb2,
+                    pkb.jumlah,
+                    tc.count
+            FROM
+                penerimaan p
+            LEFT JOIN penerimaan_kas_bank pkb ON p.id = pkb.penerimaan_id
+            LEFT JOIN (SELECT 
+                penerimaan_kas_bank.penerimaan_id, COUNT(*) count
+            FROM
+                penerimaan_kas_bank
+            WHERE
+                penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})
+            GROUP BY penerimaan_id) tc ON tc.penerimaan_id = p.id
+            WHERE
+                p.id IN ({$listPenerimaan})
+            ORDER BY p.nomor) tr) t
+            JOIN (SELECT 
+                penerimaan_id, SUM(jumlah) jumlah
+            FROM
+                penerimaan_detail
+            WHERE
+                penerimaan_detail.item_id = :itemPenjualan 
+                AND penerimaan_id IN ({$listPenerimaan})
+            GROUP BY penerimaan_id) tp ON tp.penerimaan_id = t.id
+            JOIN penerimaan ON t.id = penerimaan.id
+            JOIN (SELECT 
+                penerimaan_detail.penerimaan_id, penjualan.nomor
+            FROM
+                penjualan
+            JOIN hutang_piutang ON hutang_piutang.id = penjualan.hutang_piutang_id
+            JOIN penerimaan_detail ON penerimaan_detail.hutang_piutang_id = hutang_piutang.id
+            WHERE
+                penerimaan_id IN ({$listPenerimaan})) t_penjualan ON t_penjualan.penerimaan_id = t.id UNION SELECT 
+                t.*,
+                    CASE
+                        WHEN
+                            t.kb = 1 OR t.count IS NULL
+                                OR t.count = 1
+                        THEN
+                            tp.jumlah
+                    END penjualan,
+                    CASE t.kb
+                        WHEN 1 THEN pengeluaran.uang_dibayar
+                    END uang_dibayar,
+                    t_penjualan.nomor
+            FROM
+                (SELECT 
+                tr.id,
+                    tr.nomor nomor_bayar,
+                    tr.profil_id,
+                    CASE
+                        WHEN kb2 > 0 THEN kb2
+                        ELSE kb1
+                    END kb,
+                    CASE
+                        WHEN tr.jumlah > 0 THEN tr.jumlah
+                        ELSE uang_dibayar
+                    END uang_dibayar_perakun,
+                    tr.count
+            FROM
+                (SELECT 
+                p.id,
+                    p.nomor,
+                    p.profil_id,
+                    p.kas_bank_id kb1,
+                    p.uang_dibayar,
+                    pkb.kas_bank_id kb2,
+                    pkb.jumlah,
+                    tc.count
+            FROM
+                pengeluaran p
+            LEFT JOIN pengeluaran_kas_bank pkb ON p.id = pkb.pengeluaran_id
+            LEFT JOIN (SELECT 
+                pengeluaran_kas_bank.pengeluaran_id, COUNT(*) count
+            FROM
+                pengeluaran_kas_bank
+            WHERE
+                pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})
+            GROUP BY pengeluaran_id) tc ON tc.pengeluaran_id = p.id
+            WHERE
+                p.id IN ({$listPengeluaran})
+            ORDER BY p.nomor) tr) t
+            JOIN (SELECT 
+                pengeluaran_id, SUM(jumlah) jumlah
+            FROM
+                pengeluaran_detail
+            WHERE
+                pengeluaran_detail.item_id = :itemPenjualan 
+                AND pengeluaran_id IN ({$listPengeluaran})
+            GROUP BY pengeluaran_id) tp ON tp.pengeluaran_id = t.id
+            JOIN pengeluaran ON t.id = pengeluaran.id
+            JOIN (SELECT 
+                pengeluaran_detail.pengeluaran_id, penjualan.nomor
+            FROM
+                penjualan
+            JOIN hutang_piutang ON hutang_piutang.id = penjualan.hutang_piutang_id
+            JOIN pengeluaran_detail ON pengeluaran_detail.hutang_piutang_id = hutang_piutang.id
+            WHERE
+                pengeluaran_id IN ({$listPengeluaran})) t_penjualan ON t_penjualan.pengeluaran_id = t.id) tabel_detail
+                JOIN
+            profil ON profil.id = tabel_detail.profil_id
+                JOIN
+            kas_bank ON kas_bank.id = tabel_detail.kb
+        ORDER BY kas_bank.nama , tabel_detail.nomor
+            ";
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -525,6 +701,7 @@ class LaporanHarian extends CActiveRecord
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan'  => Penerimaan::STATUS_BAYAR,
+            ':itemPenjualan'     => ItemKeuangan::ITEM_PENJUALAN
         ]);
 
         return $command->queryAll();
@@ -536,6 +713,7 @@ class LaporanHarian extends CActiveRecord
      */
     public function totalPenjualanTunaiPerAkun()
     {
+        /*
         $sql = "
          SELECT sum(jumlah) jumlah, kb.nama nama_akun
          FROM
@@ -557,7 +735,195 @@ class LaporanHarian extends CActiveRecord
          JOIN kas_bank kb ON kb.id = t.kas_bank_id
          GROUP BY kb.nama
          ORDER BY kb.nama";
+         * 
+         */
+        
+        $listPenerimaan = "
+                    SELECT DISTINCT
+                        p.id
+                    FROM
+                        penerimaan_detail d
+                    JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status = :statusPenerimaan
+                        AND p.tanggal = :tanggal
+                    JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = :asalHutangPiutang
+                    JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= :tanggalAwal
+                        AND penjualan.tanggal < :tanggalAkhir            
+                ";
+        $listPengeluaran = "
+                    SELECT DISTINCT
+                        p.id
+                    FROM
+                        pengeluaran_detail d
+                    JOIN pengeluaran p ON d.pengeluaran_id = p.id AND p.status = :statusPengeluaran
+                        AND p.tanggal = :tanggal
+                    JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = :asalHutangPiutang
+                    JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= :tanggalAwal
+                        AND penjualan.tanggal < :tanggalAkhir
+            ";
+        
+        $sqlPembayaranPenjualan = "
+        SELECT 
+            tabel_detail.*,
+            profil.nama nama,
+            kas_bank.nama nama_akun,
+            CASE
+                WHEN uang_dibayar > 0 THEN uang_dibayar_perakun - (uang_dibayar - penjualan)
+                WHEN count IS NULL OR count = 1 THEN penjualan
+                ELSE uang_dibayar_perakun
+            END jumlah
+        FROM
+            (SELECT 
+                t.*,
+                    CASE
+                        WHEN
+                            t.kb = 1 OR t.count IS NULL
+                                OR t.count = 1
+                        THEN
+                            tp.jumlah
+                    END penjualan,
+                    CASE t.kb
+                        WHEN 1 THEN penerimaan.uang_dibayar
+                    END uang_dibayar,
+                    t_penjualan.nomor
+            FROM
+                (SELECT 
+                tr.id,
+                    tr.nomor nomor_bayar,
+                    tr.profil_id,
+                    CASE
+                        WHEN kb2 > 0 THEN kb2
+                        ELSE kb1
+                    END kb,
+                    CASE
+                        WHEN tr.jumlah > 0 THEN tr.jumlah
+                        ELSE uang_dibayar
+                    END uang_dibayar_perakun,
+                    tr.count
+            FROM
+                (SELECT 
+                p.id,
+                    p.nomor,
+                    p.profil_id,
+                    p.kas_bank_id kb1,
+                    p.uang_dibayar,
+                    pkb.kas_bank_id kb2,
+                    pkb.jumlah,
+                    tc.count
+            FROM
+                penerimaan p
+            LEFT JOIN penerimaan_kas_bank pkb ON p.id = pkb.penerimaan_id
+            LEFT JOIN (SELECT 
+                penerimaan_kas_bank.penerimaan_id, COUNT(*) count
+            FROM
+                penerimaan_kas_bank
+            WHERE
+                penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})
+            GROUP BY penerimaan_id) tc ON tc.penerimaan_id = p.id
+            WHERE
+                p.id IN ({$listPenerimaan})
+            ORDER BY p.nomor) tr) t
+            JOIN (SELECT 
+                penerimaan_id, SUM(jumlah) jumlah
+            FROM
+                penerimaan_detail
+            WHERE
+                penerimaan_detail.item_id = :itemPenjualan 
+                AND penerimaan_id IN ({$listPenerimaan})
+            GROUP BY penerimaan_id) tp ON tp.penerimaan_id = t.id
+            JOIN penerimaan ON t.id = penerimaan.id
+            JOIN (SELECT 
+                penerimaan_detail.penerimaan_id, penjualan.nomor
+            FROM
+                penjualan
+            JOIN hutang_piutang ON hutang_piutang.id = penjualan.hutang_piutang_id
+            JOIN penerimaan_detail ON penerimaan_detail.hutang_piutang_id = hutang_piutang.id
+            WHERE
+                penerimaan_id IN ({$listPenerimaan})) t_penjualan ON t_penjualan.penerimaan_id = t.id UNION SELECT 
+                t.*,
+                    CASE
+                        WHEN
+                            t.kb = 1 OR t.count IS NULL
+                                OR t.count = 1
+                        THEN
+                            tp.jumlah
+                    END penjualan,
+                    CASE t.kb
+                        WHEN 1 THEN pengeluaran.uang_dibayar
+                    END uang_dibayar,
+                    t_penjualan.nomor
+            FROM
+                (SELECT 
+                tr.id,
+                    tr.nomor nomor_bayar,
+                    tr.profil_id,
+                    CASE
+                        WHEN kb2 > 0 THEN kb2
+                        ELSE kb1
+                    END kb,
+                    CASE
+                        WHEN tr.jumlah > 0 THEN tr.jumlah
+                        ELSE uang_dibayar
+                    END uang_dibayar_perakun,
+                    tr.count
+            FROM
+                (SELECT 
+                p.id,
+                    p.nomor,
+                    p.profil_id,
+                    p.kas_bank_id kb1,
+                    p.uang_dibayar,
+                    pkb.kas_bank_id kb2,
+                    pkb.jumlah,
+                    tc.count
+            FROM
+                pengeluaran p
+            LEFT JOIN pengeluaran_kas_bank pkb ON p.id = pkb.pengeluaran_id
+            LEFT JOIN (SELECT 
+                pengeluaran_kas_bank.pengeluaran_id, COUNT(*) count
+            FROM
+                pengeluaran_kas_bank
+            WHERE
+                pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})
+            GROUP BY pengeluaran_id) tc ON tc.pengeluaran_id = p.id
+            WHERE
+                p.id IN ({$listPengeluaran})
+            ORDER BY p.nomor) tr) t
+            JOIN (SELECT
+                pengeluaran_id, SUM(jumlah) jumlah
+            FROM
+                pengeluaran_detail
+            WHERE
+                pengeluaran_detail.item_id = :itemPenjualan 
+                AND pengeluaran_id IN ({$listPengeluaran})
+            GROUP BY pengeluaran_id) tp ON tp.pengeluaran_id = t.id
+            JOIN pengeluaran ON t.id = pengeluaran.id
+            JOIN (SELECT 
+                pengeluaran_detail.pengeluaran_id, penjualan.nomor
+            FROM
+                penjualan
+            JOIN hutang_piutang ON hutang_piutang.id = penjualan.hutang_piutang_id
+            JOIN pengeluaran_detail ON pengeluaran_detail.hutang_piutang_id = hutang_piutang.id
+            WHERE
+                pengeluaran_id IN ({$listPengeluaran})) t_penjualan ON t_penjualan.pengeluaran_id = t.id) tabel_detail
+                JOIN
+            profil ON profil.id = tabel_detail.profil_id
+                JOIN
+            kas_bank ON kas_bank.id = tabel_detail.kb
+        ORDER BY kas_bank.nama , tabel_detail.nomor
+            ";
 
+        $sql = "
+        SELECT 
+            nama_akun, SUM(jumlah) jumlah
+        FROM
+            ({$sqlPembayaranPenjualan}) t_detail_bayar
+        GROUP BY nama_akun
+            ";
+        
         $command = Yii::app()->db->createCommand($sql);
 
         $command->bindValues([
@@ -567,6 +933,7 @@ class LaporanHarian extends CActiveRecord
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
             ':statusPenerimaan'  => Penerimaan::STATUS_BAYAR,
+            ':itemPenjualan'     => ItemKeuangan::ITEM_PENJUALAN
         ]);
 
         return $command->queryAll();        
@@ -948,7 +1315,7 @@ class LaporanHarian extends CActiveRecord
 
     public function itemPengeluaran()
     {
-        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA];
+        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA, ItemKeuangan::POS_TARIK_TUNAI_PENGELUARAN];
         $condForItemKhusus = 'item.id in (';
         $f                 = true;
         foreach ($itemKhusus as $value) {
@@ -1041,7 +1408,7 @@ class LaporanHarian extends CActiveRecord
 
     public function itemPenerimaan()
     {
-        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA];
+        $itemKhusus        = [ItemKeuangan::POS_INFAQ, ItemKeuangan::POS_DISKON_PER_NOTA, ItemKeuangan::POS_TARIK_TUNAI_PENGELUARAN];
         $condForItemKhusus = 'item.id in (';
         $f                 = true;
         foreach ($itemKhusus as $value) {
@@ -1620,6 +1987,116 @@ class LaporanHarian extends CActiveRecord
 
         $bayarReturJual = $command->queryRow();
         return $bayarReturJual['total'];
+    }
+    
+    /**
+     * Tarik tunai yang terjadi pada tanggal tsb
+     * @return array nama akun, nomor penjualan, nama, jumlah dari tarik tunai
+     */
+    public function tarikTunai()
+    {
+        $sql = "
+        SELECT 
+            kas_bank.nama nama_akun,
+            penjualan.nomor,
+            profil.nama,
+            t.jumlah
+        FROM
+            penjualan_tarik_tunai t
+                JOIN
+            penjualan ON penjualan.id = t.penjualan_id
+                JOIN
+            profil ON profil.id = penjualan.profil_id
+                JOIN
+            kas_bank ON kas_bank.id = t.kas_bank_id
+        WHERE
+            t.updated_at >= :tanggalAwal
+                AND t.updated_at < :tanggalAkhir
+        ORDER BY kas_bank.nama , penjualan.nomor            
+            ";
+
+        if ($this->groupByProfil['inv']) {
+            $sql = "
+                    select nama_akun, nama, sum(jumlah) jumlah
+                    from ({$sql}) t
+                    group by nama_akun, nama
+                    order by nama_akun, nama
+            ";
+        }
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':tanggalAwal'  => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir
+        ]);
+        
+        return $command->queryAll();
+    }
+    
+    public function totalTarikTunaiPerAkun()
+    {
+
+        $sql = "
+        SELECT 
+            kas_bank.nama nama_akun,
+            penjualan.nomor,
+            profil.nama,
+            t.jumlah
+        FROM
+            penjualan_tarik_tunai t
+                JOIN
+            penjualan ON penjualan.id = t.penjualan_id
+                JOIN
+            profil ON profil.id = penjualan.profil_id
+                JOIN
+            kas_bank ON kas_bank.id = t.kas_bank_id
+        WHERE
+            t.updated_at >= :tanggalAwal
+                AND t.updated_at < :tanggalAkhir
+        ORDER BY kas_bank.nama , penjualan.nomor            
+            ";
+
+        $sql = "
+        SELECT 
+            nama_akun, SUM(jumlah) jumlah
+        FROM
+            ({$sql}) t
+        GROUP BY nama_akun
+        ORDER BY nama_akun
+            ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':tanggalAwal'  => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir
+        ]);
+
+        return $command->queryAll();
+    }
+
+    public function totalTarikTunai()
+    {
+        $sql = "
+        SELECT 
+            sum(t.jumlah) total
+        FROM
+            penjualan_tarik_tunai t
+        WHERE
+            t.updated_at >= :tanggalAwal
+                AND t.updated_at < :tanggalAkhir           
+            ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':tanggalAwal'  => $this->tanggalAwal,
+            ':tanggalAkhir' => $this->tanggalAkhir
+        ]);
+        
+        return $command->queryRow()['total'];
+        
     }
 
 }

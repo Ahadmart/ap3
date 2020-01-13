@@ -254,27 +254,35 @@ class Pengeluaran extends CActiveRecord
     {
         return number_format($this->ambilTotal(), 0, ',', '.');
     }
+    
+    public function prosesP()
+    {
+        $this->scenario = 'proses';
+        if ($this->save()) {
+            // Ambil details yang hutang piutang untuk diproses lebih lanjut
+            $details = PengeluaranDetail::model()->findAll('pengeluaran_id=:pengeluaranId and hutang_piutang_id is not null', array(':pengeluaranId' => $this->id));
+            foreach ($details as $detail) {
+                $hutangPiutang = HutangPiutang::model()->findByPk($detail->hutang_piutang_id);
+                // Bayar dan simpan
+                if (!($hutangPiutang->bayar() && $hutangPiutang->save())) {
+                    throw new Exception("Gagal proses bayar hutang piutang");
+                }
+            }
+            return true;
+        } else {
+            throw new Exception("Gagal Proses");
+        }
+    }
 
     public function proses()
     {
         $this->scenario = 'proses';
-        $transaction = $this->dbConnection->beginTransaction();
+        $transaction    = $this->dbConnection->beginTransaction();
         try {
-            if ($this->save()) {
-                // Ambil details yang hutang piutang untuk diproses lebih lanjut
-                $details = PengeluaranDetail::model()->findAll('pengeluaran_id=:pengeluaranId and hutang_piutang_id is not null', array(':pengeluaranId' => $this->id));
-                foreach ($details as $detail) {
-                    $hutangPiutang = HutangPiutang::model()->findByPk($detail->hutang_piutang_id);
-                    // Bayar dan simpan
-                    if (!($hutangPiutang->bayar() && $hutangPiutang->save())) {
-                        throw new Exception("Gagal proses bayar hutang piutang");
-                    }
-                }
+            if ($this->prosesP()) {
                 $transaction->commit();
                 return true;
-            } else {
-                throw new Exception("Gagal Proses");
-            }
+            } 
         } catch (Exception $e) {
             $transaction->rollback();
             throw $e;

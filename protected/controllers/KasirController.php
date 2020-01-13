@@ -75,14 +75,24 @@ class KasirController extends Controller
     {
         $this->layout = '//layouts/box_kecil';
         $model        = $this->loadModel($id);
+        
+        if (!is_null($model->waktu_tutup)){
+            $this->redirect(['rekap', 'id' => $id]);
+        }
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
-        $model->total_penjualan = $model->totalPenjualan()['jumlah'];
-        $model->total_margin    = $model->totalMargin()['jumlah'];
-        $model->total_retur     = $model->totalReturJual()['jumlah'];
+        $model->total_penjualan      = $model->totalPenjualan()['jumlah'];
+        $model->total_margin         = $model->totalMargin()['jumlah'];
+        $model->total_retur          = $model->totalReturJual()['jumlah'];
+        $model->total_infaq          = $model->totalInfaq()['total'];
+        $model->total_diskon_pernota = $model->totalDiskonPerNota()['total'];
+        $model->total_penerimaan     = $model->penerimaanNet()['total'];
+        $model->total_tarik_tunai    = $model->totalTarikTunai()['total'];
+        
+        $penerimaanKas = $model->totalPenerimaanKas();
 
-        $model->saldo_akhir_seharusnya = $model->saldo_awal + $model->total_penjualan - $model->total_retur;
+        $model->saldo_akhir_seharusnya = $model->saldo_awal + $penerimaanKas - $model->total_tarik_tunai;
 
         if (isset($_POST['Kasir'])) {
             $config        = Config::model()->find('nama=:nama', [':nama' => 'kasir.showautosummary']);
@@ -100,7 +110,8 @@ class KasirController extends Controller
         }
 
         $this->render('tutup', [
-            'model' => $model,
+            'model'                   => $model,
+            'penerimaanKas'           => $penerimaanKas
         ]);
     }
 
@@ -210,7 +221,7 @@ class KasirController extends Controller
             'kertasPdf' => $kertasPdf,
         ]);
     }
-    
+
     public function actionCetak($id)
     {
         if (isset($_GET['printId'])) {
