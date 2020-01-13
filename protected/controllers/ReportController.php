@@ -1257,5 +1257,83 @@ class ReportController extends Controller
             'csv'      => $report,
         ]);
     }
+    
+    public function actionStockOpname()
+    {
+        $model  = new ReportStockOpnameForm();
+        $report = null;
+        if (isset($_POST['ReportStockOpnameForm'])) {
+            $model->attributes = $_POST['ReportStockOpnameForm'];
+            if ($model->validate()) {
+                $report = $model->report();
+            }
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes();  // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf            = ReportStockOpnameForm::listKertas();
+
+        $this->render('stockopname', [
+            'model'     => $model,
+            'user'      => $user,
+            'report'    => $report,
+            'printers'  => $printers,
+            'kertasPdf' => $kertasPdf,
+        ]);
+    }
+
+    public function actionPrintStockOpname($printId, $kertas, $dari, $sampai, $user)
+    {
+        $model         = new ReportStockOpnameForm();
+        $model->dari   = $dari;
+        $model->sampai = $sampai;
+        $model->userId = $user;
+        if ($model->validate()) {
+            $report              = $model->report();
+            $report['timestamp'] = date('d-m-Y H:i:s');
+            $report['namaToko']  = $this->namaToko();
+            $report['kodeToko']  = $this->kodeToko();
+            $report['dari']      = $dari;
+            $report['sampai']    = $sampai;
+
+            $device = Device::model()->findByPk($printId);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    $this->stockOpnamePdf($report, $kertas);
+                    break;
+            }
+            Yii::app()->end();
+        }
+    }
+
+    public function stockOpnamePdf($report, $kertas)
+    {
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+        ini_set("pcre.backtrack_limit", "99999999");
+
+        /*
+         * Persiapan render PDF
+         */
+        $listNamaKertas = ReportStockOpnameForm::listKertas();
+        require_once __DIR__ . '/../vendors/autoload.php';
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_stockopname_pdf', [
+                    'report' => $report,
+                        ], true
+        ));
+
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
+        // Render PDF
+        $mpdf->Output("Laporan SO {$report['kodeToko']} {$report['namaToko']} {$report['dari']} {$report['sampai']} {$report['timestamp']}.pdf", 'I');
+    }
 
 }
