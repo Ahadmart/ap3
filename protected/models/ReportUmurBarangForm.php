@@ -245,7 +245,8 @@ class ReportUmurBarangForm extends CFormModel
 
     public function toCsv()
     {
-        return $this->array2csv($this->reportUmurBarang());
+        $report = $this->reportUmurBarang();
+        return $this->array2csv($report);
     }
 
 }
