@@ -146,7 +146,7 @@ class HargaJualRekomendasi extends CActiveRecord {
                 ->limit(1, 0)
                 ->queryRow();
 
-        if ($hasil['harga'] != $hargaJual && !is_null($hargaJual)) {
+        if ($hasil && $hasil['harga'] != $hargaJual && !is_null($hargaJual)) {
             // Jika tidak sama atau belum ada maka: insert harga jual baru
             $hargaJualModel = new HargaJualRekomendasi;
             $hargaJualModel->barang_id = $barangId;
@@ -197,6 +197,6 @@ class HargaJualRekomendasi extends CActiveRecord {
 				  ->where('id = (select max(id) from '.$this->tableName().' where barang_id = :barangId)')
 				  ->bindValues(array(':barangId' => $barangId))
 				  ->queryRow();
-		return $query['harga'];
-	}
+        return $query ? $query['harga'] : null;
+    }
 }

@@ -13,6 +13,11 @@
  * @property string $saldo_akhir_seharusnya
  * @property string $saldo_akhir
  * @property string $total_penjualan
+ * @property string $total_infaq
+ * @property string $total_diskon_pernota
+ * @property string $total_tarik_tunai
+ * @property string $total_penerimaan
+ * @property string $total_uang_dibayar
  * @property string $total_margin
  * @property string $total_retur
  * @property string $updated_at
@@ -42,15 +47,15 @@ class Kasir extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('user_id, device_id, waktu_buka, saldo_awal', 'required', 'message' => '{attribute} harus diisi!'),
-            array('user_id, device_id, updated_by', 'length', 'max' => 10),
-            array('saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_margin, total_retur', 'length', 'max' => 18),
-            array('waktu_tutup, created_at, updated_at, updated_by', 'safe'),
+        return [
+            ['user_id, device_id, waktu_buka, saldo_awal', 'required', 'message' => '{attribute} harus diisi!'],
+            ['user_id, device_id, updated_by', 'length', 'max' => 10],
+            ['saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_infaq, total_diskon_pernota, total_tarik_tunai, total_penerimaan, total_uang_dibayar, total_margin, total_retur', 'length', 'max' => 18],
+            ['waktu_tutup, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, user_id, device_id, waktu_buka, waktu_tutup, saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_margin, total_retur, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
-        );
+            ['id, user_id, device_id, waktu_buka, waktu_tutup, saldo_awal, saldo_akhir_seharusnya, saldo_akhir, total_penjualan, total_infaq, total_diskon_pernota, total_tarik_tunai, total_penerimaan, total_uang_dibayar, total_margin, total_retur, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -60,11 +65,11 @@ class Kasir extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-            'device' => array(self::BELONGS_TO, 'Device', 'device_id'),
-            'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
-            'user' => array(self::BELONGS_TO, 'User', 'user_id'),
-        );
+        return [
+            'device'    => [self::BELONGS_TO, 'Device', 'device_id'],
+            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
+            'user'      => [self::BELONGS_TO, 'User', 'user_id'],
+        ];
     }
 
     /**
@@ -72,22 +77,27 @@ class Kasir extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'user_id' => 'User',
-            'device_id' => 'Device',
-            'waktu_buka' => 'Sejak',
-            'waktu_tutup' => 'Waktu Tutup',
-            'saldo_awal' => 'Saldo Awal',
+        return [
+            'id'                     => 'ID',
+            'user_id'                => 'User',
+            'device_id'              => 'Device',
+            'waktu_buka'             => 'Sejak',
+            'waktu_tutup'            => 'Waktu Tutup',
+            'saldo_awal'             => 'Saldo Awal',
             'saldo_akhir_seharusnya' => 'Saldo Akhir Seharusnya',
-            'saldo_akhir' => 'Saldo Akhir',
-            'total_penjualan' => 'Total Penjualan',
-            'total_margin' => 'Total Margin',
-            'total_retur' => 'Total Retur Jual',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-            'created_at' => 'Created At',
-        );
+            'saldo_akhir'            => 'Saldo Akhir',
+            'total_penjualan'        => 'Total Penjualan',
+            'total_infaq'            => 'Total Infaq',
+            'total_diskon_pernota'   => 'Total Diskon Pernota',
+            'total_tarik_tunai'      => 'Total Tarik Tunai',
+            'total_penerimaan'       => 'Total Penerimaan',
+            'total_uang_dibayar'     => 'Total Uang Dibayar',
+            'total_margin'           => 'Total Margin',
+            'total_retur'            => 'Total Retur Jual',
+            'updated_at'             => 'Updated At',
+            'updated_by'             => 'Updated By',
+            'created_at'             => 'Created At',
+        ];
     }
 
     /**
@@ -117,6 +127,11 @@ class Kasir extends CActiveRecord
         $criteria->compare('saldo_akhir_seharusnya', $this->saldo_akhir_seharusnya, true);
         $criteria->compare('saldo_akhir', $this->saldo_akhir, true);
         $criteria->compare('total_penjualan', $this->total_penjualan, true);
+        $criteria->compare('total_infaq', $this->total_infaq, true);
+        $criteria->compare('total_diskon_pernota', $this->total_diskon_pernota, true);
+        $criteria->compare('total_tarik_tunai', $this->total_tarik_tunai, true);
+        $criteria->compare('total_penerimaan', $this->total_penerimaan, true);
+        $criteria->compare('total_penerimaan', $this->total_uang_dibayar, true);
         $criteria->compare('total_margin', $this->total_margin, true);
         $criteria->compare('total_retur', $this->total_retur, true);
         $criteria->compare('updated_at', $this->updated_at, true);
@@ -134,10 +149,10 @@ class Kasir extends CActiveRecord
             'defaultOrder' => 'id desc'
         ];
 
-        return new CActiveDataProvider($this, array(
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort' => $sort,
-        ));
+            'sort'     => $sort,
+        ]);
     }
 
     /**
@@ -180,12 +195,12 @@ class Kasir extends CActiveRecord
             join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal>=:waktu and penjualan.updated_by=:userId
         ");
 
-        $command->bindValues(array(
-            ':waktu' => $this->waktu_buka,
+        $command->bindValues([
+            ':waktu'             => $this->waktu_buka,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
-            ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
-            ':userId' => $this->user_id
-        ));
+            ':statusPenerimaan'  => Penerimaan::STATUS_BAYAR,
+            ':userId'            => $this->user_id
+        ]);
 
         return $command->queryRow();
     }
@@ -202,12 +217,12 @@ class Kasir extends CActiveRecord
             join harga_pokok_penjualan hpp on jual_detail.id=hpp.penjualan_detail_id
         ");
 
-        $command->bindValues(array(
-            ':waktu' => $this->waktu_buka,
+        $command->bindValues([
+            ':waktu'             => $this->waktu_buka,
             ':asalHutangPiutang' => HutangPiutang::DARI_PENJUALAN,
-            ':statusPenerimaan' => Penerimaan::STATUS_BAYAR,
-            ':userId' => $this->user_id
-        ));
+            ':statusPenerimaan'  => Penerimaan::STATUS_BAYAR,
+            ':userId'            => $this->user_id
+        ]);
 
         return $command->queryRow();
     }
@@ -222,16 +237,37 @@ class Kasir extends CActiveRecord
             join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal>=:waktu and retur_penjualan.updated_by=:userId
         ");
 
-        $command->bindValues(array(
-            ':waktu' => $this->waktu_buka,
+        $command->bindValues([
+            ':waktu'             => $this->waktu_buka,
             ':asalHutangPiutang' => HutangPiutang::DARI_RETUR_JUAL,
             ':statusPengeluaran' => Pengeluaran::STATUS_BAYAR,
-            ':userId' => $this->user_id
-        ));
+            ':userId'            => $this->user_id
+        ]);
 
         return $command->queryRow();
     }
-    
+
+    public function totalTarikTunai()
+    {
+        $command = Yii::app()->db->createCommand("
+        SELECT 
+            SUM(jumlah) total
+        FROM
+            penjualan_tarik_tunai
+                JOIN
+            penjualan ON penjualan.id = penjualan_tarik_tunai.penjualan_id
+                AND penjualan.tanggal >= :waktu
+                AND penjualan.updated_by = :userId
+        ");
+
+        $command->bindValues([
+            ':waktu'  => $this->waktu_buka,
+            ':userId' => $this->user_id
+        ]);
+
+        return $command->queryRow();
+    }
+
     public function rekapText()
     {
         $jumlahKolom = 40;
@@ -252,6 +288,10 @@ class Kasir extends CActiveRecord
         $terPanjang      = strlen($saldoAkhirFisik) > $terPanjang ? strlen($saldoAkhirFisik) : $terPanjang;
         $selisihSaldo    = is_null($this->saldo_akhir - $this->saldo_akhir_seharusnya) ? '0' : number_format($this->saldo_akhir - $this->saldo_akhir_seharusnya, 0, ',', '.');
         $terPanjang      = strlen($selisihSaldo) > $terPanjang ? strlen($selisihSaldo) : $terPanjang;
+        $totalPenerimaan = is_null($this->total_penerimaan) ? number_format($this->penerimaanNet()['total'], 0, ',', '.') : number_format($this->total_penerimaan, 0, ',', '.');
+        $terPanjang      = strlen($totalPenerimaan) > $terPanjang ? strlen($totalPenerimaan) : $terPanjang;
+        $totalTarikTunai = is_null($this->total_tarik_tunai) ? '0' : number_format($this->total_tarik_tunai, 0, ',', '.');
+        $terPanjang      = strlen($totalTarikTunai) > $terPanjang ? strlen($totalTarikTunai) : $terPanjang;
 
         $text .= str_pad('Login', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama . PHP_EOL;
         $text .= str_pad('Nama', 19, ' ', STR_PAD_LEFT) . ': ' . $this->user->nama_lengkap . PHP_EOL;
@@ -260,58 +300,405 @@ class Kasir extends CActiveRecord
         $text .= str_pad('Tutup', 19, ' ', STR_PAD_LEFT) . ': ' . date_format(date_create_from_format('Y-m-d H:i:s', $this->waktu_tutup), 'd-m-Y H:i:s') . PHP_EOL;
         $text .= str_pad('Saldo Awal', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAwal, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         $text .= str_pad('Total Penjualan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenjualan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        $text .= str_pad('Total Margin', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalMargin, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
 
-        $penjualanPerAkun = $this->penjualanPerAkun();
-        if (count($penjualanPerAkun) > 1) {
-            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
-            foreach ($penjualanPerAkun as $akun) {
-                $jumlahAkun = is_null($akun['jumlah']) ? '0' : number_format($akun['jumlah'], 0, ',', '.');
+        $totalDiskonPerNota = is_null($this->total_diskon_pernota) ? $this->totalDiskonPerNota()['total'] : $this->total_diskon_pernota;
+        if ($totalDiskonPerNota > 0) {
+            $text .= str_pad('Total Dis Nota', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad(number_format($totalDiskonPerNota, 0, ',', '.'), $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+        $totalInfaq = is_null($this->total_infaq) ? $this->totalInfaq()['total'] : $this->total_infaq;
+        if ($totalInfaq > 0) {
+            $text .= str_pad('Total Infaq', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad(number_format($totalInfaq, 0, ',', '.'), $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+        if ($totalPenjualan != $totalPenerimaan) {
+            $text .= str_pad('Total Penerimaan', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalPenerimaan, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+//        $penjualanPerAkun = $this->penjualanPerAkun();
+//        if (count($penjualanPerAkun) > 1) {
+//            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+//            foreach ($penjualanPerAkun as $akun) {
+//                $jumlahAkun = is_null($akun['jumlah']) ? '0' : number_format($akun['jumlah'], 0, ',', '.');
+//                $text       .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+//            }
+//            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+//        }
+
+        $uangDibayarPerAkun = $this->uangDibayarPerAkun();
+//        if (count($uangDibayarPerAkun) > 1) {
+        $text               .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+        foreach ($uangDibayarPerAkun as $akun) {
+            if ($akun['kb'] == KasBank::KAS_ID) {
+                // Jika total_penerimaan null berarti dibuat sebelum update ini, maka hitung ulang
+                $totalUangDibayar = is_null($this->total_uang_dibayar) ? $this->totalUangDibayar()['total'] : $this->total_uang_dibayar;
+                $totalPenerimaan  = is_null($this->total_penerimaan) ? $this->penerimaanNet()['total'] : $this->total_penerimaan;
+                $kas              = $akun['total'] - ($totalUangDibayar - $totalPenerimaan);
+//                    $kas             = $akun['total'];
+                $jumlahAkun       = is_null($kas) ? '0' : number_format($kas, 0, ',', '.');
+                $text             .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+            } else {
+                $jumlahAkun = is_null($akun['total']) ? '0' : number_format($akun['total'], 0, ',', '.');
                 $text       .= str_pad($akun['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+            }
+        }
+        $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+//        }
+
+        if ($totalTarikTunai > 0) {
+            $text .= str_pad('Total Tarik Tunai', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalTarikTunai, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+
+        $tarikTunaiPerAkun = $this->tarikTunaiPerAkun();
+        if (!empty($tarikTunaiPerAkun)) {
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
+            foreach ($tarikTunaiPerAkun as $trkTunai) {
+                $jumlahAkun = number_format($trkTunai['jumlah'], 0, ',', '.');
+                $text       .= str_pad($trkTunai['nama'], 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($jumlahAkun, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
             }
             $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
         }
 
-        $text .= str_pad('Total Margin', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalMargin, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
-        $text .= str_pad('Total Retur Jual', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalRetur, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
-        $text .= str_pad('Saldo Akhir', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAkhir, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        if ($totalRetur > 0) {
+            $text .= str_pad('Total Retur Jual', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalRetur, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+        $text .= str_pad('Saldo Akhir Kas', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAkhir, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         $text .= str_pad('Saldo Akhir Fisik', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($saldoAkhirFisik, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         $text .= str_pad('Selisih', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($selisihSaldo, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
         return $text;
     }
-    
-    public function penjualanPerAkun()
+
+    /*
+      public function penjualanPerAkun()
+      {
+      $sql = "
+      SELECT
+      kas_bank.id, kas_bank.nama, t_rekap.jumlah
+      FROM
+      (SELECT
+      p.kas_bank_id, SUM(d.jumlah) jumlah
+      FROM
+      penerimaan_detail d
+      JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
+      JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
+      AND hp.asal = :hpAsal
+      JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
+      AND penjualan.tanggal >= :waktuBuka
+      AND penjualan.tanggal <= :waktuTutup
+      AND penjualan.updated_by = :userId
+      GROUP BY p.kas_bank_id) AS t_rekap
+      JOIN
+      kas_bank ON kas_bank.id = t_rekap.kas_bank_id
+      order by kas_bank.nama
+      ";
+
+      $command = Yii::app()->db->createCommand($sql);
+
+      $command->bindValues([
+      ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
+      ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
+      ':waktuBuka'        => $this->waktu_buka,
+      ':waktuTutup'       => $this->waktu_tutup,
+      ':userId'           => $this->user_id,
+      ]);
+
+      return $command->queryAll();
+      }
+     * 
+     */
+
+    public function uangDibayarPerAkun()
     {
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND penjualan.tanggal <= :waktuTutup";
+        }
         $sql = "
         SELECT 
-            kas_bank.id, kas_bank.nama, t_rekap.jumlah
+            t.kb, kas_bank.nama, t.total
         FROM
             (SELECT 
-                p.kas_bank_id, SUM(d.jumlah) jumlah
+                tr.kb, SUM(tr.nominal) total
             FROM
-                penerimaan_detail d
-            JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
-            JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
-                AND hp.asal = :hpAsal
-            JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
-                AND penjualan.tanggal >= :waktuBuka
-                AND penjualan.tanggal <= :waktuTutup
-                AND penjualan.updated_by = :userId
-            GROUP BY p.kas_bank_id) AS t_rekap
+                (SELECT 
+                tp.nomor,
+                    CASE 
+                        WHEN kb2 > 0 THEN kb2
+                        ELSE kb1
+                    END kb,
+                    CASE 
+                        WHEN jumlah > 0 THEN jumlah
+                        ELSE uang_dibayar
+                    END nominal
+            FROM
+                (SELECT 
+                p.nomor,
+                    p.kas_bank_id kb1,
+                    p.uang_dibayar,
+                    pkb.kas_bank_id kb2,
+                    pkb.jumlah
+            FROM
+                penerimaan p
+            LEFT JOIN penerimaan_kas_bank pkb ON p.id = pkb.penerimaan_id
+            WHERE
+                p.id IN (SELECT DISTINCT
+                        p.id
+                    FROM
+                        penerimaan_detail d
+                    JOIN penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
+                    JOIN hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = :hpAsal
+                    JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= :waktuBuka
+                        {$kondisiTutup}
+                        AND penjualan.updated_by = :userId)) AS tp) AS tr
+            GROUP BY tr.kb) AS t
                 JOIN
-            kas_bank ON kas_bank.id = t_rekap.kas_bank_id
-            order by kas_bank.nama  
+            kas_bank ON t.kb = kas_bank.id
+            ORDER BY t.kb
         ";
-        
+
         $command = Yii::app()->db->createCommand($sql);
-        
+
         $command->bindValues([
             ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
             ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
             ':waktuBuka'        => $this->waktu_buka,
-            ':waktuTutup'       => $this->waktu_tutup,
             ':userId'           => $this->user_id,
         ]);
-        
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
+
+        return $command->queryAll();
+    }
+
+    public function penerimaanNet()
+    {
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND penjualan.tanggal <= :waktuTutup";
+        }
+        $sql = "
+        SELECT 
+            SUM(CASE posisi WHEN 0 THEN jumlah ELSE -jumlah END) total
+        FROM
+            penerimaan_detail
+        WHERE
+            penerimaan_id IN (SELECT DISTINCT
+                    p.id
+                FROM
+                    penerimaan_detail d
+                        JOIN
+                    penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
+                        JOIN
+                    hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = :hpAsal
+                        JOIN
+                    penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= :waktuBuka
+                        {$kondisiTutup}
+                        AND penjualan.updated_by = :userId)
+        ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
+            ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
+            ':waktuBuka'        => $this->waktu_buka,
+            ':userId'           => $this->user_id,
+        ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
+
+        return $command->queryRow();
+    }
+
+    public function totalUangDibayar()
+    {
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND penjualan.tanggal <= :waktuTutup";
+        }
+        $sql = "
+        SELECT 
+            SUM(uang_dibayar) total
+        FROM
+            penerimaan
+        WHERE
+            id IN (SELECT DISTINCT
+                    p.id
+                FROM
+                    penerimaan_detail d
+                        JOIN
+                    penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
+                        JOIN
+                    hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = :hpAsal
+                        JOIN
+                    penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= :waktuBuka
+                        {$kondisiTutup}
+                        AND penjualan.updated_by = :userId)
+        ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
+            ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
+            ':waktuBuka'        => $this->waktu_buka,
+            ':userId'           => $this->user_id,
+        ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
+
+        return $command->queryRow();
+    }
+
+    public function totalInfaq()
+    {
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND penjualan.tanggal <= :waktuTutup";
+        }
+        $sql = "
+        SELECT 
+            SUM(jumlah) total
+        FROM
+            penerimaan_detail
+        WHERE
+            penerimaan_id IN (SELECT DISTINCT
+                    p.id
+                FROM
+                    penerimaan_detail d
+                        JOIN
+                    penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
+                        JOIN
+                    hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = :hpAsal
+                        JOIN
+                    penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= :waktuBuka
+                        {$kondisiTutup}
+                        AND penjualan.updated_by = :userId)
+        AND item_id = :itemInfaq
+        ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
+            ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
+            ':waktuBuka'        => $this->waktu_buka,
+            ':userId'           => $this->user_id,
+            ':itemInfaq'        => ItemKeuangan::POS_INFAQ,
+        ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
+
+        return $command->queryRow();
+    }
+
+    public function totalDiskonPerNota()
+    {
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND penjualan.tanggal <= :waktuTutup";
+        }
+        $sql = "
+        SELECT 
+            SUM(jumlah) total
+        FROM
+            penerimaan_detail
+        WHERE
+            penerimaan_id IN (SELECT DISTINCT
+                    p.id
+                FROM
+                    penerimaan_detail d
+                        JOIN
+                    penerimaan p ON d.penerimaan_id = p.id AND p.status = :penerimaanStatus
+                        JOIN
+                    hutang_piutang hp ON d.hutang_piutang_id = hp.id
+                        AND hp.asal = :hpAsal
+                        JOIN
+                    penjualan ON hp.id = penjualan.hutang_piutang_id
+                        AND penjualan.tanggal >= :waktuBuka
+                        {$kondisiTutup}
+                        AND penjualan.updated_by = :userId)
+        AND item_id = :itemInfaq
+        ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':penerimaanStatus' => Penerimaan::STATUS_BAYAR,
+            ':hpAsal'           => HutangPiutang::DARI_PENJUALAN,
+            ':waktuBuka'        => $this->waktu_buka,
+            ':userId'           => $this->user_id,
+            ':itemInfaq'        => ItemKeuangan::POS_DISKON_PER_NOTA,
+        ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
+
+        return $command->queryRow();
+    }
+
+    public function totalPenerimaanKas()
+    {
+        $uangDibayarPerAkun = $this->uangDibayarPerAkun();
+        $jumlahAkun         = 0;
+        // print_r($uangDibayarPerAkun);
+        foreach ($uangDibayarPerAkun as $akun) {
+            if ($akun['kb'] == KasBank::KAS_ID) {
+                // Jika total_penerimaan null berarti dibuat sebelum update ini, maka hitung ulang
+                $totalUangDibayar = is_null($this->total_uang_dibayar) ? $this->totalUangDibayar()['total'] : $this->total_uang_dibayar;
+                $totalPenerimaan  = is_null($this->total_penerimaan) ? $this->penerimaanNet()['total'] : $this->total_penerimaan;
+                $kas              = $akun['total'] - ($totalUangDibayar - $totalPenerimaan);
+                $jumlahAkun       = is_null($kas) ? '0' : $kas;
+            }
+        }
+        return $jumlahAkun;
+    }
+
+    public function tarikTunaiPerAkun()
+    {
+
+        $kondisiTutup = '';
+        if (!is_null($this->waktu_tutup)) {
+            $kondisiTutup = "AND t.updated_at <= :waktuTutup";
+        }
+        $sql = "
+        SELECT 
+            t_rekap_akun.kas_bank_id, t_rekap_akun.jumlah, kas_bank.nama
+        FROM
+            (SELECT 
+                kas_bank_id, SUM(jumlah) jumlah
+            FROM
+                penjualan_tarik_tunai t
+            WHERE
+                t.updated_by = :userId
+                    AND t.updated_at >= :waktuBuka
+                    {$kondisiTutup}
+            GROUP BY kas_bank_id) t_rekap_akun
+                JOIN
+            kas_bank ON kas_bank.id = t_rekap_akun.kas_bank_id
+        ORDER BY kas_bank.id
+        ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':waktuBuka' => $this->waktu_buka,
+            ':userId'    => $this->user_id,
+        ]);
+        if (!is_null($this->waktu_tutup)) {
+            $command->bindValue(':waktuTutup', $this->waktu_tutup);
+        }
+
         return $command->queryAll();
     }
 

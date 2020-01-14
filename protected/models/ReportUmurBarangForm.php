@@ -73,38 +73,87 @@ class ReportUmurBarangForm extends CFormModel
         }
         $kategoriQuery = '';
         if (!empty($this->kategoriId)) {
-            $kategoriQuery = 'JOIN barang ON inventory_balance.barang_id = barang.id
-                                AND barang.kategori_id = :kategoriId';
+            $kategoriQuery = 'JOIN barang b ON inventory_balance.barang_id = b.id
+                                AND b.kategori_id = :kategoriId';
         }
-        $command = Yii::app()->db->createCommand();
-        $command->select("
+//        $command = Yii::app()->db->createCommand();
+//        $command->select("
+//                t_inventory.*,
+//                SUM(ib.qty) total_stok,
+//                TIMESTAMPDIFF(MONTH, tgl_beli_awal, NOW()) umur_bulan,
+//                TIMESTAMPDIFF(DAY, tgl_beli_awal, NOW()) umur_hari,
+//                barang.barcode,
+//                barang.nama,
+//                profil.nama supplier
+//                ");
+//        $command->from("
+//                (SELECT 
+//                    barang_id,
+//                        SUM(qty) qty,
+//                        SUM(qty * harga_beli) nominal,
+//                        MIN(inventory_balance.created_at) tgl_beli_awal,
+//                        COUNT(*) count
+//                FROM
+//                    inventory_balance
+//        {$kategoriQuery}    
+//                JOIN barang on barang.id = inventory_balance.barang_id and barang.status=:barangAktif
+//                WHERE
+//        {$whereBulan}
+//                        AND qty > 0
+//                GROUP BY barang_id
+//                LIMIT {$this->limit}) AS t_inventory
+//                ");
+//        $command->join('inventory_balance ib', 't_inventory.barang_id = ib.barang_id');
+//        $command->join('barang', 't_inventory.barang_id = barang.id');
+//        $command->join('supplier_barang', 'supplier_barang.barang_id = barang.id AND supplier_barang.default= :sbDefault');
+//        $command->join('profil', 'profil.id = supplier_barang.supplier_id');
+//        $command->group('barang_id');
+//        $command->order([$this->listSortBy2()[$this->sortBy0], $this->listSortBy2()[$this->sortBy1]]);
+        
+        $sql = "
+        SELECT 
+            t.*, profil.nama supplier
+        FROM
+            (SELECT 
                 t_inventory.*,
-                SUM(ib.qty) total_stok,
-                TIMESTAMPDIFF(MONTH, tgl_beli_awal, NOW()) umur_bulan,
-                TIMESTAMPDIFF(DAY, tgl_beli_awal, NOW()) umur_hari,
-                barang.barcode,
-                barang.nama
-                ");
-        $command->from("
+                    SUM(ib.qty) total_stok,
+                    TIMESTAMPDIFF(MONTH, tgl_beli_awal, NOW()) umur_bulan,
+                    TIMESTAMPDIFF(DAY, tgl_beli_awal, NOW()) umur_hari,
+                    barang.barcode,
+                    barang.nama
+            FROM
                 (SELECT 
-                    barang_id,
-                        SUM(qty) qty,
-                        SUM(qty * harga_beli) nominal,
-                        MIN(inventory_balance.created_at) tgl_beli_awal,
-                        COUNT(*) count
-                FROM
-                    inventory_balance
-        {$kategoriQuery}    
-                WHERE
-        {$whereBulan}
-                        AND qty > 0
-                GROUP BY barang_id
-                LIMIT {$this->limit}) AS t_inventory
-                ");
-        $command->join('inventory_balance ib', 't_inventory.barang_id = ib.barang_id');
-        $command->join('barang', 't_inventory.barang_id = barang.id');
-        $command->group('barang_id');
-        $command->order([$this->listSortBy2()[$this->sortBy0], $this->listSortBy2()[$this->sortBy1]]);
+                barang_id,
+                    SUM(qty) qty,
+                    SUM(qty * harga_beli) nominal,
+                    MIN(inventory_balance.created_at) tgl_beli_awal,
+                    COUNT(*) count
+            FROM
+                inventory_balance
+            {$kategoriQuery}    
+            JOIN barang ON barang.id = inventory_balance.barang_id
+                AND barang.status = :barangAktif
+            WHERE
+            {$whereBulan}
+                    AND qty > 0
+            GROUP BY barang_id
+            LIMIT {$this->limit}) AS t_inventory
+            JOIN `inventory_balance` `ib` ON t_inventory.barang_id = ib.barang_id
+            JOIN `barang` ON t_inventory.barang_id = barang.id
+            GROUP BY `barang_id`
+            ORDER BY {$this->listSortBy2()[$this->sortBy0]} , {$this->listSortBy2()[$this->sortBy1]}) t
+                JOIN
+            `supplier_barang` ON supplier_barang.barang_id = t.barang_id
+                AND supplier_barang.default = :sbDefault
+                JOIN
+            `profil` ON profil.id = supplier_barang.supplier_id
+            ";
+            
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValue(':barangAktif', Barang::STATUS_AKTIF);
+        $command->bindValue(':sbDefault', SupplierBarang::SUPPLIER_DEFAULT);
+        
+        
         if (!empty($this->kategoriId)) {
             $command->bindValue(':kategoriId', $this->kategoriId);
         }
@@ -177,6 +226,26 @@ class ReportUmurBarangForm extends CFormModel
             self::KERTAS_FOLIO => self::KERTAS_FOLIO_NAMA,
             self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA
         ];
+    }
+
+    public function array2csv(array &$array)
+    {
+        if (count($array) == 0) {
+            return null;
+        }
+        ob_start();
+        $df = fopen('php://output', 'w');
+        fputcsv($df, array_keys(reset($array)));
+        foreach ($array as $row) {
+            fputcsv($df, $row);
+        }
+        fclose($df);
+        return ob_get_clean();
+    }
+
+    public function toCsv()
+    {
+        return $this->array2csv($this->reportUmurBarang());
     }
 
 }

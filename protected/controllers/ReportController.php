@@ -626,7 +626,7 @@ class ReportController extends Controller
 
         $itemKeuangan = new ItemKeuangan('search');
         $itemKeuangan->unsetAttributes(); // clear any default values
-        $itemKeuangan->parent_id = '>0';
+        //$itemKeuangan->parent_id = '>0'; //Uncomment jika hanya menampilkan item "anak"
         /* Uncomment jika ingin trx diluar trx inventory
          * fix me: masukkan ke config.
          */
@@ -680,7 +680,7 @@ class ReportController extends Controller
             }
         }
 
-        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER, Device::TIPE_CSV_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $kertasUntukPdf       = ReportUmurBarangForm::listKertas();
         $this->render('umurbarang', [
@@ -699,12 +699,44 @@ class ReportController extends Controller
                 case Device::TIPE_PDF_PRINTER:
                     $this->umurBarangPdf($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1'], $_GET['kertas']);
                     break;
+                case Device::TIPE_CSV_PRINTER:
+                    $this->umurBarangCsv($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1']);
+                    break;
             }
         }
+    }
+    
+    public function umurBarangCsv($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1)
+    {
+        $model = new ReportUmurBarangForm();
+
+        $model->bulan      = $bulan;
+        $model->dari       = $dari;
+        $model->sampai     = $sampai;
+        $model->kategoriId = $kategoriId;
+        $model->limit      = $limit;
+        $model->sortBy0    = $sortBy0;
+        $model->sortBy1    = $sortBy1;
+        //$report            = $model->reportUmurBarang();
+        
+        $text  = $model->toCsv();        
+
+        $timeStamp       = date('Ymd His');
+        $keteranganWaktu = $model->bulan > 0 ? '>=' . $model->bulan : $model->dari . '-' . $model->sampai;
+        $namaFile        = "Laporan Umur Barang {$keteranganWaktu} {$timeStamp}.csv";
+
+        $this->renderPartial('_csv', [
+            'namaFile'    => $namaFile,
+            'csv'        => $text
+        ]);
     }
 
     public function umurBarangPdf($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $kertas)
     {
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+        ini_set("pcre.backtrack_limit", "99999999");
+        
         $model = new ReportUmurBarangForm();
 
         $model->bulan      = $bulan;
@@ -747,7 +779,7 @@ class ReportController extends Controller
         $mpdf->pagenumPrefix = 'Hal ';
         $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mpdf->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("Laporan Umur Barang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionPls()
@@ -1256,6 +1288,84 @@ class ReportController extends Controller
             'namaFile' => $namaFile,
             'csv'      => $report,
         ]);
+    }
+    
+    public function actionStockOpname()
+    {
+        $model  = new ReportStockOpnameForm();
+        $report = null;
+        if (isset($_POST['ReportStockOpnameForm'])) {
+            $model->attributes = $_POST['ReportStockOpnameForm'];
+            if ($model->validate()) {
+                $report = $model->report();
+            }
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes();  // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf            = ReportStockOpnameForm::listKertas();
+
+        $this->render('stockopname', [
+            'model'     => $model,
+            'user'      => $user,
+            'report'    => $report,
+            'printers'  => $printers,
+            'kertasPdf' => $kertasPdf,
+        ]);
+    }
+
+    public function actionPrintStockOpname($printId, $kertas, $dari, $sampai, $user)
+    {
+        $model         = new ReportStockOpnameForm();
+        $model->dari   = $dari;
+        $model->sampai = $sampai;
+        $model->userId = $user;
+        if ($model->validate()) {
+            $report              = $model->report();
+            $report['timestamp'] = date('d-m-Y H:i:s');
+            $report['namaToko']  = $this->namaToko();
+            $report['kodeToko']  = $this->kodeToko();
+            $report['dari']      = $dari;
+            $report['sampai']    = $sampai;
+
+            $device = Device::model()->findByPk($printId);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    $this->stockOpnamePdf($report, $kertas);
+                    break;
+            }
+            Yii::app()->end();
+        }
+    }
+
+    public function stockOpnamePdf($report, $kertas)
+    {
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+        ini_set("pcre.backtrack_limit", "99999999");
+
+        /*
+         * Persiapan render PDF
+         */
+        $listNamaKertas = ReportStockOpnameForm::listKertas();
+        require_once __DIR__ . '/../vendors/autoload.php';
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_stockopname_pdf', [
+                    'report' => $report,
+                        ], true
+        ));
+
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
+        // Render PDF
+        $mpdf->Output("Laporan SO {$report['kodeToko']} {$report['namaToko']} {$report['dari']} {$report['sampai']} {$report['timestamp']}.pdf", 'I');
     }
 
 }
