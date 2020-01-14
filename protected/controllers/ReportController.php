@@ -680,7 +680,7 @@ class ReportController extends Controller
             }
         }
 
-        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER, Device::TIPE_CSV_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $kertasUntukPdf       = ReportUmurBarangForm::listKertas();
         $this->render('umurbarang', [
@@ -699,8 +699,36 @@ class ReportController extends Controller
                 case Device::TIPE_PDF_PRINTER:
                     $this->umurBarangPdf($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1'], $_GET['kertas']);
                     break;
+                case Device::TIPE_CSV_PRINTER:
+                    $this->umurBarangCsv($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1']);
+                    break;
             }
         }
+    }
+    
+    public function umurBarangCsv($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1)
+    {
+        $model = new ReportUmurBarangForm();
+
+        $model->bulan      = $bulan;
+        $model->dari       = $dari;
+        $model->sampai     = $sampai;
+        $model->kategoriId = $kategoriId;
+        $model->limit      = $limit;
+        $model->sortBy0    = $sortBy0;
+        $model->sortBy1    = $sortBy1;
+        //$report            = $model->reportUmurBarang();
+        
+        $text  = $model->toCsv();        
+
+        $timeStamp       = date('Ymd His');
+        $keteranganWaktu = $model->bulan > 0 ? '>=' . $model->bulan : $model->dari . '-' . $model->sampai;
+        $namaFile        = "Laporan Umur Barang {$keteranganWaktu} {$timeStamp}.csv";
+
+        $this->renderPartial('_csv', [
+            'namaFile'    => $namaFile,
+            'csv'        => $text
+        ]);
     }
 
     public function umurBarangPdf($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $kertas)
@@ -751,7 +779,7 @@ class ReportController extends Controller
         $mpdf->pagenumPrefix = 'Hal ';
         $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mpdf->Output("Hutang Piutang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+        $mpdf->Output("Laporan Umur Barang {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
     public function actionPls()

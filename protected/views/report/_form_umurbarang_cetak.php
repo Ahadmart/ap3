@@ -44,12 +44,16 @@
                             <li>
                                 <a href="<?=
                                 $this->createUrl('printumurbarang', [
-                                    'printId' => $printer['id'],
-                                    'profilId' => $model->profilId,
-                                    'showDetail' => $model->showDetail,
-                                    'pilihCetak' => $model->pilihCetak
-                                ])
-                                ?>">
+                                               'printId'    => $printer['id'],
+                                               'bulan'      => $model->bulan,
+                                               'dari'       => $model->dari,
+                                               'sampai'     => $model->sampai,
+                                               'kategoriId' => $model->kategoriId,
+                                               'limit'      => $model->limit,
+                                               'sortBy0'    => $model->sortBy0,
+                                               'sortBy1'    => $model->sortBy1,
+                                           ])
+                                           ?>">
                                     <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
                             </li>
                             <?php
