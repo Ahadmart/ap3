@@ -705,6 +705,10 @@ class ReportController extends Controller
 
     public function umurBarangPdf($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $kertas)
     {
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
+        ini_set("pcre.backtrack_limit", "99999999");
+        
         $model = new ReportUmurBarangForm();
 
         $model->bulan      = $bulan;

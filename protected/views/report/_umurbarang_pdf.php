@@ -78,6 +78,7 @@ function namaHari($timeStamp)
                         <th rowspan="2" class="rata-kanan">No</th>
                         <th rowspan="2">Barcode</th>
                         <th rowspan="2">Nama</th>
+                        <th rowspan="2">Supplier</th>
                         <th rowspan="2" class="rata-kanan">Stok</th>
                         <th rowspan="2" class="rata-kanan">Nilai Stok</th>
                         <th colspan="2" class='rata-tengah'>Umur Stok dalam</th>
@@ -96,6 +97,7 @@ function namaHari($timeStamp)
                             <td class="rata-kanan"><?php echo $i; ?></td>
                             <td><?= $baris['barcode']; ?></td>
                             <td><?= $baris['nama']; ?></td>
+                            <td><?= $baris['supplier']; ?></td>
                             <td class="rata-kanan"><?= number_format($baris['qty'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?= number_format($baris['nominal'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?= number_format($baris['umur_hari'], 0, ',', '.'); ?></td>
