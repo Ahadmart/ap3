@@ -10,20 +10,20 @@
 class ReportTopRankForm extends CFormModel
 {
 
-    const SORT_BY_QTY_ASC = 1;
-    const SORT_BY_QTY_DSC = 2;
-    const SORT_BY_OMZET_ASC = 3;
-    const SORT_BY_OMZET_DSC = 4;
+    const SORT_BY_QTY_ASC    = 1;
+    const SORT_BY_QTY_DSC    = 2;
+    const SORT_BY_OMZET_ASC  = 3;
+    const SORT_BY_OMZET_DSC  = 4;
     const SORT_BY_MARGIN_ASC = 5;
     const SORT_BY_MARGIN_DSC = 6;
     /* ============= */
-    const KERTAS_LETTER = 10;
-    const KERTAS_A4 = 20;
-    const KERTAS_FOLIO = 30;
+    const KERTAS_LETTER      = 10;
+    const KERTAS_A4          = 20;
+    const KERTAS_FOLIO       = 30;
     /* ===================== */
     const KERTAS_LETTER_NAMA = 'Letter';
-    const KERTAS_A4_NAMA = 'A4';
-    const KERTAS_FOLIO_NAMA = 'Folio';
+    const KERTAS_A4_NAMA     = 'A4';
+    const KERTAS_FOLIO_NAMA  = 'Folio';
 
     public $dari;
     public $sampai;
@@ -39,10 +39,10 @@ class ReportTopRankForm extends CFormModel
      */
     public function rules()
     {
-        return array(
-            array('dari, sampai, sortBy', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            array('profilId, kategoriId, rakId, limit, kertas', 'safe')
-        );
+        return [
+            ['dari, sampai, sortBy', 'required', 'message' => '{attribute} tidak boleh kosong'],
+            ['profilId, kategoriId, rakId, limit, kertas', 'safe']
+        ];
     }
 
     /**
@@ -50,15 +50,15 @@ class ReportTopRankForm extends CFormModel
      */
     public function attributeLabels()
     {
-        return array(
-            'profilId' => 'Profil (Supplier)',
+        return [
+            'profilId'   => 'Profil (Supplier)',
             'kategoriId' => 'Kategori',
-            'rakId' => 'Rak',
-            'limit' => 'Jumlah Item',
-            'sortBy' => 'Urut berdasarkan',
-            'dari' => 'Dari',
-            'sampai' => 'Sampai'
-        );
+            'rakId'      => 'Rak',
+            'limit'      => 'Jumlah Item',
+            'sortBy'     => 'Urut berdasarkan',
+            'dari'       => 'Dari',
+            'sampai'     => 'Sampai'
+        ];
     }
 
     public function getNamaProfil()
@@ -81,8 +81,11 @@ class ReportTopRankForm extends CFormModel
 
     public function reportTopRank()
     {
-        $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
-        $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
+        $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d') . ' 00:00:00';
+
+        $tglAkhir = DateTime::createFromFormat('d-m-Y', $this->sampai);
+        $tglAkhir->modify('+1 day');
+        $sampai   = $tglAkhir->format('Y-m-d') . ' 00:00:00';
 
         $command = Yii::app()->db->createCommand();
         $command->select('t_penjualan.barang_id, barang.barcode, barang.nama, t_penjualan.totalqty, t_penjualan.total, t_modal.totalmodal, (t_penjualan.total - t_modal.totalModal) margin, t_penjualan.totalqty/DATEDIFF(:sampai, :dari) avgday, t_stok.stok');
@@ -93,7 +96,7 @@ class ReportTopRankForm extends CFormModel
                         FROM
                             penjualan_detail pd
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
-                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                            AND pj.tanggal >= :dari AND pj.tanggal < :sampai
                         GROUP BY barang_id) t_penjualan");
         $command->join("(SELECT
                             barang_id, SUM(hpp.qty * hpp.harga_beli) totalmodal
@@ -101,7 +104,7 @@ class ReportTopRankForm extends CFormModel
                             harga_pokok_penjualan hpp
                         JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
-                            AND DATE_FORMAT(pj.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+                            AND pj.tanggal >= :dari AND pj.tanggal < :sampai
                         GROUP BY barang_id) t_modal", "t_penjualan.barang_id = t_modal.barang_id");
         $command->join('barang', 't_penjualan.barang_id=barang.id');
         $command->join('(SELECT
@@ -166,28 +169,48 @@ class ReportTopRankForm extends CFormModel
 
         return $command->queryAll();
     }
+    public function array2csv(array &$array)
+    {
+        if (count($array) == 0) {
+            return null;
+        }
+        ob_start();
+        $df = fopen('php://output', 'w');
+        fputcsv($df, array_keys(reset($array)));
+        foreach ($array as $row) {
+            fputcsv($df, $row);
+        }
+        fclose($df);
+        return ob_get_clean();
+    }
+
+    public function toCsv()
+    {
+        $report = $this->reportTopRank();
+        return $this->array2csv($report);
+    }
 
     public function filterKategori()
     {
-        return ['NULL' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return ['NULL' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
     public function filterRak()
     {
-        return ['NULL' => '[SEMUA]'] + CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return ['NULL' => '[SEMUA]'] + CHtml::listData(RakBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
     public function listSortBy()
     {
         return [
-            'Top Rank' => [
-                self::SORT_BY_QTY_DSC => 'Jumlah Barang [z-a]',
-                self::SORT_BY_OMZET_DSC => 'Omset [z-a]',
+            'Top Rank'    => [
+                self::SORT_BY_QTY_DSC    => 'Jumlah Barang [z-a]',
+                self::SORT_BY_OMZET_DSC  => 'Omset [z-a]',
                 self::SORT_BY_MARGIN_DSC => 'Profit [z-a]'
             ],
             'Slow Moving' => [
-                self::SORT_BY_QTY_ASC => 'Jumlah Barang [a-z]',
-                self::SORT_BY_OMZET_ASC => 'Omset [a-z]',
+                self::SORT_BY_QTY_ASC    => 'Jumlah Barang [a-z]',
+                self::SORT_BY_OMZET_ASC  => 'Omset [a-z]',
                 self::SORT_BY_MARGIN_ASC => 'Profit [a-z]'
             ]
         ];
@@ -196,8 +219,8 @@ class ReportTopRankForm extends CFormModel
     public static function listKertas()
     {
         return [
-            self::KERTAS_A4 => self::KERTAS_A4_NAMA,
-            self::KERTAS_FOLIO => self::KERTAS_FOLIO_NAMA,
+            self::KERTAS_A4     => self::KERTAS_A4_NAMA,
+            self::KERTAS_FOLIO  => self::KERTAS_FOLIO_NAMA,
             self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA
         ];
     }

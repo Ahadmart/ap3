@@ -420,26 +420,46 @@ class ReportController extends Controller
             $profil->attributes = $_GET['Profil'];
         }
 
-        $kertasUntukPdf = ReportTopRankForm::listKertas();
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER, Device::TIPE_CSV_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasUntukPdf       = ReportTopRankForm::listKertas();
+
         $this->render('toprank', [
             'model'     => $model,
             'profil'    => $profil,
             'report'    => $report,
+            'printers'  => $printers,
             'kertasPdf' => $kertasUntukPdf,
         ]);
     }
 
-    public function actionTopRankPdf()
+    public function actionPrintTopRank()
     {
-        $model  = new ReportTopRankForm;
-        $report = null;
-
-        if (isset($_POST['ReportTopRankForm'])) {
-            $model->attributes = $_POST['ReportTopRankForm'];
-            $report            = $model->reportTopRank();
-        } else {
-            throw new Exception("Tidak ada data, klik lagi dari tombol cetak", 500);
+        if (isset($_GET['printId'])) {
+            $device = Device::model()->findByPk($_GET['printId']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    $this->topRankPdf($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['kertas']);
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    $this->topRankCsv($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy']);
+                    break;
+            }
         }
+    }
+
+    public function topRankPdf($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $kertas)
+    {
+        $model             = new ReportTopRankForm;
+        $model->profilId   = $profilId;
+        $model->dari       = $dari;
+        $model->sampai     = $sampai;
+        $model->kategoriId = $kategoriId;
+        $model->rakId      = $rakId;
+        $model->limit      = $limit;
+        $model->sortBy     = $sortBy;
+
+        $report = $model->reportTopRank();
 
         $configs = Config::model()->findAll();
         /*
@@ -469,6 +489,29 @@ class ReportController extends Controller
         $mpdf->pagenumSuffix = ' / ';
         // Render PDF
         $mpdf->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
+    }
+    
+    public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy)
+    {
+        $model             = new ReportTopRankForm;
+        $model->profilId   = $profilId;
+        $model->dari       = $dari;
+        $model->sampai     = $sampai;
+        $model->kategoriId = $kategoriId;
+        $model->rakId      = $rakId;
+        $model->limit      = $limit;
+        $model->sortBy     = $sortBy;
+
+        $text = $model->toCsv();
+
+        $timeStamp  = date('Ymd His');
+        $keterangan = $model->dari . '-' . $model->sampai;
+        $namaFile   = "Laporan Top Rank {$keterangan} {$timeStamp}.csv";
+
+        $this->renderPartial('_csv', [
+            'namaFile' => $namaFile,
+            'csv'      => $text
+        ]);
     }
 
     public function actionHutangPiutang()
