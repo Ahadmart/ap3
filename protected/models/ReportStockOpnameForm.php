@@ -116,7 +116,7 @@ class ReportStockOpnameForm extends CFormModel
             FROM
                 inventory_balance
             WHERE 
-                updated_at <= :dari
+                updated_at <= :sampai
             GROUP BY barang_id) t_ib ON t_ib.barang_id = d.barang_id
                 JOIN
             inventory_balance ib ON ib.id = t_ib.max_id
