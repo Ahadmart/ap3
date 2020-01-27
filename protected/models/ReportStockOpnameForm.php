@@ -99,7 +99,24 @@ class ReportStockOpnameForm extends CFormModel
             b.nama,
             d.qty_tercatat,
             d.qty_sebenarnya,
-            ib.harga_beli,
+            (SELECT 
+                    harga_beli
+                FROM
+                    inventory_balance
+                WHERE
+                    created_at <= s.tanggal
+                        AND barang_id = d.barang_id
+                ORDER BY id DESC
+                LIMIT 1) harga_beli,
+            (SELECT 
+                    harga
+                FROM
+                    barang_harga_jual
+                WHERE
+                    created_at <= s.tanggal
+                        AND barang_id = d.barang_id
+                ORDER BY id DESC
+                LIMIT 1) harga_jual,
             `user`.nama nama_user
         FROM
             stock_opname_detail d
@@ -110,16 +127,6 @@ class ReportStockOpnameForm extends CFormModel
                 AND s.`status` = :statusSO
                 JOIN
             barang b ON b.id = d.barang_id
-                JOIN
-            (SELECT 
-                barang_id, MAX(id) max_id
-            FROM
-                inventory_balance
-            WHERE 
-                updated_at <= :sampai
-            GROUP BY barang_id) t_ib ON t_ib.barang_id = d.barang_id
-                JOIN
-            inventory_balance ib ON ib.id = t_ib.max_id
                 JOIN
             `user` ON `user`.id = d.updated_by
         {$userCondition}
@@ -137,6 +144,15 @@ class ReportStockOpnameForm extends CFormModel
         }
 
         return $command->queryAll();
+    }
+    
+    /**
+     * 
+     * @return boolean true jika perhitungan menggunakan harga jual
+     */
+    public static function isHitungDenganHargaJual()
+    {
+        return true;
     }
 
 }

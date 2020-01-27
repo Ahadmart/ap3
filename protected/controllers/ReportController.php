@@ -1343,7 +1343,7 @@ class ReportController extends Controller
                 $report = $model->report();
             }
         }
-
+        
         $user = new User('search');
         $user->unsetAttributes();  // clear any default values
         if (isset($_GET['User'])) {
@@ -1353,13 +1353,14 @@ class ReportController extends Controller
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $kertasPdf            = ReportStockOpnameForm::listKertas();
-
+        
         $this->render('stockopname', [
-            'model'     => $model,
-            'user'      => $user,
-            'report'    => $report,
-            'printers'  => $printers,
-            'kertasPdf' => $kertasPdf,
+            'model'                => $model,
+            'user'                 => $user,
+            'report'               => $report,
+            'printers'             => $printers,
+            'kertasPdf'            => $kertasPdf,
+            'nilaiDenganHargaJual' => ReportStockOpnameForm::isHitungDenganHargaJual(),
         ]);
     }
 
@@ -1400,7 +1401,8 @@ class ReportController extends Controller
         require_once __DIR__ . '/../vendors/autoload.php';
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('_stockopname_pdf', [
-                    'report' => $report,
+                    'report'               => $report,
+                    'nilaiDenganHargaJual' => ReportStockOpnameForm::isHitungDenganHargaJual(),
                         ], true
         ));
 
