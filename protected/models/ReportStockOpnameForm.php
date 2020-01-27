@@ -145,14 +145,25 @@ class ReportStockOpnameForm extends CFormModel
 
         return $command->queryAll();
     }
-    
+
     /**
      * 
      * @return boolean true jika perhitungan menggunakan harga jual
      */
     public static function isHitungDenganHargaJual()
     {
-        return true;
+        $sql     = "
+        SELECT 
+            nilai
+        FROM
+            config
+        WHERE
+            nama = 'laporanso.dengan_hargajual'            
+            ";
+        $command = Yii::app()->db->createCommand($sql);
+        $r       = $command->queryRow();
+        
+        return $r['nilai'] == '1';
     }
 
 }

@@ -64,10 +64,10 @@
                     <th></th>
                     <th class="rata-kanan">Qty</th>
                     <th class="rata-kanan">Nilai</th>
-                    <?php if ($nilaiDenganHargaJual) { ?><th>Harga Jual</th><?php } ?>
+                    <?php if ($nilaiDenganHargaJual) { ?><th class="rata-kanan">Harga Jual</th><?php } ?>
                     <th class="rata-kanan">Qty</th>
                     <th class="rata-kanan">Nilai</th>
-                    <?php if ($nilaiDenganHargaJual) { ?><th>Harga Jual</th><?php } ?>
+                    <?php if ($nilaiDenganHargaJual) { ?><th class="rata-kanan">Harga Jual</th><?php } ?>
                     <th class="rata-kanan">Qty</th>
                     <th class="rata-kanan"><?php echo $nilaiDenganHargaJual ? 'Harga Jual' : 'Nilai' ?></th>
                 </tr>
@@ -114,10 +114,10 @@
                     <td><?= $baris['nama']; ?> </td>
                     <td class="rata-kanan"><?php echo number_format($baris['qty_tercatat'], 0, ',', '.'); ?></td>
                     <td class="rata-kanan"><?php echo number_format($nominalTercatat, 0, ',', '.'); ?></td>
-                    <?php if ($nilaiDenganHargaJual) { ?><td><?php echo number_format($nominalTercatatHJ, 0, ',', '.'); ?></td><?php } ?>
+                    <?php if ($nilaiDenganHargaJual) { ?><td class="rata-kanan"><?php echo number_format($nominalTercatatHJ, 0, ',', '.'); ?></td><?php } ?>
                     <td class="rata-kanan"><?php echo number_format($baris['qty_sebenarnya'], 0, ',', '.'); ?></td>
                     <td class="rata-kanan"><?php echo number_format($nominalSebenarnya, 0, ',', '.'); ?></td>
-                    <?php if ($nilaiDenganHargaJual) { ?><td><?php echo number_format($nominalSebenarnyaHJ, 0, ',', '.'); ?></td><?php } ?>
+                    <?php if ($nilaiDenganHargaJual) { ?><td class="rata-kanan"><?php echo number_format($nominalSebenarnyaHJ, 0, ',', '.'); ?></td><?php } ?>
                     <td class="rata-kanan"><?php echo number_format($qtySelisih, 0, ',', '.'); ?></td>
                     <td class="rata-kanan"><?php echo number_format($nominalSelisih, 0, ',', '.'); ?></td>
                 </tr>
