@@ -22,7 +22,7 @@ Lihat INSTALL.txt
 ## Built With
 
 * [Yiiframework 1.1](http://www.yiiframework.com/) - The PHP Web framework
-* [Zurb Foundation 5.5](https://foundation.zurb.com/sites/docs/v/5.5.3/) - Front-end framework
+* [Zurb Foundation 5.5](https://get.foundation/sites/docs-v5/) - Front-end framework
 
 
 ## Acknowledgments
