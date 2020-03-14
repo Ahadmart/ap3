@@ -39,7 +39,7 @@
                     <div class="footer1"></div>
                     <div class="footer2"></div>
                     <div class="footer3"></div>
-                    <img class="logo" src="<?php echo Yii::app()->theme->baseUrl; ?>/img/ahadmart-logo.png" />
+                    <img class="logo" src="<?php echo YiiBase::getPathOfAlias('webroot').'/themes/'. Yii::app()->theme->name; ?>/img/ahadmart-logo.png" />
                 </div>
             </div>
             <?php
