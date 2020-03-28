@@ -18,15 +18,16 @@
                                     ?>
                                     <li><a target="blank" href="<?=
                                         $this->createUrl('printtoprank', [
-                                            'printId'    => $printer['id'],
-                                            'kertas'     => $key,
-                                            'dari'       => $model->dari,
-                                            'sampai'     => $model->sampai,
-                                            'kategoriId' => $model->kategoriId,
-                                            'rakId'      => $model->rakId,
-                                            'limit'      => $model->limit,
-                                            'sortBy'     => $model->sortBy,
-                                        ])
+                                                           'printId'    => $printer['id'],
+                                                           'kertas'     => $key,
+                                                           'profilId'   => $model->profilId,
+                                                           'dari'       => $model->dari,
+                                                           'sampai'     => $model->sampai,
+                                                           'kategoriId' => $model->kategoriId,
+                                                           'rakId'      => $model->rakId,
+                                                           'limit'      => $model->limit,
+                                                           'sortBy'     => $model->sortBy,
+                                                       ])
                                         ?>"><?= $value; ?></a></li>
                                         <?php
                                     endforeach;
@@ -38,14 +39,15 @@
                             <li>
                                 <a href="<?=
                                 $this->createUrl('printtoprank', [
-                                    'printId'    => $printer['id'],
-                                    'dari'       => $model->dari,
-                                    'sampai'     => $model->sampai,
-                                    'kategoriId' => $model->kategoriId,
-                                    'rakId'      => $model->rakId,
-                                    'limit'      => $model->limit,
-                                    'sortBy'     => $model->sortBy,
-                                ])
+                                               'printId'    => $printer['id'],
+                                               'profilId'   => $model->profilId,
+                                               'dari'       => $model->dari,
+                                               'sampai'     => $model->sampai,
+                                               'kategoriId' => $model->kategoriId,
+                                               'rakId'      => $model->rakId,
+                                               'limit'      => $model->limit,
+                                               'sortBy'     => $model->sortBy,
+                                           ])
                                 ?>">
                                     <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
                             </li>
