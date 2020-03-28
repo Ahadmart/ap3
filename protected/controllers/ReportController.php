@@ -476,7 +476,7 @@ class ReportController extends Controller
         require_once __DIR__ . '/../vendors/autoload.php';
         $waktuCetak     = date('dmY His');
         $listNamaKertas = ReportTopRankForm::listKertas();
-        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$model->kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('_toprank_pdf', [
             'model'      => $model,
             'report'     => $report,
