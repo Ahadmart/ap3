@@ -15,9 +15,9 @@ $this->boxHeader['normal'] = 'Barang';
 
 // Agar focus tetap di input cari barcode setelah pencarian
 Yii::app()->clientScript->registerScript('editableQty', ''
-        . '$( document ).ajaxComplete(function() {'
-        . '$("input[name=\'Barang[barcode]\'").select();'
-        . '});');
+    . '$( document ).ajaxComplete(function() {'
+    . '$("input[name=\'Barang[barcode]\'").select();'
+    . '});');
 ?>
 <div class="row" style="overflow: auto">
     <div class="small-12 columns">
@@ -53,6 +53,10 @@ Yii::app()->clientScript->registerScript('editableQty', ''
                     'value' => '$data->kategori->nama',
                     'filter' => $model->filterKategori()
                 ),
+                [
+                    'name'  => 'strukturFullPath',
+                    'value' => '$data->namaStruktur',
+                ],
                 array(
                     'name' => 'rak_id',
                     'value' => '$data->rak == null ? "NULL":$data->rak->nama',
@@ -103,20 +107,22 @@ Yii::app()->clientScript->registerScript('editableQty', ''
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => ''),
-    array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => '',
+    array(
+        'itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => '',
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
-                    'accesskey' => 't'
-                )),
+                'class' => 'button',
+                'accesskey' => 't'
+            )),
         ),
         'submenuOptions' => array('class' => 'button-group')
     ),
-    array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => '',
+    array(
+        'itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => '',
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
-                )),
+                'class' => 'button',
+            )),
         ),
         'submenuOptions' => array('class' => 'button-group')
     )

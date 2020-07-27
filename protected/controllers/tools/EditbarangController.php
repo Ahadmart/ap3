@@ -10,9 +10,20 @@ class EditbarangController extends Controller
         if (isset($_GET['Barang'])) {
             $model->attributes = $_GET['Barang'];
         }
+        
+        $lv1 = new StrukturBarang('search');
+        $lv1->unsetAttributes();  // clear any default values
+        $lv1->setAttribute('level', 1); // default yang tampil
+        $lv1->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+
+        $strukturDummy = new StrukturBarang('search');
+        $strukturDummy->unsetAttributes();  // clear any default values
+        $strukturDummy->setAttribute('level', 0);
 
         $this->render('index', [
-            'model' => $model,
+            'model'         => $model,
+            'lv1'           => $lv1,
+            'strukturDummy' => $strukturDummy,
         ]);
     }
 
@@ -318,4 +329,55 @@ class EditbarangController extends Controller
             ]);
         }
     }
+
+    public function actionFormGantiStruktur()
+    {
+        $this->renderPartial('_form_ganti_struktur', [
+        ]);
+    }
+
+    private function _setStruktur($items, $strukturL3Id)
+    {
+        $condition = 'id in (';
+        $i         = 1;
+        $params    = [];
+        $pertamax  = true;
+        foreach ($items as $item) {
+            $key = ':item' . $i;
+            if (!$pertamax) {
+                $condition .= ',';
+            }
+            $condition    .= $key;
+            $params[$key] = $item;
+            $pertamax     = false;
+            $i++;
+        }
+        $condition   .= ')';
+        $rowAffected = Barang::model()->updateAll(['struktur_id' => $strukturL3Id], $condition, $params);
+        $struktur    = StrukturBarang::model()->findByPk($strukturL3Id);
+        return [
+            'sukses'       => true,
+            'rowAffected'  => $rowAffected,
+            'namaStruktur' => $struktur->nama,
+        ];
+    }
+
+    public function actionGantiStruktur()
+    {
+
+        if (!empty($_POST['struktur-id']) && !empty($_POST['items'])) {
+            $items        = $_POST['items'];
+            $strukturL3Id = $_POST['struktur-id'];
+            $this->renderJSON($this->_setStruktur($items, $strukturL3Id));
+        } else {
+            $this->renderJSON([
+                'sukses' => false,
+                'error'  => [
+                    'code' => 500,
+                    'msg'  => 'Tidak ada data!',
+                ],
+            ]);
+        }
+    }
+
 }

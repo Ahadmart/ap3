@@ -126,8 +126,8 @@ class ReportController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-            $this->createUrl('pilihuser', ['id' => $data->id]) .
-            '" class="pilih user">' . $data->nama_lengkap . '</a>';
+                $this->createUrl('pilihuser', ['id' => $data->id]) .
+                '" class="pilih user">' . $data->nama_lengkap . '</a>';
         }
         return $return;
     }
@@ -288,8 +288,7 @@ class ReportController extends Controller
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('harian_detail_pdf', [
             'report' => $report,
-        ], true
-        ));
+        ], true));
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumPrefix = 'Hal ';
         $mpdf->pagenumSuffix = ' / ';
@@ -307,8 +306,7 @@ class ReportController extends Controller
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('harian_detail_pdf_2', [
             'report' => $report,
-        ], true
-        ));
+        ], true));
 
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumPrefix = 'Hal ';
@@ -325,8 +323,7 @@ class ReportController extends Controller
         $mPDF1 = Yii::app()->ePdf->mpdf('', 'A4');
         $mPDF1->WriteHTML($this->renderPartial('harian_detail_pdf', [
             'report' => $report,
-        ], true
-        ));
+        ], true));
 
         $mPDF1->SetDisplayMode('fullpage');
         $mPDF1->pagenumPrefix = 'Hal ';
@@ -387,8 +384,7 @@ class ReportController extends Controller
             'report'     => $report,
             'config'     => $branchConfig,
             'waktuCetak' => $waktuCetak,
-        ], true
-        ));
+        ], true));
 
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumPrefix = 'Hal ';
@@ -482,15 +478,14 @@ class ReportController extends Controller
             'report'     => $report,
             'config'     => $branchConfig,
             'waktuCetak' => $waktuCetak,
-        ], true
-        ));
+        ], true));
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumPrefix = 'Hal ';
         $mpdf->pagenumSuffix = ' / ';
         // Render PDF
         $mpdf->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
-    
+
     public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy)
     {
         $model             = new ReportTopRankForm;
@@ -600,8 +595,7 @@ class ReportController extends Controller
             'waktu'      => $waktu,
             'waktuCetak' => $waktuCetak,
             'profil'     => Profil::model()->findByPk($model->profilId),
-        ], true
-        ));
+        ], true));
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumPrefix = 'Hal ';
         $mpdf->pagenumSuffix = ' / ';
@@ -695,8 +689,8 @@ class ReportController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-            $this->createUrl('pilihitemkeu', ['id' => $data->id]) .
-            '" class="pilih itemkeu">' . $data->nama . '</a>';
+                $this->createUrl('pilihitemkeu', ['id' => $data->id]) .
+                '" class="pilih itemkeu">' . $data->nama . '</a>';
         }
         return $return;
     }
@@ -748,7 +742,7 @@ class ReportController extends Controller
             }
         }
     }
-    
+
     public function umurBarangCsv($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1)
     {
         $model = new ReportUmurBarangForm();
@@ -761,8 +755,8 @@ class ReportController extends Controller
         $model->sortBy0    = $sortBy0;
         $model->sortBy1    = $sortBy1;
         //$report            = $model->reportUmurBarang();
-        
-        $text  = $model->toCsv();        
+
+        $text  = $model->toCsv();
 
         $timeStamp       = date('Ymd His');
         $keteranganWaktu = $model->bulan > 0 ? '>=' . $model->bulan : $model->dari . '-' . $model->sampai;
@@ -779,7 +773,7 @@ class ReportController extends Controller
         ini_set('memory_limit', '-1');
         set_time_limit(0);
         ini_set("pcre.backtrack_limit", "99999999");
-        
+
         $model = new ReportUmurBarangForm();
 
         $model->bulan      = $bulan;
@@ -816,8 +810,7 @@ class ReportController extends Controller
             'config'     => $branchConfig,
             'waktu'      => $waktu,
             'waktuCetak' => $waktuCetak,
-        ], true
-        ));
+        ], true));
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumPrefix = 'Hal ';
         $mpdf->pagenumSuffix = ' / ';
@@ -903,8 +896,7 @@ class ReportController extends Controller
             'config'     => $branchConfig,
             'waktu'      => $waktu,
             'waktuCetak' => $waktuCetak,
-        ], true
-        ));
+        ], true));
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumPrefix = 'Hal ';
         $mpdf->pagenumSuffix = ' / ';
@@ -1172,7 +1164,6 @@ class ReportController extends Controller
         ];
         if ($model->validate()) {
             $csv = $model->toCsv();
-
         }
 
         if (is_null($csv)) {
@@ -1229,7 +1220,7 @@ class ReportController extends Controller
 
         $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
-        
+
         $this->render('penjualan_salesorder', [
             'model'    => $model,
             'profil'   => $profil,
@@ -1238,7 +1229,7 @@ class ReportController extends Controller
             'printers' => $printers,
         ]);
     }
-    
+
     public function actionPrintPenjualanSo()
     {
         if (isset($_GET['printId'])) {
@@ -1311,7 +1302,7 @@ class ReportController extends Controller
             //'report'   => $report,
         ]);
     }
-    
+
     public function actionPenjualanPerKategoriCsv()
     {
         $model  = new ReportPenjualanPerKategoriForm();
@@ -1322,7 +1313,7 @@ class ReportController extends Controller
                 $report = $model->toCSV();
             }
         }
-        
+
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
         $timeStamp = date("Y-m-d-H-i");
         $namaFile  = "Penjualan per Kategori {$namaToko->nilai} {$model->dari}_{$model->sampai} {$timeStamp}";
@@ -1332,7 +1323,7 @@ class ReportController extends Controller
             'csv'      => $report,
         ]);
     }
-    
+
     public function actionStockOpname()
     {
         $model  = new ReportStockOpnameForm();
@@ -1343,7 +1334,7 @@ class ReportController extends Controller
                 $report = $model->report();
             }
         }
-        
+
         $user = new User('search');
         $user->unsetAttributes();  // clear any default values
         if (isset($_GET['User'])) {
@@ -1353,7 +1344,7 @@ class ReportController extends Controller
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $kertasPdf            = ReportStockOpnameForm::listKertas();
-        
+
         $this->render('stockopname', [
             'model'                => $model,
             'user'                 => $user,
@@ -1401,10 +1392,9 @@ class ReportController extends Controller
         require_once __DIR__ . '/../vendors/autoload.php';
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('_stockopname_pdf', [
-                    'report'               => $report,
-                    'nilaiDenganHargaJual' => ReportStockOpnameForm::isHitungDenganHargaJual(),
-                        ], true
-        ));
+            'report'               => $report,
+            'nilaiDenganHargaJual' => ReportStockOpnameForm::isHitungDenganHargaJual(),
+        ], true));
 
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumPrefix = 'Hal ';
@@ -1413,4 +1403,161 @@ class ReportController extends Controller
         $mpdf->Output("Laporan SO {$report['kodeToko']} {$report['namaToko']} {$report['dari']} {$report['sampai']} {$report['timestamp']}.pdf", 'I');
     }
 
+    /**
+     * Report Penjualan per StrukturForm
+     */
+    public function actionPenjualanPerStruktur()
+    {
+        $model = new ReportPenjualanPerStrukturForm;
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes();  // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes();  // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf = ReportPenjualanPerStrukturForm::listKertas();
+        $this->render('penjualanperstruktur', [
+            'model' => $model,
+            'profil' => $profil,
+            'user' => $user,
+            'printers' => $printers,
+            'kertasPdf' => $kertasPdf,
+            'printHandle' => 'printpenjualanstruktur'
+        ]);
+    }
+
+    public function actionAmbilStrukturLv2()
+    {
+        $lv1Id   = $_GET['parent-id'];
+        $listLv2 = ReportPenjualanPerStrukturForm::listStrukLv2($lv1Id);
+        $r       = '';
+        foreach ($listLv2 as $key => $value) {
+            $r .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        echo $r;
+    }
+
+    public function actionAmbilStrukturLv3()
+    {
+        $lv2Id   = $_GET['parent-id'];
+        $listLv3 = ReportPenjualanPerStrukturForm::listStrukLv3($lv2Id);
+        $r       = '';
+        foreach ($listLv3 as $key => $value) {
+            $r .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        echo $r;
+    }
+
+    public function actionPrintPenjualanStruktur()
+    {
+        $model  = new ReportPenjualanPerStrukturForm;
+        $report = [];
+        if (isset($_POST['ReportPenjualanPerStrukturForm'])) {
+            $model->attributes = $_POST['ReportPenjualanPerStrukturForm'];
+            if ($model->validate()) {
+                if ($model->strukLv3 > 0) {
+                    $report = $model->reportDetail();
+                    //                    print_r($report);
+                    $this->penjualanStrukturPdf(
+                        $report,
+                        3,
+                        $model->strukLv3,
+                        $model->dari,
+                        $model->sampai,
+                        $model->kertas,
+                        $model->profilId,
+                        $model->userId
+                    );
+                } else if ($model->strukLv2 > 0) {
+                    $report = $model->reportDetail();
+                    //                    print_r($report);
+                    $this->penjualanStrukturPdf(
+                        $report,
+                        2,
+                        $model->strukLv2,
+                        $model->dari,
+                        $model->sampai,
+                        $model->kertas,
+                        $model->profilId,
+                        $model->userId
+                    );
+                } else {
+                    $report = $model->reportPerLv2();
+                    //                    echo '<pre>';
+                    //                    print_r($report);
+                    //                    echo '</pre>';
+                    $this->penjualanStrukturPdf(
+                        $report,
+                        0,
+                        $model->strukLv1,
+                        $model->dari,
+                        $model->sampai,
+                        $model->kertas,
+                        $model->profilId,
+                        $model->userId
+                    );
+                }
+            }
+        }
+    }
+
+    public function penjualanStrukturPdf($report, $level, $strukturId, $dari, $sampai, $kertas, $profilId, $userId)
+    {
+        $namaStruktur = '';
+        $viewReport   = '_penjualan_perstruktur_perbarang_pdf';
+        if ($level == 3 || $level == 2) {
+            $struktur     = StrukturBarang::model()->findByPk($strukturId);
+            $namaStruktur = $struktur->getFullPath();
+        } else {
+            if ($strukturId > 0) {
+                $struktur     = StrukturBarang::model()->findByPk($strukturId);
+                $namaStruktur = $struktur->getFullPath();
+            } else {
+                $namaStruktur = 'Semua';
+            }
+            $viewReport = '_penjualan_perstruktur_perlv2_pdf';
+        }
+
+        $configs = Config::model()->findAll();
+        /*
+         * Ubah config (object) jadi array
+         */
+        $branchConfig = [];
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+
+        /*
+         * Persiapan render PDF
+         */
+        $listNamaKertas = ReportPenjualanPerStrukturForm::listKertas();
+        require_once __DIR__ . '/../vendors/autoload.php';
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial($viewReport, [
+            'report'       => $report,
+            'config'       => $branchConfig,
+            'namaStruktur' => $namaStruktur,
+            'profilId'     => $profilId,
+            'userId'       => $userId,
+            'level'        => $level,
+            'dari'         => date_format(date_create_from_format('d-m-Y H:i', $dari), 'Y-m-d H:i:s'),
+            'sampai'       => date_format(date_create_from_format('d-m-Y H:i', $sampai), 'Y-m-d H:i:s'),
+            'waktuCetak'   => date('dmY His'),
+        ], true));
+
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
+        // Render PDF
+        $mpdf->Output("Penjualan Per Struktur [{$branchConfig['toko.nama']}] [{$dari} - {$sampai}].pdf", 'I');
+    }
 }

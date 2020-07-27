@@ -29,7 +29,20 @@ $this->boxHeader['normal'] = "Barang: {$model->nama}";
                 ?>
         </div>
     </div>
-
+    <div class="large-8 columns">
+        <div class="panel">
+            <?php
+            /*
+             * Informasi & Editable Struktur
+             */
+            $this->renderPartial('_struktur', [
+                'barang'        => $model,
+                'lv1'           => $lv1,
+                'strukturDummy' => $strukturDummy
+            ]);
+            ?>
+        </div>
+    </div>
     <div class="large-8 columns">
         <div class="panel">
             <?php

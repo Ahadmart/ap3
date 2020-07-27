@@ -84,6 +84,15 @@ class BarangController extends Controller
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
+        $lv1 = new StrukturBarang('search');
+        $lv1->unsetAttributes();  // clear any default values
+        $lv1->setAttribute('level', 1); // default yang tampil
+        $lv1->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+
+        $strukturDummy = new StrukturBarang('search');
+        $strukturDummy->unsetAttributes();  // clear any default values
+        $strukturDummy->setAttribute('level', 0);
+
         $supplierBarang = new SupplierBarang('search');
         $supplierBarang->unsetAttributes();
         $supplierBarang->setAttribute('barang_id', '=' . $id);
@@ -120,6 +129,8 @@ class BarangController extends Controller
 
         $this->render('ubah', [
             'model'             => $model,
+            'lv1'               => $lv1,
+            'strukturDummy'     => $strukturDummy,
             'supplierBarang'    => $supplierBarang,
             'listBukanSupplier' => $this->_listBukanSupplier($id),
             'hargaJual'         => $hargaJual,
@@ -309,5 +320,58 @@ class BarangController extends Controller
         $hjMultiList = HargaJualMulti::listAktif($id);
         $this->renderPartial('_harga_jual_multi_aktif', ['hjMultiList' => $hjMultiList]);
         Yii::app()->end();
+    }
+
+    public function actionRenderStrukturGrid()
+    {
+        $level  = Yii::app()->request->getPost('level');
+        $parent = Yii::app()->request->getPost('parent');
+        switch ($level) {
+            case 1:
+                $model = new StrukturBarang('search');
+                $model->unsetAttributes();
+                $model->setAttribute('level', 1);
+                $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+                $this->renderPartial('_grid1', ['lv1' => $model]);
+                break;
+            case 2:
+                $model = new StrukturBarang('search');
+                $model->unsetAttributes();  // clear any default values
+                $model->setAttribute('parent_id', $parent);
+                $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+                $this->renderPartial('_grid2', ['lv2' => $model]);
+                break;
+            case 3:
+                $model = new StrukturBarang('search');
+                $model->unsetAttributes();  // clear any default values
+                $model->setAttribute('parent_id', $parent);
+                $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+                $this->renderPartial('_grid3', ['lv3' => $model]);
+                break;
+        }
+    }
+
+    public function actionUpdateStruktur($id)
+    {
+        $r = [
+            'sukses' => false,
+            'msg'    => "Struktur Level 3 belum dipilih"
+        ];
+        if (Yii::app()->request->getPost('struktur-id')) {
+            $model              = $this->loadModel($id);
+            $model->struktur_id = Yii::app()->request->getPost('struktur-id');
+            if ($model->save()) {
+                $r = [
+                    'sukses'       => true,
+                    'namastruktur' => $model->getNamaStruktur()
+                ];
+            } else {
+                $r = [
+                    'sukses' => false,
+                    'msg'    => "Gagal update Struktur!"
+                ];
+            }
+        }
+        $this->renderJSON($r);
     }
 }
