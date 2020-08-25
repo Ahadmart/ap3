@@ -26,10 +26,10 @@ class ReportPenjualanForm extends CFormModel
      */
     public function rules()
     {
-        return array(
-            array('dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'),
-            array('profilId, userId, kategoriId, transferMode', 'safe')
-        );
+        return [
+            ['dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'],
+            ['profilId, userId, kategoriId, transferMode', 'safe'],
+        ];
     }
 
     /**
@@ -37,14 +37,14 @@ class ReportPenjualanForm extends CFormModel
      */
     public function attributeLabels()
     {
-        return array(
-            'profilId' => 'Profil',
-            'userId' => 'User',
-            'dari' => 'Dari',
-            'sampai' => 'Sampai',
-            'kategoriId' => 'Kategori',
-            'transferMode' => 'Jenis'
-        );
+        return [
+            'profilId'     => 'Profil',
+            'userId'       => 'User',
+            'dari'         => 'Dari',
+            'sampai'       => 'Sampai',
+            'kategoriId'   => 'Kategori',
+            'transferMode' => 'Jenis',
+        ];
     }
 
     /**
@@ -52,10 +52,10 @@ class ReportPenjualanForm extends CFormModel
      */
     public function relations()
     {
-        return array(
-            'profil' => array(self::BELONGS_TO, 'Profil', 'profilId'),
-            'user' => array(self::BELONGS_TO, 'User', 'userId'),
-        );
+        return [
+            'profil' => [self::BELONGS_TO, 'Profil', 'profilId'],
+            'user'   => [self::BELONGS_TO, 'User', 'userId'],
+        ];
     }
 
     public function getNamaProfil()
@@ -77,8 +77,8 @@ class ReportPenjualanForm extends CFormModel
 
     public function reportPenjualan()
     {
-        $dari = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i').":00";
-        $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i').":00";
+        $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i') . ":00";
+        $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i') . ":00";
 
         $tableName = $this->tableName();
 
@@ -90,18 +90,18 @@ class ReportPenjualanForm extends CFormModel
 
         $whereSub = '';
         if (!empty($this->profilId)) {
-            $whereSub .=" AND pj.profil_id = :profilId";
+            $whereSub .= " AND pj.profil_id = :profilId";
         }
 
         if (!empty($this->userId)) {
-            $whereSub.=" AND pj.updated_by = :userId";
+            $whereSub .= " AND pj.updated_by = :userId";
         }
-        
+
         if ($this->transferMode > 0) {
             $whereSub .= " AND pj.transfer_mode = :transferMode";
         }
 
-        $userId = Yii::app()->user->id;
+        $userId    = Yii::app()->user->id;
         $sqlSelect = "
         SELECT
             t_penjualan.penjualan_id,
@@ -155,7 +155,6 @@ class ReportPenjualanForm extends CFormModel
             {$sqlSelect}
                 ";
 
-
         Yii::app()->db->createCommand("DELETE FROM {$tableName} WHERE user_id={$userId}")->execute();
         $command = Yii::app()->db->createCommand($sql);
 
@@ -172,7 +171,7 @@ class ReportPenjualanForm extends CFormModel
         if (!empty($this->kategoriId)) {
             $command->bindValue(':kategoriId', $this->kategoriId);
         }
-        
+
         if ($this->transferMode > 0) {
             switch ($this->transferMode) {
                 case self::JENIS_PENJUALAN:
@@ -189,26 +188,27 @@ class ReportPenjualanForm extends CFormModel
         $command->execute();
 
         $com = Yii::app()->db->createCommand()
-                        ->from($tableName)->where('user_id=:userId', [':userId' => $userId]);
+            ->from($tableName)->where('user_id=:userId', [':userId' => $userId]);
 
         $commandRekap = Yii::app()->db->createCommand()
-                        ->select('sum(total) total, sum(total_modal) totalmodal, sum(margin) margin')
-                        ->from($tableName)->where('user_id=:userId', [':userId' => $userId]);
+            ->select('sum(total) total, sum(total_modal) totalmodal, sum(margin) margin')
+            ->from($tableName)->where('user_id=:userId', [':userId' => $userId]);
 
         $penjualan = $com->queryAll();
-        $rekap = $commandRekap->queryRow();
-        return array(
+        $rekap     = $commandRekap->queryRow();
+        return [
             'detail' => $penjualan,
-            'rekap' => $rekap
-        );
+            'rekap'  => $rekap,
+        ];
     }
 
     public function filterKategori()
     {
-        return ['' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return ['' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
-    
-    public function filterTransfer(){
+
+    public function filterTransfer()
+    {
         return [
             ''                    => '[SEMUA]',
             self::JENIS_PENJUALAN => 'Penjualan',
@@ -221,23 +221,22 @@ class ReportPenjualanForm extends CFormModel
         $csv = '"tanggal","nomor","nama_profil","total","margin","profit_margin"' . PHP_EOL;
 
         $penjualan = Yii::app()->db->createCommand()
-                ->from($this->tableName())->where('user_id=:userId', [
-                    ':userId' => Yii::app()->user->id
-                ])
-                ->queryAll();
+            ->from($this->tableName())->where('user_id=:userId', [
+                ':userId' => Yii::app()->user->id,
+            ])
+            ->queryAll();
 
         foreach ($penjualan as $baris) {
-            $profitMargin = $baris['margin'] / $baris['total'];
+            $profitMargin = $baris['total'] != 0 ? $baris['margin'] / $baris['total'] : 0;
             $csv .= "\"{$baris['tanggal']}\","
-                    . "\"{$baris['nomor']}\","
-                    . "\"{$baris['nama']}\","
-                    . "\"{$baris['total']}\","
-                    . "\"{$baris['margin']}\","
-                    . "{$profitMargin}"
-                    . PHP_EOL;
+                . "\"{$baris['nomor']}\","
+                . "\"{$baris['nama']}\","
+                . "\"{$baris['total']}\","
+                . "\"{$baris['margin']}\","
+                . "{$profitMargin}"
+                . PHP_EOL;
         }
 
         return $csv;
     }
-
 }
