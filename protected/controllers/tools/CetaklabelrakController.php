@@ -84,6 +84,8 @@ class CetaklabelrakController extends Controller
             'margin_header' => 9,
             'margin_footer' => 9,
         ]);
+        
+        //$mpdf->showImageErrors = true;
 
         $labelRakView = CetakLabelRakLayoutForm::listView();
         $mpdf->WriteHTML($this->renderPartial($labelRakView[$layout['layoutId']], [
@@ -92,6 +94,12 @@ class CetaklabelrakController extends Controller
             'tanggalCetak' => $tanggalCetak,
         ], true
         ));
+//        $this->renderPartial($labelRakView[$layout['layoutId']], [
+//            'barang'       => $barang,
+//            'namaToko'     => $this->namaToko(),
+//            'tanggalCetak' => $tanggalCetak,
+//        ]
+//        );
 
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumSuffix = ' / ';

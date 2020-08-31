@@ -71,12 +71,19 @@ class ReportDaftarBarangForm extends CFormModel
         SELECT 
             barang.barcode,
             barang.nama,
+            kat.nama kategori,
+            t_inv.qty,
             pd.harga_beli hpp,
             bhj.harga harga_jual,
-            bhjr.harga rrp,
-            kat.nama nama_kategori
+            bhjr.harga rrp
         FROM
             barang
+                JOIN
+            (SELECT 
+                barang_id, SUM(qty) qty
+            FROM
+                inventory_balance
+            GROUP BY barang_id) t_inv ON t_inv.barang_id = barang.id
                 JOIN
             (SELECT 
                 MAX(id) max_id, barang_id
@@ -125,11 +132,12 @@ class ReportDaftarBarangForm extends CFormModel
     public function reportKeCsv($report)
     {
         //$report = $this->reportDaftarBarang();
-        $csv = '"barcode","nama","kategori","hpp","harga_jual","rrp"' . PHP_EOL;
+        $csv = '"barcode","nama","kategori","qty", "hpp","harga_jual","rrp"' . PHP_EOL;
         foreach ($report as $baris) {
             $csv.= "\"{$baris['barcode']}\","
                     . "\"{$baris['nama']}\","
-                    . "\"{$baris['nama_kategori']}\","
+                    . "\"{$baris['kategori']}\","
+                    . "\"{$baris['qty']}\","
                     . "\"{$baris['hpp']}\","
                     . "\"{$baris['harga_jual']}\","
                     . "\"{$baris['rrp']}\""

@@ -1,45 +1,64 @@
-<?php
-/* @var $this ReportController */
-/* @var $model ReporTopRankForm */
-/* @var $form CActiveForm */
-?>
-<?php
-$form = $this->beginWidget('CActiveForm', array(
-    'id' => 'toprank-cetak-form',
-    'action' => $this->createUrl('toprankpdf'),
-// Please note: When you enable ajax validation, make sure the corresponding
-// controller action is handling ajax validation correctly.
-// See class documentation of CActiveForm for details on this,
-// you need to use the performAjaxValidation()-method described there.
-    'enableAjaxValidation' => false,
-    'htmlOptions' => array(
-        'target' => '_blank',
-    )
-        ));
-
-echo $form->hiddenField($model, 'profilId');
-echo $form->hiddenField($model, 'dari');
-echo $form->hiddenField($model, 'sampai');
-echo $form->hiddenField($model, 'kategoriId');
-echo $form->hiddenField($model, 'rakId');
-echo $form->hiddenField($model, 'limit');
-echo $form->hiddenField($model, 'sortBy');
-?>
-<?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
 <div class="row">
-    <div class="small-12 medium-2 columns">
-        <?php echo $form->labelEx($model, 'kertas'); ?>
-        <?php echo $form->dropDownList($model, 'kertas', $kertasPdf); ?>
-        <?php echo $form->error($model, 'kertas', array('class' => 'error')); ?>
-    </div>
-    <div class="small-12 medium-2 large-1 end columns">
-        <label for="tombol-cetak">&nbsp;</label>
-        <?php echo CHtml::submitButton('Cetak', array('name' => 'cetak', 'id' => 'tombol-cetak', 'class' => 'tiny success bigfont button right')); ?>
+    <div class="small-12 columns">
+        <ul class="button-group right">
+            <li>
+                <a href="#" accesskey="p" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
+                <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
+                    <?php
+                    foreach ($printers as $printer) {
+                        ?>
+                        <?php
+                        if ($printer['tipe_id'] == Device::TIPE_PDF_PRINTER) {
+                            /* Jika printer pdf, tambahkan pilihan ukuran kertas */
+                            ?>
+                            <span class="sub-dropdown"><?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></span>
+                            <ul>
+                                <?php
+                                foreach ($kertasPdf as $key => $value):
+                                    ?>
+                                    <li><a target="blank" href="<?=
+                                        $this->createUrl('printtoprank', [
+                                                           'printId'    => $printer['id'],
+                                                           'kertas'     => $key,
+                                                           'profilId'   => $model->profilId,
+                                                           'dari'       => $model->dari,
+                                                           'sampai'     => $model->sampai,
+                                                           'kategoriId' => $model->kategoriId,
+                                                           'rakId'      => $model->rakId,
+                                                           'limit'      => $model->limit,
+                                                           'sortBy'     => $model->sortBy,
+                                                       ])
+                                        ?>"><?= $value; ?></a></li>
+                                        <?php
+                                    endforeach;
+                                    ?>
+                            </ul>
+                            <?php
+                        } else {
+                            ?>
+                            <li>
+                                <a href="<?=
+                                $this->createUrl('printtoprank', [
+                                               'printId'    => $printer['id'],
+                                               'profilId'   => $model->profilId,
+                                               'dari'       => $model->dari,
+                                               'sampai'     => $model->sampai,
+                                               'kategoriId' => $model->kategoriId,
+                                               'rakId'      => $model->rakId,
+                                               'limit'      => $model->limit,
+                                               'sortBy'     => $model->sortBy,
+                                           ])
+                                ?>">
+                                    <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
+                            </li>
+                            <?php
+                        }
+                        ?>
+                        <?php
+                    }
+                    ?>
+                </ul>
+            </li>
+        </ul>  
     </div>
 </div>
-<?php
-$this->endWidget();
-
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/foundation-datepicker.css');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
-Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/locales/foundation-datepicker.id.js', CClientScript::POS_HEAD);

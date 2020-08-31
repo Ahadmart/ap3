@@ -40,9 +40,20 @@
                     <th>Nomor SO</th>
                     <th>Tanggal</th>
                     <th>Barcode</th>
-                    <th>Nama</th>                        
-                    <th colspan="2" class="rata-tengah">Tercatat</th>                    
-                    <th colspan="2" class="rata-tengah">Fisik</th>               
+                    <th>Nama</th>                 
+                    <?php
+                    if ($nilaiDenganHargaJual) {
+                        ?>
+                        <th colspan="3" class="rata-tengah">Tercatat</th>  
+                        <th colspan="3" class="rata-tengah">Fisik</th>   
+                        <?php
+                    } else {
+                        ?>
+                        <th colspan="2" class="rata-tengah">Tercatat</th>  
+                        <th colspan="2" class="rata-tengah">Fisik</th>   
+                        <?php
+                    }
+                    ?>
                     <th colspan="2" class="rata-tengah">Selisih</th>
                 </tr>
                 <tr>
@@ -53,10 +64,12 @@
                     <th></th>
                     <th class="rata-kanan">Qty</th>
                     <th class="rata-kanan">Nilai</th>
+                    <?php if ($nilaiDenganHargaJual) { ?><th class="rata-kanan">Harga Jual</th><?php } ?>
                     <th class="rata-kanan">Qty</th>
                     <th class="rata-kanan">Nilai</th>
+                    <?php if ($nilaiDenganHargaJual) { ?><th class="rata-kanan">Harga Jual</th><?php } ?>
                     <th class="rata-kanan">Qty</th>
-                    <th class="rata-kanan">Nilai</th>
+                    <th class="rata-kanan"><?php echo $nilaiDenganHargaJual ? 'Harga Jual' : 'Nilai' ?></th>
                 </tr>
             </thead>
             <?php
@@ -65,11 +78,16 @@
             $totalQtySelisih     = 0;
             $totalNominalSelisih = 0;
             foreach ($report['detail'] as $baris):
-                $nomor               = $baris['nomor'];
-                $nominalTercatat     = $baris['qty_tercatat'] * $baris['harga_beli'];
-                $nominalSebenarnya   = $baris['qty_sebenarnya'] * $baris['harga_beli'];
-                $qtySelisih          = $baris['qty_sebenarnya'] - $baris['qty_tercatat'];
-                $nominalSelisih      = $qtySelisih * $baris['harga_beli'];
+                $nomor             = $baris['nomor'];
+                $nominalTercatat   = $baris['qty_tercatat'] * $baris['harga_beli'];
+                $nominalSebenarnya = $baris['qty_sebenarnya'] * $baris['harga_beli'];
+                $qtySelisih        = $baris['qty_sebenarnya'] - $baris['qty_tercatat'];
+                $nominalSelisih    = $qtySelisih * $baris['harga_beli'];
+                if ($nilaiDenganHargaJual) {
+                    $nominalTercatatHJ   = $baris['qty_tercatat'] * $baris['harga_jual'];
+                    $nominalSebenarnyaHJ = $baris['qty_sebenarnya'] * $baris['harga_jual'];
+                    $nominalSelisih      = $qtySelisih * $baris['harga_jual'];
+                }
                 $totalQtySelisih     += $qtySelisih;
                 $totalNominalSelisih += $nominalSelisih;
                 ?>
@@ -96,8 +114,10 @@
                     <td><?= $baris['nama']; ?> </td>
                     <td class="rata-kanan"><?php echo number_format($baris['qty_tercatat'], 0, ',', '.'); ?></td>
                     <td class="rata-kanan"><?php echo number_format($nominalTercatat, 0, ',', '.'); ?></td>
+                    <?php if ($nilaiDenganHargaJual) { ?><td class="rata-kanan"><?php echo number_format($nominalTercatatHJ, 0, ',', '.'); ?></td><?php } ?>
                     <td class="rata-kanan"><?php echo number_format($baris['qty_sebenarnya'], 0, ',', '.'); ?></td>
                     <td class="rata-kanan"><?php echo number_format($nominalSebenarnya, 0, ',', '.'); ?></td>
+                    <?php if ($nilaiDenganHargaJual) { ?><td class="rata-kanan"><?php echo number_format($nominalSebenarnyaHJ, 0, ',', '.'); ?></td><?php } ?>
                     <td class="rata-kanan"><?php echo number_format($qtySelisih, 0, ',', '.'); ?></td>
                     <td class="rata-kanan"><?php echo number_format($nominalSelisih, 0, ',', '.'); ?></td>
                 </tr>
@@ -108,7 +128,7 @@
             endforeach;
             ?>
             <tr>
-                <td colspan="9" class="rata-tengah">T O T A L</td>
+                <td colspan="<?php echo $nilaiDenganHargaJual ? 11 : 9 ?>" class="rata-tengah">T O T A L</td>
                 <td class="rata-kanan"><?php echo number_format($totalQtySelisih, 0, ',', '.'); ?></td>
                 <td class="rata-kanan"><?php echo number_format($totalNominalSelisih, 0, ',', '.'); ?></td>
             </tr>

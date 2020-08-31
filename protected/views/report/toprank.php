@@ -1,30 +1,31 @@
 <?php
 /* @var $this ReportController */
 
-$this->breadcrumbs = array(
-    'Laporan' => array('index'),
+$this->breadcrumbs = [
+    'Laporan' => ['index'],
     'Top Rank',
-);
+];
 
-$this->boxHeader['small'] = 'Top Rank / Slow Moving';
+$this->boxHeader['small']  = 'Top Rank / Slow Moving';
 $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Top Rank / Slow Moving';
 
-$this->renderPartial('_form_toprank', array('model' => $model));
+$this->renderPartial('_form_toprank', ['model' => $model]);
 ?>
 <div class="row">
     <div class="small-12 columns">
         <div id="tabel-profil" style="display: none">
-            <?php $this->renderPartial('_profil', array('profil' => $profil)); ?>
+            <?php $this->renderPartial('_profil', ['profil' => $profil]); ?>
         </div>
     </div>
 </div>
 <?php
 if (isset($report)) {
 
-    $this->renderPartial('_form_toprank_cetak', array(
-        'model' => $model,
+    $this->renderPartial('_form_toprank_cetak', [
+        'model'     => $model,
+        'printers'  => $printers,
         'kertasPdf' => $kertasPdf
-    ));
+    ]);
     ?>
     <div class="row">
         <div class="small-12 columns">

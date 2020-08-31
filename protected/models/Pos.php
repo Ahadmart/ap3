@@ -59,12 +59,14 @@ class Pos extends Penjualan
             $item = $dokumen->itemBayarHutang;
 
             foreach ($bayar as $b) {
-                $penerimaanKasBank                = new PenerimaanKasBank;
-                $penerimaanKasBank->penerimaan_id = $penerimaan->id;
-                $penerimaanKasBank->kas_bank_id   = $b['akun'];
-                $penerimaanKasBank->jumlah        = $b['jumlah'];
-                if (!$penerimaanKasBank->save()) {
-                    throw new Exception("Gagal simpan penerimaan akun:" . $b['akun'] . ", jml:" . $b['jumlah'], 500);
+                if ($b['jumlah'] > 0) {
+                    $penerimaanKasBank                = new PenerimaanKasBank;
+                    $penerimaanKasBank->penerimaan_id = $penerimaan->id;
+                    $penerimaanKasBank->kas_bank_id   = $b['akun'];
+                    $penerimaanKasBank->jumlah        = $b['jumlah'];
+                    if (!$penerimaanKasBank->save()) {
+                        throw new Exception("Gagal simpan penerimaan akun:" . $b['akun'] . ", jml:" . $b['jumlah'], 500);
+                    }
                 }
             }
 
@@ -100,7 +102,7 @@ class Pos extends Penjualan
             //$tarikTunai = $posData['tarik-tunai'];
 
             if (isset($posData['tarik-tunai']) && $posData['tarik-tunai'] > 0) {
-                $tarikTunaiAkun = KasBank::model()->findByPk($posData['tarik-tunai-acc']);
+                $tarikTunaiAkun                  = KasBank::model()->findByPk($posData['tarik-tunai-acc']);
                 $penerimaanDetail                = new PenerimaanDetail;
                 $penerimaanDetail->penerimaan_id = $penerimaan->id;
                 $penerimaanDetail->item_id       = ItemKeuangan::POS_TARIK_TUNAI_PENERIMAAN;

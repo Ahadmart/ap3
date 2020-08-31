@@ -7,6 +7,7 @@
  * @property string $id
  * @property string $barcode
  * @property string $nama
+ * @property string $struktur_id
  * @property string $kategori_id
  * @property string $satuan_id
  * @property string $rak_id
@@ -18,6 +19,7 @@
  * @property string $created_at
  *
  * The followings are the available model relations:
+ * @property StrukturBarang $struktur
  * @property BarangKategori $kategori
  * @property BarangSatuan $satuan
  * @property BarangRak $rak
@@ -38,6 +40,7 @@ class Barang extends CActiveRecord
 
     public $soId;
     public $daftarSupplier;
+    public $strukturFullPath;
 
     /**
      * @return string the associated database table name
@@ -79,11 +82,11 @@ class Barang extends CActiveRecord
             array('status', 'numerical', 'integerOnly' => true),
             array('barcode', 'length', 'max' => 30),
             array('nama', 'length', 'max' => 45),
-            array('kategori_id, satuan_id, rak_id, restock_point, restock_level, updated_by', 'length', 'max' => 10),
+            array('struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, updated_by', 'length', 'max' => 10),
             array('created_at, updated_at, updated_by', 'safe'),
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, barcode, nama, kategori_id, satuan_id, rak_id, restock_point, restock_level, status, daftarSupplier', 'safe', 'on' => 'search'),
+            array('id, barcode, nama, struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, status, daftarSupplier, strukturFullPath', 'safe', 'on' => 'search'),
         );
     }
 
@@ -96,6 +99,7 @@ class Barang extends CActiveRecord
         // class name for the relations automatically generated below.
         return array(
             'kategori' => array(self::BELONGS_TO, 'KategoriBarang', 'kategori_id'),
+            'struktur' => array(self::BELONGS_TO, 'StrukturBarang', 'struktur_id'),
             'satuan' => array(self::BELONGS_TO, 'SatuanBarang', 'satuan_id'),
             'rak' => array(self::BELONGS_TO, 'RakBarang', 'rak_id'),
             'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
@@ -118,6 +122,7 @@ class Barang extends CActiveRecord
             'id' => 'ID',
             'barcode' => 'Barcode',
             'nama' => 'Nama',
+            'struktur_id' => 'Struktur',
             'kategori_id' => 'Kategori',
             'satuan_id' => 'Satuan',
             'rak_id' => 'Rak',
@@ -127,7 +132,8 @@ class Barang extends CActiveRecord
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
-            'daftarSupplier' => 'Supplier'
+            'daftarSupplier' => 'Supplier',
+            'strukturFullPath' => 'Struktur',
         );
     }
 
@@ -152,6 +158,7 @@ class Barang extends CActiveRecord
         $criteria->compare('t.id', $this->id);
         $criteria->compare('barcode', $this->barcode, true);
         $criteria->compare('t.nama', $this->nama, true);
+        $criteria->compare('struktur_id', $this->struktur_id);
         $criteria->compare('kategori_id', $this->kategori_id);
         $criteria->compare('satuan_id', $this->satuan_id);
         $criteria->compare('restock_point', $this->restock_point, true);
@@ -169,9 +176,24 @@ class Barang extends CActiveRecord
                             WHERE
                                 barang_id = t.id
                                 GROUP BY barang_id)", $this->daftarSupplier, true);
-//        if (!empty($this->daftarSupplier)){
-//            $criteria->addCondition("");
-//        }
+        $criteria->compare("(
+            SELECT 
+                CONCAT(lv1.nama, ' > ', lv2.nama, ' > ', lv3.nama)
+            FROM
+                barang b
+                    JOIN
+                barang_struktur lv3 ON lv3.id = b.struktur_id
+                    JOIN
+                barang_struktur lv2 ON lv2.id = lv3.parent_id
+                    JOIN
+                barang_struktur lv1 ON lv1.id = lv2.parent_id
+            WHERE
+                b.id = t.id
+            )
+                ", $this->strukturFullPath, true);
+        //        if (!empty($this->daftarSupplier)){
+        //            $criteria->addCondition("");
+        //        }
         if ($this->rak_id != 'NULL') {
             $criteria->compare('rak_id', $this->rak_id);
         } else {
@@ -215,6 +237,12 @@ class Barang extends CActiveRecord
     {
         if (empty($this->rak_id)) {
             $this->rak_id = NULL;
+        }
+        if (empty($this->kategori_id)){
+            $this->kategori_id = NULL;
+        }
+        if (empty($this->struktur_id)){
+            $this->struktur_id = NULL;
         }
         return parent::beforeValidate();
     }
@@ -300,7 +328,7 @@ class Barang extends CActiveRecord
     {
         return TagBarang::model()->findAll('barang_id=:barangId', [':barangId' => $this->id]);
     }
-    
+
     /**
      * Mencari tanggal terakhir dari pembelian barang ini 
      * @return Tanggal 'd-m-Y H:i:s'
@@ -321,12 +349,13 @@ class Barang extends CActiveRecord
 	")->queryRow();
         return $hasil['tanggal_terakhir'];
     }
-    
+
     /**
      * Ambil daftar supplier dari barang ini
      * @return array list of supplier (id, nama, default)
      */
-    public function getListSupplier(){
+    public function getListSupplier()
+    {
         $sql = "
             SELECT 
                 p.id, p.nama, sb.`default`
@@ -340,6 +369,12 @@ class Barang extends CActiveRecord
                ";
         $command = Yii::app()->db->createCommand($sql);
         $command->bindValue(":barangId", $this->id);
-        return $command->queryAll();        
+        return $command->queryAll();
+    }
+    
+    public function getNamaStruktur()
+    {
+        $struktur = StrukturBarang::model()->findByPk($this->struktur_id);
+        return is_null($struktur) ? "" : $struktur->getFullPath();
     }
 }

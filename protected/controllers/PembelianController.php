@@ -187,6 +187,15 @@ class PembelianController extends Controller
         $config = Config::model()->find('nama=:nama', [':nama' => 'pembelian.pembulatankeatashj']);
         $configCariBarang = Config::model()->find("nama='pembelian.caribarangmode'");
 
+        $lv1 = new StrukturBarang('search');
+        $lv1->unsetAttributes();  // clear any default values
+        $lv1->setAttribute('level', 1); // default yang tampil
+        $lv1->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+
+        $strukturDummy = new StrukturBarang('search');
+        $strukturDummy->unsetAttributes();  // clear any default values
+        $strukturDummy->setAttribute('level', 0);
+
         $this->render('ubah', array(
             'model' => $model,
             'barangBarcode' => $barangBarcode,
@@ -197,7 +206,9 @@ class PembelianController extends Controller
             'barang' => $barang,
             'pilihBarang' => $pilihBarang,
             'pembulatan' => $config->nilai,
-            'tipeCari' => $configCariBarang->nilai
+            'tipeCari' => $configCariBarang->nilai,
+                    'lv1'             => $lv1,
+                    'strukturDummy'   => $strukturDummy,
                 //'totalPembelian' => $model->ambilTotal()
         ));
     }
@@ -778,6 +789,35 @@ class PembelianController extends Controller
                 }
             }
             return $html;
+        }
+    }
+
+    public function actionRenderStrukturGrid()
+    {
+        $level  = Yii::app()->request->getPost('level');
+        $parent = Yii::app()->request->getPost('parent');
+        switch ($level) {
+            case 1:
+                $model = new StrukturBarang('search');
+                $model->unsetAttributes();
+                $model->setAttribute('level', 1);
+                $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+                $this->renderPartial('_grid1', ['lv1' => $model]);
+                break;
+            case 2:
+                $model = new StrukturBarang('search');
+                $model->unsetAttributes();  // clear any default values
+                $model->setAttribute('parent_id', $parent);
+                $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+                $this->renderPartial('_grid2', ['lv2' => $model]);
+                break;
+            case 3:
+                $model = new StrukturBarang('search');
+                $model->unsetAttributes();  // clear any default values
+                $model->setAttribute('parent_id', $parent);
+                $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+                $this->renderPartial('_grid3', ['lv3' => $model]);
+                break;
         }
     }
 

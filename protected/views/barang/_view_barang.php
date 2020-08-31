@@ -2,30 +2,34 @@
 <hr />
 <?php
 $this->widget('BDetailView', array(
-    'data' => $model,
+    'data'       => $model,
     'attributes' => array(
         'nama',
         'barcode',
         array(
-            'name' => 'satuan.nama',
-            'label' => 'Satuan'
+            'name'  => 'satuan.nama',
+            'label' => 'Satuan',
         ),
         array(
-            'name' => 'kategori.nama',
-            'label' => 'Kategori'
+            'name'  => 'kategori.nama',
+            'label' => 'Kategori',
         ),
+        [
+            'name'  => 'namaStruktur',
+            'label' => 'Struktur',
+        ],
         array(
-            'name' => 'rak.nama',
-            'label' => 'Rak'
+            'name'  => 'rak.nama',
+            'label' => 'Rak',
         ),
         /*
         'restock_point',
         'restock_level',
-         * 
+         *
          */
         array(
             'label' => 'Status',
-            'value' => $model->namaStatus
-        )
+            'value' => $model->namaStatus,
+        ),
     ),
 ));
