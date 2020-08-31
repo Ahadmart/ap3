@@ -1411,27 +1411,46 @@ class ReportController extends Controller
         $model = new ReportPenjualanPerStrukturForm;
 
         $profil = new Profil('search');
-        $profil->unsetAttributes();  // clear any default values
+        $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
 
         $user = new User('search');
-        $user->unsetAttributes();  // clear any default values
+        $user->unsetAttributes(); // clear any default values
         if (isset($_GET['User'])) {
             $user->attributes = $_GET['User'];
         }
 
-        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
-        $printers = Device::model()->listDevices($tipePrinterAvailable);
-        $kertasPdf = ReportPenjualanPerStrukturForm::listKertas();
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER, Device::TIPE_CSV_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf            = ReportPenjualanPerStrukturForm::listKertas();
+        $optionPrinters       = [];
+        // Untuk render html select option
+        foreach ($printers as $printer) {
+            switch ($printer['tipe_id']) {
+                case Device::TIPE_PDF_PRINTER:
+                    foreach ($kertasPdf as $key => $value) {
+                        $optionPrinters['PDF'][$printer['id'] . '|' . $key] = $value;
+                    }
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    $optionPrinters[$printer['id']] = $printer['nama'];
+                    break;
+                default:
+                    // Nothing... yet
+                    break;
+            }
+        };
+
         $this->render('penjualanperstruktur', [
-            'model' => $model,
-            'profil' => $profil,
-            'user' => $user,
-            'printers' => $printers,
-            'kertasPdf' => $kertasPdf,
-            'printHandle' => 'printpenjualanstruktur'
+            'model'          => $model,
+            'profil'         => $profil,
+            'user'           => $user,
+            'printers'       => $printers,
+            'kertasPdf'      => $kertasPdf,
+            'optionPrinters' => $optionPrinters,
+            'printHandle'    => 'printpenjualanstruktur',
         ]);
     }
 
@@ -1463,49 +1482,65 @@ class ReportController extends Controller
         $report = [];
         if (isset($_POST['ReportPenjualanPerStrukturForm'])) {
             $model->attributes = $_POST['ReportPenjualanPerStrukturForm'];
-            if ($model->validate()) {
-                if ($model->strukLv3 > 0) {
-                    $report = $model->reportDetail();
-                    //                    print_r($report);
-                    $this->penjualanStrukturPdf(
-                        $report,
-                        3,
-                        $model->strukLv3,
-                        $model->dari,
-                        $model->sampai,
-                        $model->kertas,
-                        $model->profilId,
-                        $model->userId
-                    );
-                } else if ($model->strukLv2 > 0) {
-                    $report = $model->reportDetail();
-                    //                    print_r($report);
-                    $this->penjualanStrukturPdf(
-                        $report,
-                        2,
-                        $model->strukLv2,
-                        $model->dari,
-                        $model->sampai,
-                        $model->kertas,
-                        $model->profilId,
-                        $model->userId
-                    );
-                } else {
-                    $report = $model->reportPerLv2();
-                    //                    echo '<pre>';
-                    //                    print_r($report);
-                    //                    echo '</pre>';
-                    $this->penjualanStrukturPdf(
-                        $report,
-                        0,
-                        $model->strukLv1,
-                        $model->dari,
-                        $model->sampai,
-                        $model->kertas,
-                        $model->profilId,
-                        $model->userId
-                    );
-                }
+            $printerInput      = explode('|', $model->printer); //0:printerId, 1:kertas (PDF)
+            $device            = Device::model()->findByPk($printerInput[0]);
+            if (is_null($device)) {
+                throw new CHttpException(500, "Printer tidak ditemukan!");
+            };
+
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    $model->kertas = $printerInput[1];
+                    if ($model->validate()) {
+                        if ($model->strukLv3 > 0) {
+                            $report = $model->reportDetail();
+                            //  print_r($report);
+                            $this->penjualanStrukturPdf(
+                                $report,
+                                3,
+                                $model->strukLv3,
+                                $model->dari,
+                                $model->sampai,
+                                $model->kertas,
+                                $model->profilId,
+                                $model->userId
+                            );
+                        } else if ($model->strukLv2 > 0) {
+                            $report = $model->reportDetail();
+                            // print_r($report);
+                            $this->penjualanStrukturPdf(
+                                $report,
+                                2,
+                                $model->strukLv2,
+                                $model->dari,
+                                $model->sampai,
+                                $model->kertas,
+                                $model->profilId,
+                                $model->userId
+                            );
+                        } else {
+                            $report = $model->reportPerLv2();
+                            // echo '<pre>';
+                            // print_r($report);
+                            // echo '</pre>';
+                            $this->penjualanStrukturPdf(
+                                $report,
+                                0,
+                                $model->strukLv1,
+                                $model->dari,
+                                $model->sampai,
+                                $model->kertas,
+                                $model->profilId,
+                                $model->userId
+                            );
+                        }
+                    }
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    if ($model->validate()) {
+                        $this->penjualanStrukturCSV($model);
+                    }
+                    break;
             }
         }
     }
@@ -1541,7 +1576,7 @@ class ReportController extends Controller
          */
         $listNamaKertas = ReportPenjualanPerStrukturForm::listKertas();
         require_once __DIR__ . '/../vendors/autoload.php';
-        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial($viewReport, [
             'report'       => $report,
             'config'       => $branchConfig,
@@ -1559,5 +1594,23 @@ class ReportController extends Controller
         $mpdf->pagenumSuffix = ' / ';
         // Render PDF
         $mpdf->Output("Penjualan Per Struktur [{$branchConfig['toko.nama']}] [{$dari} - {$sampai}].pdf", 'I');
+    }
+
+    public function penjualanStrukturCSV($model)
+    {
+        $csv = $model->reportCSV();
+
+        if (is_null($csv)) {
+            throw new CHttpException(500, "Tidak ada data");
+        }
+
+        $namaToko  = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp = date("Y-m-d-H-i");
+        $namaFile  = "Penjualan perStruktur {$namaToko->nilai} {$timeStamp}";
+
+        $this->renderPartial('_csv', [
+            'namaFile' => $namaFile,
+            'csv'      => $csv,
+        ]);
     }
 }

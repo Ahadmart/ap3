@@ -11,11 +11,11 @@ $form = $this->beginWidget('CActiveForm', [
     // See class documentation of CActiveForm for details on this,
     // you need to use the performAjaxValidation()-method described there.
     'enableAjaxValidation' => false,
-    'action' => $this->createUrl('printpenjualanstruktur'), 
-    'htmlOptions' => [
+    'action'               => $this->createUrl('printpenjualanstruktur'),
+    'htmlOptions'          => [
         'target' => '_blank',
-    ]
-        ]);
+    ],
+]);
 ?>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, ['class' => 'panel callout']); ?>
 
@@ -54,17 +54,17 @@ $form = $this->beginWidget('CActiveForm', [
             </div>
         </div>
     </div>
-    <div class="small-12 medium-4 columns">      
+    <div class="small-12 medium-4 columns">
         <?php echo $form->labelEx($model, 'strukLv1'); ?>
         <?php echo $form->dropDownList($model, 'strukLv1', $model->listStrukLv1()); ?>
         <?php echo $form->error($model, 'strukLv1', ['class' => 'error']); ?>
     </div>
-    <div class="small-12 medium-4 columns"> 
+    <div class="small-12 medium-4 columns">
         <?php echo $form->labelEx($model, 'strukLv2'); ?>
         <?php echo $form->dropDownList($model, 'strukLv2', [], ['prompt' => '[SEMUA]']); ?>
         <?php echo $form->error($model, 'strukLv2', ['class' => 'error']); ?>
     </div>
-    <div class="small-12 medium-4 columns"> 
+    <div class="small-12 medium-4 columns">
         <?php echo $form->labelEx($model, 'strukLv3'); ?>
         <?php echo $form->dropDownList($model, 'strukLv3', [], ['prompt' => '[SEMUA]']); ?>
         <?php echo $form->error($model, 'strukLv3', ['class' => 'error']); ?>
@@ -73,14 +73,23 @@ $form = $this->beginWidget('CActiveForm', [
 <hr />
 
 <div class="row">
-    <div class="small-12 medium-2 columns">
-        <?php echo $form->labelEx($model, 'kertas'); ?>
-        <?php echo $form->dropDownList($model, 'kertas', $kertasPdf); ?>
-        <?php echo $form->error($model, 'kertas', ['class' => 'error']); ?>
+    <?php
+    /*
+<div class="small-12 medium-2 columns">
+<?php echo $form->labelEx($model, 'kertas'); ?>
+<?php echo $form->dropDownList($model, 'kertas', $kertasPdf); ?>
+<?php echo $form->error($model, 'kertas', ['class' => 'error']); ?>
+</div>
+ */
+    ?>
+    <div class="small-6 medium-2 large-1 columns">
+        <?php echo $form->labelEx($model, 'printer'); ?>
+        <?php echo $form->dropDownList($model, 'printer', $optionPrinters); ?>
+        <?php echo $form->error($model, 'printer', ['class' => 'error']); ?>
     </div>
-    <div class="small-12 medium-2 columns end">
+    <div class="small-6 medium-2 large-1 columns end">
         <label for="tombol-cetak">&nbsp;</label>
-        <?php echo CHtml::submitButton('Submit', ['name' => 'cetak', 'id' => 'tombol-cetak', 'class' => 'tiny bigfont success button']); ?>        
+        <?php echo CHtml::submitButton('Submit', ['name' => 'cetak', 'id' => 'tombol-cetak', 'class' => 'tiny bigfont success button']); ?>
     </div>
 </div>
 
@@ -92,7 +101,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/f
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/locales/foundation-datepicker.id.js', CClientScript::POS_HEAD);
 ?>
 <script>
-    $(function () {
+    $(function() {
         $('.tanggalan').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
@@ -105,19 +114,19 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         });
     });
 
-    $("#ReportPenjualanPerStrukturForm_strukLv1").change(function () {
+    $("#ReportPenjualanPerStrukturForm_strukLv1").change(function() {
         var parentId = $(this).val()
         $("label[for='ReportPenjualanPerStrukturForm_strukLv2']").text('Loading..');
-        $("#ReportPenjualanPerStrukturForm_strukLv2").load("<?= $this->createUrl('ambilstrukturlv2', ['parent-id' => '']); ?>" + parentId, function(){
+        $("#ReportPenjualanPerStrukturForm_strukLv2").load("<?= $this->createUrl('ambilstrukturlv2', ['parent-id' => '']); ?>" + parentId, function() {
             $("label[for='ReportPenjualanPerStrukturForm_strukLv2']").text('Struktur Level 2');
         })
         $("#ReportPenjualanPerStrukturForm_strukLv3").html("<option value=''>[SEMUA]</option>")
     })
 
-    $("#ReportPenjualanPerStrukturForm_strukLv2").change(function () {
+    $("#ReportPenjualanPerStrukturForm_strukLv2").change(function() {
         var parentId = $(this).val()
         $("label[for='ReportPenjualanPerStrukturForm_strukLv3']").text('Loading..');
-        $("#ReportPenjualanPerStrukturForm_strukLv3").load("<?= $this->createUrl('ambilstrukturlv3', ['parent-id' => '']); ?>" + parentId, function(){
+        $("#ReportPenjualanPerStrukturForm_strukLv3").load("<?= $this->createUrl('ambilstrukturlv3', ['parent-id' => '']); ?>" + parentId, function() {
             $("label[for='ReportPenjualanPerStrukturForm_strukLv3']").text('Struktur Level 3');
         })
     })

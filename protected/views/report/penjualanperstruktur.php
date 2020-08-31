@@ -14,10 +14,11 @@ $this->boxHeader['small']  = 'Penjualan';
 $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Penjualan per Struktur';
 
 $this->renderPartial('_form_penjualan_perstruktur', [
-    'model'       => $model,
-    'printers'    => $printers,
-    'kertasPdf'   => $kertasPdf,
-    'printHandle' => $printHandle
+    'model'          => $model,
+    'printers'       => $printers,
+    'kertasPdf'      => $kertasPdf,
+    'optionPrinters' => $optionPrinters,
+    'printHandle'    => $printHandle,
 ]);
 ?>
 <div class="row">
@@ -32,7 +33,7 @@ $this->renderPartial('_form_penjualan_perstruktur', [
 </div>
 <?php
 if (isset($report['rekap']) && $report['rekap']) {
-    ?>
+?>
     <div class="row">
         <div class="small-6 columns">
             <?php
@@ -40,7 +41,7 @@ if (isset($report['rekap']) && $report['rekap']) {
                 'model'       => $model,
                 'printers'    => $printers,
                 'kertasPdf'   => $kertasPdf,
-                'printHandle' => 'printHandle'
+                'printHandle' => 'printHandle',
             ]);
             ?>
         </div>
@@ -48,24 +49,24 @@ if (isset($report['rekap']) && $report['rekap']) {
             <h6>Total : <?php echo number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
             <h6>Margin : <?php echo number_format($report['rekap']['margin'], 0, ',', '.'); ?></h6>
             <?php if ($report['rekap']['total'] != 0) {
-                ?>
+            ?>
                 <h6>Profit Margin: <?php echo number_format($report['rekap']['margin'] / $report['rekap']['total'] * 100, 2, ',', '.'); ?>%</h6>
-                <?php
+            <?php
             }
             ?>
             <?php
-            if (!empty($report['detail'])):
-                ?>
+            if (!empty($report['detail'])) :
+            ?>
                 <h6><?= count($report['detail']) ?> Transaksi</h6>
-                <?php
+            <?php
             endif;
             ?>
         </div>
     </div>
-    <?php
+<?php
 }
-if (!empty($report['detail'])):
-    ?>
+if (!empty($report['detail'])) :
+?>
     <div class="row">
         <div class="small-12 columns">
             <table class="tabel-index responsive">
@@ -83,8 +84,8 @@ if (!empty($report['detail'])):
                 <tbody>
                     <?php
                     $i = 1;
-                    foreach ($report['detail'] as $barisReport):
-                        ?>
+                    foreach ($report['detail'] as $barisReport) :
+                    ?>
                         <tr>
                             <td class="rata-kanan"><?= $i ?></td>
                             <td><?php echo $barisReport['tanggal']; ?></td>
@@ -94,7 +95,7 @@ if (!empty($report['detail'])):
                             <td class="rata-kanan"><?php echo number_format($barisReport['margin'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['margin'] / $barisReport['total'] * 100, 2, ',', '.') . '%'; ?></td>
                         </tr>
-                        <?php
+                    <?php
                         $i++;
                     endforeach;
                     ?>
@@ -102,28 +103,28 @@ if (!empty($report['detail'])):
             </table>
         </div>
     </div>
-    <?php
+<?php
 endif;
 ?>
 <script>
-    $(function () {
+    $(function() {
         $('.tanggalan').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
         });
     });
 
-    $("#tombol-browse-profil").click(function () {
+    $("#tombol-browse-profil").click(function() {
         $("#tabel-profil").slideToggle(500);
         $("input[name='Profil[nama]']").focus();
     });
 
-    $("#tombol-browse-user").click(function () {
+    $("#tombol-browse-user").click(function() {
         $("#tabel-user").slideToggle(500);
         $("input[name='User[nama_lengkap]']").focus();
     });
 
-    $("body").on("click", "a.pilih.profil", function () {
+    $("body").on("click", "a.pilih.profil", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -132,7 +133,7 @@ endif;
         return false;
     });
 
-    $("body").on("click", "a.pilih.user", function () {
+    $("body").on("click", "a.pilih.user", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -155,11 +156,11 @@ endif;
         $("#ReportPenjualanPerStrukturForm_userId").val(data.id);
     }
 
-    $("body").on("focusin", "a.pilih", function () {
+    $("body").on("focusin", "a.pilih", function() {
         $(this).parent('td').parent('tr').addClass('pilih');
     });
 
-    $("body").on("focusout", "a.pilih", function () {
+    $("body").on("focusout", "a.pilih", function() {
         $(this).parent('td').parent('tr').removeClass('pilih');
     });
 </script>
