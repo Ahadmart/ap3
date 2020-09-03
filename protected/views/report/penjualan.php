@@ -5,61 +5,68 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/fou
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/locales/foundation-datepicker.id.js', CClientScript::POS_HEAD);
 
-$this->breadcrumbs = array(
-    'Laporan' => array('index'),
+$this->breadcrumbs = [
+    'Laporan' => ['index'],
     'Penjualan',
-);
+];
 
-$this->boxHeader['small'] = 'Penjualan';
+$this->boxHeader['small']  = 'Penjualan';
 $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Penjualan';
 
-$this->renderPartial('_form_penjualan', array('model' => $model));
+$this->renderPartial('_form_penjualan', ['model' => $model]);
 ?>
 <div class="row">
     <div class="small-12 columns">
         <div id="tabel-profil" style="display: none">
-            <?php $this->renderPartial('_profil', array('profil' => $profil)); ?>
+            <?php $this->renderPartial('_profil', ['profil' => $profil]); ?>
         </div>
         <div id="tabel-user" style="display: none">
-            <?php $this->renderPartial('_user', array('user' => $user)); ?>
+            <?php $this->renderPartial('_user', ['user' => $user]); ?>
         </div>
     </div>
 </div>
 <?php
 if (isset($report['rekap']) && $report['rekap']) {
-    ?>
+?>
     <div class="row">
         <div class="small-6 columns">
             <?php
-            $this->renderPartial('_form_penjualan_cetak', array(
-                'model' => $model,
+            $this->renderPartial('_form_penjualan_cetak', [
+                'model'    => $model,
                 'printers' => $printers,
-                    //'kertasPdf' => $kertasPdf
-            ));
+                //'kertasPdf' => $kertasPdf
+            ]);
             ?>
         </div>
         <div class="small-6 columns rata-kanan">
             <h6>Total : <?php echo number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
             <h6>Margin : <?php echo number_format($report['rekap']['margin'], 0, ',', '.'); ?></h6>
             <?php if ($report['rekap']['total'] != 0) {
-                ?>
+            ?>
                 <h6>Profit Margin: <?php echo number_format($report['rekap']['margin'] / $report['rekap']['total'] * 100, 2, ',', '.'); ?>%</h6>
-                <?php
+            <?php
             }
             ?>
             <?php
-            if (!empty($report['detail'])):
-                ?>
+            if (!empty($report['detail'])) :
+            ?>
                 <h6><?= count($report['detail']) ?> Transaksi</h6>
-                <?php
+            <?php
+            endif;
+            ?>
+            <?php
+            if (!empty($report['jmlItem'])) :
+            ?>
+                <h6><?= $report['jmlItem']['jml_item'] ?> Item</h6>
+            <?php
             endif;
             ?>
         </div>
     </div>
-    <?php
+<?php
 }
-if (!empty($report['detail'])):
-    ?>
+if (!empty($report['detail'])) :
+?>
     <div class="row">
         <div class="small-12 columns">
             <table class="tabel-index responsive">
@@ -77,18 +84,18 @@ if (!empty($report['detail'])):
                 <tbody>
                     <?php
                     $i = 1;
-                    foreach ($report['detail'] as $barisReport):
-                        ?>
+                    foreach ($report['detail'] as $barisReport) :
+                    ?>
                         <tr>
                             <td class="rata-kanan"><?= $i ?></td>
                             <td><?php echo $barisReport['tanggal']; ?></td>
-                            <td><a href="<?php echo Yii::app()->createUrl('penjualan/view', array('id' => $barisReport['penjualan_id'])); ?>"><?php echo $barisReport['nomor']; ?></a></td>
+                            <td><a href="<?php echo Yii::app()->createUrl('penjualan/view', ['id' => $barisReport['penjualan_id']]); ?>"><?php echo $barisReport['nomor']; ?></a></td>
                             <td><?= $barisReport['nama']; ?> </td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['margin'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?php echo $barisReport['total'] == 0 ? '' : number_format($barisReport['margin'] / $barisReport['total'] * 100, 2, ',', '.') . '%'; ?></td>
                         </tr>
-                        <?php
+                    <?php
                         $i++;
                     endforeach;
                     ?>
@@ -96,28 +103,28 @@ if (!empty($report['detail'])):
             </table>
         </div>
     </div>
-    <?php
+<?php
 endif;
 ?>
 <script>
-    $(function () {
+    $(function() {
         $('.tanggalan').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
         });
     });
 
-    $("#tombol-browse-profil").click(function () {
+    $("#tombol-browse-profil").click(function() {
         $("#tabel-profil").slideToggle(500);
         $("input[name='Profil[nama]']").focus();
     });
 
-    $("#tombol-browse-user").click(function () {
+    $("#tombol-browse-user").click(function() {
         $("#tabel-user").slideToggle(500);
         $("input[name='User[nama_lengkap]']").focus();
     });
 
-    $("body").on("click", "a.pilih.profil", function () {
+    $("body").on("click", "a.pilih.profil", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -126,7 +133,7 @@ endif;
         return false;
     });
 
-    $("body").on("click", "a.pilih.user", function () {
+    $("body").on("click", "a.pilih.user", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -149,11 +156,11 @@ endif;
         $("#ReportPenjualanForm_userId").val(data.id);
     }
 
-    $("body").on("focusin", "a.pilih", function () {
+    $("body").on("focusin", "a.pilih", function() {
         $(this).parent('td').parent('tr').addClass('pilih');
     });
 
-    $("body").on("focusout", "a.pilih", function () {
+    $("body").on("focusout", "a.pilih", function() {
         $(this).parent('td').parent('tr').removeClass('pilih');
     });
 </script>
