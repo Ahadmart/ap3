@@ -155,6 +155,19 @@ class ReportPenjualanForm extends CFormModel
             {$sqlSelect}
                 ";
 
+        $jmlItemQuery = "
+            SELECT
+                COUNT(DISTINCT barang_id) jml_item
+            FROM
+                penjualan_detail pd
+                    JOIN
+                penjualan pj ON pd.penjualan_id = pj.id AND pj.status != :statusDraft
+                    {$kategoriQuery}
+            WHERE
+                pj.tanggal BETWEEN :dari AND :sampai
+                {$whereSub}
+        ";
+
         Yii::app()->db->createCommand("DELETE FROM {$tableName} WHERE user_id={$userId}")->execute();
         $command = Yii::app()->db->createCommand($sql);
 
@@ -162,14 +175,22 @@ class ReportPenjualanForm extends CFormModel
         $command->bindValue(":dari", $dari);
         $command->bindValue(":sampai", $sampai);
 
+        $jmlItemCom = Yii::app()->db->createCommand($jmlItemQuery);
+        $jmlItemCom->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
+        $jmlItemCom->bindValue(":dari", $dari);
+        $jmlItemCom->bindValue(":sampai", $sampai);
+
         if (!empty($this->profilId)) {
             $command->bindValue(":profilId", $this->profilId);
+            $jmlItemCom->bindValue(":profilId", $this->profilId);
         }
         if (!empty($this->userId)) {
             $command->bindValue(":userId", $this->userId);
+            $jmlItemCom->bindValue(":userId", $this->userId);
         }
         if (!empty($this->kategoriId)) {
             $command->bindValue(':kategoriId', $this->kategoriId);
+            $jmlItemCom->bindValue(':kategoriId', $this->kategoriId);
         }
 
         if ($this->transferMode > 0) {
@@ -183,6 +204,7 @@ class ReportPenjualanForm extends CFormModel
                     break;
             }
             $command->bindValue(':transferMode', $q);
+            $jmlItemCom->bindValue(':transferMode', $q);
         }
 
         $command->execute();
@@ -196,9 +218,12 @@ class ReportPenjualanForm extends CFormModel
 
         $penjualan = $com->queryAll();
         $rekap     = $commandRekap->queryRow();
+        $jmlItem   = $jmlItemCom->queryRow();
+
         return [
             'detail' => $penjualan,
             'rekap'  => $rekap,
+            'jmlItem' => $jmlItem,
         ];
     }
 
