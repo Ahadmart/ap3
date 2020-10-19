@@ -72,6 +72,9 @@ class ReportDaftarBarangForm extends CFormModel
             barang.barcode,
             barang.nama,
             kat.nama kategori,
+            lv1.nama struktur_lv1,
+            lv2.nama struktur_lv2,
+            lv3.nama struktur_lv3,
             t_inv.qty,
             pd.harga_beli hpp,
             bhj.harga harga_jual,
@@ -110,6 +113,12 @@ class ReportDaftarBarangForm extends CFormModel
             barang_harga_jual_rekomendasi bhjr ON bhjr.id = t_hjr.max_id
                 JOIN
             barang_kategori kat ON kat.id = barang.kategori_id
+                LEFT JOIN
+            barang_struktur lv3 ON lv3.id = barang.struktur_id
+                LEFT JOIN
+            barang_struktur lv2 ON lv2.id = lv3.parent_id
+                LEFT JOIN
+            barang_struktur lv1 ON lv1.id = lv2.parent_id
             {$sqlSup}
         WHERE
             barang.status = :statusBarang {$sqlWhere}

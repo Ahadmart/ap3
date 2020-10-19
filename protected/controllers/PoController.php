@@ -546,7 +546,7 @@ class PoController extends Controller
         /*
          * Persiapan render PDF
          */
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
 
         $listNamaKertas = Po::listNamaKertas();
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
