@@ -138,22 +138,24 @@ class ReportDaftarBarangForm extends CFormModel
         return $command->queryAll();
     }
 
+    public function array2csv(array &$array)
+    {
+        if (count($array) == 0) {
+            return null;
+        }
+        ob_start();
+        $df = fopen('php://output', 'w');
+        fputcsv($df, array_keys(reset($array)));
+        foreach ($array as $row) {
+            fputcsv($df, $row);
+        }
+        fclose($df);
+        return ob_get_clean();
+    }
+
     public function reportKeCsv($report)
     {
-        //$report = $this->reportDaftarBarang();
-        $csv = '"barcode","nama","kategori","qty", "hpp","harga_jual","rrp"' . PHP_EOL;
-        foreach ($report as $baris) {
-            $csv.= "\"{$baris['barcode']}\","
-                    . "\"{$baris['nama']}\","
-                    . "\"{$baris['kategori']}\","
-                    . "\"{$baris['qty']}\","
-                    . "\"{$baris['hpp']}\","
-                    . "\"{$baris['harga_jual']}\","
-                    . "\"{$baris['rrp']}\""
-                    . PHP_EOL;
-        }
-
-        return $csv;
+        return $this->array2csv($report);
     }
 
     public function filterKategori()
