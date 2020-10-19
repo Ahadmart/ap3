@@ -14,7 +14,7 @@ Yang perlu diinstall untuk menggunakan AhadPOS ٣
 
 ### Installing
 
-Lihat INSTALL.txt
+Lihat [INSTALL.txt](https://github.com/Ahadmart/ap3/blob/master/INSTALL.TXT)
 
 ## Built With
 
