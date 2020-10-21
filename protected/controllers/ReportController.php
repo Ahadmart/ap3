@@ -1119,7 +1119,7 @@ class ReportController extends Controller
             $user->attributes = $_GET['User'];
         }
 
-        $tipePrinterAvailable = [];
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
 
         $this->render('diskon', [
@@ -1129,6 +1129,34 @@ class ReportController extends Controller
             'report'   => $report,
             'printers' => $printers,
         ]);
+    }
+
+    public function actionPrintDiskon()
+    {
+        $model = new ReportDiskonForm();
+        $report = [];
+        if (isset($_GET['printId'])) {
+            // Saat ini baru ada csv. Jika ada yang lain, fixme!
+            $model->profilId = $_GET['profilId'];
+            $model->userId = $_GET['userId'];
+            $model->tipeDiskonId = $_GET['tipeDiskonId'];
+            $model->dari = $_GET['dari'];
+            $model->sampai = $_GET['sampai'];
+            // print_r($model->attributes); 
+            if ($model->validate()) {
+                $report = $model->reportDiskon();
+                $text = $model->toCsv($report['detail']);
+                $timeStamp       = date('Ymd His');
+                $namaFile        = "Laporan Diskon_{$model->dari}_{$model->sampai}_{$timeStamp}.csv";
+                // $contentTypeMeta = 'text/csv';
+
+                $this->renderPartial('_csv', [
+                    'namaFile'    => $namaFile,
+                    'csv'        => $text,
+                    // 'contentType' => $contentTypeMeta
+                ]);
+            }
+        }
     }
 
     public function actionRekapDiskon()
