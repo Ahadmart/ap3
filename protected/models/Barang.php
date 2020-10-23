@@ -238,10 +238,10 @@ class Barang extends CActiveRecord
         if (empty($this->rak_id)) {
             $this->rak_id = NULL;
         }
-        if (empty($this->kategori_id)){
+        if (empty($this->kategori_id)) {
             $this->kategori_id = NULL;
         }
-        if (empty($this->struktur_id)){
+        if (empty($this->struktur_id)) {
             $this->struktur_id = NULL;
         }
         return parent::beforeValidate();
@@ -272,7 +272,7 @@ class Barang extends CActiveRecord
 					order by id desc
 					limit 1
 			  ")->queryRow();
-        return $hasil['harga'];
+        return !empty($hasil) ? $hasil['harga'] : 0;
     }
 
     public function getHargaJual()
@@ -371,7 +371,7 @@ class Barang extends CActiveRecord
         $command->bindValue(":barangId", $this->id);
         return $command->queryAll();
     }
-    
+
     public function getNamaStruktur()
     {
         $struktur = StrukturBarang::model()->findByPk($this->struktur_id);
