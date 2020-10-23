@@ -42,12 +42,12 @@ class HargaJualMulti extends CActiveRecord
         // will receive user inputs.
         return [
             ['barang_id, satuan_id, harga', 'required'],
-            ['barang_id, satuan_id, qty, updated_by', 'length', 'max'=>10],
-            ['harga', 'length', 'max'=>18],
+            ['barang_id, satuan_id, qty, updated_by', 'length', 'max' => 10],
+            ['harga', 'length', 'max' => 18],
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, barang_id, satuan_id, qty, harga, updated_at, updated_by, created_at, barcode, namaBarang, namaSatuan', 'safe', 'on'=>'search'],
+            ['id, barang_id, satuan_id, qty, harga, updated_at, updated_by, created_at, barcode, namaBarang, namaSatuan', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -101,7 +101,7 @@ class HargaJualMulti extends CActiveRecord
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
-        $criteria=new CDbCriteria;
+        $criteria = new CDbCriteria;
 
         $criteria->compare('t.id', $this->id);
         $criteria->compare('t.barang_id', $this->barang_id);
@@ -141,7 +141,7 @@ class HargaJualMulti extends CActiveRecord
         ];
 
         return new CActiveDataProvider($this, [
-            'criteria'=> $criteria,
+            'criteria' => $criteria,
             'sort'    => $sort
         ]);
     }
@@ -152,7 +152,7 @@ class HargaJualMulti extends CActiveRecord
      * @param  string         $className active record class name.
      * @return HargaJualMulti the static model class
      */
-    public static function model($className=__CLASS__)
+    public static function model($className = __CLASS__)
     {
         return parent::model($className);
     }
@@ -172,16 +172,16 @@ class HargaJualMulti extends CActiveRecord
         $return = false;
         // Cari harga jual multi terakhir
         $hasil = Yii::app()->db->createCommand()
-                  ->select('satuan_id, harga')
-                  ->from(HargaJualMulti::model()->tableName())
-                  ->where('barang_id = :barangId AND qty = :qty', [
-                      ':barangId' => $barangId,
-                      ':qty'      => (int) $attributes['qty']
-                      ])
-                  ->order('id desc')
-                  ->queryRow();
+            ->select('satuan_id, harga')
+            ->from(HargaJualMulti::model()->tableName())
+            ->where('barang_id = :barangId AND qty = :qty', [
+                ':barangId' => $barangId,
+                ':qty'      => (int) $attributes['qty']
+            ])
+            ->order('id desc')
+            ->queryRow();
 
-        if ($hasil['harga'] != $attributes['harga'] || $hasil['satuan_id'] != $attributes['satuan_id']) {
+        if (!empty($hasil) || $hasil['harga'] != $attributes['harga'] || $hasil['satuan_id'] != $attributes['satuan_id']) {
             // Jika tidak sama atau belum ada maka: insert harga jual baru
             $hargaJualModel             = new HargaJualMulti;
             $hargaJualModel->attributes = $attributes;
@@ -224,7 +224,7 @@ class HargaJualMulti extends CActiveRecord
      * @param  int   $barangId ID Barang
      * @return array [nama_satuan, qty, harga]
      */
-    public static function listAktif($barangId, $sort='')
+    public static function listAktif($barangId, $sort = '')
     {
         $sql = '
         SELECT 
@@ -245,7 +245,7 @@ class HargaJualMulti extends CActiveRecord
         ORDER BY qty ' . $sort;
 
         return Yii::app()->db->createCommand($sql)
-        ->bindValue(':barangId', $barangId)
-        ->queryAll();
+            ->bindValue(':barangId', $barangId)
+            ->queryAll();
     }
 }

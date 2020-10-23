@@ -155,7 +155,7 @@ class HargaJual extends CActiveRecord
 			->limit(1, 0)
 			->queryRow();
 
-		if (!empty($hasil) && $hasil['harga'] != $hargaJual) {
+		if (!empty($hasil) || $hasil['harga'] != $hargaJual) {
 			// Jika tidak sama atau belum ada maka: insert harga jual baru
 			$hargaJualModel = new HargaJual;
 			$hargaJualModel->barang_id = $barangId;
