@@ -181,7 +181,7 @@ class HargaJualMulti extends CActiveRecord
             ->order('id desc')
             ->queryRow();
 
-        if (!empty($hasil) || $hasil['harga'] != $attributes['harga'] || $hasil['satuan_id'] != $attributes['satuan_id']) {
+        if (empty($hasil) || $hasil['harga'] != $attributes['harga'] || $hasil['satuan_id'] != $attributes['satuan_id']) {
             // Jika tidak sama atau belum ada maka: insert harga jual baru
             $hargaJualModel             = new HargaJualMulti;
             $hargaJualModel->attributes = $attributes;
