@@ -15,55 +15,60 @@
  * @property Barang $barang
  * @property User $updatedBy
  */
-class HargaJual extends CActiveRecord {
+class HargaJual extends CActiveRecord
+{
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName() {
+	public function tableName()
+	{
 		return 'barang_harga_jual';
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules() {
+	public function rules()
+	{
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			 array('barang_id, harga', 'required'),
-			 array('barang_id, updated_by', 'length', 'max' => 10),
-			 array('harga', 'length', 'max' => 18),
-			 array('created_at, updated_at, updated_by', 'safe'),
-			 // The following rule is used by search().
-			 // @todo Please remove those attributes that should not be searched.
-			 array('id, barang_id, harga, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
+			array('barang_id, harga', 'required'),
+			array('barang_id, updated_by', 'length', 'max' => 10),
+			array('harga', 'length', 'max' => 18),
+			array('created_at, updated_at, updated_by', 'safe'),
+			// The following rule is used by search().
+			// @todo Please remove those attributes that should not be searched.
+			array('id, barang_id, harga, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
 		);
 	}
 
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations() {
+	public function relations()
+	{
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			 'barang' => array(self::BELONGS_TO, 'Barang', 'barang_id'),
-			 'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
+			'barang' => array(self::BELONGS_TO, 'Barang', 'barang_id'),
+			'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
 		);
 	}
 
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels() {
+	public function attributeLabels()
+	{
 		return array(
-			 'id' => 'ID',
-			 'barang_id' => 'Barang',
-			 'harga' => 'Harga',
-			 'updated_at' => 'Updated At',
-			 'updated_by' => 'Updated By',
-			 'created_at' => 'Sejak',
+			'id' => 'ID',
+			'barang_id' => 'Barang',
+			'harga' => 'Harga',
+			'updated_at' => 'Updated At',
+			'updated_by' => 'Updated By',
+			'created_at' => 'Sejak',
 		);
 	}
 
@@ -79,7 +84,8 @@ class HargaJual extends CActiveRecord {
 	 * @return CActiveDataProvider the data provider that can return the models
 	 * based on the search/filter conditions.
 	 */
-	public function search() {
+	public function search()
+	{
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria = new CDbCriteria;
@@ -92,12 +98,12 @@ class HargaJual extends CActiveRecord {
 		$criteria->compare('created_at', $this->created_at, true);
 
 		$sort = array(
-			 'defaultOrder' => 't.id desc'
+			'defaultOrder' => 't.id desc'
 		);
 
 		return new CActiveDataProvider($this, array(
-			 'criteria' => $criteria,
-			 'sort' => $sort
+			'criteria' => $criteria,
+			'sort' => $sort
 		));
 	}
 
@@ -107,11 +113,13 @@ class HargaJual extends CActiveRecord {
 	 * @param string $className active record class name.
 	 * @return HargaJual the static model class
 	 */
-	public static function model($className = __CLASS__) {
+	public static function model($className = __CLASS__)
+	{
 		return parent::model($className);
 	}
 
-	public function beforeSave() {
+	public function beforeSave()
+	{
 
 		if ($this->isNewRecord) {
 			$this->created_at = date('Y-m-d H:i:s');
@@ -121,7 +129,8 @@ class HargaJual extends CActiveRecord {
 		return parent::beforeSave();
 	}
 
-	public function afterFind() {
+	public function afterFind()
+	{
 		$this->harga = number_format($this->harga, 0, ',', '.');
 		$this->created_at = date_format(date_create_from_format('Y-m-d H:i:s', $this->created_at), 'd-m-Y H:i:s');
 		return parent::afterFind();
@@ -134,18 +143,19 @@ class HargaJual extends CActiveRecord {
 	 * @param decimal $hargaJual
 	 * @return boolean False jika tabel nya tidak ada atau gagal simpan ke tabel harga jual
 	 */
-	public function updateHarga($barangId, $hargaJual) {
+	public function updateHarga($barangId, $hargaJual)
+	{
 		$return = false;
 		// Cari harga jual terakhir
 		$hasil = Yii::app()->db->createCommand()
-				  ->select('harga')
-				  ->from($this->tableName())
-				  ->where('barang_id=:barangId', array(':barangId' => $barangId))
-				  ->order('id desc')
-				  ->limit(1, 0)
-				  ->queryRow();
+			->select('harga')
+			->from($this->tableName())
+			->where('barang_id=:barangId', array(':barangId' => $barangId))
+			->order('id desc')
+			->limit(1, 0)
+			->queryRow();
 
-		if ($hasil['harga'] != $hargaJual) {
+		if (!empty($hasil) && $hasil['harga'] != $hargaJual) {
 			// Jika tidak sama atau belum ada maka: insert harga jual baru
 			$hargaJualModel = new HargaJual;
 			$hargaJualModel->barang_id = $barangId;
@@ -165,7 +175,8 @@ class HargaJual extends CActiveRecord {
 	 * @param decimal $hargaJual
 	 * @throws Exception
 	 */
-	public function updateHargaJualTrx($barangId, $hargaJual) {
+	public function updateHargaJualTrx($barangId, $hargaJual)
+	{
 
 		$transaction = $this->dbConnection->beginTransaction();
 		try {
@@ -186,14 +197,14 @@ class HargaJual extends CActiveRecord {
 	 * @param int $barangId ID Barang yang akan dicari harga jual terkini nya
 	 * @return dec Harga jual terakhir
 	 */
-	public function terkini($barangId) {
+	public function terkini($barangId)
+	{
 		$query = Yii::app()->db->createCommand()
-				  ->select('harga')
-				  ->from($this->tableName())
-				  ->where('id = (select max(id) from '.$this->tableName().' where barang_id = :barangId)')
-				  ->bindValues(array(':barangId' => $barangId))
-				  ->queryRow();
+			->select('harga')
+			->from($this->tableName())
+			->where('id = (select max(id) from ' . $this->tableName() . ' where barang_id = :barangId)')
+			->bindValues(array(':barangId' => $barangId))
+			->queryRow();
 		return $query['harga'];
 	}
-
 }
