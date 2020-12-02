@@ -14,7 +14,7 @@ $this->boxHeader['normal'] = 'Retur Pembelian: ' . $model->nomor;
     <div class="small-12 columns header">
         <span class="secondary label">Supplier</span><span class="label"><?php echo $model->profil->nama; ?></span>
         <span class="secondary label">Tanggal</span><span class="label"><?php echo $model->tanggal; ?></span>
-        <!--<span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span>-->
+        <span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span>
         <span class="secondary label">Total</span><span class="alert label"><?php echo $model->total; ?></span>
         <span class="secondary label">Status</span><span class="warning label"><?php echo $model->getNamaStatus(); ?></span>
 
@@ -24,32 +24,32 @@ $this->boxHeader['normal'] = 'Retur Pembelian: ' . $model->nomor;
                 <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
                     <?php
                     foreach ($printerReturPembelian as $printer) {
-                        ?>
+                    ?>
                         <?php
                         if ($printer['tipe_id'] == Device::TIPE_PDF_PRINTER) {
                             /* Jika printer pdf, tambahkan pilihan ukuran kertas */
-                            ?>
+                        ?>
                             <span class="sub-dropdown"><?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></span>
                             <ul>
                                 <?php
-                                foreach ($kertasUntukPdf as $key => $value):
-                                    ?>
+                                foreach ($kertasUntukPdf as $key => $value) :
+                                ?>
                                     <li><a href="<?php echo $this->createUrl('printreturpembelian', array('id' => $model->id, 'printId' => $printer['id'], 'kertas' => $key)) ?>"><?php echo $value; ?></a></li>
-                                    <?php
+                                <?php
                                 endforeach;
                                 ?>
                             </ul>
-                            <?php
+                        <?php
                         } else {
-                            ?>
+                        ?>
                             <li>
                                 <a href="<?php echo $this->createUrl('printreturpembelian', array('id' => $model->id, 'printId' => $printer['id'])) ?>">
                                     <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
                             </li>
-                            <?php
+                        <?php
                         }
                         ?>
-                        <?php
+                    <?php
                     }
                     ?>
                 </ul>
@@ -123,20 +123,22 @@ $this->boxHeader['normal'] = 'Retur Pembelian: ' . $model->nomor;
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
-    array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
+    array(
+        'itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
         'items' => array(
             array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                    'accesskey' => 'i'
-                ))
+                'class' => 'success button',
+                'accesskey' => 'i'
+            ))
         ),
         'submenuOptions' => array('class' => 'button-group')
     ),
-    array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
+    array(
+        'itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
         'items' => array(
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                ))
+                'class' => 'success button',
+            ))
         ),
         'submenuOptions' => array('class' => 'button-group')
     )
