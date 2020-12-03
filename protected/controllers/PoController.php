@@ -254,8 +254,8 @@ class PoController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('view', ['id' => $data->id]) . '">' .
-                    $data->nomor . '</a>';
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->nomor . '</a>';
         }
         return $return;
     }
@@ -269,8 +269,8 @@ class PoController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
-                    $data->tanggal . '</a>';
+                $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
+                $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -443,11 +443,8 @@ class PoController extends Controller
         if (isset($_POST['pk'])) {
             $pk                = $_POST['pk'];
             $qty               = $_POST['value'];
-            $detail            = PoDetail::model()->findByPk($pk);
-            $detail->qty_order = $qty;
 
-            $return = ['sukses' => false];
-            if ($detail->save()) {
+            if (PoDetail::model()->updateByPk($pk, ['qty_order' => $qty]) > 0) {
                 $return = ['sukses' => true];
             }
 
@@ -546,7 +543,7 @@ class PoController extends Controller
         /*
          * Persiapan render PDF
          */
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
 
         $listNamaKertas = Po::listNamaKertas();
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
@@ -556,12 +553,14 @@ class PoController extends Controller
             $viewCetak = '_pdf_draft';
         }
         $mpdf->WriteHTML($this->renderPartial(
-                        $viewCetak, [
-                    'modelHeader'  => $modelHeader,
-                    'branchConfig' => $branchConfig,
-                    'profil'       => $profil,
-                    'poDetail'     => $poDetail
-                        ], true
+            $viewCetak,
+            [
+                'modelHeader'  => $modelHeader,
+                'branchConfig' => $branchConfig,
+                'profil'       => $profil,
+                'poDetail'     => $poDetail
+            ],
+            true
         ));
 
         $mpdf->SetDisplayMode('fullpage');
@@ -680,14 +679,14 @@ class PoController extends Controller
             $ak = 'accesskey="r"';
         }
         return '<a href="#" class="editable-order" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
-                Yii::app()->controller->createUrl('inputorder') . '">' . $data->qty_order . '</a>';
+            Yii::app()->controller->createUrl('inputorder') . '">' . $data->qty_order . '</a>';
     }
 
     public function renderTombolSetOrder($data, $row)
     {
         return CHtml::link('<i class="fa fa-plus-square"><i>', Yii::app()->controller->createUrl('setorder'), [
-                    'data-detailid' => $data->id,
-                    'class'         => 'tombol-setorder'
+            'data-detailid' => $data->id,
+            'class'         => 'tombol-setorder'
         ]);
     }
 
@@ -766,5 +765,4 @@ class PoController extends Controller
         }
         $this->renderJSON($return);
     }
-
 }

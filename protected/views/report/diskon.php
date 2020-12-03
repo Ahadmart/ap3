@@ -27,24 +27,33 @@ $this->renderPartial('_form_diskon', ['model' => $model]);
 </div>
 <?php
 if (isset($report['rekap']) && $report['rekap']) {
-    ?>
+?>
     <div class="row">
         <div class="small-12 columns rata-kanan">
             <h6>Total : <?= number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
             <?php
-            if (!empty($report['detail'])):
-                ?>
+            if (!empty($report['detail'])) :
+            ?>
                 <h6><?= count($report['detail']) ?> Transaksi</h6>
-                <?php
+            <?php
             endif;
             ?>
         </div>
     </div>
-    <?php
+<?php
 }
-if (!empty($report['detail'])):
-    ?>
+if (!empty($report['detail'])) :
+?>
     <div class="row">
+        <div class="small-6 columns">
+            <?php
+            $this->renderPartial('_form_diskon_cetak', [
+                'model'    => $model,
+                'printers' => $printers,
+                //'kertasPdf' => $kertasPdf
+            ]);
+            ?>
+        </div>
         <div class="small-12 columns">
             <table class="tabel-index responsive">
                 <thead>
@@ -60,7 +69,7 @@ if (!empty($report['detail'])):
                         <th rowspan="2">Jenis Diskon</th>
                         <!--<th>User</th>-->
                     </tr>
-                    <tr>                        
+                    <tr>
                         <th class="rata-kanan">Harga Jual</th>
                         <th class="rata-kanan">HPP</th>
                         <th class="rata-kanan">Margin</th>
@@ -73,11 +82,11 @@ if (!empty($report['detail'])):
                     $totalPenjualan = 0;
                     $totalHPP = 0;
                     $totalMargin = 0;
-                    foreach ($report['detail'] as $barisReport):
-                        ?>
+                    foreach ($report['detail'] as $barisReport) :
+                    ?>
                         <tr>
                             <td class="rata-kanan"><?= $i ?></td>
-                            <td><a href="<?= Yii::app()->createUrl('penjualan/view', ['id' => $barisReport['penjualan_id']]); ?>"><?= $barisReport['nomor']; ?></a></td>
+                            <td><a href="<?= Yii::app()->createUrl('penjualan/view', ['id' => $barisReport['penjualan_id']]); ?>"><?= $barisReport['nomor_penjualan']; ?></a></td>
                             <td><?= $barisReport['barcode']; ?> </td>
                             <td><?= $barisReport['nama']; ?> </td>
                             <td class="rata-kanan"><?= number_format($barisReport['harga_normal'], 0, ',', '.'); ?></td>
@@ -87,9 +96,9 @@ if (!empty($report['detail'])):
                             <td class="rata-kanan"><?= number_format($barisReport['hpp'], 0, ',', '.'); ?></td>
                             <?php $margin = $barisReport['total'] - $barisReport['hpp']; ?>
                             <td class="rata-kanan<?= $margin < 0 ? ' angka-negatif' : '' ?>"><?= number_format($margin, 0, ',', '.'); ?></td>
-                            <td><?= $tipeDiskon[$barisReport['tipe_diskon_id']]; ?> </td>
+                            <td><?= $barisReport['tipe_diskon_nama'] ?></td>
                         </tr>
-                        <?php
+                    <?php
                         $totalPenjualan += $barisReport['total'];
                         $totalHPP += $barisReport['hpp'];
                         $i++;
@@ -107,28 +116,28 @@ if (!empty($report['detail'])):
             </table>
         </div>
     </div>
-    <?php
+<?php
 endif;
 ?>
 <script>
-    $(function () {
+    $(function() {
         $('.tanggalan').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
         });
     });
 
-    $("#tombol-browse-profil").click(function () {
+    $("#tombol-browse-profil").click(function() {
         $("#tabel-profil").slideToggle(500);
         $("input[name='Profil[nama]']").focus();
     });
 
-    $("#tombol-browse-user").click(function () {
+    $("#tombol-browse-user").click(function() {
         $("#tabel-user").slideToggle(500);
         $("input[name='User[nama_lengkap]']").focus();
     });
 
-    $("body").on("click", "a.pilih.profil", function () {
+    $("body").on("click", "a.pilih.profil", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -137,7 +146,7 @@ endif;
         return false;
     });
 
-    $("body").on("click", "a.pilih.user", function () {
+    $("body").on("click", "a.pilih.user", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -160,11 +169,11 @@ endif;
         $("#ReportDiskonForm_userId").val(data.id);
     }
 
-    $("body").on("focusin", "a.pilih", function () {
+    $("body").on("focusin", "a.pilih", function() {
         $(this).parent('td').parent('tr').addClass('pilih');
     });
 
-    $("body").on("focusout", "a.pilih", function () {
+    $("body").on("focusout", "a.pilih", function() {
         $(this).parent('td').parent('tr').removeClass('pilih');
     });
 </script>

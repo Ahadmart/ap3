@@ -60,7 +60,7 @@ class CetaklabelrakController extends Controller
          * Persiapan render PDF
          */
         error_reporting(0); // Masih ada error di library Mpdf. Sembunyikan error dahulu, perbaiki kemudian :senyum
-        require_once __DIR__ . '/../../vendors/autoload.php';
+        require_once __DIR__ . '/../../vendor/autoload.php';
 
         set_time_limit(0);
         $tanggalCetak   = date('dmY His');

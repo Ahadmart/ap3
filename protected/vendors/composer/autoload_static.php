@@ -28,7 +28,7 @@ class ComposerStaticInit210d9c2f50b8fdf8e04a0b58c6b5c258
         ),
         'Mpdf\\' => 
         array (
-            0 => __DIR__ . '/..' . '/mpdf7/mpdf/src',
+            0 => __DIR__ . '/..' . '/mpdf-8.0.7/mpdf/src',
         ),
     );
 

@@ -37,8 +37,8 @@ mysql -e "create database ahadpos3"
 awk '/AllowOverride None/{c+=1}{if(c==3){sub("AllowOverride None","AllowOverride All",$0)};print}' /etc/apache2/apache2.conf > /tmp/nih
 cp /tmp/nih /etc/apache2/apache2.conf
 
-#install mcrypt and mbstring module (php7)
-sudo apt-get install php7.0-mcrypt php7.0-mbstring
+#install gd (untuk pdf), mcrypt and mbstring module (php7)
+sudo apt-get install php-gd php-mcrypt php-mbstring
 
 #enable mbstring module (php)
 sudo phpenmod mbstring

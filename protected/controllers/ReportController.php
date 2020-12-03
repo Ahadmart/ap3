@@ -283,7 +283,7 @@ class ReportController extends Controller
          * Persiapan render PDF
          */
 
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $listNamaKertas = ReportHarianForm::listKertas();
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('harian_detail_pdf', [
@@ -301,7 +301,7 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $listNamaKertas = ReportHarianForm::listKertas();
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('harian_detail_pdf_2', [
@@ -376,7 +376,7 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $waktuCetak     = date('dmY His');
         $listNamaKertas = ReportPoinMemberForm::listNamaKertas();
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$model->kertas], 'tempDir' => __DIR__ . '/../runtime/']);
@@ -469,7 +469,7 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $waktuCetak     = date('dmY His');
         $listNamaKertas = ReportTopRankForm::listKertas();
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
@@ -582,7 +582,7 @@ class ReportController extends Controller
         /*
          * Persiapan render PDF
          */
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $waktu          = date('Y-m-d H:i:s');
         $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportHutangPiutangForm::listKertas();
@@ -799,7 +799,7 @@ class ReportController extends Controller
          */
 
         error_reporting(0); // Masih ada error di library Mpdf. Sembunyikan error dahulu, perbaiki kemudian :senyum
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $waktu          = date('Y-m-d H:i:s');
         $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportUmurBarangForm::listKertas();
@@ -885,7 +885,7 @@ class ReportController extends Controller
          * Persiapan render PDF
          */
         ini_set('pcre.backtrack_limit', 10000000); // Persiapan jika rownya banyak
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $waktu          = date('Y-m-d H:i:s');
         $waktuCetak     = date_format(date_create_from_format('Y-m-d H:i:s', $waktu), 'dmY His');
         $listNamaKertas = ReportPlsForm::listKertas();
@@ -1119,7 +1119,7 @@ class ReportController extends Controller
             $user->attributes = $_GET['User'];
         }
 
-        $tipePrinterAvailable = [];
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
 
         $this->render('diskon', [
@@ -1129,6 +1129,34 @@ class ReportController extends Controller
             'report'   => $report,
             'printers' => $printers,
         ]);
+    }
+
+    public function actionPrintDiskon()
+    {
+        $model = new ReportDiskonForm();
+        $report = [];
+        if (isset($_GET['printId'])) {
+            // Saat ini baru ada csv. Jika ada yang lain, fixme!
+            $model->profilId = $_GET['profilId'];
+            $model->userId = $_GET['userId'];
+            $model->tipeDiskonId = $_GET['tipeDiskonId'];
+            $model->dari = $_GET['dari'];
+            $model->sampai = $_GET['sampai'];
+            // print_r($model->attributes); 
+            if ($model->validate()) {
+                $report = $model->reportDiskon();
+                $text = $model->toCsv($report['detail']);
+                $timeStamp       = date('Ymd His');
+                $namaFile        = "Laporan Diskon_{$model->dari}_{$model->sampai}_{$timeStamp}.csv";
+                // $contentTypeMeta = 'text/csv';
+
+                $this->renderPartial('_csv', [
+                    'namaFile'    => $namaFile,
+                    'csv'        => $text,
+                    // 'contentType' => $contentTypeMeta
+                ]);
+            }
+        }
     }
 
     public function actionRekapDiskon()
@@ -1389,7 +1417,7 @@ class ReportController extends Controller
          * Persiapan render PDF
          */
         $listNamaKertas = ReportStockOpnameForm::listKertas();
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('_stockopname_pdf', [
             'report'               => $report,
@@ -1575,7 +1603,7 @@ class ReportController extends Controller
          * Persiapan render PDF
          */
         $listNamaKertas = ReportPenjualanPerStrukturForm::listKertas();
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial($viewReport, [
             'report'       => $report,

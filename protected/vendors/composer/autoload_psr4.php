@@ -7,5 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
-    'Mpdf\\' => array($vendorDir . '/mpdf7/mpdf/src'),
+    'Mpdf\\' => array($vendorDir . '/mpdf-8.0.7/mpdf/src'),
 );

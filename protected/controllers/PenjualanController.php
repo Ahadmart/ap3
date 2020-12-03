@@ -385,7 +385,7 @@ class PenjualanController extends Controller
         /*
          * Persiapan render PDF
          */
-        require_once __DIR__ . '/../vendors/autoload.php';
+        require_once __DIR__ . '/../vendor/autoload.php';
         $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'tempDir' => __DIR__ . '/../runtime/']);
 
         $viewInvoice = '_invoice';

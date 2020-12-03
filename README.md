@@ -9,12 +9,12 @@ Mudah digunakan. Kompatibel dengan hardware POS, seperti barcode scanner, printe
 Yang perlu diinstall untuk menggunakan AhadPOS ٣
 
 - Apache2 Web Server
-- PHP >= 5.6
+- PHP 5.6 s.d 7.4
 - MySql
 
 ### Installing
 
-Lihat INSTALL.txt
+Lihat [INSTALL.txt](https://github.com/Ahadmart/ap3/blob/master/INSTALL.TXT)
 
 ## Built With
 

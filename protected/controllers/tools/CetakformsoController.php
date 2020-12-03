@@ -71,7 +71,7 @@ class CetakformsoController extends Controller
         /*
          * Persiapan render PDF
          */
-        require_once __DIR__ . '/../../vendors/autoload.php';
+        require_once __DIR__ . '/../../vendor/autoload.php';
 
         $tanggalCetak   = date('d-m-Y H:i:s');
         $listNamaKertas = CetakStockOpnameForm::listNamaKertas();

@@ -22,7 +22,7 @@ class ReportDiskonForm extends CFormModel
     {
         return [
             ['dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'],
-            ['profilId, userId, tipeDiskonId', 'safe']
+            ['profilId, userId, tipeDiskonId', 'safe'],
         ];
     }
 
@@ -32,11 +32,11 @@ class ReportDiskonForm extends CFormModel
     public function attributeLabels()
     {
         return [
-            'profilId' => 'Profil',
-            'userId' => 'User',
+            'profilId'     => 'Profil',
+            'userId'       => 'User',
             'tipeDiskonId' => 'Tipe Diskon',
-            'dari' => 'Dari',
-            'sampai' => 'Sampai',
+            'dari'         => 'Dari',
+            'sampai'       => 'Sampai',
         ];
     }
 
@@ -59,7 +59,7 @@ class ReportDiskonForm extends CFormModel
 
     public function reportDiskon()
     {
-        $dari = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i');
+        $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i');
         $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i');
 
         $tipeDiskonCond = '';
@@ -77,16 +77,28 @@ class ReportDiskonForm extends CFormModel
         }
 
         $sql = "
-            SELECT 
+        SELECT penjualan_id, nomor_penjualan, barcode, nama, harga_normal, harga_jual, qty, total, hpp, total-hpp margin,
+            CASE tipe_diskon_id
+                WHEN 0 THEN 'Promo'
+                WHEN 1 THEN 'Grosir'
+                WHEN 2 THEN 'Banded'
+                WHEN 3 THEN 'Manual/Admin'
+                WHEN 4 THEN 'Promo Member'
+                WHEN 5 THEN 'Beli x dapat y'
+                WHEN 6 THEN 'Beli Rp.x dapat y'
+                WHEN 7 THEN 'Promo perKategori'
+            END tipe_diskon_nama
+        FROM (
+            SELECT
                 dis.penjualan_id,
-                p.nomor,
+                p.nomor nomor_penjualan,
                 barang.barcode,
                 barang.nama,
                 dis.harga_normal,
                 detail.harga_jual,
                 detail.qty,
                 (detail.qty * detail.harga_jual) total,
-                (SELECT 
+                (SELECT
                         SUM(qty * harga_beli)
                     FROM
                         harga_pokok_penjualan
@@ -106,6 +118,7 @@ class ReportDiskonForm extends CFormModel
                 barang ON barang.id = detail.barang_id
             {$tipeDiskonCond}
             ORDER BY p.nomor , barang.nama
+            ) AS t_diskon
             ";
 
         $command = Yii::app()->db->createCommand($sql);
@@ -126,8 +139,31 @@ class ReportDiskonForm extends CFormModel
         }
 
         return [
-            'detail' => $command->queryAll()
+            'detail' => $command->queryAll(),
         ];
     }
 
+    public function array2csv(array &$array)
+    {
+        if (count($array) == 0) {
+            return null;
+        }
+        ob_start();
+        $df = fopen('php://output', 'w');
+        fputcsv($df, array_keys(reset($array)));
+        foreach ($array as $row) {
+            fputcsv($df, $row);
+        }
+        fclose($df);
+        return ob_get_clean();
+    }
+
+    /**
+     * Export Laporan Diskon ke CSV
+     * @return text csv beserta header
+     */
+    public function toCsv($report)
+    {
+        return $this->array2csv($report);
+    }
 }

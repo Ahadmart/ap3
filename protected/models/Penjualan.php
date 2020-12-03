@@ -308,7 +308,7 @@ class Penjualan extends CActiveRecord
             $detailBaru->harga_jual_rekomendasi = $detail->harga_jual_rekomendasi;
 
             if (!$detailBaru->save()) {
-                throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$detail->barang_id}, qty:{$qty}", 500);
+                throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$detail->barang_id}, qty:{$detailBaru->qty}", 500);
             }
 
             if (!HargaPokokPenjualan::model()->updateByPk($hpp->id, array('penjualan_detail_id' => $detailBaru->id)) > 1) {
@@ -430,12 +430,14 @@ class Penjualan extends CActiveRecord
     {
         $sisa = $qty;
         $hargaJualNormal = HargaJual::model()->terkini($barang->id);
+        // Yii::log("Tambah barang detail; barangID: ".$barang->id, "info"); 
         /* 
          * Cek Multi Harga Jual, jika ada: Diskon diabaikan!
          * Cek Diskon, dengan prioritas PROMO MEMBER, PROMO, GROSIR, BANDED, QTY DAPAT BARANG
          * Hanya bisa salah satu
          */
         if (!empty(HargaJualMulti::listAktif($barang->id))){
+            // Yii::log("Diskon Multi HJ; barangID: ".$barang->id, "info"); 
             //terapkan multi harga jual
             //ambil sisanya (yang tidak kena kelipatan satuan multi harga)
             $sisa = $this->aksiMultiHJ($barang->id, $qty, $hargaJualNormal);
@@ -464,7 +466,7 @@ class Penjualan extends CActiveRecord
             //ambil sisanya (yang tidak didiskon)
             $sisa = $this->aksiDiskonBanded($barang->id, $qty, $hargaJualNormal);
         } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_QTY_GET_BARANG))) {
-            //terapkan diskon beli x dapat y
+            // Yii::log("Terapkan diskon beli x dapat y; barangID: ".$barang->id, "info"); 
             //ambil sisanya (yang tidak didiskon)
             $sisa = $this->aksiDiskonQtyDapatBarang($barang->id, $qty, $hargaJualNormal);
         } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_NOMINAL_GET_BARANG))) {
@@ -473,6 +475,7 @@ class Penjualan extends CActiveRecord
 
         /* Jika masih ada sisa, insert ke penjulan dg harga jual normal */
         if ($sisa > 0) {
+            // Yii::log("Masih ada sisa; barangID: ".$barang->id, "info"); 
             /* -------------- */
             $this->insertBarang($barang->id, $sisa, $hargaJualNormal);
             /* -------------- */
