@@ -126,7 +126,7 @@ class ReturPembelian extends CActiveRecord
         $criteria->compare('profil_id', $this->profil_id, true);
         $criteria->compare('hutang_piutang_id', $this->hutang_piutang_id, true);
         $criteria->compare('referensi', $this->referensi, true);
-        $criteria->compare('tanggal_referensi', $this->tanggal_referensi, true);
+        $criteria->compare("DATE_FORMAT(t.tanggal_referensi, '%d-%m-%Y')", $this->tanggal_referensi, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
