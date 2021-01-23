@@ -466,8 +466,7 @@ class ReportPenjualanPerStrukturForm extends CFormModel
                 barang_id, SUM(qty) stok
             FROM
                 inventory_balance
-            GROUP BY barang_id
-            HAVING SUM(qty) > 0) t_stok ON t_stok.barang_id = barang.id
+            GROUP BY barang_id) t_stok ON t_stok.barang_id = barang.id
                 JOIN
             barang_struktur bs3 ON bs3.id = barang.struktur_id {$lv3Cond}
                 JOIN

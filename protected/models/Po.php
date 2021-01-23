@@ -121,11 +121,11 @@ class Po extends CActiveRecord
         $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id, true);
-        $criteria->compare('nomor', $this->nomor, true);
-        $criteria->compare('tanggal', $this->tanggal, true);
+        $criteria->compare('t.nomor', $this->nomor, true);
+        $criteria->compare("DATE_FORMAT(t.tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('profil_id', $this->profil_id, true);
         $criteria->compare('referensi', $this->referensi, true);
-        $criteria->compare('tanggal_referensi', $this->tanggal_referensi, true);
+        $criteria->compare("DATE_FORMAT(t.tanggal_referensi, '%d-%m-%Y')", $this->tanggal_referensi, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('pembelian_id', $this->pembelian_id, true);
         $criteria->compare('updated_at', $this->updated_at, true);
@@ -215,8 +215,9 @@ class Po extends CActiveRecord
         $tahun = date('y');
         $data  = $this->find(
             [
-            'select'    => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,2)='{$tahun}'"]
+                'select'    => 'max(substring(nomor,9)*1) as max',
+                'condition' => "substring(nomor,5,2)='{$tahun}'"
+            ]
         );
 
         $value = is_null($data) ? 0 : $data->max;
@@ -282,7 +283,8 @@ class Po extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ]
+            ];
         }
     }
 
@@ -374,7 +376,8 @@ class Po extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ]
+            ];
         }
     }
 
@@ -428,7 +431,7 @@ class Po extends CActiveRecord
         if (!is_null($rakId)) {
             $model->rakId = $rakId;
         }
-        
+
         $hasil = $model->reportPls();
         // return $hasil;
         if (empty($hasil)) {
@@ -437,12 +440,12 @@ class Po extends CActiveRecord
         }
 
         /* Hapus data yang masih draft */
-        PoDetail::model()->deleteAll('po_id=:poId AND status=:sDraft', [':poId'=>$this->id, ':sDraft'=>PoDetail::STATUS_DRAFT]);
+        PoDetail::model()->deleteAll('po_id=:poId AND status=:sDraft', [':poId' => $this->id, ':sDraft' => PoDetail::STATUS_DRAFT]);
 
         /* Insert data hasil report ke po_detail */
         $data = [];
         foreach ($hasil as $row) {
-            $data[]=[
+            $data[] = [
                 'po_id'        => $this->id,
                 'barang_id'    => $row['barang_id'],
                 'barcode'      => $row['barcode'],
@@ -450,7 +453,7 @@ class Po extends CActiveRecord
                 'harga_beli'   => 0, // dinol kan terlebih dahulu, nanti akan diupdate ان شاءالله
                 'ads'          => $row['ads'],
                 'stok'         => $row['stok'],
-                'est_sisa_hari'=> $row['sisa_hari'],
+                'est_sisa_hari' => $row['sisa_hari'],
                 'updated_by'   => 1 // User administrator
             ];
         }
@@ -508,7 +511,8 @@ class Po extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ]
+            ];
         }
     }
 }
