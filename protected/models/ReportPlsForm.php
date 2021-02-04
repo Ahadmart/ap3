@@ -74,8 +74,11 @@ class ReportPlsForm extends CFormModel
                 barang_id, SUM(qty) qty
             FROM
                 penjualan_detail
+                    JOIN
+                penjualan ON penjualan.id = penjualan_detail.penjualan_id
+                    AND penjualan.status != :statusDraft
             WHERE
-                created_at BETWEEN DATE_SUB(NOW(), INTERVAL :range DAY) AND NOW()
+                penjualan.created_at BETWEEN DATE_SUB(NOW(), INTERVAL :range DAY) AND NOW()
             GROUP BY barang_id) AS t_jualan
                 ");
         $command->join("
@@ -95,15 +98,16 @@ class ReportPlsForm extends CFormModel
         }
 
         if (!empty($this->rakId)) {
-            $command->andWhere("barang.rak_id = ".$this->rakId);
-        } 
-        
+            $command->andWhere("barang.rak_id = " . $this->rakId);
+        }
+
         $command->andWhere("barang.status = :statusBarang");
 
+        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $command->bindValue(":range", $this->jumlahHari);
         $command->bindValue(":sisaHariMax", $this->sisaHariMax);
         $command->bindValue(":statusBarang", Barang::STATUS_AKTIF);
-        
+
         if (!empty($this->profilId)) {
             $command->bindValue(":profilId", $this->profilId);
         }
@@ -149,5 +153,4 @@ class ReportPlsForm extends CFormModel
             self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA,
         ];
     }
-
 }

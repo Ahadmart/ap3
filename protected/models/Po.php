@@ -98,7 +98,7 @@ class Po extends CActiveRecord
             'updated_at'        => 'Updated At',
             'updated_by'        => 'Updated By',
             'created_at'        => 'Created At',
-            'namaUpdatedBy'     => 'User'
+            'namaUpdatedBy'     => 'User',
         ];
     }
 
@@ -139,21 +139,21 @@ class Po extends CActiveRecord
         $sort = [
             'defaultOrder' => 't.status, t.tanggal desc',
             'attributes'   => [
-                'namaSupplier' => [
+                'namaSupplier'  => [
                     'asc'  => 'profil.nama',
-                    'desc' => 'profil.nama desc'
+                    'desc' => 'profil.nama desc',
                 ],
                 'namaUpdatedBy' => [
                     'asc'  => 'updatedBy.nama_lengkap',
-                    'desc' => 'updatedBy.nama_lengkap desc'
+                    'desc' => 'updatedBy.nama_lengkap desc',
                 ],
-                '*'
-            ]
+                '*',
+            ],
         ];
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort'     => $sort
+            'sort'     => $sort,
         ]);
     }
 
@@ -216,7 +216,7 @@ class Po extends CActiveRecord
         $data  = $this->find(
             [
                 'select'    => 'max(substring(nomor,9)*1) as max',
-                'condition' => "substring(nomor,5,2)='{$tahun}'"
+                'condition' => "substring(nomor,5,2)='{$tahun}'",
             ]
         );
 
@@ -268,8 +268,8 @@ class Po extends CActiveRecord
 
         try {
             PoDetail::model()->deleteAll('po_id=:poId and status=:status', [
-                ':poId'     => $this->id,
-                ':status'   => PoDetail::STATUS_DRAFT
+                ':poId'   => $this->id,
+                ':status' => PoDetail::STATUS_DRAFT,
             ]);
             if (!$this->save()) {
                 throw new Exception('Gagal Simpan PO');
@@ -283,7 +283,7 @@ class Po extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
@@ -357,7 +357,7 @@ class Po extends CActiveRecord
             $command->bindValues([
                 ':pembelianId' => $pembelian->id,
                 ':poId'        => $this->id,
-                ':userId'      => Yii::app()->user->id
+                ':userId'      => Yii::app()->user->id,
             ]);
             $rows = $command->execute();
 
@@ -366,8 +366,8 @@ class Po extends CActiveRecord
                 'sukses' => true,
                 'data'   => [
                     'pembelianId' => $pembelian->id,
-                    'rows'        => $rows
-                ]
+                    'rows'        => $rows,
+                ],
             ];
         } catch (Exception $ex) {
             $transaction->rollback();
@@ -376,7 +376,7 @@ class Po extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
@@ -403,7 +403,7 @@ class Po extends CActiveRecord
     public function toCsv()
     {
         $sql = '
-        SELECT 
+        SELECT
             barcode, nama, harga_beli harga, qty_order qty
         FROM
             po_detail
@@ -419,8 +419,8 @@ class Po extends CActiveRecord
     public function analisaPLS($hariPenjualan, $sisaHari, $profilId, $rakId)
     {
         /* Analisa PLS
-           Kode diambil dari Report PLS
-        */
+        Kode diambil dari Report PLS
+         */
         $model              = new ReportPlsForm;
         $model->jumlahHari  = $hariPenjualan;
         $model->sisaHariMax = $sisaHari;
@@ -446,21 +446,21 @@ class Po extends CActiveRecord
         $data = [];
         foreach ($hasil as $row) {
             $data[] = [
-                'po_id'        => $this->id,
-                'barang_id'    => $row['barang_id'],
-                'barcode'      => $row['barcode'],
-                'nama'         => $row['nama'],
-                'harga_beli'   => 0, // dinol kan terlebih dahulu, nanti akan diupdate ان شاءالله
-                'ads'          => $row['ads'],
-                'stok'         => $row['stok'],
+                'po_id'         => $this->id,
+                'barang_id'     => $row['barang_id'],
+                'barcode'       => $row['barcode'],
+                'nama'          => $row['nama'],
+                'harga_beli'    => 0, // dinol kan terlebih dahulu, nanti akan diupdate ان شاءالله
+                'ads'           => $row['ads'],
+                'stok'          => $row['stok'],
                 'est_sisa_hari' => $row['sisa_hari'],
-                'updated_by'   => 1 // User administrator
+                'updated_by'    => 1, // User administrator
             ];
         }
         Yii::app()->db->commandBuilder->createMultipleInsertCommand('po_detail', $data)->execute();
 
         /* Update dengan perhitungan saran order, untuk persediaan selama $sisaHari + buffer 30% */
-        return  $this->hitungSaranOrder($sisaHari, 0.3);
+        return $this->hitungSaranOrder($sisaHari, 0.3);
     }
 
     public function hitungSaranOrder($hariPersediaan, $buffer)
@@ -499,11 +499,11 @@ class Po extends CActiveRecord
             $hasil   = $command->execute([
                 ':hariPersediaan' => $hariPersediaan,
                 ':bufferHari'     => $bufferHari,
-                ':poId'           => $this->id
+                ':poId'           => $this->id,
             ]);
             return [
                 'sukses' => true,
-                'data'   => $hasil
+                'data'   => $hasil,
             ];
         } catch (Exception $ex) {
             return [
@@ -511,7 +511,7 @@ class Po extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
