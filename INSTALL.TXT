@@ -27,10 +27,19 @@ mysql -e "create database ahadpos3"
 ##  This causes Yii framework to fail with error SQLSTATE 1698 : 
 ##          https://translate.google.co.id/translate?hl=en&sl=zh-CN&u=http://www.codes51.com/article/detail_273734.html&prev=search
 ##          http://dev.mysql.com/doc/refman/5.7/en/error-messages-server.html#error_er_access_denied_no_password_error
-
 ## If you're using MySQL 5.7, execute the following command
 ##mysql -e "UPDATE mysql . user SET authentication_string = PASSWORD( 'YourPasswordHere' ), plugin = 'mysql_native_password' WHERE user = 'root' ; flush privileges;"
 ## again remember, MySQL 5.7 will NOT accept empty password
+
+## Mysql 8.0.23. Cara ganti password root menggunakan mysql native password
+## 1) login ke mysql pakai sudo
+sudo mysql -u root
+## 2) 
+UPDATE user SET plugin='mysql_native_password' WHERE User='root';
+## 3) 
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'passwordterpilih';
+## 4) 
+FLUSH PRIVILEGES;
 
 # need to enable the Rewrite commands in .htaccess file, by changing "AllowOverride None" into "AllowOverride All"
 # (just the one for /var/www/ Directory)
