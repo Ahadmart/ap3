@@ -185,4 +185,39 @@ class StrukturBarang extends CActiveRecord
         return $text;
     }
 
+    public static function listStrukLv1()
+    {
+        $criteria            = new CDbCriteria();
+        $criteria->condition = 'level=1 AND status=:publish';
+        $criteria->params    = [':publish' => self::STATUS_PUBLISH];
+        $criteria->order     = 'nama';
+
+        return ['' => '[SEMUA]'] + CHtml::listData(self::model()->findAll($criteria), 'id', 'nama');
+    }
+
+    public static function listStrukLv2($parentId)
+    {
+        $criteria            = new CDbCriteria();
+        $criteria->condition = 'level=2 AND status=:publish AND parent_id=:parentId';
+        $criteria->params    = [
+            ':publish'  => self::STATUS_PUBLISH,
+            ':parentId' => $parentId,
+        ];
+        $criteria->order = 'nama';
+
+        return ['' => '[SEMUA]'] + CHtml::listData(self::model()->findAll($criteria), 'id', 'nama');
+    }
+
+    public static function listStrukLv3($parentId)
+    {
+        $criteria            = new CDbCriteria();
+        $criteria->condition = 'level=3 AND status=:publish AND parent_id=:parentId';
+        $criteria->params    = [
+            ':publish'  => self::STATUS_PUBLISH,
+            ':parentId' => $parentId,
+        ];
+        $criteria->order = 'nama';
+
+        return ['' => '[SEMUA]'] + CHtml::listData(self::model()->findAll($criteria), 'id', 'nama');
+    }
 }

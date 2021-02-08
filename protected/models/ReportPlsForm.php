@@ -26,6 +26,9 @@ class ReportPlsForm extends CFormModel
     public $rakId;
     public $sortBy;
     public $kertas;
+    public $strukLv1;
+    public $strukLv2;
+    public $strukLv3;
 
     /**
      * Declares the validation rules.
@@ -49,6 +52,9 @@ class ReportPlsForm extends CFormModel
             'sisaHariMax' => 'Limit Estimasi Sisa Hari <=',
             'rakId'       => 'Rak (Opsional)',
             'sortBy'      => 'Urut berdasarkan',
+            'strukLv1'    => 'Struktur Level 1',
+            'strukLv2'    => 'Struktur Level 2',
+            'strukLv3'    => 'Struktur Level 3',
         ];
     }
 
