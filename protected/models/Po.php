@@ -416,7 +416,7 @@ class Po extends CActiveRecord
         return $this->array2csv($report);
     }
 
-    public function analisaPLS($hariPenjualan, $sisaHari, $profilId, $rakId)
+    public function analisaPLS($hariPenjualan, $sisaHari, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3)
     {
         /* Analisa PLS
         Kode diambil dari Report PLS
@@ -424,6 +424,9 @@ class Po extends CActiveRecord
         $model              = new ReportPlsForm;
         $model->jumlahHari  = $hariPenjualan;
         $model->sisaHariMax = $sisaHari;
+        $model->strukLv1    = $strukLv1;
+        $model->strukLv2    = $strukLv2;
+        $model->strukLv3    = $strukLv3;
         $model->sortBy      = ReportPlsForm::SORT_BY_SISA_HARI_ASC;
         if (!is_null($profilId)) {
             $model->profilId = $profilId;
@@ -438,24 +441,31 @@ class Po extends CActiveRecord
             // return ['sukses' => true, 'data' => 0];
             return ['sukses' => false, 'error' => ['msg' => 'Data tidak ditemukan!', 'code' => 404]];
         }
+        // print_r($hasil);
+        // Yii::app()->end();
 
         /* Hapus data yang masih draft */
         PoDetail::model()->deleteAll('po_id=:poId AND status=:sDraft', [':poId' => $this->id, ':sDraft' => PoDetail::STATUS_DRAFT]);
 
         /* Insert data hasil report ke po_detail */
         $data = [];
-        foreach ($hasil as $row) {
-            $data[] = [
-                'po_id'         => $this->id,
-                'barang_id'     => $row['barang_id'],
-                'barcode'       => $row['barcode'],
-                'nama'          => $row['nama'],
-                'harga_beli'    => 0, // dinol kan terlebih dahulu, nanti akan diupdate ان شاءالله
-                'ads'           => $row['ads'],
-                'stok'          => $row['stok'],
-                'est_sisa_hari' => $row['sisa_hari'],
-                'updated_by'    => 1, // User administrator
-            ];
+        foreach ($hasil as $strukturLv3) {
+            foreach ($strukturLv3 as $row) {
+                $data[] = [
+                    'po_id'         => $this->id,
+                    'barang_id'     => $row['barang_id'],
+                    'barcode'       => $row['barcode'],
+                    'nama'          => $row['nama'],
+                    'harga_beli'    => 0, // dinol kan terlebih dahulu, nanti akan diupdate ان شاءالله
+                    'ads'           => $row['ads'],
+                    'stok'          => $row['stok'],
+                    'est_sisa_hari' => $row['sisa_hari'],
+                    'updated_by'    => 1, // User administrator
+                ];
+            }
+        }
+        if (empty($data)) {
+            return ['sukses' => false, 'error' => ['msg' => 'Data tidak ditemukan!', 'code' => 404]];
         }
         Yii::app()->db->commandBuilder->createMultipleInsertCommand('po_detail', $data)->execute();
 

@@ -64,8 +64,70 @@ class ReportPlsForm extends CFormModel
         return $model->nama;
     }
 
+    public function listChildStruk($id)
+    {
+        $criteria = new CDbCriteria();
+        if (empty($id)) {
+            $criteria->condition = 'status=:publish AND parent_id IS NULL';
+            $criteria->params    = [
+                ':publish' => StrukturBarang::STATUS_PUBLISH,
+            ];
+        } else {
+            $criteria->condition = 'status=:publish AND parent_id=:id';
+            $criteria->params    = [
+                ':publish' => StrukturBarang::STATUS_PUBLISH,
+                ':id'      => $id,
+            ];
+        }
+        $criteria->order = 'nama';
+
+        $childStruk = StrukturBarang::model()->findAll($criteria);
+
+        $r = [];
+        foreach ($childStruk as $struk) {
+            $r[] = $struk->id;
+        }
+        return $r;
+    }
+
     public function reportPls()
     {
+        $strukturList = [];
+        if ($this->strukLv3 > 0) {
+            $strukturList[] = $this->strukLv3;
+            // echo ',this->strukId: ' . $this->strukLv3;
+        } else if ($this->strukLv2 > 0) {
+            $strukturList = $this->listChildStruk($this->strukLv2);
+        } else if ($this->strukLv1 > 0) {
+            $strukturListLv2 = $this->listChildStruk($this->strukLv1);
+            foreach ($strukturListLv2 as $strukturIdLv2) {
+                $strukturList = array_merge($strukturList, $this->listChildStruk($strukturIdLv2));
+            }
+        } else {
+            // Struktur tidak dipilih, return all
+            $r['all'] = $this->reportPlsLevel3(null);
+            return $r;
+        }
+
+        $r = [];
+        foreach ($strukturList as $strukId) {
+            // echo ', strukId: ' . $strukId;
+            $r[$strukId] = $this->reportPlsLevel3($strukId);
+        }
+        return $r;
+    }
+
+    public function reportPlsLevel3($strukId)
+    {
+        $whereStruk = '';
+        if (!empty($strukId)) {
+            $whereStruk = "
+                JOIN
+            barang ON barang.id = penjualan_detail.barang_id
+                AND barang.struktur_id = :strukId
+        ";
+        }
+
         $command = Yii::app()->db->createCommand();
         $command->select("
             t_jualan.*,
@@ -83,6 +145,7 @@ class ReportPlsForm extends CFormModel
                     JOIN
                 penjualan ON penjualan.id = penjualan_detail.penjualan_id
                     AND penjualan.status != :statusDraft
+                    {$whereStruk}
             WHERE
                 penjualan.created_at BETWEEN DATE_SUB(NOW(), INTERVAL :range DAY) AND NOW()
             GROUP BY barang_id) AS t_jualan
@@ -120,7 +183,11 @@ class ReportPlsForm extends CFormModel
         if (!empty($this->rakId)) {
             $command->bindValue(":rakId", $this->rakId);
         }
+        if (!empty($strukId)) {
+            $command->bindValue(":strukId", $strukId);
+        }
 
+        // echo $command->getText();
         // return $command->getText();
         return $command->queryAll();
     }

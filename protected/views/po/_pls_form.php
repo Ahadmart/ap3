@@ -76,6 +76,7 @@
             beforeSend: function() {
                 $("#tombol-analisa-pls").addClass("tombol-loading");
                 $("#tombol-analisa-pls").html("<i class=\"fa fa-refresh fa-spin fa-fw\"></i> <span class=\"ak\">A</span>mbil Data PLS");
+                $(".error").html("").slideUp(500);
             },
             success: function(data) {
                 if (data.sukses) {
