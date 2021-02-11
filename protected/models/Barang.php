@@ -13,6 +13,7 @@
  * @property string $rak_id
  * @property string $restock_point
  * @property string $restock_level
+ * @property string $restock_min
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
@@ -36,7 +37,7 @@ class Barang extends CActiveRecord
 {
 
     const STATUS_TIDAK_AKTIF = 0;
-    const STATUS_AKTIF = 1;
+    const STATUS_AKTIF       = 1;
 
     public $soId;
     public $daftarSupplier;
@@ -52,20 +53,20 @@ class Barang extends CActiveRecord
 
     public function scopes()
     {
-        return array(
+        return [
             'belumSO',
-            'aktif' => array(
-                'condition' => 'status = ' . self::STATUS_AKTIF
-            )
-        );
+            'aktif' => [
+                'condition' => 'status = ' . self::STATUS_AKTIF,
+            ],
+        ];
     }
 
     public function belumSO($soId, $rakId)
     {
-        $this->getDbCriteria()->mergeWith(array(
-            'join' => "left join stock_opname_detail sod on t.id = sod.barang_id and sod.stock_opname_id = {$soId}",
-            'condition' => "t.rak_id={$rakId} and sod.barang_id is null"
-        ));
+        $this->getDbCriteria()->mergeWith([
+            'join'      => "left join stock_opname_detail sod on t.id = sod.barang_id and sod.stock_opname_id = {$soId}",
+            'condition' => "t.rak_id={$rakId} and sod.barang_id is null",
+        ]);
         return $this;
     }
 
@@ -76,18 +77,18 @@ class Barang extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('barcode, nama, kategori_id, satuan_id', 'required'),
-            array('barcode', 'unique'),
-            array('status', 'numerical', 'integerOnly' => true),
-            array('barcode', 'length', 'max' => 30),
-            array('nama', 'length', 'max' => 45),
-            array('struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, updated_by', 'length', 'max' => 10),
-            array('created_at, updated_at, updated_by', 'safe'),
+        return [
+            ['barcode, nama, kategori_id, satuan_id', 'required'],
+            ['barcode', 'unique'],
+            ['status', 'numerical', 'integerOnly' => true],
+            ['barcode', 'length', 'max' => 30],
+            ['nama', 'length', 'max' => 45],
+            ['struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, updated_by', 'length', 'max' => 10],
+            ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, barcode, nama, struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, status, daftarSupplier, strukturFullPath', 'safe', 'on' => 'search'),
-        );
+            ['id, barcode, nama, struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, status, daftarSupplier, strukturFullPath', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -97,20 +98,20 @@ class Barang extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-            'kategori' => array(self::BELONGS_TO, 'KategoriBarang', 'kategori_id'),
-            'struktur' => array(self::BELONGS_TO, 'StrukturBarang', 'struktur_id'),
-            'satuan' => array(self::BELONGS_TO, 'SatuanBarang', 'satuan_id'),
-            'rak' => array(self::BELONGS_TO, 'RakBarang', 'rak_id'),
-            'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
-            'barangHargaJuals' => array(self::HAS_MANY, 'BarangHargaJual', 'barang_id'),
-            'barangHargaJualRekomendasis' => array(self::HAS_MANY, 'BarangHargaJualRekomendasi', 'barang_id'),
-            'inventoryBalances' => array(self::HAS_MANY, 'InventoryBalance', 'barang_id'),
-            'pembelianDetails' => array(self::HAS_MANY, 'PembelianDetail', 'barang_id'),
-            'penjualanDetails' => array(self::HAS_MANY, 'PenjualanDetail', 'barang_id'),
-            'stockOpnameDetails' => array(self::HAS_MANY, 'StockOpnameDetail', 'barang_id'),
-            'supplierBarangs' => array(self::HAS_MANY, 'SupplierBarang', 'barang_id'),
-        );
+        return [
+            'kategori'                    => [self::BELONGS_TO, 'KategoriBarang', 'kategori_id'],
+            'struktur'                    => [self::BELONGS_TO, 'StrukturBarang', 'struktur_id'],
+            'satuan'                      => [self::BELONGS_TO, 'SatuanBarang', 'satuan_id'],
+            'rak'                         => [self::BELONGS_TO, 'RakBarang', 'rak_id'],
+            'updatedBy'                   => [self::BELONGS_TO, 'User', 'updated_by'],
+            'barangHargaJuals'            => [self::HAS_MANY, 'BarangHargaJual', 'barang_id'],
+            'barangHargaJualRekomendasis' => [self::HAS_MANY, 'BarangHargaJualRekomendasi', 'barang_id'],
+            'inventoryBalances'           => [self::HAS_MANY, 'InventoryBalance', 'barang_id'],
+            'pembelianDetails'            => [self::HAS_MANY, 'PembelianDetail', 'barang_id'],
+            'penjualanDetails'            => [self::HAS_MANY, 'PenjualanDetail', 'barang_id'],
+            'stockOpnameDetails'          => [self::HAS_MANY, 'StockOpnameDetail', 'barang_id'],
+            'supplierBarangs'             => [self::HAS_MANY, 'SupplierBarang', 'barang_id'],
+        ];
     }
 
     /**
@@ -118,23 +119,24 @@ class Barang extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'barcode' => 'Barcode',
-            'nama' => 'Nama',
-            'struktur_id' => 'Struktur',
-            'kategori_id' => 'Kategori',
-            'satuan_id' => 'Satuan',
-            'rak_id' => 'Rak',
-            'restock_point' => 'Restock Point',
-            'restock_level' => 'Restock Level',
-            'status' => 'Status',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-            'created_at' => 'Created At',
-            'daftarSupplier' => 'Supplier',
+        return [
+            'id'               => 'ID',
+            'barcode'          => 'Barcode',
+            'nama'             => 'Nama',
+            'struktur_id'      => 'Struktur',
+            'kategori_id'      => 'Kategori',
+            'satuan_id'        => 'Satuan',
+            'rak_id'           => 'Rak',
+            'restock_point'    => 'Restock Point',
+            'restock_level'    => 'Restock Level',
+            'restock_min'      => 'Minimum Restock',
+            'status'           => 'Status',
+            'updated_at'       => 'Updated At',
+            'updated_by'       => 'Updated By',
+            'created_at'       => 'Created At',
+            'daftarSupplier'   => 'Supplier',
             'strukturFullPath' => 'Struktur',
-        );
+        ];
     }
 
     /**
@@ -163,11 +165,12 @@ class Barang extends CActiveRecord
         $criteria->compare('satuan_id', $this->satuan_id);
         $criteria->compare('restock_point', $this->restock_point, true);
         $criteria->compare('restock_level', $this->restock_level, true);
+        $criteria->compare('restock_min', $this->restock_min, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('t.created_at', $this->created_at, true);
-        $criteria->compare("(SELECT 
+        $criteria->compare("(SELECT
                                 group_concat(p.nama)
                             FROM
                                 supplier_barang sb
@@ -177,7 +180,7 @@ class Barang extends CActiveRecord
                                 barang_id = t.id
                                 GROUP BY barang_id)", $this->daftarSupplier, true);
         $criteria->compare("(
-            SELECT 
+            SELECT
                 CONCAT(lv1.nama, ' > ', lv2.nama, ' > ', lv3.nama)
             FROM
                 barang b
@@ -204,10 +207,10 @@ class Barang extends CActiveRecord
         }
 
         return new CActiveDataProvider($this, [
-            'criteria' => $criteria,
+            'criteria'   => $criteria,
             'pagination' => [
-                'pageSize' => $pageSize
-            ]
+                'pageSize' => $pageSize,
+            ],
         ]);
     }
 
@@ -236,20 +239,20 @@ class Barang extends CActiveRecord
     public function beforeValidate()
     {
         if (empty($this->rak_id)) {
-            $this->rak_id = NULL;
+            $this->rak_id = null;
         }
         if (empty($this->kategori_id)) {
-            $this->kategori_id = NULL;
+            $this->kategori_id = null;
         }
         if (empty($this->struktur_id)) {
-            $this->struktur_id = NULL;
+            $this->struktur_id = null;
         }
         return parent::beforeValidate();
     }
 
     public function getNamaStatus()
     {
-        $statusDef = array('Non Aktif', 'Aktif');
+        $statusDef = ['Non Aktif', 'Aktif'];
         return $statusDef[$this->status];
     }
 
@@ -299,25 +302,25 @@ class Barang extends CActiveRecord
 
     public function filterStatus()
     {
-        return array(
+        return [
             Barang::STATUS_TIDAK_AKTIF => 'Non Aktif',
-            Barang::STATUS_AKTIF => 'Aktif'
-        );
+            Barang::STATUS_AKTIF       => 'Aktif',
+        ];
     }
 
     public function filterKategori()
     {
-        return CHtml::listData(KategoriBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return CHtml::listData(KategoriBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
     public function filterSatuan()
     {
-        return CHtml::listData(SatuanBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return CHtml::listData(SatuanBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
     public function filterRak()
     {
-        return ['NULL' => 'NULL'] + CHtml::listData(RakBarang::model()->findAll(array('order' => 'nama')), 'id', 'nama');
+        return ['NULL' => 'NULL'] + CHtml::listData(RakBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
     /**
@@ -330,7 +333,7 @@ class Barang extends CActiveRecord
     }
 
     /**
-     * Mencari tanggal terakhir dari pembelian barang ini 
+     * Mencari tanggal terakhir dari pembelian barang ini
      * @return Tanggal 'd-m-Y H:i:s'
      */
     public function getTanggalBeliTerakhir()
@@ -340,7 +343,7 @@ class Barang extends CActiveRecord
                 DATE_FORMAT(pembelian.tanggal, '%d-%m-%Y %H:%i:%s') tanggal_terakhir
             FROM
                 pembelian_detail
-            JOIN 
+            JOIN
                 pembelian on pembelian.id = pembelian_detail.pembelian_id
             WHERE
                 barang_id =  {$this->id}
@@ -357,7 +360,7 @@ class Barang extends CActiveRecord
     public function getListSupplier()
     {
         $sql = "
-            SELECT 
+            SELECT
                 p.id, p.nama, sb.`default`
             FROM
                 supplier_barang sb

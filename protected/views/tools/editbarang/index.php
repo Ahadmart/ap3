@@ -12,15 +12,16 @@ $this->boxHeader['normal'] = 'Edit Barang';
 
 // Agar focus tetap di input cari barcode setelah pencarian
 Yii::app()->clientScript->registerScript('barcodeFocus', ''
-        . '$(document).ajaxComplete(function() {'
-        . '$("input[name=\'Barang[barcode]\'").select();'
-        . '});');
+    . '$(document).ajaxComplete(function() {'
+    . '$("input[name=\'Barang[barcode]\'").select();'
+    . '});');
 ?>
 
 <div id="ganti-rak-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 <div id="ganti-kat-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 <div id="edit-sup-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 <div id="ganti-struktur-m" class="medium reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
+<div id="ganti-minrestock-m" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 <div class="row">
     <div class="small-12 columns">
         <?= CHtml::link('Set Non Aktif', '#', ['class' => 'button tb-edit-barang', 'id' => 'tombol-set-na', 'disabled' => true]); ?>
@@ -30,28 +31,40 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
             'class'          => 'button tb-edit-barang',
             'data-reveal-id' => 'ganti-rak-m',
             'id'             => 'tombol-ganti-rak',
-            'disabled'       => true])
+            'disabled'       => true
+        ])
         ?>
         <?=
         CHtml::link('Ganti Kategori..', '#', [
             'class'          => 'button tb-edit-barang',
             'data-reveal-id' => 'ganti-kat-m',
             'id'             => 'tombol-ganti-kat',
-            'disabled'       => true])
+            'disabled'       => true
+        ])
         ?>
         <?=
         CHtml::link('Edit Supplier..', '#', [
             'class'          => 'button tb-edit-barang',
             'data-reveal-id' => 'edit-sup-m',
             'id'             => 'tombol-edit-sup',
-            'disabled'       => true])
+            'disabled'       => true
+        ])
         ?>
         <?=
         CHtml::link('Ganti Struktur..', '#', [
             'class'    => 'button tb-edit-barang',
             //'data-reveal-id' => 'ganti-struktur-m',
             'id'       => 'tombol-ganti-struktur',
-            'disabled' => true])
+            'disabled' => true
+        ])
+        ?>
+        <?=
+        CHtml::link('Set Minimum Restock..', '#', [
+            'class'    => 'button tb-edit-barang',
+            //'data-reveal-id' => 'ganti-struktur-m',
+            'id'       => 'tombol-ganti-minrestock',
+            'disabled' => true
+        ])
         ?>
     </div>
 </div>
@@ -120,6 +133,9 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
                     'filter' => $model->filterRak(),
                 ],
                 [
+                    'name'   => 'restock_min',
+                ],
+                [
                     'name'   => 'status',
                     'value'  => '$data->namaStatus',
                     'filter' => $model->filterStatus(),
@@ -152,7 +168,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 ?>
 <script>
-    $(document).ajaxComplete(function () {
+    $(document).ajaxComplete(function() {
         cekboxchange();
         $(".checkbox-column").change(cekboxchange);
     });
@@ -176,7 +192,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         $(".tb-edit-barang").attr("disabled", true);
     }
 
-    $("#tombol-set-na").click(function () {
+    $("#tombol-set-na").click(function() {
         if ($(this).is("[disabled]")) {
             console.log('set na disabled clicked');
         } else {
@@ -191,7 +207,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 type: 'POST',
                 url: dataUrl,
                 data: dataKirim,
-                success: function (data) {
+                success: function(data) {
                     if (data.sukses) {
                         $.gritter.add({
                             title: 'Sukses',
@@ -211,7 +227,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         }
     });
 
-    $("#tombol-set-a").click(function () {
+    $("#tombol-set-a").click(function() {
         if ($(this).is("[disabled]")) {
             console.log('set a disabled clicked');
         } else {
@@ -226,7 +242,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 type: 'POST',
                 url: dataUrl,
                 data: dataKirim,
-                success: function (data) {
+                success: function(data) {
                     if (data.sukses) {
                         $.gritter.add({
                             title: 'Sukses',
@@ -246,59 +262,75 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         }
     });
 
-    $("#tombol-ganti-rak").click(function () {
+    $("#tombol-ganti-rak").click(function() {
         if ($(this).is("[disabled]")) {
             console.log('set rak disabled clicked');
         } else {
             $('#ganti-rak-m').foundation('reveal', 'open', {
                 url: '<?= $this->createUrl('formgantirak'); ?>',
-                success: function (data) {
+                success: function(data) {
                     // Tampilkan Dropdown pilihan rak
                 },
-                error: function () {
+                error: function() {
                     alert('Gagal mengambil data rak!');
                 }
             });
         }
     });
 
-    $("#tombol-ganti-kat").click(function () {
+    $("#tombol-ganti-kat").click(function() {
         if ($(this).is("[disabled]")) {
             console.log('ganti kat disabled clicked');
         } else {
             $('#ganti-kat-m').foundation('reveal', 'open', {
                 url: '<?= $this->createUrl('formgantikat'); ?>',
-                success: function (data) {
+                success: function(data) {
                     // Tampilkan Dropdown pilihan kategori
                 },
-                error: function () {
+                error: function() {
                     alert('Gagal mengambil data kategori!');
                 }
             });
         }
     });
 
-    $("#tombol-edit-sup").click(function () {
+    $("#tombol-edit-sup").click(function() {
         if ($(this).is("[disabled]")) {
             console.log('edit sup disabled clicked');
         } else {
             $('#edit-sup-m').foundation('reveal', 'open', {
                 url: '<?= $this->createUrl('formeditsup'); ?>',
-                success: function (data) {
+                success: function(data) {
                     // Tampilkan Dropdown pilihan rak
                 },
-                error: function () {
+                error: function() {
                     alert('Gagal mengambil data supplier!');
                 }
             });
         }
     });
 
-    $("#tombol-ganti-struktur").click(function () {
+    $("#tombol-ganti-struktur").click(function() {
         if ($(this).is("[disabled]")) {
             console.log('set na disabled clicked');
         } else {
             $("#ganti-struktur").toggle(500);
         }
     })
+
+    $("#tombol-ganti-minrestock").click(function() {
+        if ($(this).is("[disabled]")) {
+            console.log('ganti restock minimum disabled clicked');
+        } else {
+            $('#ganti-minrestock-m').foundation('reveal', 'open', {
+                url: '<?= $this->createUrl('formminimumrestock'); ?>',
+                success: function(data) {
+                    // Tampilkan Dropdown pilihan rak
+                },
+                error: function() {
+                    alert('Gagal mengambil data form ganti restock!');
+                }
+            });
+        }
+    });
 </script>
