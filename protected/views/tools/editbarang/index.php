@@ -322,10 +322,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         if ($(this).is("[disabled]")) {
             console.log('ganti restock minimum disabled clicked');
         } else {
+
             $('#ganti-minrestock-m').foundation('reveal', 'open', {
                 url: '<?= $this->createUrl('formminimumrestock'); ?>',
                 success: function(data) {
-                    // Tampilkan Dropdown pilihan rak
+                    // Tampilkan Input Minimum Restock
                 },
                 error: function() {
                     alert('Gagal mengambil data form ganti restock!');

@@ -1,5 +1,5 @@
 <?= CHtml::label('Set Minimum Restock', 'input-min-restock') ?>
-<?= CHtml::textField('input-min-restock'); ?>
+<?= CHtml::textField('input-min-restock', '0', ['autofocus' => 'autofocus']) ?>
 <?= CHtml::link('Submit', '#', ['class' => 'tiny bigfont button', 'id' => 'tombol-submit-set-minimumrestock']) ?>
 <?= CHtml::link('&#215;', '', ['class' => 'close-reveal-modal', 'aria-label' => 'Close']) ?>
 
@@ -8,7 +8,7 @@
         var value = $("#input-min-restock").val();
         var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
         var dataKirim = {
-            'ajaxrak': true,
+            'ajaxminrestock': true,
             'minrestock-value': value,
             'items': data
         };
@@ -33,7 +33,7 @@
                         time: 5000
                     });
                 }
-                $('#ganti-rak-m').foundation('reveal', 'close');
+                $('#ganti-minrestock-m').foundation('reveal', 'close');
             }
         });
     });
