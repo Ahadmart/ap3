@@ -145,7 +145,12 @@ class StrukturBarang extends CActiveRecord
             $this->created_at = date('Y-m-d H:i:s');
         }
         $this->updated_at = date('Y-m-d H:i:s');
-        $this->updated_by = Yii::app()->user->id;
+        // Model ini juga diakses oleh console app (syncstruktur: sync struktur dari DC)
+        // update pertama untuk console, jika lewat web app: update dengan user yang login
+        $this->updated_by = 1;
+        if (Yii::app() instanceof CWebApplication) {
+            $this->updated_by = Yii::app()->user->id;
+        }
         return parent::beforeSave();
     }
 
