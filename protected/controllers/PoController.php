@@ -423,6 +423,7 @@ class PoController extends Controller
             $detail->harga_beli = $_POST['hargabeli'];
             $detail->harga_jual = $_POST['hargajual'];
             $detail->status     = PoDetail::STATUS_ORDER;
+            $detail->stok       = $barang->stok;
 
             // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
             // echo terlihat di console
@@ -620,7 +621,7 @@ class PoController extends Controller
         if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
             $profilId = $model->profil_id;
         }
-        $rakId = empty($_POST['rakId']) ? null : $_POST['rakId'];
+        $rakId    = empty($_POST['rakId']) ? null : $_POST['rakId'];
         $strukLv1 = empty($_POST['strukLv1']) ? null : $_POST['strukLv1'];
         $strukLv2 = empty($_POST['strukLv2']) ? null : $_POST['strukLv2'];
         $strukLv3 = empty($_POST['strukLv3']) ? null : $_POST['strukLv3'];
