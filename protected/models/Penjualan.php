@@ -536,7 +536,7 @@ class Penjualan extends CActiveRecord
 
         $diskonNominal = $diskonPromoKategori->nominal;
         if ($diskonPromoKategori->persen > 0) {
-            $diskonNominal = ($diskonPromoKategori->persen / 100) * $hargaJualNormal;
+            $diskonNominal = ((float)$diskonPromoKategori->persen / 100) * $hargaJualNormal;
         }
         $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
 
@@ -565,7 +565,7 @@ class Penjualan extends CActiveRecord
             $qtyPromo = $qty;
             $sisa = 0;
         }
-        $diskonNominal = ($diskonPromo->nominal > 0) ? $diskonPromo->nominal : $hargaJualNormal * ($diskonPromo->persen / 100);
+        $diskonNominal = ($diskonPromo->nominal > 0) ? $diskonPromo->nominal : $hargaJualNormal * ((float)$diskonPromo->persen / 100);
         $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
         $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonNominal, DiskonBarang::TIPE_PROMO_MEMBER);
         return $sisa;
