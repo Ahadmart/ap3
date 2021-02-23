@@ -48,16 +48,16 @@ class PoDetail extends CActiveRecord
         // will receive user inputs.
         return [
             ['po_id, barcode, nama, harga_beli', 'required'],
-            ['stok, saran_order, status', 'numerical', 'integerOnly'=>true],
+            ['stok, saran_order, status', 'numerical', 'integerOnly' => true],
             ['ads, est_sisa_hari', 'numerical'],
-            ['po_id, barang_id, qty_order, updated_by', 'length', 'max'=>10],
-            ['barcode', 'length', 'max'=>30],
-            ['nama', 'length', 'max'=>45],
-            ['harga_beli, harga_jual', 'length', 'max'=>18],
+            ['po_id, barang_id, qty_order, updated_by', 'length', 'max' => 10],
+            ['barcode', 'length', 'max' => 30],
+            ['nama', 'length', 'max' => 45],
+            ['harga_beli, harga_jual', 'length', 'max' => 18],
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, po_id, barang_id, barcode, nama, harga_beli, harga_jual, ads, stok, est_sisa_hari, saran_order, qty_order, status, updated_at, updated_by, created_at', 'safe', 'on'=>'search'],
+            ['id, po_id, barang_id, barcode, nama, harga_beli, harga_jual, ads, stok, est_sisa_hari, saran_order, qty_order, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -116,7 +116,7 @@ class PoDetail extends CActiveRecord
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
-        $criteria=new CDbCriteria;
+        $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('po_id', $this->po_id, true);
@@ -142,8 +142,8 @@ class PoDetail extends CActiveRecord
         return new CActiveDataProvider($this, [
             'criteria'  => $criteria,
             'sort'      => $sort,
-            'pagination'=> [
-                'pageSize'=> $pageSize,
+            'pagination' => [
+                'pageSize' => (int)$pageSize,
             ],
         ]);
     }
@@ -154,7 +154,7 @@ class PoDetail extends CActiveRecord
      * @param  string   $className active record class name.
      * @return PoDetail the static model class
      */
-    public static function model($className=__CLASS__)
+    public static function model($className = __CLASS__)
     {
         return parent::model($className);
     }
