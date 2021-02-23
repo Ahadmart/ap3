@@ -54,8 +54,8 @@ class Penjualan extends CActiveRecord
      */
     public function rules()
     {
-// NOTE: you should only define rules for those attributes that
-// will receive user inputs.
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
         return array(
             array('profil_id', 'required'),
             array('transfer_mode, status', 'numerical', 'integerOnly' => true),
@@ -73,8 +73,8 @@ class Penjualan extends CActiveRecord
      */
     public function relations()
     {
-// NOTE: you may need to adjust the relation name and the related
-// class name for the relations automatically generated below.
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
         return array(
             'hutangPiutang' => array(self::BELONGS_TO, 'HutangPiutang', 'hutang_piutang_id'),
             'profil' => array(self::BELONGS_TO, 'Profil', 'profil_id'),
@@ -119,7 +119,7 @@ class Penjualan extends CActiveRecord
      */
     public function search()
     {
-// @todo Please modify the following code to remove attributes that should not be searched.
+        // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
 
@@ -215,7 +215,7 @@ class Penjualan extends CActiveRecord
         select sum(qty) qty from penjualan_detail
         where penjualan_id=:penjualanId and barang_id=:barangId
             ")->bindValues(array(':penjualanId' => $this->id, ':barangId' => $barangId))
-                ->queryRow();
+            ->queryRow();
 
         return $detail['qty'];
     }
@@ -264,7 +264,8 @@ class Penjualan extends CActiveRecord
                 'error' => array(
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                )
+            );
         }
     }
 
@@ -339,11 +340,11 @@ class Penjualan extends CActiveRecord
                     INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanMultiHJ}.penjualan_detail_id = {$tabelPenjualanDetail}.id
                     WHERE {$tabelPenjualanDetail}.barang_id=:barangId AND {$tabelPenjualanDetail}.penjualan_id=:penjualanId
                         ")
-                ->bindValues(array(
-                    ':barangId' => $barang->id,
-                    ':penjualanId' => $this->id
-                ))
-                ->execute();
+            ->bindValues(array(
+                ':barangId' => $barang->id,
+                ':penjualanId' => $this->id
+            ))
+            ->execute();
 
         Yii::app()->db->createCommand("
                     DELETE {$tabelPenjualanDiskon}
@@ -351,11 +352,11 @@ class Penjualan extends CActiveRecord
                     INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanDiskon}.penjualan_detail_id = {$tabelPenjualanDetail}.id
                     WHERE {$tabelPenjualanDetail}.barang_id=:barangId AND {$tabelPenjualanDetail}.penjualan_id=:penjualanId
                         ")
-                ->bindValues(array(
-                    ':barangId' => $barang->id,
-                    ':penjualanId' => $this->id
-                ))
-                ->execute();
+            ->bindValues(array(
+                ':barangId' => $barang->id,
+                ':penjualanId' => $this->id
+            ))
+            ->execute();
 
         PenjualanDetail::model()->deleteAll('barang_id=:barangId AND penjualan_id=:penjualanId', array(
             ':barangId' => $barang->id,
@@ -417,7 +418,8 @@ class Penjualan extends CActiveRecord
                 'error' => array(
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                )
+            );
         }
     }
 
@@ -436,7 +438,7 @@ class Penjualan extends CActiveRecord
          * Cek Diskon, dengan prioritas PROMO MEMBER, PROMO, GROSIR, BANDED, QTY DAPAT BARANG
          * Hanya bisa salah satu
          */
-        if (!empty(HargaJualMulti::listAktif($barang->id))){
+        if (!empty(HargaJualMulti::listAktif($barang->id))) {
             // Yii::log("Diskon Multi HJ; barangID: ".$barang->id, "info"); 
             //terapkan multi harga jual
             //ambil sisanya (yang tidak kena kelipatan satuan multi harga)
@@ -456,7 +458,6 @@ class Penjualan extends CActiveRecord
             //terapkan diskon promo
             //ambil sisanya (yang tidak didiskon)
             $sisa = $this->aksiDiskonPromoPerKategori($barang->id, $qty, $hargaJualNormal);
-        
         } else if (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_GROSIR))) {
             //terapkan diskon grosir
             //ambil sisanya (yang tidak didiskon)
@@ -582,7 +583,7 @@ class Penjualan extends CActiveRecord
             )
         ));
 
-        if ($qty>=$diskonGrosir->qty_min){
+        if ($qty >= $diskonGrosir->qty_min) {
             $diskonNominal = $diskonGrosir->nominal;
             $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
             $this->insertBarang($barangId, $qty, $hargaJualSatuan, $diskonNominal, DiskonBarang::TIPE_GROSIR);
@@ -767,7 +768,7 @@ class Penjualan extends CActiveRecord
         if ($diskon > 0) {
             $this->insertDiskon($detail, $tipeDiskonId);
         }
-        if (!empty($multiHJ)){
+        if (!empty($multiHJ)) {
             $this->insertMultiHJ($detail, $multiHJ);
         }
     }
@@ -789,50 +790,53 @@ class Penjualan extends CActiveRecord
     {
         if ($tipeDiskonId == DiskonBarang::TIPE_NOMINAL_GET_BARANG) {
             return DiskonBarang::model()->find([
-                        'condition' => 'barang_bonus_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
-                        'order' => 'id desc',
-                        'params' => [
-                            'barangId' => $barangId,
-                            'status' => DiskonBarang::STATUS_AKTIF,
-                            'tipeDiskon' => $tipeDiskonId]
+                'condition' => 'barang_bonus_id=:barangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
+                'order' => 'id desc',
+                'params' => [
+                    'barangId' => $barangId,
+                    'status' => DiskonBarang::STATUS_AKTIF,
+                    'tipeDiskon' => $tipeDiskonId
+                ]
             ]);
         }
 
         if ($tipeDiskonId == DiskonBarang::TIPE_QTY_GET_BARANG) {
             return DiskonBarang::model()->find([
-                        'condition' => '(barang_id=:barangId or barang_bonus_id=:barangId) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
-                        'order' => 'id desc',
-                        'params' => [
-                            'barangId' => $barangId,
-                            'status' => DiskonBarang::STATUS_AKTIF,
-                            'tipeDiskon' => $tipeDiskonId]
+                'condition' => '(barang_id=:barangId or barang_bonus_id=:barangId) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
+                'order' => 'id desc',
+                'params' => [
+                    'barangId' => $barangId,
+                    'status' => DiskonBarang::STATUS_AKTIF,
+                    'tipeDiskon' => $tipeDiskonId
+                ]
             ]);
         }
-        
+
         if ($tipeDiskonId == DiskonBarang::TIPE_PROMO_PERKATEGORI) {
             $barang = Barang::model()->findByPk($barangId);
             $waktu  = date("Y-m-d H:i:s");
             return DiskonBarang::model()->find(array(
-                        'condition' => 'barang_kategori_id=:kategoriBarangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= :waktu and (sampai >= :waktu or sampai is null)',
-                        'order'     => 'id desc',
-                        'params'    => [
-                            'kategoriBarangId' => $barang->kategori_id,
-                            'status'           => DiskonBarang::STATUS_AKTIF,
-                            'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERKATEGORI,
-                            'waktu'            => $waktu
-                        ]
+                'condition' => 'barang_kategori_id=:kategoriBarangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= :waktu and (sampai >= :waktu or sampai is null)',
+                'order'     => 'id desc',
+                'params'    => [
+                    'kategoriBarangId' => $barang->kategori_id,
+                    'status'           => DiskonBarang::STATUS_AKTIF,
+                    'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERKATEGORI,
+                    'waktu'            => $waktu
+                ]
             ));
         }
 
         /* Diskon lainnya */
         return DiskonBarang::model()->find([
-                    'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
-                    'order' => 'id desc',
-                    'params' => [
-                        'barangId' => $barangId,
-                        'semuaBarang' => DiskonBarang::SEMUA_BARANG,
-                        'status' => DiskonBarang::STATUS_AKTIF,
-                        'tipeDiskon' => $tipeDiskonId]
+            'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
+            'order' => 'id desc',
+            'params' => [
+                'barangId' => $barangId,
+                'semuaBarang' => DiskonBarang::SEMUA_BARANG,
+                'status' => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon' => $tipeDiskonId
+            ]
         ]);
     }
 
@@ -843,7 +847,8 @@ class Penjualan extends CActiveRecord
             'order' => 'id desc',
             'params' => [
                 'status' => DiskonBarang::STATUS_AKTIF,
-                'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG]
+                'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG
+            ]
         ]);
 
         if (!is_null($diskon) && $this->ambilTotal() >= $diskon->nominal) {
@@ -885,9 +890,11 @@ class Penjualan extends CActiveRecord
     public function cariNomorTahunan()
     {
         $tahun = date('y');
-        $data = $this->find(array(
-            'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,2)='{$tahun}'")
+        $data = $this->find(
+            array(
+                'select' => 'max(substring(nomor,9)*1) as max',
+                'condition' => "substring(nomor,5,2)='{$tahun}'"
+            )
         );
 
         $value = is_null($data) ? 0 : $data->max;
@@ -915,10 +922,10 @@ class Penjualan extends CActiveRecord
     public function ambilTotal()
     {
         $detail = Yii::app()->db->createCommand()
-                ->select('sum(harga_jual * qty) total')
-                ->from(PenjualanDetail::model()->tableName())
-                ->where('penjualan_id=:penjualanId', array(':penjualanId' => $this->id))
-                ->queryRow();
+            ->select('sum(harga_jual * qty) total')
+            ->from(PenjualanDetail::model()->tableName())
+            ->where('penjualan_id=:penjualanId', array(':penjualanId' => $this->id))
+            ->queryRow();
         return $detail['total'];
     }
 
@@ -984,7 +991,7 @@ class Penjualan extends CActiveRecord
         $details = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', array(':penjualanId' => $this->id));
         foreach ($details as $detail) {
             $inventoryTerpakai = InventoryBalance::model()->jual($detail->barang_id, $detail->qty);
-            if (empty($inventoryTerpakai)){
+            if (empty($inventoryTerpakai)) {
                 throw new Exception("Gagal mengambil data inventory. Coba ulangi proses simpan!. Barang ID: " . $detail->barang_id . "; Qty: " . $detail->qty);
             }
             $count = 1;
@@ -1075,7 +1082,8 @@ class Penjualan extends CActiveRecord
                 'error' => array(
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                )
+            );
         }
     }
 
@@ -1141,7 +1149,7 @@ class Penjualan extends CActiveRecord
                     join barang_kategori kb on kb.id = barang.kategori_id
                     where penjualan_id={$this->id}
                     order by pd.id")
-                ->queryAll();
+            ->queryAll();
         /* Kalau perlu harga beli, tambahkan ini ke sql
          * (
           select case
@@ -1153,21 +1161,21 @@ class Penjualan extends CActiveRecord
           ) as harga_beli,
          */
 
-// Cari nama toko ini
+        // Cari nama toko ini
         $config = Config::model()->find("nama='toko.nama'");
-        foreach ($details as $detail):
+        foreach ($details as $detail) :
             $csv .= "\"{$detail['barcode']}\","
-                    . "\"{$detail['barang_id']}\","
-                    . "\"{$detail['nama_barang']}\","
-                    . "\"{$detail['qty']}\","
-                    . "\"\"," // harga beli dikosongkan
-                    . "\"{$detail['harga_jual']}\","
-                    . "\"{$detail['harga_jual_rekomendasi']}\","
-                    . "\"{$detail['satuan']}\","
-                    . "\"{$detail['kategori']}\","
-                    . "\"{$config->nilai}\"," //nama toko/gudang
-                    . "\"{$this->updatedBy->nama}\""
-                    . PHP_EOL;
+                . "\"{$detail['barang_id']}\","
+                . "\"{$detail['nama_barang']}\","
+                . "\"{$detail['qty']}\","
+                . "\"\"," // harga beli dikosongkan
+                . "\"{$detail['harga_jual']}\","
+                . "\"{$detail['harga_jual_rekomendasi']}\","
+                . "\"{$detail['satuan']}\","
+                . "\"{$detail['kategori']}\","
+                . "\"{$config->nilai}\"," //nama toko/gudang
+                . "\"{$this->updatedBy->nama}\""
+                . PHP_EOL;
         endforeach;
         return $csv;
     }
@@ -1223,8 +1231,8 @@ class Penjualan extends CActiveRecord
          join barang on pd.barang_id = barang.id
          where pd.penjualan_id = :penjualanId
               ")
-                ->bindValue(':penjualanId', $this->id)
-                ->queryAll();
+            ->bindValue(':penjualanId', $this->id)
+            ->queryAll();
 
         $struk = '';
 
@@ -1245,20 +1253,20 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'INVOICE '; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-                . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
-                . PHP_EOL;
+            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+            . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat1'], $jumlahKolom - $kananMaxLength, ' ')
-                . str_pad($strTgl, $kananMaxLength, ' ')
-                . PHP_EOL;
+            . str_pad($strTgl, $kananMaxLength, ' ')
+            . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat2'], $jumlahKolom - $kananMaxLength, ' ')
-                . str_pad($strTglDue, $kananMaxLength, ' ')
-                . PHP_EOL;
+            . str_pad($strTglDue, $kananMaxLength, ' ')
+            . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
-                . str_pad($strKasir, $kananMaxLength, ' ')
-                . PHP_EOL;
+            . str_pad($strKasir, $kananMaxLength, ' ')
+            . PHP_EOL;
         $struk .= str_pad($strTotal, $jumlahKolom - $kananMaxLength + strlen($strTotal), ' ', STR_PAD_LEFT)
-                . PHP_EOL;
-//      $struk .= PHP_EOL;
+            . PHP_EOL;
+        //      $struk .= PHP_EOL;
 
         $struk .= 'Kepada: ' . $this->profil->nama . PHP_EOL;
         $struk .= '        ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 8) . PHP_EOL;
@@ -1326,7 +1334,7 @@ class Penjualan extends CActiveRecord
             $signatureHead3 = 'Driver';
 
             $struk .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) .
-                    str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
+                str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
             $struk .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
             $struk .= '     (                )         (                )         (                )' . PHP_EOL;
         }
@@ -1367,8 +1375,8 @@ class Penjualan extends CActiveRecord
             join barang_satuan satuan on satuan.id = barang.satuan_id
             where pd.penjualan_id = :penjualanId
             ")
-                ->bindValue(':penjualanId', $this->id)
-                ->queryAll();
+            ->bindValue(':penjualanId', $this->id)
+            ->queryAll();
 
         $penerimaan = Yii::app()->db->createCommand("
             select penerimaan.id, penerimaan.uang_dibayar
@@ -1377,10 +1385,11 @@ class Penjualan extends CActiveRecord
             join penjualan on penjualan.hutang_piutang_id = pd.hutang_piutang_id
             where penjualan.id = :penjualanId
             ")
-                ->bindValue(':penjualanId', $this->id)
-                ->queryRow();
-        
-        $penerimaanDetail = Yii::app()->db->createCommand("
+            ->bindValue(':penjualanId', $this->id)
+            ->queryRow();
+        $penerimaanDetail = [];
+        if (!empty($penerimaan)) {
+            $penerimaanDetail = Yii::app()->db->createCommand("
             SELECT 
                 item_id, jumlah
             FROM
@@ -1388,7 +1397,8 @@ class Penjualan extends CActiveRecord
             WHERE
                 penerimaan_id = :penerimaanId            
             ")->bindValue(':penerimaanId', $penerimaan['id'])->queryAll();
-        
+        }
+
         $tarikTunaiModel = PenjualanTarikTunai::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
 
         $struk = '';
@@ -1435,7 +1445,7 @@ class Penjualan extends CActiveRecord
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
         $txtTotal = 'Total       : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-        
+
         $diskonNota = 0;
         $infaq = 0;
         if (!empty($penerimaanDetail)) {
@@ -1443,22 +1453,30 @@ class Penjualan extends CActiveRecord
                 switch ($strukItem['item_id']) {
                     case ItemKeuangan::POS_DISKON_PER_NOTA:
                         $diskonNota = $strukItem['jumlah'];
-                        $txtDiskonNotaNominal = str_pad('(' . number_format($strukItem['jumlah'], 0, ',', '.') . ')',
-                                12, ' ', STR_PAD_LEFT);
+                        $txtDiskonNotaNominal = str_pad(
+                            '(' . number_format($strukItem['jumlah'], 0, ',', '.') . ')',
+                            12,
+                            ' ',
+                            STR_PAD_LEFT
+                        );
                         $txtDiskonNota        = str_pad('Diskon      : ' . $txtDiskonNotaNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
                         break;
                     case ItemKeuangan::POS_INFAQ:
                         $infaq = $strukItem['jumlah'];
-                        $txtInfaq = 'Infak       : ' . str_pad(number_format($strukItem['jumlah'], 0, ',', '.'),
-                                        11, ' ', STR_PAD_LEFT);
+                        $txtInfaq = 'Infak       : ' . str_pad(
+                            number_format($strukItem['jumlah'], 0, ',', '.'),
+                            11,
+                            ' ',
+                            STR_PAD_LEFT
+                        );
                         break;
                 }
             }
         }
-        
+
         $tarikTunai = is_null($tarikTunaiModel) ? 0 : $tarikTunaiModel->jumlah;
 
-        $dibayar = is_null($penerimaan['uang_dibayar']) ? NULL : $penerimaan['uang_dibayar'];
+        $dibayar = empty($penerimaan['uang_dibayar']) ? NULL : $penerimaan['uang_dibayar'];
         if (!is_null($dibayar)) {
             $txtBayar = 'Dibayar     : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
             $txtKbali = 'Kembali     : ' . str_pad(number_format($dibayar - $total + $diskonNota - $infaq - $tarikTunai, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
@@ -1471,7 +1489,7 @@ class Penjualan extends CActiveRecord
         if (isset($txtInfaq)) {
             $struk .= str_pad($txtInfaq, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
-        
+
         if (!is_null($tarikTunaiModel)) {
             $txtTarikTunai = 'Tarik Tunai : ' . str_pad(number_format($tarikTunaiModel->jumlah, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
             $struk .= str_pad($txtTarikTunai, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
@@ -1481,7 +1499,7 @@ class Penjualan extends CActiveRecord
             $struk .= str_pad($txtBayar, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
             $struk .= str_pad($txtKbali, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
-        
+
         if ($totalDiskon > 0) {
             $txtDiskon = 'Anda Hemat  : ' . str_pad(number_format($totalDiskon + $diskonNota, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
             $struk     .= PHP_EOL;
@@ -1532,8 +1550,8 @@ class Penjualan extends CActiveRecord
             join barang_satuan satuan on satuan.id = barang.satuan_id
             where pd.penjualan_id = :penjualanId
             ")
-                ->bindValue(':penjualanId', $this->id)
-                ->queryAll();
+            ->bindValue(':penjualanId', $this->id)
+            ->queryAll();
 
         $penerimaan = Yii::app()->db->createCommand("
             select penerimaan.uang_dibayar
@@ -1542,8 +1560,8 @@ class Penjualan extends CActiveRecord
             join penjualan on penjualan.hutang_piutang_id = pd.hutang_piutang_id
             where penjualan.id = :penjualanId
             ")
-                ->bindValue(':penjualanId', $this->id)
-                ->queryRow();
+            ->bindValue(':penjualanId', $this->id)
+            ->queryRow();
 
         $struk = '';
 
@@ -1559,14 +1577,14 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'NOTA'; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-                . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
-                . PHP_EOL;
+            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+            . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header1'], $jumlahKolom - $kananMaxLength, ' ')
-                . str_pad($strKasir, $kananMaxLength, ' ')
-                . PHP_EOL;
+            . str_pad($strKasir, $kananMaxLength, ' ')
+            . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header2'], $jumlahKolom - $kananMaxLength, ' ')
-                . str_pad($strWaktu, $kananMaxLength, ' ')
-                . PHP_EOL;
+            . str_pad($strWaktu, $kananMaxLength, ' ')
+            . PHP_EOL;
         $struk .= PHP_EOL;
 
         $struk .= 'Kepada: ' . $this->profil->nama . PHP_EOL;
@@ -1639,7 +1657,7 @@ class Penjualan extends CActiveRecord
 
         $txtTotal = 'Total      : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
 
-        $dibayar = is_null($penerimaan['uang_dibayar']) ? NULL : $penerimaan['uang_dibayar'];
+        $dibayar = empty($penerimaan['uang_dibayar']) ? NULL : $penerimaan['uang_dibayar'];
         if (is_null($dibayar)) {
             $txtBayar = 'Dibayar    : ' . str_pad('', 11, ' ', STR_PAD_LEFT);
             $txtKbali = 'Kembali    : ' . str_pad('', 11, ' ', STR_PAD_LEFT);
@@ -1672,7 +1690,7 @@ class Penjualan extends CActiveRecord
             $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
             $rowCount = 1; // Reset row counter
         }
-//$struk .= 'Barang yang sudah dibeli tidak bisa ditukar atau dikembalikan' . PHP_EOL . PHP_EOL;
+        //$struk .= 'Barang yang sudah dibeli tidak bisa ditukar atau dikembalikan' . PHP_EOL . PHP_EOL;
         $signatureHead1 = '        Hormat Kami';
         $signatureHead2 = 'Pelanggan';
 
@@ -1703,12 +1721,12 @@ class Penjualan extends CActiveRecord
             $penjualan = Yii::app()->db->createCommand("
             select sum(harga_jual * qty) jumlah from penjualan_detail where penjualan_id=:penjualanId
                 ")->bindValues(array(':penjualanId' => $this->id))
-                    ->queryRow();
+                ->queryRow();
 
             $configMember = Yii::app()->db->createCommand("
             select nilai from config where nama=:namaConfig
                 ")->bindValues(array(':namaConfig' => 'member.nilai_1_poin'))
-                    ->queryRow();
+                ->queryRow();
 
             /* Jika di config nilai = 0, berarti tidak memakai sistem poin */
             return $configMember['nilai'] > 0 ? floor($penjualan['jumlah'] / $configMember['nilai']) : 0;
@@ -1730,25 +1748,25 @@ class Penjualan extends CActiveRecord
             $poin = false;
             if (!is_null($periodePoin)) {
                 $poin = Yii::app()->db->createCommand()
-                        ->select('sum(poin) total')
-                        ->from(PenjualanMember::model()->tableName() . ' tpm')
-                        ->where('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND :akhir
+                    ->select('sum(poin) total')
+                    ->from(PenjualanMember::model()->tableName() . ' tpm')
+                    ->where('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND :akhir
                                 AND profil_id=:profilId')
-                        ->bindValues(array(
-                            //':tahun' => 'year(' . $this->tanggal . ')',
-                            ':awal' => $periodePoin->awal,
-                            ':akhir' => $periodePoin->akhir,
-                            ':profilId' => $profil->id
-                        ))
-                        ->queryRow();
+                    ->bindValues(array(
+                        //':tahun' => 'year(' . $this->tanggal . ')',
+                        ':awal' => $periodePoin->awal,
+                        ':akhir' => $periodePoin->akhir,
+                        ':profilId' => $profil->id
+                    ))
+                    ->queryRow();
             } else {
                 /* Berarti periode lintas tahun (awal > akhir ) */
                 $periodePoinL = MemberPeriodePoin::model()->find('(awal <= month(now()) OR month(now()) <= akhir) AND awal > akhir');
                 if (!is_null($periodePoinL)) {
                     $queryPoin = Yii::app()->db->createCommand()
-                            ->select('sum(poin) total')
-                            ->from(PenjualanMember::model()->tableName() . ' tpm')
-                            ->where('profil_id=:profilId');
+                        ->select('sum(poin) total')
+                        ->from(PenjualanMember::model()->tableName() . ' tpm')
+                        ->where('profil_id=:profilId');
 
                     $curMonth = date('n');
 
@@ -1763,7 +1781,7 @@ class Penjualan extends CActiveRecord
                     /* Jika sekarang berada diantara januari dengan akhir periode */
                     if ($curMonth <= $periodePoinL->akhir) {
                         $queryPoin->andWhere('((YEAR(tpm.updated_at)=YEAR(NOW()) AND MONTH(tpm.updated_at) <= MONTH(NOW())) OR '
-                                . '(YEAR(tpm.updated_at)=YEAR(NOW())-1 AND MONTH(tpm.updated_at) >= :awal))');
+                            . '(YEAR(tpm.updated_at)=YEAR(NOW())-1 AND MONTH(tpm.updated_at) >= :awal))');
                         $queryPoin->bindValues([
                             ':awal' => $periodePoinL->awal
                         ]);
@@ -1810,7 +1828,8 @@ class Penjualan extends CActiveRecord
                 'error' => array(
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                )
+            );
         }
     }
 
@@ -1841,18 +1860,18 @@ class Penjualan extends CActiveRecord
                     INNER JOIN {$tabelPenjualanDetail} ON {$tabelPenjualanDiskon}.penjualan_detail_id = {$tabelPenjualanDetail}.id
                     WHERE {$tabelPenjualanDetail}.penjualan_id=:penjualanId
                         ")
-                    ->bindValues(array(
-                        ':penjualanId' => $this->id
-                    ))
-                    ->execute();
+                ->bindValues(array(
+                    ':penjualanId' => $this->id
+                ))
+                ->execute();
             Yii::app()->db->createCommand("
                     DELETE FROM {$tabelPenjualanMultiHarga}
                     WHERE penjualan_id=:penjualanId
                         ")
-                    ->bindValues(array(
-                        ':penjualanId' => $this->id
-                    ))
-                    ->execute();
+                ->bindValues(array(
+                    ':penjualanId' => $this->id
+                ))
+                ->execute();
 
             PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', array(
                 'penjualanId' => $this->id
@@ -1878,7 +1897,8 @@ class Penjualan extends CActiveRecord
                 'error' => array(
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                )
+            );
         }
     }
 
@@ -1897,8 +1917,8 @@ class Penjualan extends CActiveRecord
     {
         $listHarga = HargaJualMulti::listAktif($barangId, 'desc');
         $sisa = $qty;
-        foreach ($listHarga as $satuan){
-            if ($sisa >= $satuan['qty']){
+        foreach ($listHarga as $satuan) {
+            if ($sisa >= $satuan['qty']) {
                 $jmlSatuan = floor($sisa / $satuan['qty']); // Jumlah dari satuan (pak, lsn, karton, dst)
                 $qtyTotal = $jmlSatuan * $satuan['qty']; // Jumlah qty total dari KELIPATAN satuan
                 /* -------------- */
@@ -1919,9 +1939,8 @@ class Penjualan extends CActiveRecord
         $penjualanMultiHJ->qty = $penjualanDetail->qty;
         $penjualanMultiHJ->harga = $penjualanDetail->harga_jual;
         $penjualanMultiHJ->harga_normal = $params['harga_jual_normal'];
-        if (!$penjualanMultiHJ->save()){
-            throw new Exception('Gagal simpan penjualan multi harga untuk detail #'.$penjualanDetail->id, 500);
+        if (!$penjualanMultiHJ->save()) {
+            throw new Exception('Gagal simpan penjualan multi harga untuk detail #' . $penjualanDetail->id, 500);
         }
     }
-
 }
