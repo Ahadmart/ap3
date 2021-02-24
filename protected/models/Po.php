@@ -456,11 +456,13 @@ class Po extends CActiveRecord
                     'barang_id'     => $row['barang_id'],
                     'barcode'       => $row['barcode'],
                     'nama'          => $row['nama'],
-                    'harga_beli'    => 0, // dinol kan terlebih dahulu, nanti akan diupdate ان شاءالله
+                    // dinol kan terlebih dahulu, akan diupdate oleh hitungSaranOrder ان شاءالله
+                    'harga_beli'    => 0,
                     'ads'           => $row['ads'],
                     'stok'          => $row['stok'],
                     'est_sisa_hari' => $row['sisa_hari'],
-                    'updated_by'    => 1, // User administrator
+                    'restock_min'   => $row['restock_min'],
+                    'updated_by'    => Yii::app()->user->id,
                 ];
             }
         }

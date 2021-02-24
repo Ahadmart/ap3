@@ -14,6 +14,7 @@
  * @property double $ads
  * @property integer $stok
  * @property double $est_sisa_hari
+ * @property string $restock_min
  * @property integer $saran_order
  * @property string $qty_order
  * @property integer $status
@@ -50,14 +51,14 @@ class PoDetail extends CActiveRecord
             ['po_id, barcode, nama, harga_beli', 'required'],
             ['stok, saran_order, status', 'numerical', 'integerOnly' => true],
             ['ads, est_sisa_hari', 'numerical'],
-            ['po_id, barang_id, qty_order, updated_by', 'length', 'max' => 10],
+            ['po_id, barang_id, restock_min, qty_order, updated_by', 'length', 'max' => 10],
             ['barcode', 'length', 'max' => 30],
             ['nama', 'length', 'max' => 45],
             ['harga_beli, harga_jual', 'length', 'max' => 18],
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, po_id, barang_id, barcode, nama, harga_beli, harga_jual, ads, stok, est_sisa_hari, saran_order, qty_order, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, po_id, barang_id, barcode, nama, harga_beli, harga_jual, ads, stok, est_sisa_hari, restock_min, saran_order, qty_order, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -91,6 +92,7 @@ class PoDetail extends CActiveRecord
             'ads'           => 'Ads',
             'stok'          => 'Stok',
             'est_sisa_hari' => 'Est Sisa Hari',
+            'restock_min'   => 'Minimum Restock',
             'saran_order'   => 'Saran Order',
             'qty_order'     => 'Qty Order',
             'status'        => 'Status',
@@ -128,6 +130,7 @@ class PoDetail extends CActiveRecord
         $criteria->compare('ads', $this->ads);
         $criteria->compare('stok', $this->stok);
         $criteria->compare('est_sisa_hari', $this->est_sisa_hari);
+        $criteria->compare('restock_min', $this->restock_min);
         $criteria->compare('saran_order', $this->saran_order);
         $criteria->compare('qty_order', $this->qty_order, true);
         $criteria->compare('status', $this->status);
@@ -136,14 +139,14 @@ class PoDetail extends CActiveRecord
         $criteria->compare('created_at', $this->created_at, true);
 
         $sort = [
-            'defaultOrder' => 't.updated_at desc'
+            'defaultOrder' => 't.updated_at desc',
         ];
 
         return new CActiveDataProvider($this, [
-            'criteria'  => $criteria,
-            'sort'      => $sort,
+            'criteria'   => $criteria,
+            'sort'       => $sort,
             'pagination' => [
-                'pageSize' => (int)$pageSize,
+                'pageSize' => (int) $pageSize,
             ],
         ]);
     }
@@ -176,6 +179,6 @@ class PoDetail extends CActiveRecord
 
     public static function sudahAda($poId, $barangId)
     {
-        return  PoDetail::model()->find('po_id=:poId AND barang_id=:barangId', [':poId' => $poId, ':barangId' => $barangId]);
+        return PoDetail::model()->find('po_id=:poId AND barang_id=:barangId', [':poId' => $poId, ':barangId' => $barangId]);
     }
 }

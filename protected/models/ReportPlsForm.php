@@ -133,6 +133,7 @@ class ReportPlsForm extends CFormModel
             t_jualan.*,
             barang.barcode,
             barang.nama,
+            barang.restock_min,
             t_jualan.qty / :range ads,
             t_stok.qty stok,
             t_stok.qty / (t_jualan.qty / :range) sisa_hari
