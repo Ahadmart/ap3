@@ -51,6 +51,8 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                 [
                     'name'              => 'restock_min',
                     'filter'            => false,
+                    'type'              => 'raw',
+                    'value'             => [$this, 'renderRestockMinEditable'],
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
                 ],

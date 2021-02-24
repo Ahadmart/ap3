@@ -500,12 +500,17 @@ class Po extends CActiveRecord
 
             SET
                 `saran_order` = CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`),
-                `qty_order` = CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`),
+                `qty_order` =  
+                CASE
+                    WHEN CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`) > po_detail.restock_min THEN CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`)
+                    ELSE po_detail.restock_min
+                END,
                 `po_detail`.`harga_jual` = bhj.harga,
                 `po_detail`.`harga_beli` = belid.harga_beli
             WHERE
                 po_id = :poId
                 ';
+
         try {
             $command = Yii::app()->db->createCommand($sql);
             $hasil   = $command->execute([

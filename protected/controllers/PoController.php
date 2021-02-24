@@ -791,4 +791,51 @@ class PoController extends Controller
         }
         echo $r;
     }
+
+    /**
+     * Render html link (<a>) untuk edit restock_min (minimum restock)
+     * @param  activeRecord $data
+     * @param  type         $row
+     * @return html         link editable
+     */
+    public function renderRestockMinEditable($data, $row)
+    {
+        $ak = '';
+        if ($row == 0) {
+            $ak = 'accesskey="r"';
+        }
+        return '<a href="#" class="editable-order" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
+            Yii::app()->controller->createUrl('editrestockmin') . '">' . $data->restock_min . '</a>';
+    }
+
+    public function actionEditRestockMin()
+    {
+        $return = ['sukses' => false];
+        if (isset($_POST['pk'])) {
+            $pk       = $_POST['pk'];
+            $poDetail = PoDetail::model()->findByPk($pk);
+            if ($_POST['value'] > $poDetail->qty_order) {
+                $rowAffected = $poDetail->updateByPk($pk, [
+                    'restock_min' => $_POST['value'],
+                    'qty_order'   => $_POST['value'],
+                    'updated_by'  => Yii::app()->user->id,
+                ]);
+            } else {
+                $rowAffected = $poDetail->updateByPk($pk, [
+                    'restock_min' => $_POST['value'],
+                    'updated_by'  => Yii::app()->user->id,
+                ]);
+            }
+            if ($rowAffected > 0) {
+                $return = ['sukses' => true];
+            }
+            // Barang juga diupdate mudah-mudahan lancar tanpa transaction
+            $barangId = PoDetail::model()->findByPk($pk)->barang_id;
+            Barang::model()->updateByPk($barangId, [
+                'restock_min' => $_POST['value'],
+                'updated_by'  => Yii::app()->user->id,
+            ]);
+        }
+        $this->renderJSON($return);
+    }
 }
