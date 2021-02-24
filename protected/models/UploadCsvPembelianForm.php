@@ -89,7 +89,7 @@ class UploadCsvPembelianForm extends CFormModel
 
                             $strukLv1Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[11], ':level' => 1])->queryRow();
                             // $strukLv1Ada = StrukturBarang::model()->find('nama=:strukLv1 AND level=1', [':strukLv1' => $line[11]]);
-                            if (is_null($strukLv1Ada)) {
+                            if (empty($strukLv1Ada)) {
                                 $strukLv1Baru        = new StrukturBarang();
                                 $strukLv1Baru->nama  = $line[11];
                                 $strukLv1Baru->level = 1;
@@ -115,7 +115,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 ";
                             $strukLv2Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[12], ':level' => 2, ':namaLevel1' => $line[11]])->queryRow();
                             // $strukLv2Ada = StrukturBarang::model()->find('nama=:strukLv2 AND level=2', [':strukLv2' => $line[12]]);
-                            if (is_null($strukLv2Ada)) {
+                            if (empty($strukLv2Ada)) {
                                 $strukLv2Baru            = new StrukturBarang();
                                 $strukLv2Baru->nama      = $line[12];
                                 $strukLv2Baru->level     = 2;
@@ -149,7 +149,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 ";
                             $strukLv3Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[13], ':level' => 3, ':namaLevel2' => $line[12], ':namaLevel1' => $line[11]])->queryRow();
                             // $strukLv3Ada = StrukturBarang::model()->find('nama=:strukLv3 AND level=3', [':strukLv3' => $line[13]]);
-                            if (is_null($strukLv3Ada)) {
+                            if (empty($strukLv3Ada)) {
                                 $strukLv3Baru            = new StrukturBarang();
                                 $strukLv3Baru->nama      = $line[13];
                                 $strukLv3Baru->level     = 3;
