@@ -247,6 +247,9 @@ class Barang extends CActiveRecord
         if (empty($this->struktur_id)) {
             $this->struktur_id = null;
         }
+        if (empty($this->restock_min)) {
+            $this->restock_min = 0;
+        }
         return parent::beforeValidate();
     }
 
