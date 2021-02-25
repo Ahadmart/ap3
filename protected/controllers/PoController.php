@@ -753,7 +753,17 @@ class PoController extends Controller
     public function actionOrderSemua($id)
     {
         $return      = ['sukses' => false];
-        $rowAffected = PoDetail::model()->updateAll(['status' => PoDetail::STATUS_ORDER], 'po_id=:POId', [':POId' => $id]);
+        $condition = 'po_id=:POId ';
+        $params[':POId'] = $id;
+        if (!empty($_GET['barcode'])) {
+            $condition .= 'AND barcode LIKE :barcode ';
+            $params[':barcode'] = "%{$_GET['barcode']}%";
+        }
+        if (!empty($_GET['nama'])) {
+            $condition .= 'AND nama LIKE :nama';
+            $params[':nama'] = "%{$_GET['nama']}%";
+        }
+        $rowAffected = PoDetail::model()->updateAll(['status' => PoDetail::STATUS_ORDER], $condition, $params);
         if ($rowAffected > 0) {
             $return = ['sukses' => true];
         }

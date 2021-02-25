@@ -146,8 +146,13 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
 
     $("body").on("click", "#tombol-order-semua", function() {
         var dataurl = $(this).attr('href');
+        var dataKirim = {
+            'barcode': $("input:text[name='PoDetail[barcode]']").val(),
+            'nama': $("input:text[name='PoDetail[nama]']").val(),
+        }
         $.ajax({
             url: dataurl,
+            data: dataKirim,
             success: function(data) {
                 if (data.sukses) {
                     ambilTotal();
