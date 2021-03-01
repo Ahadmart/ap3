@@ -71,7 +71,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     if ($manualMode) {
         $this->renderPartial('_input_manual', array(
             'model' => $model,
-            'barangBelumSO' => $barangBelumSO
+            'barangBelumSO' => $barangBelumSO,
+            'showQtyReturBeli' => $showQtyReturBeli,
         ));
     } else {
         $this->renderPartial('_input_detail', array(
@@ -85,12 +86,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     <?php
     $this->renderPartial('_detail', array(
         'model' => $model,
-        'modelDetail' => $soDetail
+        'modelDetail' => $soDetail,
+        'showQtyReturBeli' => $showQtyReturBeli,
     ));
     ?>
 </div>
-<?php if (!$manualMode):
-    ?>
+<?php if (!$manualMode) :
+?>
     <div class="row" id="barang-list" style="display:none">
         <?php
         $this->renderPartial('_barang_list', array(
@@ -98,15 +100,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         ));
         ?>
     </div>
-    <?php
+<?php
 endif;
 ?>
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         $("#tombol-simpan").on("click");
 
-        $("#tombol-simpan").click(function () {
+        $("#tombol-simpan").click(function() {
             $("#tombol-simpan").off("click").html("<i class=\"fa fa-floppy-o fa-spin\"></i> <span class=\"ak\">S</span>impan SO").addClass("warning");
 
             dataUrl = '<?php echo $this->createUrl('simpanso', array('id' => $model->id)); ?>';
@@ -117,7 +119,7 @@ endif;
                 type: 'POST',
                 url: dataUrl,
                 data: dataKirim,
-                success: function (data) {
+                success: function(data) {
                     if (data.sukses) {
                         location.reload();
                     } else {
@@ -136,38 +138,40 @@ endif;
 <?php
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
-    array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
+    array(
+        'itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
-                    'accesskey' => 't'
-                )),
+                'class' => 'button',
+                'accesskey' => 't'
+            )),
             array('label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
-                    'class' => 'alert button',
-                    'accesskey' => 'h',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
-                )),
+                'class' => 'alert button',
+                'accesskey' => 'h',
+                'submit' => array('hapus', 'id' => $model->id),
+                'confirm' => 'Anda yakin?'
+            )),
             array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                    'accesskey' => 'i'
-                ))
+                'class' => 'success button',
+                'accesskey' => 'i'
+            ))
         ),
         'submenuOptions' => array('class' => 'button-group')
     ),
-    array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
+    array(
+        'itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
-                )),
+                'class' => 'button',
+            )),
             array('label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
-                    'class' => 'alert button',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
-                )),
+                'class' => 'alert button',
+                'submit' => array('hapus', 'id' => $model->id),
+                'confirm' => 'Anda yakin?'
+            )),
             array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                ))
+                'class' => 'success button',
+            ))
         ),
         'submenuOptions' => array('class' => 'button-group')
     )
