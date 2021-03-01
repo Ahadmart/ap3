@@ -383,4 +383,28 @@ class Barang extends CActiveRecord
         $struktur = StrukturBarang::model()->findByPk($this->struktur_id);
         return is_null($struktur) ? "" : $struktur->getFullPath();
     }
+
+    public function getQtyReturBeli()
+    {
+        $sql = "
+        SELECT DISTINCT
+            ib.barang_id, SUM(d.qty) qty_retur
+        FROM
+            retur_pembelian_detail d
+                JOIN
+            retur_pembelian rb ON rb.id = d.retur_pembelian_id
+                AND rb.status = :statusRBDraft
+                JOIN
+            inventory_balance ib ON ib.id = d.inventory_balance_id
+                AND ib.barang_id = :barangId
+        GROUP BY ib.barang_id
+        ";
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValues([
+            ':barangId' => $this->id,
+            ':statusRBDraft' => ReturPembelian::STATUS_DRAFT
+        ]);
+        $r = $command->queryRow();
+        return !empty($r) ? $r['qty_retur'] : '';
+    }
 }

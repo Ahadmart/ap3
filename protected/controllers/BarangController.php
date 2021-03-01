@@ -218,13 +218,16 @@ class BarangController extends Controller
     {
         $model = new Barang('search');
         $model->unsetAttributes();  // clear any default values
-      $model->setAttribute('status', Barang::STATUS_AKTIF); // default yang tampil
+        $model->setAttribute('status', Barang::STATUS_AKTIF); // default yang tampil
         if (isset($_GET['Barang'])) {
             $model->attributes = $_GET['Barang'];
         }
 
+        $configShowQtyReturBeli = Config::model()->find("nama='barang.showstokreturbeli'");
+        $showRB = $configShowQtyReturBeli->nilai == 1 ? true : false;
         $this->render('index', [
             'model' => $model,
+            'showQtyReturBeli' => $showRB,
         ]);
     }
 
@@ -282,8 +285,8 @@ class BarangController extends Controller
         $namaController   = $inventoryBalance->namaAsalController();
         $model            = $inventoryBalance->modelAsal();
         return '<a href="' .
-                $this->createUrl("{$namaController}/view", ['id' => $model->id]) . '">' .
-                $data->nomor_dokumen . '</a>';
+            $this->createUrl("{$namaController}/view", ['id' => $model->id]) . '">' .
+            $data->nomor_dokumen . '</a>';
     }
 
     public function renderLinkToView($data)
@@ -291,8 +294,8 @@ class BarangController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-                    $this->createUrl('view', ['id' => $data->id]) . '">' .
-                    $data->nama . '</a>';
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->nama . '</a>';
         }
         return $return;
     }
