@@ -81,7 +81,7 @@ Yii::app()->clientScript->registerScript('editableQty', ''
                     'filter' => false
                 ),
                 array(
-                    'name' => 'Qty Retur Beli',
+                    'name' => 'Draft Retur Beli',
                     'value' => '$data->qtyReturBeli',
                     'htmlOptions' => array('class' => 'rata-kanan'),
                     'headerHtmlOptions' => array('style' => 'width:75px', 'class' => 'rata-kanan'),
