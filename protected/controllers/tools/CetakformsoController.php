@@ -68,6 +68,8 @@ class CetakformsoController extends Controller
 
     public function formSoPdf($modelForm, $data)
     {
+        $configShowQtyReturBeli = Config::model()->find("nama='barang.showstokreturbeli'");
+        $showRB                 = $configShowQtyReturBeli->nilai == 1 ? true : false;
         /*
          * Persiapan render PDF
          */
@@ -84,15 +86,19 @@ class CetakformsoController extends Controller
             'margin_right' => 7,
             'margin_top'   => 7,
         ]);
-        $mpdf->WriteHTML($this->renderPartial('_form_so_pdf', [
-            'modelForm'    => $modelForm,
-            'data'         => $data,
-            'tanggalCetak' => $tanggalCetak,
-            'toko'         => [
-                'kode' => $this->kodeToko(),
-                'nama' => $this->namaToko(),
+        $mpdf->WriteHTML($this->renderPartial(
+            '_form_so_pdf',
+            [
+                'modelForm'    => $modelForm,
+                'data'         => $data,
+                'tanggalCetak' => $tanggalCetak,
+                'toko'         => [
+                    'kode' => $this->kodeToko(),
+                    'nama' => $this->namaToko(),
+                ],
+                'showQtyReturBeli' => $showRB,
             ],
-        ], true
+            true
         ));
 
         $mpdf->SetDisplayMode('fullpage');
@@ -100,5 +106,4 @@ class CetakformsoController extends Controller
         // Render PDF
         $mpdf->Output("{$this->namaToko()} form so {$modelForm->namaRak} {$tanggalCetak}.pdf", 'I');
     }
-
 }
