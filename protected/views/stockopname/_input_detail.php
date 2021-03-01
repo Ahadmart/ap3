@@ -24,10 +24,10 @@
                       <a class="prefix secondary button" onclick="getZxing()"><i class="fa fa-barcode fa-2x"></i></a>
                      */
                     ?>
-                    <a class="prefix secondary button" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('ubah', ['id' => $model->id, 'barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a> 
+                    <a class="prefix secondary button" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('ubah', ['id' => $model->id, 'barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a>
                 </div>
                 <div class="small-6 columns">
-                    <input id="scan" type="text"  placeholder="Scan [B]arcode" accesskey="b" autofocus="autofocus" autocomplete="off"/>
+                    <input id="scan" type="text" placeholder="Scan [B]arcode" accesskey="b" autofocus="autofocus" autocomplete="off" />
                 </div>
                 <div class="small-3 columns">
                     <a id="tombol-ok-scan" href="" class="button postfix">OK</a>
@@ -42,7 +42,7 @@
                     <span class="prefix"><i class="fa fa-search fa-2x"></i></span>
                 </div>
                 <div class="small-6 large-6 columns">
-                    <input id="namabarang" type="text"  placeholder="[C]ari Barang" accesskey="c"/>
+                    <input id="namabarang" type="text" placeholder="[C]ari Barang" accesskey="c" />
                 </div>
                 <div class="small-3 large-4 columns">
                     <a href="" id="tombol-cari" class="button postfix">Cari</a>
@@ -59,7 +59,7 @@
                     <span class="prefix huruf"><b>Q</b>ty Asli</span>
                 </div>
                 <div class="small-4 columns">
-                    <input id="qty" type="number" accesskey="q" autocomplete="off"/>
+                    <input id="qty" type="number" accesskey="q" autocomplete="off" />
                 </div>
                 <div class="small-4 columns">
                     <a id="tombol-ok-tambah" href="" class="button postfix">Tambah</a>
@@ -77,7 +77,7 @@
                     <span class="prefix huruf">Se<b>l</b>isih</span>
                 </div>
                 <div class="small-4 columns">
-                    <input id="selisih" type="number" accesskey="l" autocomplete="off"/>
+                    <input id="selisih" type="number" accesskey="l" autocomplete="off" />
                 </div>
                 <div class="small-4 columns">
                     <a id="tombol-ok-tambah-s" href="" class="button postfix">Tambah</a>
@@ -92,7 +92,11 @@
     function isiBarangInfo(data) {
         $("#barang-info").show();
         text = data.nama + ' <small>' + data.barcode + '</small><br />';
-        text += '<small>Qty</small> ' + data.stok + '  <small>Qty SO</small> ' + data.qtySudahSo;
+        text += '<small>Qty</small> ' + data.stok;
+        if (data.qtyDraftReturBeli > 0) {
+            text += '  <small>Draft Retur Beli</small> ' + data.qtyDraftReturBeli;
+        }
+        text += '  <small>Qty SO</small> ' + data.qtySudahSo;
         text += ' <a href="<?= $this->createUrl('ubah', ['id' => $model->id]) ?>"> Kembali </a>';
         $("#barang-info p").html(text);
     }
@@ -110,7 +114,7 @@
         $("#scan").focus();
     }
 
-    $("#tombol-ok-scan").click(function () {
+    $("#tombol-ok-scan").click(function() {
         kirimBarcode($("#scan").val());
         return false;
     });
@@ -127,16 +131,16 @@
             data: datakirim,
             url: dataurl,
             type: "POST",
-            success: function (data) {
+            success: function(data) {
                 if (data.sukses) {
                     $("#input-barang").hide();
                     if (data.inputselisih == 1) {
-                        $("#input-selisih").show(100, function () {
+                        $("#input-selisih").show(100, function() {
                             isiBarangInfo(data);
                             $("#selisih").focus();
                         });
                     } else {
-                        $("#input-qty").show(100, function () {
+                        $("#input-qty").show(100, function() {
                             isiBarangInfo(data);
                             $("#qty").focus();
                         });
@@ -145,8 +149,8 @@
             }
         });
     }
-    
-    $(".gantiinput").click(function () {
+
+    $(".gantiinput").click(function() {
         var datakirim = {
             'gantiinput': true,
         };
@@ -155,21 +159,21 @@
             data: datakirim,
             url: dataurl,
             type: "POST",
-            success: function (data) {
+            success: function(data) {
                 if (data.sukses) {
                     $("#input-barang").hide();
                     if (data.inputselisih) {
-                        $("#input-qty").hide(100, function () {
+                        $("#input-qty").hide(100, function() {
                             $("#qty").val('');
                         });
-                        $("#input-selisih").show(100, function () {
+                        $("#input-selisih").show(100, function() {
                             $("#selisih").focus();
                         });
                     } else {
-                        $("#input-selisih").hide(100, function () {
+                        $("#input-selisih").hide(100, function() {
                             $("#selisih").val('');
                         });
-                        $("#input-qty").show(100, function () {
+                        $("#input-qty").show(100, function() {
                             $("#qty").focus();
                         });
                     }
@@ -178,44 +182,44 @@
         });
     });
 
-    $("#scan").keyup(function (e) {
+    $("#scan").keyup(function(e) {
         if (e.keyCode === 13) {
             $("#tombol-ok-scan").click();
         }
         return false;
     });
 
-    $("#form-scan").on('submit', function () {
+    $("#form-scan").on('submit', function() {
         return false;
     });
 
-    $("#form-caribarang").on('submit', function () {
+    $("#form-caribarang").on('submit', function() {
         return false;
     });
 
-    $("#qty").keyup(function (e) {
+    $("#qty").keyup(function(e) {
         if (e.keyCode === 13) {
             $("#tombol-ok-tambah").click();
         }
         return false;
     });
-    
-    $("#selisih").keyup(function (e) {
+
+    $("#selisih").keyup(function(e) {
         if (e.keyCode === 13) {
             $("#tombol-ok-tambah-s").click();
         }
         return false;
     });
-    
-    $("#input-qty").on('submit', function () {
-        return false;
-    });
-    
-    $("#input-selisih").on('submit', function () {
+
+    $("#input-qty").on('submit', function() {
         return false;
     });
 
-    $("#tombol-ok-tambah").click(function () {
+    $("#input-selisih").on('submit', function() {
+        return false;
+    });
+
+    $("#tombol-ok-tambah").click(function() {
         var barcode = $("#scan").val();
         var qty = $("#qty").val()
         var datakirim = {
@@ -229,7 +233,7 @@
             data: datakirim,
             url: dataurl,
             type: "POST",
-            success: function (data) {
+            success: function(data) {
                 if (data.sukses) {
                     $("#so-detail-grid").yiiGridView('update');
                     resetInput();
@@ -238,8 +242,8 @@
         });
         return false;
     });
-    
-    $("#tombol-ok-tambah-s").click(function () {
+
+    $("#tombol-ok-tambah-s").click(function() {
         var barcode = $("#scan").val();
         var selisih = $("#selisih").val()
         var datakirim = {
@@ -252,7 +256,7 @@
             data: datakirim,
             url: dataurl,
             type: "POST",
-            success: function (data) {
+            success: function(data) {
                 if (data.sukses) {
                     $("#so-detail-grid").yiiGridView('update');
                     resetInput();
@@ -262,7 +266,7 @@
         return false;
     });
 
-    $("#namabarang").keyup(function (e) {
+    $("#namabarang").keyup(function(e) {
         if (e.keyCode === 13) {
             $("#tombol-cari").click();
             $("#tombol-cari").focus();
@@ -270,7 +274,7 @@
         return false;
     });
 
-    $("#tombol-cari").click(function () {
+    $("#tombol-cari").click(function() {
         var datakirim = {
             'cariBarang': true,
             'namaBarang': $("#namabarang").val()
@@ -278,8 +282,8 @@
         $('#barang-grid').yiiGridView('update', {
             data: datakirim
         });
-        $("#so-detail").hide(100, function () {
-            $("#barang-list").show(100, function () {
+        $("#so-detail").hide(100, function() {
+            $("#barang-list").show(100, function() {
                 // Dipilih, dipilih, dipilih..
             });
 
@@ -287,24 +291,24 @@
         return false;
     });
 
-<?php
-/* Proses barcode yang didapat dari scan zxing */
-/*
+    <?php
+    /* Proses barcode yang didapat dari scan zxing */
+    /*
   function processBarcode(b) {
   $("#scan").val(b);
   kirimBarcode(b);
   }
  * 
  */
-?>
-<?php
-if (!is_null($scanBarcode)) {
     ?>
-        $(function () {
+    <?php
+    if (!is_null($scanBarcode)) {
+    ?>
+        $(function() {
             $("#scan").val(<?= $scanBarcode ?>);
             kirimBarcode(<?= $scanBarcode ?>);
         });
     <?php
-}
-?>
+    }
+    ?>
 </script>

@@ -15,10 +15,10 @@ class StockopnameController extends Controller
         if (isset($_GET['StockOpnameDetail'])) {
             $detail->attributes = $_GET['StockOpnameDetail'];
         }
-        $this->render('view', array(
-            'model' => $this->loadModel($id),
-            'detail' => $detail
-        ));
+        $this->render('view', [
+            'model'  => $this->loadModel($id),
+            'detail' => $detail,
+        ]);
     }
 
     /**
@@ -28,20 +28,21 @@ class StockopnameController extends Controller
     public function actionTambah()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new StockOpname;
+        $model        = new StockOpname;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
         if (isset($_POST['StockOpname'])) {
             $model->attributes = $_POST['StockOpname'];
-            if ($model->save())
-                $this->redirect(array('ubah', 'id' => $model->id));
+            if ($model->save()) {
+                $this->redirect(['ubah', 'id' => $model->id]);
+            }
         }
 
-        $this->render('tambah', array(
+        $this->render('tambah', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -56,7 +57,7 @@ class StockopnameController extends Controller
         // $this->performAjaxValidation($model);
 
         if ($model->status != StockOpname::STATUS_DRAFT) {
-            $this->redirect(array('view', 'id' => $model->id));
+            $this->redirect(['view', 'id' => $model->id]);
         }
 
         $manualMode = isset($_GET['manual']) && $_GET['manual'] == true;
@@ -90,14 +91,14 @@ class StockopnameController extends Controller
             $scanBarcode = $_GET['barcodescan'];
         }
 
-        $this->render('ubah', array(
-            'model' => $model,
-            'soDetail' => $soDetail,
-            'barang' => $barang,
-            'manualMode' => $manualMode,
-            'barangBelumSO' => $manualMode ? $barangBelumSO : NULL,
-            'scanBarcode' => $scanBarcode
-        ));
+        $this->render('ubah', [
+            'model'         => $model,
+            'soDetail'      => $soDetail,
+            'barang'        => $barang,
+            'manualMode'    => $manualMode,
+            'barangBelumSO' => $manualMode ? $barangBelumSO : null,
+            'scanBarcode'   => $scanBarcode,
+        ]);
     }
 
     /**
@@ -114,8 +115,9 @@ class StockopnameController extends Controller
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        if (!isset($_GET['ajax'])) {
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
+        }
     }
 
     /**
@@ -124,13 +126,14 @@ class StockopnameController extends Controller
     public function actionIndex()
     {
         $model = new StockOpname('search');
-        $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['StockOpname']))
+        $model->unsetAttributes(); // clear any default values
+        if (isset($_GET['StockOpname'])) {
             $model->attributes = $_GET['StockOpname'];
+        }
 
-        $this->render('index', array(
+        $this->render('index', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -143,8 +146,10 @@ class StockopnameController extends Controller
     public function loadModel($id)
     {
         $model = StockOpname::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+
         return $model;
     }
 
@@ -170,8 +175,8 @@ class StockopnameController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('view', array('id' => $data->id)) . '">' .
-                    $data->nomor . '</a>';
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->nomor . '</a>';
         }
         return $return;
     }
@@ -185,8 +190,8 @@ class StockopnameController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('ubah', array('id' => $data->id)) . '">' .
-                    $data->tanggal . '</a>';
+                $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+                $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -195,22 +200,27 @@ class StockopnameController extends Controller
 
     public function actionScanBarcode($id)
     {
-        $return = array(
-            'sukses' => false
-        );
+        $return = [
+            'sukses' => false,
+        ];
         if (isset($_POST['scan'])) {
             $barcode      = $_POST['barcode'];
-            $barang       = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
+            $barang       = Barang::model()->find('barcode=:barcode', [':barcode' => $barcode]);
             $qtySudahSo   = StockOpnameDetail::model()->qtyYangSudahSo($id, $barang->id);
             $inputselisih = $this->loadModel($id)->input_selisih;
             $return       = [
-                'sukses'       => true,
-                'barcode'      => $barcode,
-                'nama'         => $barang->nama,
-                'stok'         => $barang->getStok(),
-                'qtySudahSo'   => $qtySudahSo,
-                'inputselisih' => $inputselisih
+                'sukses'            => true,
+                'barcode'           => $barcode,
+                'nama'              => $barang->nama,
+                'stok'              => $barang->getStok(),
+                'qtySudahSo'        => $qtySudahSo,
+                'inputselisih'      => $inputselisih,
             ];
+            $configShowDraftRB = Config::model()->find("nama='barang.showstokreturbeli'");
+            $showRB = $configShowDraftRB->nilai == 1 ? true : false;
+            if ($showRB) {
+                $return = array_merge($return, ['qtyDraftReturBeli' => $barang->qtyReturBeli,]);
+            }
         }
 
         $this->renderJSON($return);
@@ -218,12 +228,12 @@ class StockopnameController extends Controller
 
     public function actionTambahDetail($id)
     {
-        $return = array(
-            'sukses' => false
-        );
+        $return = [
+            'sukses' => false,
+        ];
         if (isset($_POST['tambah'])) {
             $barcode = $_POST['barcode'];
-            $barang  = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
+            $barang  = Barang::model()->find('barcode=:barcode', [':barcode' => $barcode]);
             $stok    = $barang->getStok();
             if (isset($_POST['qty'])) {
                 $qty = $_POST['qty'];
@@ -245,18 +255,18 @@ class StockopnameController extends Controller
      */
     public function tambahDetail($soId, $barangId, $qtyTercatat, $qtySebenarnya)
     {
-        $return = array(
-            'sukses' => false
-        );
-        $detail = new StockOpnameDetail;
+        $return = [
+            'sukses' => false,
+        ];
+        $detail                  = new StockOpnameDetail;
         $detail->stock_opname_id = $soId;
-        $detail->barang_id = $barangId;
-        $detail->qty_tercatat = is_null($qtyTercatat) ? 0 : $qtyTercatat;
-        $detail->qty_sebenarnya = $qtySebenarnya;
+        $detail->barang_id       = $barangId;
+        $detail->qty_tercatat    = is_null($qtyTercatat) ? 0 : $qtyTercatat;
+        $detail->qty_sebenarnya  = $qtySebenarnya;
         if ($detail->save()) {
-            $return = array(
+            $return = [
                 'sukses' => true,
-            );
+            ];
         }
         return $return;
     }
@@ -275,7 +285,7 @@ class StockopnameController extends Controller
 
     public function actionSimpanSo($id)
     {
-        $return = array('sukses' => false);
+        $return = ['sukses' => false];
         // cek jika 'simpan' ada dan bernilai true
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $so = $this->loadModel($id);
@@ -293,7 +303,7 @@ class StockopnameController extends Controller
             $ak = 'accesskey="q"';
         }
         return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
-                Yii::app()->controller->createUrl('inputqtymanual') . '"></a>';
+            Yii::app()->controller->createUrl('inputqtymanual') . '"></a>';
     }
 
     /**
@@ -301,18 +311,18 @@ class StockopnameController extends Controller
      */
     public function actionInputQtyManual()
     {
-        $return = array(
+        $return = [
             'sukses' => false,
-            'error' => array(
+            'error'  => [
                 'code' => '500',
-                'msg' => 'Sempurnakan input!',
-            )
-        );
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
         if (isset($_POST['pk'])) {
-            $pk = $_POST['pk'];
+            $pk       = $_POST['pk'];
             $qtyInput = $_POST['value'];
-            $id = $_POST['soId'];
-            $barang = Barang::model()->findByPk($pk);
+            $id       = $_POST['soId'];
+            $barang   = Barang::model()->findByPk($pk);
 
             $return = $this->tambahDetail($id, $barang->id, $barang->getStok(), $qtyInput);
         }
@@ -322,30 +332,30 @@ class StockopnameController extends Controller
 
     public function renderGantiRakLinkEditable($data, $row)
     {
-        return CHtml::link('Pilih..', '', array(
-                    'class' => 'editable-rak',
-                    'data-type' => 'select',
-                    'data-pk' => $data->id,
-                    'data-url' => Yii::app()->controller->createUrl('gantirak'),
-                    'data-title' => 'Select Rak'
-        ));
+        return CHtml::link('Pilih..', '', [
+            'class'      => 'editable-rak',
+            'data-type'  => 'select',
+            'data-pk'    => $data->id,
+            'data-url'   => Yii::app()->controller->createUrl('gantirak'),
+            'data-title' => 'Select Rak',
+        ]);
     }
 
     public function actionGantiRak()
     {
-        $return = array(
+        $return = [
             'sukses' => false,
-            'error' => array(
+            'error'  => [
                 'code' => '500',
-                'msg' => 'Sempurnakan input!',
-            )
-        );
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
         if (isset($_POST['pk'])) {
-            $pk = $_POST['pk'];
-            $rakId = $_POST['value'];
+            $pk     = $_POST['pk'];
+            $rakId  = $_POST['value'];
             $barang = Barang::model()->findByPk($pk);
-            Barang::model()->updateByPk($pk, array('rak_id' => $rakId));
-            $return = array('sukses' => true);
+            Barang::model()->updateByPk($pk, ['rak_id' => $rakId]);
+            $return = ['sukses' => true];
         }
 
         $this->renderJSON($return);
@@ -353,17 +363,17 @@ class StockopnameController extends Controller
 
     public function renderTombolSetNol($data, $row)
     {
-        return CHtml::link('<i class="fa fa-square-o"><i>', Yii::app()->controller->createUrl('setnol'), array(
-                    'data-barangid' => $data->id,
-                    'class' => 'tombol-setnol'
-        ));
+        return CHtml::link('<i class="fa fa-square-o"><i>', Yii::app()->controller->createUrl('setnol'), [
+            'data-barangid' => $data->id,
+            'class'         => 'tombol-setnol',
+        ]);
     }
 
     public function actionSetNol($id)
     {
-        $return = array('sukses' => false);
+        $return = ['sukses' => false];
         if (isset($_POST['barangid'])) {
-            $pk = $_POST['barangid'];
+            $pk     = $_POST['barangid'];
             $barang = Barang::model()->findByPk($pk);
             $return = $this->tambahDetail($id, $barang->id, $barang->getStok(), 0);
         }
@@ -372,20 +382,20 @@ class StockopnameController extends Controller
 
     public function renderTombolSetInAktif($data, $row)
     {
-        return CHtml::link('<i class="fa fa-square-o"><i>', Yii::app()->controller->createUrl('setinaktif'), array(
-                    'data-barangid' => $data->id,
-                    'class' => 'tombol-setinaktif'
-        ));
+        return CHtml::link('<i class="fa fa-square-o"><i>', Yii::app()->controller->createUrl('setinaktif'), [
+            'data-barangid' => $data->id,
+            'class'         => 'tombol-setinaktif',
+        ]);
     }
 
     public function actionSetInAktif($id)
     {
-        $return = array('sukses' => false);
+        $return = ['sukses' => false];
         if (isset($_POST['barangid'])) {
-            $pk = $_POST['barangid'];
+            $pk     = $_POST['barangid'];
             $barang = Barang::model()->findByPk($pk);
-            Barang::model()->updateByPk($pk, array('status' => Barang::STATUS_TIDAK_AKTIF));
-            $return = array('sukses' => true);
+            Barang::model()->updateByPk($pk, ['status' => Barang::STATUS_TIDAK_AKTIF]);
+            $return = ['sukses' => true];
         }
         $this->renderJSON($return);
     }
@@ -396,7 +406,7 @@ class StockopnameController extends Controller
 
         $this->renderJSON([
             'sukses' => true,
-            'rows' => $model->tambahDetailSetNol()
+            'rows'   => $model->tambahDetailSetNol(),
         ]);
     }
 
@@ -406,7 +416,7 @@ class StockopnameController extends Controller
 
         $this->renderJSON([
             'sukses' => true,
-            'rows' => $model->setInAktifAll()
+            'rows'   => $model->setInAktifAll(),
         ]);
     }
 
@@ -421,11 +431,10 @@ class StockopnameController extends Controller
             if ($model->update(['input_selisih'])) {
                 $r = [
                     'sukses'       => true,
-                    'inputselisih' => $model->input_selisih
+                    'inputselisih' => $model->input_selisih,
                 ];
             }
         }
         $this->renderJSON($r);
     }
-
 }
