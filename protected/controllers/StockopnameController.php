@@ -91,8 +91,8 @@ class StockopnameController extends Controller
             $scanBarcode = $_GET['barcodescan'];
         }
 
-        $configShowQtyReturBeli = Config::model()->find("nama='barang.showstokreturbeli'");
-        $showRB                 = $configShowQtyReturBeli->nilai == 1 ? true : false;
+        // $configShowQtyReturBeli = Config::model()->find("nama='barang.showstokreturbeli'");
+        // $showRB                 = $configShowQtyReturBeli->nilai == 1 ? true : false;
 
         $this->render('ubah', [
             'model'            => $model,
@@ -101,7 +101,7 @@ class StockopnameController extends Controller
             'manualMode'       => $manualMode,
             'barangBelumSO'    => $manualMode ? $barangBelumSO : null,
             'scanBarcode'      => $scanBarcode,
-            'showQtyReturBeli' => $showRB,
+            // 'showQtyReturBeli' => $showRB,
         ]);
     }
 
@@ -220,11 +220,11 @@ class StockopnameController extends Controller
                 'qtySudahSo'   => $qtySudahSo,
                 'inputselisih' => $inputselisih,
             ];
-            $configShowDraftRB = Config::model()->find("nama='barang.showstokreturbeli'");
-            $showRB            = $configShowDraftRB->nilai == 1 ? true : false;
-            if ($showRB) {
-                $return = array_merge($return, ['qtyDraftReturBeli' => $barang->qtyReturBeli]);
-            }
+            // $configShowDraftRB = Config::model()->find("nama='barang.showstokreturbeli'");
+            // $showRB            = $configShowDraftRB->nilai == 1 ? true : false;
+            // if ($showRB) {
+            //     $return = array_merge($return, ['qtyDraftReturBeli' => $barang->qtyReturBeli]);
+            // }
         }
 
         $this->renderJSON($return);

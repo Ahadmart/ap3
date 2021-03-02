@@ -45,11 +45,13 @@
                 <th>Harga Jual</th>
                 <th style="width: 11%">Qty Tercatat</th>
                 <?php
+                /*
                 if ($showQtyReturBeli) :
                 ?>
                     <th>Qty Draft RB</th>
                 <?php
                 endif;
+                */
                 ?>
                 <th>Selisih</th>
             </tr>
@@ -65,12 +67,14 @@
                 <td class="rata-kanan"><?= number_format($barang['harga'], 0, ',', '.') ?></td>
                 <td class="rata-kanan"><?= $barang['stok']; ?></td>
                 <?php
+                /*
                 if ($showQtyReturBeli) :
                     $barangModel = Barang::model()->find("barcode = :barcode", [':barcode' => $barang['barcode']]);
                 ?>
                     <td class="rata-kanan"><?= $barangModel->qtyReturBeli ?></td>
                 <?php
                 endif;
+                */
                 ?>
                 <td></td>
             </tr>

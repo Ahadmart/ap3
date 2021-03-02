@@ -68,8 +68,8 @@ class CetakformsoController extends Controller
 
     public function formSoPdf($modelForm, $data)
     {
-        $configShowQtyReturBeli = Config::model()->find("nama='barang.showstokreturbeli'");
-        $showRB                 = $configShowQtyReturBeli->nilai == 1 ? true : false;
+        // $configShowQtyReturBeli = Config::model()->find("nama='barang.showstokreturbeli'");
+        // $showRB                 = $configShowQtyReturBeli->nilai == 1 ? true : false;
         /*
          * Persiapan render PDF
          */
@@ -96,7 +96,7 @@ class CetakformsoController extends Controller
                     'kode' => $this->kodeToko(),
                     'nama' => $this->namaToko(),
                 ],
-                'showQtyReturBeli' => $showRB,
+                // 'showQtyReturBeli' => $showRB,
             ],
             true
         ));
