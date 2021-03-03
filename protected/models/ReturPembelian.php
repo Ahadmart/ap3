@@ -27,6 +27,7 @@ class ReturPembelian extends CActiveRecord
     const STATUS_DRAFT   = 0;
     const STATUS_PIUTANG = 1;
     const STATUS_LUNAS   = 2;
+    const STATUS_POSTED  = 3; // Request sponsor: Proses diantara draft dan piutang. Mengurangi stok, tapi tidak mengurangi stok total.
     /* ===================== */
     const KERTAS_LETTER = 10;
     const KERTAS_A4     = 20;
@@ -184,7 +185,9 @@ class ReturPembelian extends CActiveRecord
         // Jika disimpan melalui proses simpan retur pembelian
         if ($this->scenario === 'simpanReturBeli') {
             // Status diubah jadi pembelian belum terima (piutang)
-            $this->status = ReturPembelian::STATUS_PIUTANG;
+            // $this->status = ReturPembelian::STATUS_PIUTANG;
+            // Update per 3 Mar 2021, simpan berubah ke posted
+            $this->status = ReturPembelian::STATUS_POSTED;
             // Dapat nomor dan tanggal
             /* Solusi temporer migrasi ke 6 digit seq num untuk ahadmart */
             $this->nomor   = $this->generateNomor6Seq();
@@ -227,6 +230,7 @@ class ReturPembelian extends CActiveRecord
     {
         $status = [
             ReturPembelian::STATUS_DRAFT   => 'Draft',
+            ReturPembelian::STATUS_POSTED  => 'Posted',
             ReturPembelian::STATUS_PIUTANG => 'Piutang',
             ReturPembelian::STATUS_LUNAS   => 'Lunas',
         ];
@@ -262,6 +266,9 @@ class ReturPembelian extends CActiveRecord
      * 1. Ubah status jadi piutang
      * 2. Kurangi Inventory Balance
      * 3. Buat Piutang
+     * Update per 3 Mar 2021
+     * 1. Ubah status jadi posted
+     * 2. Kurangi Inventory Balance
      */
 
     public function simpanReturPembelian()
@@ -270,7 +277,7 @@ class ReturPembelian extends CActiveRecord
         $transaction    = $this->dbConnection->beginTransaction();
         try {
             /*
-             * Save sekaligus mengubah status dari draft jadi piutang
+             * Save sekaligus mengubah status dari draft jadi posted
              */
             if ($this->save()) {
                 $details = ReturPembelianDetail::model()->findAll("retur_pembelian_id={$this->id}");
@@ -299,37 +306,38 @@ class ReturPembelian extends CActiveRecord
                     }
                 endforeach;
 
-                $jumlahReturBeli = $this->ambilTotal();
+                // $jumlahReturBeli = $this->ambilTotal();
                 /*
                  * Create (piutang)
+                 * Update per 3 Mar 2021, piutang created setelah ada aksi dari user
                  */
-                $hutang                     = new HutangPiutang;
-                $hutang->profil_id          = $this->profil_id;
-                $hutang->jumlah             = $jumlahReturBeli;
-                $hutang->tipe               = HutangPiutang::TIPE_PIUTANG;
-                $hutang->asal               = HutangPiutang::DARI_RETUR_BELI;
-                $hutang->nomor_dokumen_asal = $this->nomor;
-                if (!$hutang->save()) {
-                    throw new Exception("Gagal simpan hutang");
-                }
+                // $hutang                     = new HutangPiutang;
+                // $hutang->profil_id          = $this->profil_id;
+                // $hutang->jumlah             = $jumlahReturBeli;
+                // $hutang->tipe               = HutangPiutang::TIPE_PIUTANG;
+                // $hutang->asal               = HutangPiutang::DARI_RETUR_BELI;
+                // $hutang->nomor_dokumen_asal = $this->nomor;
+                // if (!$hutang->save()) {
+                //     throw new Exception("Gagal simpan hutang");
+                // }
 
                 /*
                  * Hutang Detail
                  */
-                $hutangDetail                    = new HutangPiutangDetail;
-                $hutangDetail->hutang_piutang_id = $hutang->id;
-                $hutangDetail->keterangan        = 'Retur Beli: ' . $this->nomor;
-                $hutangDetail->jumlah            = $jumlahReturBeli;
-                if (!$hutangDetail->save()) {
-                    throw new Exception("Gagal simpan hutang detail");
-                }
+                // $hutangDetail                    = new HutangPiutangDetail;
+                // $hutangDetail->hutang_piutang_id = $hutang->id;
+                // $hutangDetail->keterangan        = 'Retur Beli: ' . $this->nomor;
+                // $hutangDetail->jumlah            = $jumlahReturBeli;
+                // if (!$hutangDetail->save()) {
+                //     throw new Exception("Gagal simpan hutang detail");
+                // }
 
                 /*
                  * Simpan hutang_id ke retur pembelian
                  */
-                if (!ReturPembelian::model()->updateByPk($this->id, ['hutang_piutang_id' => $hutang->id]) > 1) {
-                    throw new Exception("Gagal simpan hutang_id");
-                }
+                // if (!ReturPembelian::model()->updateByPk($this->id, ['hutang_piutang_id' => $hutang->id]) > 1) {
+                //     throw new Exception("Gagal simpan hutang_id");
+                // }
 
                 $transaction->commit();
 
