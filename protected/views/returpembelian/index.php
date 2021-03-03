@@ -52,6 +52,7 @@ $this->boxHeader['normal'] = 'Retur Pembelian';
                     'value'  => '$data->namaStatus',
                     'filter' => [
                         ReturPembelian::STATUS_DRAFT   => 'Draft',
+                        ReturPembelian::STATUS_POSTED  => 'Posted',
                         ReturPembelian::STATUS_PIUTANG => 'Piutang',
                         ReturPembelian::STATUS_LUNAS   => 'Lunas',
                     ],

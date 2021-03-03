@@ -138,7 +138,10 @@ class ReturPembelian extends CActiveRecord
         $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
 
         $sort = [
-            'defaultOrder' => 't.status, t.tanggal desc',
+            'defaultOrder' => 'case t.status when ' . self::STATUS_DRAFT . ' then 0 '
+                . 'when ' . self::STATUS_POSTED . ' then 1 '
+                . 'when ' . self::STATUS_PIUTANG . ' then 2 '
+                . 'else 3 end, t.tanggal desc',
             'attributes'   => [
                 'namaSupplier'  => [
                     'asc'  => 'profil.nama',
@@ -205,7 +208,7 @@ class ReturPembelian extends CActiveRecord
         $tahun = date('y');
         $data  = $this->find([
             'select'    => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,2)='{$tahun}'"
+            'condition' => "substring(nomor,5,2)='{$tahun}'",
         ]);
 
         $value = is_null($data) ? 0 : $data->max;
@@ -352,14 +355,14 @@ class ReturPembelian extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
 
     public function afterFind()
     {
-        $this->tanggal = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
+        $this->tanggal           = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
         $this->tanggal_referensi = !is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
         return parent::afterFind();
     }
@@ -536,7 +539,63 @@ class ReturPembelian extends CActiveRecord
 
     public function beforeValidate()
     {
-        $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : NULL;
+        $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : null;
         return parent::beforeValidate();
+    }
+
+    /**
+     * Membuat piutang dari retur_pembelian posted
+     * Update status menjadi Piutang dan simpan id hutang
+     */
+    public function terbitkanPiutang()
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+
+            $jumlahReturBeli = $this->ambilTotal();
+            /*
+             * Create (piutang)
+             * Update per 3 Mar 2021, piutang created setelah ada aksi dari user
+             */
+            $hutang                     = new HutangPiutang;
+            $hutang->profil_id          = $this->profil_id;
+            $hutang->jumlah             = $jumlahReturBeli;
+            $hutang->tipe               = HutangPiutang::TIPE_PIUTANG;
+            $hutang->asal               = HutangPiutang::DARI_RETUR_BELI;
+            $hutang->nomor_dokumen_asal = $this->nomor;
+            if (!$hutang->save()) {
+                throw new Exception("Gagal simpan hutang");
+            }
+
+            /*
+             * Hutang Detail
+             */
+            $hutangDetail                    = new HutangPiutangDetail;
+            $hutangDetail->hutang_piutang_id = $hutang->id;
+            $hutangDetail->keterangan        = 'Retur Beli: ' . $this->nomor;
+            $hutangDetail->jumlah            = $jumlahReturBeli;
+            if (!$hutangDetail->save()) {
+                throw new Exception("Gagal simpan hutang detail");
+            }
+
+            /*
+             * Update status menjadi piutang dan simpan hutang_id ke retur pembelian
+             */
+            if (!ReturPembelian::model()->updateByPk($this->id, ['status' => self::STATUS_PIUTANG, 'hutang_piutang_id' => $hutang->id, 'updated_by' => Yii::app()->user->id]) > 1) {
+                throw new Exception("Gagal update status dan simpan hutang_id");
+            }
+
+            $transaction->commit();
+            return ['sukses' => true];
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return [
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+                ],
+            ];
+        }
     }
 }

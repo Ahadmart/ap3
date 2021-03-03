@@ -19,6 +19,13 @@ $this->boxHeader['normal'] = 'Retur Pembelian: ' . $model->nomor;
         <span class="secondary label">Status</span><span class="warning label"><?php echo $model->getNamaStatus(); ?></span>
 
         <ul class="button-group right">
+            <?php
+            if ($model->status == ReturPembelian::STATUS_POSTED) :
+            ?>
+                <li><a href="<?= $this->createUrl('piutang', ['id' => $model->id]) ?>" class="tiny bigfont alert button" accesskey="t"><i class="fa fa-credit-card-alt fa-fw"></i> Terbitkan piu<span class="ak">t</span>ang</a></li>
+            <?php
+            endif;
+            ?>
             <li>
                 <a href="#" accesskey="p" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
                 <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
