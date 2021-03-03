@@ -396,7 +396,9 @@ class ReportController extends Controller
     public function actionTotalStok()
     {
         $this->layout = '//layouts/box_kecil';
-        $this->render('totalstok', ['totalStok' => InventoryBalance::model()->totalInventory()]);
+        $this->render('totalstok', [
+            'totalStok' => (int) InventoryBalance::model()->totalInventory() + (int) InventoryBalance::model()->totalNilaiReturBeliPosted()
+        ]);
     }
 
     public function actionTopRank()
