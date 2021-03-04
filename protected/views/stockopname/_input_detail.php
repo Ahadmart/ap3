@@ -93,9 +93,9 @@
         $("#barang-info").show();
         text = data.nama + ' <small>' + data.barcode + '</small><br />';
         text += '<small>Qty</small> ' + data.stok;
-        // if (data.qtyDraftReturBeli > 0) {
-        //     text += '  <small>Draft Retur Beli</small> ' + data.qtyDraftReturBeli;
-        // }
+        if (data.qtyReturBeliPosted > 0) {
+            text += '  <small>Stok Retur Beli</small> ' + data.qtyReturBeliPosted;
+        }
         text += '  <small>Qty SO</small> ' + data.qtySudahSo;
         text += ' <a href="<?= $this->createUrl('ubah', ['id' => $model->id]) ?>"> Kembali </a>';
         $("#barang-info p").html(text);

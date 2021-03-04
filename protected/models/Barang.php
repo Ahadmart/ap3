@@ -384,7 +384,7 @@ class Barang extends CActiveRecord
         return is_null($struktur) ? "" : $struktur->getFullPath();
     }
 
-    public function getQtyReturBeli()
+    public function getQtyReturBeliPosted()
     {
         $sql = "
         SELECT DISTINCT
@@ -393,7 +393,7 @@ class Barang extends CActiveRecord
             retur_pembelian_detail d
                 JOIN
             retur_pembelian rb ON rb.id = d.retur_pembelian_id
-                AND rb.status = :statusRBDraft
+                AND rb.status = :statusRBPosted
                 JOIN
             inventory_balance ib ON ib.id = d.inventory_balance_id
                 AND ib.barang_id = :barangId
@@ -402,7 +402,7 @@ class Barang extends CActiveRecord
         $command = Yii::app()->db->createCommand($sql);
         $command->bindValues([
             ':barangId' => $this->id,
-            ':statusRBDraft' => ReturPembelian::STATUS_DRAFT
+            ':statusRBPosted' => ReturPembelian::STATUS_POSTED
         ]);
         $r = $command->queryRow();
         return !empty($r) ? $r['qty_retur'] : '';

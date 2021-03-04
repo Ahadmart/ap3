@@ -95,12 +95,12 @@ class StockopnameController extends Controller
         // $showRB                 = $configShowQtyReturBeli->nilai == 1 ? true : false;
 
         $this->render('ubah', [
-            'model'            => $model,
-            'soDetail'         => $soDetail,
-            'barang'           => $barang,
-            'manualMode'       => $manualMode,
-            'barangBelumSO'    => $manualMode ? $barangBelumSO : null,
-            'scanBarcode'      => $scanBarcode,
+            'model'         => $model,
+            'soDetail'      => $soDetail,
+            'barang'        => $barang,
+            'manualMode'    => $manualMode,
+            'barangBelumSO' => $manualMode ? $barangBelumSO : null,
+            'scanBarcode'   => $scanBarcode,
             // 'showQtyReturBeli' => $showRB,
         ]);
     }
@@ -213,18 +213,14 @@ class StockopnameController extends Controller
             $qtySudahSo   = StockOpnameDetail::model()->qtyYangSudahSo($id, $barang->id);
             $inputselisih = $this->loadModel($id)->input_selisih;
             $return       = [
-                'sukses'       => true,
-                'barcode'      => $barcode,
-                'nama'         => $barang->nama,
-                'stok'         => $barang->getStok(),
-                'qtySudahSo'   => $qtySudahSo,
-                'inputselisih' => $inputselisih,
+                'sukses'             => true,
+                'barcode'            => $barcode,
+                'nama'               => $barang->nama,
+                'stok'               => $barang->getStok(),
+                'qtySudahSo'         => $qtySudahSo,
+                'inputselisih'       => $inputselisih,
+                'qtyReturBeliPosted' => $barang->qtyReturBeliPosted,
             ];
-            // $configShowDraftRB = Config::model()->find("nama='barang.showstokreturbeli'");
-            // $showRB            = $configShowDraftRB->nilai == 1 ? true : false;
-            // if ($showRB) {
-            //     $return = array_merge($return, ['qtyDraftReturBeli' => $barang->qtyReturBeli]);
-            // }
         }
 
         $this->renderJSON($return);

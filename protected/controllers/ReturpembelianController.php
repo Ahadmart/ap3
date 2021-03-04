@@ -532,7 +532,6 @@ class ReturpembelianController extends Controller
             $result = $model->terbitkanPiutang();
 
             if ($result['sukses']) {
-                echo 'sukses';
                 $this->redirect(['returpembelian/view', 'id' => $id]);
             } else {
                 throw new CHttpException(500, 'Gagal terbit piutang');

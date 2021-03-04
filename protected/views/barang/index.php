@@ -80,14 +80,14 @@ Yii::app()->clientScript->registerScript('editableQty', ''
                     'headerHtmlOptions' => ['style' => 'width:75px', 'class' => 'rata-kanan'],
                     'filter'            => false,
                 ],
-                // [
-                //     'name'              => 'Qty Retur Beli',
-                //     'value'             => '$data->qtyReturBeli',
-                //     'htmlOptions'       => ['class' => 'rata-kanan'],
-                //     'headerHtmlOptions' => ['style' => 'width:75px', 'class' => 'rata-kanan'],
-                //     'filter'            => false,
-                //     'visible'           => $showQtyReturBeli,
-                // ],
+                [
+                    'name'              => 'Stok Retur Beli',
+                    'value'             => '$data->qtyReturBeliPosted',
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'headerHtmlOptions' => ['style' => 'width:75px', 'class' => 'rata-kanan'],
+                    'filter'            => false,
+                    // 'visible'           => $showQtyReturBeli,
+                ],
                 /*
         array(
         'name' => 'restock_point',
