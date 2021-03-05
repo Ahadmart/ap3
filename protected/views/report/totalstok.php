@@ -12,6 +12,8 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Total
 <div class="row">
     <div class="small-12 columns">
         <p>
+        <h2 style="text-align: right"><small>Total Stok Net:</small> <?php echo number_format($stokNet, 0, ',', '.'); ?></h2>
+        <h2 style="text-align: right"><small>Total Stok di Retur Pembelian (posted):</small> <?php echo number_format($stokReturBeli, 0, ',', '.'); ?></h2>
         <h1 style="text-align: right"><small>Total Stok:</small> <?php echo number_format($totalStok, 0, ',', '.'); ?></h1>
         </p>
     </div>
