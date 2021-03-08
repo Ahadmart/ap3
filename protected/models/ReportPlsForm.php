@@ -22,7 +22,10 @@ class ReportPlsForm extends CFormModel
 
     public $jumlahHari;
     public $profilId;
-    public $sisaHariMax;
+    // public $sisaHariMax; // diganti dengan orderPeriod
+    public $orderPeriod;
+    public $leadTime; // Jarak antar order, sampai ordernya sampai
+    public $ssd; // Safety Stock Day (Stok jaga-jaga)
     public $rakId;
     public $sortBy;
     public $kertas;
@@ -36,7 +39,7 @@ class ReportPlsForm extends CFormModel
     public function rules()
     {
         return [
-            ['jumlahHari, sortBy, sisaHariMax', 'required', 'message' => '{attribute} tidak boleh kosong'],
+            ['jumlahHari, sortBy, orderPeriod, leadTime, ssd', 'required', 'message' => '{attribute} tidak boleh kosong'],
             ['profilId, rakId, kertas', 'safe'],
         ];
     }
@@ -49,7 +52,10 @@ class ReportPlsForm extends CFormModel
         return [
             'jumlahHari'  => 'Range Analisa Penjualan',
             'profilId'    => 'Profil (Opsional)',
-            'sisaHariMax' => 'Limit Estimasi Sisa Hari <=',
+            // 'sisaHariMax' => 'Limit Estimasi Sisa Hari <=',
+            'orderPeriod' => 'Order Period',
+            'leadTime'    => 'Lead Time',
+            'ssd'         => 'Safety Stock Day',
             'rakId'       => 'Rak (Opsional)',
             'sortBy'      => 'Urut berdasarkan',
             'strukLv1'    => 'Struktur Level 1',
@@ -159,7 +165,7 @@ class ReportPlsForm extends CFormModel
             GROUP BY barang_id) AS t_stok
                 ", "t_stok.barang_id = t_jualan.barang_id");
         $command->join("barang", "t_jualan.barang_id = barang.id");
-        $command->where("t_stok.qty / (t_jualan.qty / :range) <= :sisaHariMax");
+        $command->where("t_stok.qty / (t_jualan.qty / :range) <= :orderPeriod");
         $command->order("t_stok.qty / (t_jualan.qty / :range)" . $this->listNamaSortBy()[$this->sortBy]);
 
         if (!empty($this->profilId)) {
@@ -175,7 +181,7 @@ class ReportPlsForm extends CFormModel
 
         $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $command->bindValue(":range", $this->jumlahHari);
-        $command->bindValue(":sisaHariMax", $this->sisaHariMax);
+        $command->bindValue(":orderPeriod", $this->orderPeriod);
         $command->bindValue(":statusBarang", Barang::STATUS_AKTIF);
 
         if (!empty($this->profilId)) {

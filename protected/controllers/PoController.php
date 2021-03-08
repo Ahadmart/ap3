@@ -625,8 +625,10 @@ class PoController extends Controller
         $strukLv1 = empty($_POST['strukLv1']) ? null : $_POST['strukLv1'];
         $strukLv2 = empty($_POST['strukLv2']) ? null : $_POST['strukLv2'];
         $strukLv3 = empty($_POST['strukLv3']) ? null : $_POST['strukLv3'];
+        $leadTime = empty($_POST['leadTime']) ? 0 : $_POST['leadTime'];
+        $ssd = empty($_POST['ssd']) ? 0 : $_POST['ssd'];
 
-        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa'], $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3);
+        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['orderPeriod'], $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3);
         // $return['rakId'] = $_POST['rakId'];
         $this->renderJSON($return);
         // print_r($return);

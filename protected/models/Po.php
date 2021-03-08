@@ -416,14 +416,16 @@ class Po extends CActiveRecord
         return $this->array2csv($report);
     }
 
-    public function analisaPLS($hariPenjualan, $sisaHari, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3)
+    public function analisaPLS($hariPenjualan, $orderPeriod, $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3)
     {
         /* Analisa PLS
         Kode diambil dari Report PLS
          */
         $model              = new ReportPlsForm;
         $model->jumlahHari  = $hariPenjualan;
-        $model->sisaHariMax = $sisaHari;
+        $model->orderPeriod = $orderPeriod;
+        $model->leadTime    = $leadTime;
+        $model->ssd         = $ssd;
         $model->strukLv1    = $strukLv1;
         $model->strukLv2    = $strukLv2;
         $model->strukLv3    = $strukLv3;
@@ -472,13 +474,12 @@ class Po extends CActiveRecord
         Yii::app()->db->commandBuilder->createMultipleInsertCommand('po_detail', $data)->execute();
 
         /* Update dengan perhitungan saran order, untuk persediaan selama $sisaHari + buffer 30% */
-        return $this->hitungSaranOrder($sisaHari, 0.3);
+        return $this->hitungSaranOrder($orderPeriod, $leadTime, $ssd);
     }
 
-    public function hitungSaranOrder($hariPersediaan, $buffer)
+    public function hitungSaranOrder($orderPeriod, $leadTime, $ssd)
     {
-        $bufferHari = $buffer * $hariPersediaan;
-        $sql        = '
+        $sql = '
             UPDATE po_detail
                     JOIN
                 barang_harga_jual bhj ON bhj.barang_id = po_detail.barang_id
@@ -499,10 +500,10 @@ class Po extends CActiveRecord
                 GROUP BY barang_id) belidx ON belidx.max_id = belid.id
 
             SET
-                `saran_order` = CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`),
-                `qty_order` =  
+                `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) - `stok`),
+                `qty_order` =
                 CASE
-                    WHEN CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`) > po_detail.restock_min THEN CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`)
+                    WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) - `stok`) > po_detail.restock_min THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) - `stok`)
                     ELSE po_detail.restock_min
                 END,
                 `po_detail`.`harga_jual` = bhj.harga,
@@ -514,9 +515,10 @@ class Po extends CActiveRecord
         try {
             $command = Yii::app()->db->createCommand($sql);
             $hasil   = $command->execute([
-                ':hariPersediaan' => $hariPersediaan,
-                ':bufferHari'     => $bufferHari,
-                ':poId'           => $this->id,
+                ':orderPeriod' => $orderPeriod,
+                ':leadTime'    => $leadTime,
+                ':ssd'         => $ssd,
+                ':poId'        => $this->id,
             ]);
             return [
                 'sukses' => true,
