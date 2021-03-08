@@ -16,13 +16,13 @@
     <div class="small-12 medium-4 large-2 columns">
         <?php
         echo CHtml::activeLabelEx($modelReportPls, 'leadTime', ['data-tooltip', 'title' => "Jarak antara order, sampai ordernya sampai"]);
-        echo CHtml::activeTextField($modelReportPls, 'leadTime', ['value' => empty($modelReportPls->leadTime) ? '' : $model->leadTime, 'data-tooltip', 'class' => 'has-tip', 'title' => "Jarak antara order, sampai ordernya sampai"]);
+        echo CHtml::activeTextField($modelReportPls, 'leadTime', ['value' => empty($modelReportPls->leadTime) ? '0' : $model->leadTime, 'data-tooltip', 'class' => 'has-tip', 'title' => "Jarak antara order, sampai ordernya sampai"]);
         ?>
     </div>
     <div class="small-12 medium-4 large-2 columns">
         <?php
         echo CHtml::activeLabelEx($modelReportPls, 'Safety Stock Day', ['data-tooltip', 'title' => "Safety Stock Day (Stok jaga-jaga)"]);
-        echo CHtml::activeTextField($modelReportPls, 'ssd', ['value' => empty($modelReportPls->ssd) ? '' : $model->ssd, 'data-tooltip', 'class' => 'has-tip', 'title' => "Safety Stock Day (Stok jaga-jaga)"]);
+        echo CHtml::activeTextField($modelReportPls, 'ssd', ['value' => empty($modelReportPls->ssd) ? '0' : $model->ssd, 'data-tooltip', 'class' => 'has-tip', 'title' => "Safety Stock Day (Stok jaga-jaga)"]);
         ?>
     </div>
     <div class="small-12 medium-4 large-2 columns end">

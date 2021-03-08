@@ -14,6 +14,7 @@
  * @property string $restock_point
  * @property string $restock_level
  * @property string $restock_min
+ * @property string $variant_coefficient
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
@@ -87,7 +88,7 @@ class Barang extends CActiveRecord
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, barcode, nama, struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, status, daftarSupplier, strukturFullPath', 'safe', 'on' => 'search'],
+            ['id, barcode, nama, struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, variant_coefficient, status, daftarSupplier, strukturFullPath', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -120,22 +121,23 @@ class Barang extends CActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'               => 'ID',
-            'barcode'          => 'Barcode',
-            'nama'             => 'Nama',
-            'struktur_id'      => 'Struktur',
-            'kategori_id'      => 'Kategori',
-            'satuan_id'        => 'Satuan',
-            'rak_id'           => 'Rak',
-            'restock_point'    => 'Restock Point',
-            'restock_level'    => 'Restock Level',
-            'restock_min'      => 'Minimum Restock',
-            'status'           => 'Status',
-            'updated_at'       => 'Updated At',
-            'updated_by'       => 'Updated By',
-            'created_at'       => 'Created At',
-            'daftarSupplier'   => 'Supplier',
-            'strukturFullPath' => 'Struktur',
+            'id'                  => 'ID',
+            'barcode'             => 'Barcode',
+            'nama'                => 'Nama',
+            'struktur_id'         => 'Struktur',
+            'kategori_id'         => 'Kategori',
+            'satuan_id'           => 'Satuan',
+            'rak_id'              => 'Rak',
+            'restock_point'       => 'Restock Point',
+            'restock_level'       => 'Restock Level',
+            'restock_min'         => 'Minimum Restock',
+            'variant_coefficient' => 'VC',
+            'status'              => 'Status',
+            'updated_at'          => 'Updated At',
+            'updated_by'          => 'Updated By',
+            'created_at'          => 'Created At',
+            'daftarSupplier'      => 'Supplier',
+            'strukturFullPath'    => 'Struktur',
         ];
     }
 
@@ -166,6 +168,7 @@ class Barang extends CActiveRecord
         $criteria->compare('restock_point', $this->restock_point, true);
         $criteria->compare('restock_level', $this->restock_level, true);
         $criteria->compare('restock_min', $this->restock_min, true);
+        $criteria->compare('variant_coefficient', $this->variant_coefficient, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
@@ -401,8 +404,8 @@ class Barang extends CActiveRecord
         ";
         $command = Yii::app()->db->createCommand($sql);
         $command->bindValues([
-            ':barangId' => $this->id,
-            ':statusRBDraft' => ReturPembelian::STATUS_DRAFT
+            ':barangId'      => $this->id,
+            ':statusRBDraft' => ReturPembelian::STATUS_DRAFT,
         ]);
         $r = $command->queryRow();
         return !empty($r) ? $r['qty_retur'] : '';
