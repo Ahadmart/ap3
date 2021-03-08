@@ -88,7 +88,7 @@ class ReportController extends Controller
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
                     /* Ada tambahan parameter kertas untuk tipe pdf */
-                    $this->hutangPiutangPdf($_GET['kertas']);
+                    // $this->hutangPiutangPdf($_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
                     $this->penjualanCsv();
@@ -150,17 +150,6 @@ class ReportController extends Controller
     {
         $this->layout = '//layouts/box_kecil';
         $model        = new ReportHarianForm;
-        if (isset($_REQUEST['ReportHarianForm'])) {
-            $model->attributes = $_REQUEST['ReportHarianForm'];
-            if ($model->validate()) {
-                $report             = $model->reportHarianDetail();
-                $report['tanggal']  = $model->tanggal;
-                $report['namaToko'] = $this->namaToko();
-                $report['kodeToko'] = $this->kodeToko();
-                $this->harianDetailPdf($report);
-                Yii::app()->end();
-            }
-        }
 
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
@@ -826,8 +815,14 @@ class ReportController extends Controller
             $model->attributes = $_POST['ReportPlsForm'];
             if ($model->validate()) {
                 $report = $model->reportPls();
+            } else {
+                throw new CHttpException(500, 'Gagal mengambil report PLS');
             }
         }
+        // echo '<pre>';
+        // print_r($report);
+        // echo '</pre>';
+        // Yii::app()->end();
         $profil = new Profil('search');
         $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
@@ -852,13 +847,13 @@ class ReportController extends Controller
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->plsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['sisaHariMax'], $_GET['sortBy'], $_GET['kertas']);
+                    $this->plsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['orderPeriod'], $_GET['sortBy'], $_GET['kertas']);
                     break;
             }
         }
     }
 
-    public function plsPdf($jumlahHari, $profilId, $sisaHariMax, $sortBy, $kertas)
+    public function plsPdf($jumlahHari, $profilId, $orderPeriod, $sortBy, $kertas)
     {
         /* Agar tetap muncul, walaupun "agak" lama */
         ini_set('memory_limit', '-1');
@@ -868,7 +863,7 @@ class ReportController extends Controller
 
         $model->jumlahHari  = $jumlahHari;
         $model->profilId    = $profilId;
-        $model->sisaHariMax = $sisaHariMax;
+        $model->orderPeriod = $orderPeriod;
         $model->sortBy      = $sortBy;
         $report             = $model->reportPls();
 

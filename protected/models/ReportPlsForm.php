@@ -24,8 +24,10 @@ class ReportPlsForm extends CFormModel
     public $profilId;
     // public $sisaHariMax; // diganti dengan orderPeriod
     public $orderPeriod;
+    /* Parameter untuk PO: */
     public $leadTime; // Jarak antar order, sampai ordernya sampai
     public $ssd; // Safety Stock Day (Stok jaga-jaga)
+    /* end Parameter untuk PO */
     public $rakId;
     public $sortBy;
     public $kertas;
@@ -39,8 +41,8 @@ class ReportPlsForm extends CFormModel
     public function rules()
     {
         return [
-            ['jumlahHari, sortBy, orderPeriod, leadTime, ssd', 'required', 'message' => '{attribute} tidak boleh kosong'],
-            ['profilId, rakId, kertas', 'safe'],
+            ['jumlahHari, sortBy, orderPeriod', 'required', 'message' => '{attribute} tidak boleh kosong'],
+            ['profilId, rakId, kertas, leadTime, ssd', 'safe'],
         ];
     }
 
@@ -195,6 +197,7 @@ class ReportPlsForm extends CFormModel
         }
 
         // echo $command->getText();
+        // Yii::app()->end();
         // return $command->getText();
         return $command->queryAll();
     }
