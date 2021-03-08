@@ -501,7 +501,7 @@ class Po extends CActiveRecord
                     JOIN
                 barang ON barang.id = po_detail.barang_id
             SET
-                `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + po_detail.restock_min - `stok`),
+                `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
                 `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + po_detail.restock_min - `stok`),
                 `po_detail`.`harga_jual` = bhj.harga,
                 `po_detail`.`harga_beli` = belid.harga_beli
