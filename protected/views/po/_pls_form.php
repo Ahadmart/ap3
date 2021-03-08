@@ -21,8 +21,8 @@
     </div>
     <div class="small-12 medium-4 large-2 columns">
         <?php
-        echo CHtml::activeLabelEx($modelReportPls, 'Safety Stock Day', ['data-tooltip', 'title' => "Safety Stock Day (Stok jaga-jaga)"]);
-        echo CHtml::activeTextField($modelReportPls, 'ssd', ['value' => empty($modelReportPls->ssd) ? '0' : $model->ssd, 'data-tooltip', 'class' => 'has-tip', 'title' => "Safety Stock Day (Stok jaga-jaga)"]);
+        echo CHtml::activeLabelEx($modelReportPls, 'ssd', ['data-tooltip', 'title' => "Stok jaga-jaga"]);
+        echo CHtml::activeTextField($modelReportPls, 'ssd', ['value' => empty($modelReportPls->ssd) ? '0' : $model->ssd, 'data-tooltip', 'class' => 'has-tip', 'title' => "Stok jaga-jaga"]);
         ?>
     </div>
     <div class="small-12 medium-4 large-2 columns end">

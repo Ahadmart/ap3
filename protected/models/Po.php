@@ -498,12 +498,13 @@ class Po extends CActiveRecord
                 FROM
                     pembelian_detail
                 GROUP BY barang_id) belidx ON belidx.max_id = belid.id
-
+                    JOIN
+                barang ON barang.id = po_detail.barang_id
             SET
-                `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) - `stok`),
+                `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
                 `qty_order` =
                 CASE
-                    WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) - `stok`) > po_detail.restock_min THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) - `stok`)
+                    WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`) > po_detail.restock_min THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`)
                     ELSE po_detail.restock_min
                 END,
                 `po_detail`.`harga_jual` = bhj.harga,
