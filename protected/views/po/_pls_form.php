@@ -55,6 +55,8 @@
 </div>
 <div class="row">
     <div class="small-12 columns">
+        <?php echo CHtml::activeCheckBox($modelReportPls, 'semuaBarang', ['data-tooltip', 'title' => "Masukkan juga barang tanpa penjualan"]); ?>
+        <?php echo CHtml::activeLabelEx($modelReportPls, 'semuaBarang', ['data-tooltip', 'title' => "Masukkan juga barang tanpa penjualan"]); ?>
         <?=
         CHtml::link('<i class="fa fa-calculator fa-fw"></i> <span class="ak">A</span>nalisa Data PLS', '#', [
             'class'     => 'tiny bigfont button',
@@ -84,6 +86,7 @@
             'strukLv1': $("#ReportPlsForm_strukLv1").val(),
             'strukLv2': $("#ReportPlsForm_strukLv2").val(),
             'strukLv3': $("#ReportPlsForm_strukLv3").val(),
+            'semuaBarang': $("#ReportPlsForm_semuaBarang").is(':checked'),
         };
         $.ajax({
             type: 'POST',

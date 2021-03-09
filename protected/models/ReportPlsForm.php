@@ -27,6 +27,7 @@ class ReportPlsForm extends CFormModel
     /* Parameter untuk PO: */
     public $leadTime; // Jarak antar order, sampai ordernya sampai
     public $ssd; // Safety Stock Day (Stok jaga-jaga)
+    public $semuaBarang = false; // Jika true, juga mengambil barang tanpa penjualan
     /* end Parameter untuk PO */
     public $rakId;
     public $sortBy;
@@ -42,7 +43,7 @@ class ReportPlsForm extends CFormModel
     {
         return [
             ['jumlahHari, sortBy, orderPeriod', 'required', 'message' => '{attribute} tidak boleh kosong'],
-            ['profilId, rakId, kertas, leadTime, ssd', 'safe'],
+            ['profilId, rakId, kertas, leadTime, ssd, semuaBarang', 'safe'],
         ];
     }
 
@@ -58,6 +59,7 @@ class ReportPlsForm extends CFormModel
             'orderPeriod' => 'Order Period',
             'leadTime'    => 'Lead Time',
             'ssd'         => 'Safety Stock Day',
+            'semuaBarang' => 'Semua barang',
             'rakId'       => 'Rak (Opsional)',
             'sortBy'      => 'Urut berdasarkan',
             'strukLv1'    => 'Struktur Level 1',

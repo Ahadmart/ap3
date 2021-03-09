@@ -80,6 +80,11 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'header'            => '<a id="tombol-order-semua" href="' . $this->createUrl('ordersemua', ['id' => $poModel->id]) . '"><i class="fa fa-plus"></i> All</a>'
                 ],
                 [
+                    'name'              => 'tgl_jual_max',
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                ],
+                [
                     'class'           => 'BButtonColumn',
                     'header'          => CHtml::dropDownList('pageSize', $pageSize, [20 => 20, 50 => 50, 100 => 100, $model->search()->getTotalItemCount() => 'SEMUA'], [
                         'onchange' => "$.fn.yiiGridView.update('pls-detail-grid',{ data:{pageSize: $(this).val() }})",

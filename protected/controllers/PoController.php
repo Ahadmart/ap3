@@ -627,8 +627,9 @@ class PoController extends Controller
         $strukLv3 = empty($_POST['strukLv3']) ? null : $_POST['strukLv3'];
         $leadTime = empty($_POST['leadTime']) ? 0 : $_POST['leadTime'];
         $ssd      = empty($_POST['ssd']) ? 0 : $_POST['ssd'];
+        $semuaBarang = $_POST['semuaBarang'] == 'true' ? true : false;
 
-        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['orderPeriod'], $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3);
+        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['orderPeriod'], $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3, $semuaBarang);
         // $return['rakId'] = $_POST['rakId'];
         $this->renderJSON($return);
         // print_r($return);
@@ -829,7 +830,7 @@ class PoController extends Controller
             $rowAffected = $poDetail->updateByPk($pk, [
                 'restock_min' => $_POST['value'],
                 // 'saran_order' => $poDetail->saran_order - $poDetail->restock_min + $_POST['value'],
-                'qty_order' => $poDetail->saran_order + $_POST['value'],
+                'qty_order'   => $poDetail->saran_order + $_POST['value'],
                 'updated_by'  => Yii::app()->user->id,
             ]);
             // if ($_POST['value'] > $poDetail->qty_order) {

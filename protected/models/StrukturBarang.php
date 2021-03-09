@@ -225,4 +225,30 @@ class StrukturBarang extends CActiveRecord
 
         return ['' => '[SEMUA]'] + CHtml::listData(self::model()->findAll($criteria), 'id', 'nama');
     }
+
+    public static function listChildStruk($id)
+    {
+        $criteria = new CDbCriteria();
+        if (empty($id)) {
+            $criteria->condition = 'status=:publish AND parent_id IS NULL';
+            $criteria->params    = [
+                ':publish' => StrukturBarang::STATUS_PUBLISH,
+            ];
+        } else {
+            $criteria->condition = 'status=:publish AND parent_id=:id';
+            $criteria->params    = [
+                ':publish' => StrukturBarang::STATUS_PUBLISH,
+                ':id'      => $id,
+            ];
+        }
+        $criteria->order = 'nama';
+
+        $childStruk = StrukturBarang::model()->findAll($criteria);
+
+        $r = [];
+        foreach ($childStruk as $struk) {
+            $r[] = $struk->id;
+        }
+        return $r;
+    }
 }
