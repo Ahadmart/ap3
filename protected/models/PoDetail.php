@@ -96,7 +96,7 @@ class PoDetail extends CActiveRecord
             'restock_min'   => 'Minimum Restock',
             'saran_order'   => 'Saran Order',
             'qty_order'     => 'Qty Order',
-            'tgl_jual_max'  => 'Tgl Jual Max',
+            'tgl_jual_max'  => 'Tgl Penjualan Terakhir',
             'status'        => 'Status',
             'updated_at'    => 'Updated At',
             'updated_by'    => 'Updated By',

@@ -83,6 +83,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'name'              => 'tgl_jual_max',
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'filter'            => false,
                 ],
                 [
                     'class'           => 'BButtonColumn',
