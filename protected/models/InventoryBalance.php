@@ -14,25 +14,27 @@
  * @property string $pembelian_detail_id
  * @property string $retur_penjualan_detail_id
  * @property string $stock_opname_detail_id
+ * @property string $retur_pembelian_detail_id
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
  *
  * The followings are the available model relations:
- * @property StockOpnameDetail $stockOpnameDetail
  * @property Barang $barang
  * @property PembelianDetail $pembelianDetail
- * @property PenjualanDetail $penjualanDetail
+ * @property ReturPembelianDetail $returPembelianDetail
+ * @property ReturPenjualanDetail $returPenjualanDetail
+ * @property StockOpnameDetail $stockOpnameDetail
  * @property User $updatedBy
- * @property PenjualanDetail[] $penjualanDetails
+ * @property ReturPembelianDetail[] $returPembelianDetails
  */
 class InventoryBalance extends CActiveRecord
 {
 
-    const ASAL_PEMBELIAN        = 1;
-    const ASAL_RETURJUAL        = 2;
-    const ASAL_SO               = 3;
-    const ASAL_RETURBELI_POSTED = 4; // Tidak jadi diretur beli
+    const ASAL_PEMBELIAN = 1;
+    const ASAL_RETURJUAL = 2;
+    const ASAL_SO        = 3;
+    const ASAL_RETURBELI = 4; // Dari status Posted
 
     public $jumlah;
 
@@ -55,12 +57,12 @@ class InventoryBalance extends CActiveRecord
             ['asal, barang_id, qty_awal, qty', 'required'],
             ['asal, qty_awal, qty', 'numerical', 'integerOnly' => true],
             ['nomor_dokumen', 'length', 'max' => 45],
-            ['barang_id, pembelian_detail_id, retur_penjualan_detail_id, stock_opname_detail_id, updated_by', 'length', 'max' => 10],
+            ['barang_id, pembelian_detail_id, retur_penjualan_detail_id, stock_opname_detail_id, retur_pembelian_detail_id, updated_by', 'length', 'max' => 10],
             ['harga_beli', 'length', 'max' => 18],
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, nomor_dokumen, barang_id, harga_beli, qty_awal, qty, pembelian_detail_id, retur_penjualan_detail_id, stock_opname_detail_id, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, nomor_dokumen, barang_id, harga_beli, qty_awal, qty, pembelian_detail_id, retur_penjualan_detail_id, stock_opname_detail_id, retur_pembelian_detail_id, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -72,11 +74,13 @@ class InventoryBalance extends CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return [
-            'barang'               => [self::BELONGS_TO, 'Barang', 'barang_id'],
-            'pembelianDetail'      => [self::BELONGS_TO, 'PembelianDetail', 'pembelian_detail_id'],
-            'returPenjualanDetail' => [self::BELONGS_TO, 'ReturPenjualanDetail', 'retur_penjualan_detail_id'],
-            'stockOpnameDetail'    => [self::BELONGS_TO, 'StockOpnameDetail', 'stock_opname_detail_id'],
-            'updatedBy'            => [self::BELONGS_TO, 'User', 'updated_by'],
+            'barang'                => [self::BELONGS_TO, 'Barang', 'barang_id'],
+            'pembelianDetail'       => [self::BELONGS_TO, 'PembelianDetail', 'pembelian_detail_id'],
+            'returPembelianDetail'  => [self::BELONGS_TO, 'ReturPembelianDetail', 'retur_pembelian_detail_id'],
+            'returPenjualanDetail'  => [self::BELONGS_TO, 'ReturPenjualanDetail', 'retur_penjualan_detail_id'],
+            'stockOpnameDetail'     => [self::BELONGS_TO, 'StockOpnameDetail', 'stock_opname_detail_id'],
+            'updatedBy'             => [self::BELONGS_TO, 'User', 'updated_by'],
+            'returPembelianDetails' => [self::HAS_MANY, 'ReturPembelianDetail', 'inventory_balance_id'],
         ];
     }
 
@@ -96,6 +100,7 @@ class InventoryBalance extends CActiveRecord
             'pembelian_detail_id'       => 'Pembelian Detail',
             'retur_penjualan_detail_id' => 'Retur Penjualan Detail',
             'stock_opname_detail_id'    => 'Stock Opname Detail',
+            'retur_pembelian_detail_id' => 'Retur Pembelian Detail',
             'updated_at'                => 'Updated At',
             'updated_by'                => 'Updated By',
             'created_at'                => 'Created At',
@@ -130,6 +135,7 @@ class InventoryBalance extends CActiveRecord
         $criteria->compare('pembelian_detail_id', $this->pembelian_detail_id, true);
         $criteria->compare('retur_penjualan_detail_id', $this->retur_penjualan_detail_id, true);
         $criteria->compare('stock_opname_detail_id', $this->stock_opname_detail_id, true);
+        $criteria->compare('retur_pembelian_detail_id', $this->retur_pembelian_detail_id, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
@@ -754,6 +760,9 @@ class InventoryBalance extends CActiveRecord
 
             case InventoryBalance::ASAL_SO;
                 return 'stockopname';
+
+            case InventoryBalance::ASAL_RETURBELI;
+                return 'returpembelian';
         }
     }
 
@@ -769,6 +778,9 @@ class InventoryBalance extends CActiveRecord
 
             case InventoryBalance::ASAL_SO;
                 return StockOpname::model()->find("nomor={$this->nomor_dokumen}");
+
+            case InventoryBalance::ASAL_RETURBELI;
+                return ReturPembelian::model()->find("nomor={$this->nomor_dokumen}");
         }
     }
 
@@ -806,7 +818,25 @@ class InventoryBalance extends CActiveRecord
         return $nilai['total'];
     }
 
-    public function returBeliRestore($returBeliPostedDetail)
+    /**
+     * Menambah layer inventory untuk proses retur pembelian batal (dari posted)
+     * @param object $detail Objek model ReturPembelianDetail
+     * @return boolean true jika berhasil
+     * @throws Exception
+     */
+    public function returBeliBatal($detail)
     {
+        $ib                            = new InventoryBalance();
+        $ib->asal                      = InventoryBalance::ASAL_RETURBELI;
+        $ib->nomor_dokumen             = $detail->returPembelian->nomor;
+        $ib->retur_pembelian_detail_id = $detail->id;
+        $ib->barang_id = $detail->inventoryBalance->barang_id;
+        $ib->harga_beli = $detail->inventoryBalance->harga_beli;
+        $ib->qty_awal = $detail->qty;
+        $ib->qty = $detail->qty;
+        if (!$ib->save()) {
+            throw new Exception("Gagal simpan layer inventory untuk retur beli");
+        }
+        return true;
     }
 }
