@@ -17,6 +17,7 @@
  * @property string $restock_min
  * @property integer $saran_order
  * @property string $qty_order
+ * @property string $tgl_jual_max
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
@@ -55,10 +56,10 @@ class PoDetail extends CActiveRecord
             ['barcode', 'length', 'max' => 30],
             ['nama', 'length', 'max' => 45],
             ['harga_beli, harga_jual', 'length', 'max' => 18],
-            ['created_at, updated_at, updated_by', 'safe'],
+            ['tgl_jual_max, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, po_id, barang_id, barcode, nama, harga_beli, harga_jual, ads, stok, est_sisa_hari, restock_min, saran_order, qty_order, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, po_id, barang_id, barcode, nama, harga_beli, harga_jual, ads, stok, est_sisa_hari, restock_min, saran_order, qty_order, tgl_jual_max, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -95,6 +96,7 @@ class PoDetail extends CActiveRecord
             'restock_min'   => 'Minimum Restock',
             'saran_order'   => 'Saran Order',
             'qty_order'     => 'Qty Order',
+            'tgl_jual_max'  => 'Tgl Penjualan Terakhir',
             'status'        => 'Status',
             'updated_at'    => 'Updated At',
             'updated_by'    => 'Updated By',
@@ -133,6 +135,7 @@ class PoDetail extends CActiveRecord
         $criteria->compare('restock_min', $this->restock_min);
         $criteria->compare('saran_order', $this->saran_order);
         $criteria->compare('qty_order', $this->qty_order, true);
+        $criteria->compare('tgl_jual_max', $this->tgl_jual_max, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);

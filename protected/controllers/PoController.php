@@ -625,8 +625,11 @@ class PoController extends Controller
         $strukLv1 = empty($_POST['strukLv1']) ? null : $_POST['strukLv1'];
         $strukLv2 = empty($_POST['strukLv2']) ? null : $_POST['strukLv2'];
         $strukLv3 = empty($_POST['strukLv3']) ? null : $_POST['strukLv3'];
+        $leadTime = empty($_POST['leadTime']) ? 0 : $_POST['leadTime'];
+        $ssd      = empty($_POST['ssd']) ? 0 : $_POST['ssd'];
+        $semuaBarang = $_POST['semuaBarang'] == 'true' ? true : false;
 
-        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa'], $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3);
+        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['orderPeriod'], $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3, $semuaBarang);
         // $return['rakId'] = $_POST['rakId'];
         $this->renderJSON($return);
         // print_r($return);
@@ -752,8 +755,8 @@ class PoController extends Controller
 
     public function actionOrderSemua($id)
     {
-        $return      = ['sukses' => false];
-        $condition = 'po_id=:POId ';
+        $return          = ['sukses' => false];
+        $condition       = 'po_id=:POId ';
         $params[':POId'] = $id;
         if (!empty($_GET['barcode'])) {
             $condition .= 'AND barcode LIKE :barcode ';
@@ -822,20 +825,26 @@ class PoController extends Controller
     {
         $return = ['sukses' => false];
         if (isset($_POST['pk'])) {
-            $pk       = $_POST['pk'];
-            $poDetail = PoDetail::model()->findByPk($pk);
-            if ($_POST['value'] > $poDetail->qty_order) {
-                $rowAffected = $poDetail->updateByPk($pk, [
-                    'restock_min' => $_POST['value'],
-                    'qty_order'   => $_POST['value'],
-                    'updated_by'  => Yii::app()->user->id,
-                ]);
-            } else {
-                $rowAffected = $poDetail->updateByPk($pk, [
-                    'restock_min' => $_POST['value'],
-                    'updated_by'  => Yii::app()->user->id,
-                ]);
-            }
+            $pk          = $_POST['pk'];
+            $poDetail    = PoDetail::model()->findByPk($pk);
+            $rowAffected = $poDetail->updateByPk($pk, [
+                'restock_min' => $_POST['value'],
+                // 'saran_order' => $poDetail->saran_order - $poDetail->restock_min + $_POST['value'],
+                'qty_order'   => $poDetail->saran_order + $_POST['value'],
+                'updated_by'  => Yii::app()->user->id,
+            ]);
+            // if ($_POST['value'] > $poDetail->qty_order) {
+            //     $rowAffected = $poDetail->updateByPk($pk, [
+            //         'restock_min' => $_POST['value'],
+            //         'qty_order'   => $_POST['value'],
+            //         'updated_by'  => Yii::app()->user->id,
+            //     ]);
+            // } else {
+            //     $rowAffected = $poDetail->updateByPk($pk, [
+            //         'restock_min' => $_POST['value'],
+            //         'updated_by'  => Yii::app()->user->id,
+            //     ]);
+            // }
             if ($rowAffected > 0) {
                 $return = ['sukses' => true];
             }

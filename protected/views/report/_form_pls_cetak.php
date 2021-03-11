@@ -11,55 +11,55 @@
                 <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
                     <?php
                     foreach ($printers as $printer) {
-                        ?>
+                    ?>
                         <?php
                         if ($printer['tipe_id'] == Device::TIPE_PDF_PRINTER) {
                             /* Jika printer pdf, tambahkan pilihan ukuran kertas */
-                            ?>
+                        ?>
                             <span class="sub-dropdown"><?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></span>
                             <ul>
                                 <?php
-                                foreach ($kertasPdf as $key => $value):
-                                    ?>
+                                foreach ($kertasPdf as $key => $value) :
+                                ?>
                                     <li><a target="blank" href="<?=
-                                        $this->createUrl('printpls', [
-                                            'printId' => $printer['id'],
-                                            'kertas' => $key,
-                                            'jumlahHari' => $model->jumlahHari,
-                                            'profilId' => $model->profilId,
-                                            'sisaHariMax' => $model->sisaHariMax,
-                                            'sortBy' => $model->sortBy,
-                                        ])
-                                        ?>"><?= $value; ?></a></li>
-                                        <?php
-                                    endforeach;
-                                    ?>
+                                                                $this->createUrl('printpls', [
+                                                                    'printId'     => $printer['id'],
+                                                                    'kertas'      => $key,
+                                                                    'jumlahHari'  => $model->jumlahHari,
+                                                                    'profilId'    => $model->profilId,
+                                                                    'orderPeriod' => $model->orderPeriod,
+                                                                    'sortBy'      => $model->sortBy,
+                                                                ])
+                                                                ?>"><?= $value; ?></a></li>
+                                <?php
+                                endforeach;
+                                ?>
                             </ul>
-                            <?php
+                        <?php
                         } else {
                             /* Untuk export CSV
-                              ?>
-                              <li>
-                              <a href="<?=
-                              $this->createUrl('printpls', [
-                              'printId' => $printer['id'],
-                              'profilId' => $model->profilId,
-                              'showDetail' => $model->showDetail,
-                              'pilihCetak' => $model->pilihCetak
-                              ])
-                              ?>">
-                              <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
-                              </li>
-                              <?php
-                             * 
-                             */
+    ?>
+    <li>
+    <a href="<?=
+    $this->createUrl('printpls', [
+    'printId' => $printer['id'],
+    'profilId' => $model->profilId,
+    'showDetail' => $model->showDetail,
+    'pilihCetak' => $model->pilihCetak
+    ])
+    ?>">
+    <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
+    </li>
+    <?php
+     *
+     */
                         }
                         ?>
-                        <?php
+                    <?php
                     }
                     ?>
                 </ul>
             </li>
-        </ul>  
+        </ul>
     </div>
 </div>

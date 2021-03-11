@@ -64,6 +64,9 @@
             <?php echo $form->labelEx($model, 'restock_min'); ?>
             <?php echo $form->textField($model, 'restock_min', ['size' => 10, 'maxlength' => 10]); ?>
             <?php echo $form->error($model, 'restock_min', ['class' => 'error']); ?>
+            <?php echo $form->labelEx($model, 'variant_coefficient'); ?>
+            <?php echo $form->textField($model, 'variant_coefficient', ['size' => 10, 'maxlength' => 10]); ?>
+            <?php echo $form->error($model, 'variant_coefficient', ['class' => 'error']); ?>
             <?php
             /*
                 <?php echo $form->labelEx($model, 'restock_point'); ?>

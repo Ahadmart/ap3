@@ -2,24 +2,38 @@
     <div class="small-12 medium-4 large-2 columns">
         <?php
         echo CHtml::activeLabelEx($modelReportPls, 'jumlahHari', ['data-tooltip', 'title' => "Lakukan Analisa penjualan barang selama beberapa hari yang lalu"]);
-        echo CHtml::activeTextField($modelReportPls, 'jumlahHari', ['value' => empty($modelReportPls->jumlahHari) ? '30' : $model->jumlahHari, 'data-tooltip', 'class' => 'has-tip', 'title' => "Lakukan Analisa penjualan barang selama beberapa hari yang lalu"]);
+        echo CHtml::activeTextField($modelReportPls, 'jumlahHari', ['value' => empty($modelReportPls->jumlahHari) ? '40' : $model->jumlahHari, 'data-tooltip', 'class' => 'has-tip', 'title' => "Lakukan Analisa penjualan barang selama beberapa hari yang lalu"]);
         // echo $form->error($model, 'jumlahHari', ['class' => 'error']);
         ?>
     </div>
     <div class="small-12 medium-4 large-2 columns">
         <?php
-        echo CHtml::activeLabelEx($modelReportPls, 'sisaHariMax', ['data-tooltip', 'title' => "Hitung jumlah stok yang musti dipesan untuk ketersediaan jangka waktu ini"]);
-        echo CHtml::activeTextField($modelReportPls, 'sisaHariMax', ['value' => empty($modelReportPls->sisaHariMax) ? '7' : $model->sisaHariMax, 'data-tooltip', 'class' => 'has-tip', 'title' => "Hitung jumlah stok yang musti dipesan untuk ketersediaan jangka waktu ini"]);
+        echo CHtml::activeLabelEx($modelReportPls, 'orderPeriod', ['data-tooltip', 'title' => "Hitung jumlah stok yang musti dipesan untuk ketersediaan jangka waktu ini"]);
+        echo CHtml::activeTextField($modelReportPls, 'orderPeriod', ['value' => empty($modelReportPls->orderPeriod) ? '7' : $model->orderPeriod, 'data-tooltip', 'class' => 'has-tip', 'title' => "Hitung jumlah stok yang musti dipesan untuk ketersediaan jangka waktu ini"]);
         // echo $form->error($model, 'sisaHariMax', ['class' => 'error']);
         ?>
     </div>
     <div class="small-12 medium-4 large-2 columns">
+        <?php
+        echo CHtml::activeLabelEx($modelReportPls, 'leadTime', ['data-tooltip', 'title' => "Jarak antara order, sampai ordernya sampai"]);
+        echo CHtml::activeTextField($modelReportPls, 'leadTime', ['value' => empty($modelReportPls->leadTime) ? '0' : $model->leadTime, 'data-tooltip', 'class' => 'has-tip', 'title' => "Jarak antara order, sampai ordernya sampai"]);
+        ?>
+    </div>
+    <div class="small-12 medium-4 large-2 columns">
+        <?php
+        echo CHtml::activeLabelEx($modelReportPls, 'ssd', ['data-tooltip', 'title' => "Stok jaga-jaga"]);
+        echo CHtml::activeTextField($modelReportPls, 'ssd', ['value' => empty($modelReportPls->ssd) ? '0' : $model->ssd, 'data-tooltip', 'class' => 'has-tip', 'title' => "Stok jaga-jaga"]);
+        ?>
+    </div>
+    <div class="small-12 medium-4 large-2 columns end">
         <?php
         echo CHtml::activeLabelEx($modelReportPls, 'rakId', ['data-tooltip', 'title' => "Pilih Rak Barang (Opsional)"]);
         echo CHtml::activeDropDownList($modelReportPls, 'rakId', RakBarang::listPerSupplier($model->profil_id), ['data-tooltip', 'class' => 'has-tip', 'title' => "Pilih Rak Barang (Opsional)", 'prompt' => '[SEMUA]']);
         // echo $form->error($model, 'rakId', ['class' => 'error']);
         ?>
     </div>
+</div>
+<div class="row">
     <div class="small-12 medium-4 large-2 columns">
         <?php
         echo CHtml::activeLabelEx($modelReportPls, 'strukLv1', ['data-tooltip', 'title' => "Pilih Struktur Lv 1"]);
@@ -32,7 +46,7 @@
         echo CHtml::activeDropDownList($modelReportPls, 'strukLv2', [], ['data-tooltip', 'class' => 'has-tip', 'title' => "Pilih Struktur Lv 2 (Opsional)", 'prompt' => '[SEMUA]']);
         ?>
     </div>
-    <div class="small-12 medium-4 large-2 columns">
+    <div class="small-12 medium-4 large-2 columns end">
         <?php
         echo CHtml::activeLabelEx($modelReportPls, 'strukLv3', ['data-tooltip', 'title' => "Pilih Struktur Lv 3"]);
         echo CHtml::activeDropDownList($modelReportPls, 'strukLv3', [], ['data-tooltip', 'class' => 'has-tip', 'title' => "Pilih Struktur Lv 3 (Opsional)", 'prompt' => '[SEMUA]']);
@@ -41,11 +55,13 @@
 </div>
 <div class="row">
     <div class="small-12 columns">
+        <?php echo CHtml::activeCheckBox($modelReportPls, 'semuaBarang', ['data-tooltip', 'title' => "Masukkan juga barang tanpa penjualan"]); ?>
+        <?php echo CHtml::activeLabelEx($modelReportPls, 'semuaBarang', ['data-tooltip', 'title' => "Masukkan juga barang tanpa penjualan"]); ?>
         <?=
         CHtml::link('<i class="fa fa-calculator fa-fw"></i> <span class="ak">A</span>nalisa Data PLS', '#', [
             'class'     => 'tiny bigfont button',
             'accesskey' => 'a',
-            'id'        => 'tombol-analisa-pls'
+            'id'        => 'tombol-analisa-pls',
         ]);
         ?>
     </div>
@@ -63,11 +79,14 @@
         dataKirim = {
             'ambil': true,
             'hariPenjualan': $("#ReportPlsForm_jumlahHari").val(),
-            'hariSisa': $("#ReportPlsForm_sisaHariMax").val(),
+            'orderPeriod': $("#ReportPlsForm_orderPeriod").val(),
+            'leadTime': $("#ReportPlsForm_leadTime").val(),
+            'ssd': $("#ReportPlsForm_ssd").val(),
             'rakId': $("#ReportPlsForm_rakId").val(),
             'strukLv1': $("#ReportPlsForm_strukLv1").val(),
             'strukLv2': $("#ReportPlsForm_strukLv2").val(),
             'strukLv3': $("#ReportPlsForm_strukLv3").val(),
+            'semuaBarang': $("#ReportPlsForm_semuaBarang").is(':checked'),
         };
         $.ajax({
             type: 'POST',

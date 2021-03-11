@@ -224,7 +224,7 @@ class BarangController extends Controller
         }
 
         $configShowQtyReturBeli = Config::model()->find("nama='barang.showstokreturbeli'");
-        $showRB = $configShowQtyReturBeli->nilai == 1 ? true : false;
+        $showRB = !empty($configShowQtyReturBeli) && $configShowQtyReturBeli->nilai == 1 ? true : false;
         $this->render('index', [
             'model' => $model,
             'showQtyReturBeli' => $showRB,
