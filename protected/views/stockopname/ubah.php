@@ -72,7 +72,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         $this->renderPartial('_input_manual', array(
             'model' => $model,
             'barangBelumSO' => $barangBelumSO,
-            'showQtyReturBeli' => $showQtyReturBeli,
+            // 'showQtyReturBeli' => $showQtyReturBeli,
         ));
     } else {
         $this->renderPartial('_input_detail', array(
@@ -87,7 +87,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     $this->renderPartial('_detail', array(
         'model' => $model,
         'modelDetail' => $soDetail,
-        'showQtyReturBeli' => $showQtyReturBeli,
+        // 'showQtyReturBeli' => $showQtyReturBeli,
     ));
     ?>
 </div>

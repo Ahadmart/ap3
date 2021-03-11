@@ -21,13 +21,13 @@
                     'headerHtmlOptions' => ['style' => 'width:75px;', 'class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
                 ],
-                [
-                    'header'            => 'Draft Retur Beli',
-                    'value'             => '$data->barang->qtyReturBeli',
-                    'headerHtmlOptions' => ['style' => 'width:75px;', 'class' => 'rata-kanan'],
-                    'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'visible'           => $showQtyReturBeli,
-                ],
+                // [
+                //     'header'            => 'Draft Retur Beli',
+                //     'value'             => '$data->barang->qtyReturBeli',
+                //     'headerHtmlOptions' => ['style' => 'width:75px;', 'class' => 'rata-kanan'],
+                //     'htmlOptions'       => ['class' => 'rata-kanan'],
+                //     'visible'           => $showQtyReturBeli,
+                // ],
                 [
                     'name'              => 'qty_sebenarnya',
                     'headerHtmlOptions' => ['style' => 'width:75px;', 'class' => 'rata-kanan'],

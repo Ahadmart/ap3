@@ -38,12 +38,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
                     'filter' => false
                 ),
                 array(
-                    'header' => 'Draft Retur Beli',
-                    'value' => '$data->qtyReturBeli',
+                    'header' => 'Qty Retur Beli',
+                    'value' => '$data->qtyReturBeliPosted',
                     'htmlOptions' => array('class' => 'rata-kanan'),
                     'headerHtmlOptions' => array('class' => 'rata-kanan'),
                     'filter' => false,
-                    'visible' => $showQtyReturBeli
                 ),
                 array(
                     'header' => '<span class="ak">Q</span>ty Asli',

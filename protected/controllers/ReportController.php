@@ -385,7 +385,11 @@ class ReportController extends Controller
     public function actionTotalStok()
     {
         $this->layout = '//layouts/box_kecil';
-        $this->render('totalstok', ['totalStok' => InventoryBalance::model()->totalInventory()]);
+        $this->render('totalstok', [
+            'stokNet'       => InventoryBalance::model()->totalInventory(),
+            'stokReturBeli' => InventoryBalance::model()->totalNilaiReturBeliPosted(),
+            'totalStok'     => (int) InventoryBalance::model()->totalInventory() + (int) InventoryBalance::model()->totalNilaiReturBeliPosted(),
+        ]);
     }
 
     public function actionTopRank()
@@ -494,7 +498,7 @@ class ReportController extends Controller
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
-            'csv'      => $text
+            'csv'      => $text,
         ]);
     }
 
@@ -745,15 +749,15 @@ class ReportController extends Controller
         $model->sortBy1    = $sortBy1;
         //$report            = $model->reportUmurBarang();
 
-        $text  = $model->toCsv();
+        $text = $model->toCsv();
 
         $timeStamp       = date('Ymd His');
         $keteranganWaktu = $model->bulan > 0 ? '>=' . $model->bulan : $model->dari . '-' . $model->sampai;
         $namaFile        = "Laporan Umur Barang {$keteranganWaktu} {$timeStamp}.csv";
 
         $this->renderPartial('_csv', [
-            'namaFile'    => $namaFile,
-            'csv'        => $text
+            'namaFile' => $namaFile,
+            'csv'      => $text,
         ]);
     }
 
@@ -1041,11 +1045,11 @@ class ReportController extends Controller
 
     public function daftarBarangCsv($model, $report, $profilId)
     {
-        $profil    = Profil::model()->findByPk($profilId);
+        $profil     = Profil::model()->findByPk($profilId);
         $namaProfil = is_null($profil) ? 'Semua-Profil' : $profil->nama;
-        $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp = date("Y-m-d-H-i");
-        $namaFile  = "Daftar Barang_{$namaProfil}_{$namaToko->nilai}_{$timeStamp}";
+        $namaToko   = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp  = date("Y-m-d-H-i");
+        $namaFile   = "Daftar Barang_{$namaProfil}_{$namaToko->nilai}_{$timeStamp}";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
@@ -1128,26 +1132,26 @@ class ReportController extends Controller
 
     public function actionPrintDiskon()
     {
-        $model = new ReportDiskonForm();
+        $model  = new ReportDiskonForm();
         $report = [];
         if (isset($_GET['printId'])) {
             // Saat ini baru ada csv. Jika ada yang lain, fixme!
-            $model->profilId = $_GET['profilId'];
-            $model->userId = $_GET['userId'];
+            $model->profilId     = $_GET['profilId'];
+            $model->userId       = $_GET['userId'];
             $model->tipeDiskonId = $_GET['tipeDiskonId'];
-            $model->dari = $_GET['dari'];
-            $model->sampai = $_GET['sampai'];
-            // print_r($model->attributes); 
+            $model->dari         = $_GET['dari'];
+            $model->sampai       = $_GET['sampai'];
+            // print_r($model->attributes);
             if ($model->validate()) {
-                $report = $model->reportDiskon();
-                $text = $model->toCsv($report['detail']);
-                $timeStamp       = date('Ymd His');
-                $namaFile        = "Laporan Diskon_{$model->dari}_{$model->sampai}_{$timeStamp}.csv";
+                $report    = $model->reportDiskon();
+                $text      = $model->toCsv($report['detail']);
+                $timeStamp = date('Ymd His');
+                $namaFile  = "Laporan Diskon_{$model->dari}_{$model->sampai}_{$timeStamp}.csv";
                 // $contentTypeMeta = 'text/csv';
 
                 $this->renderPartial('_csv', [
-                    'namaFile'    => $namaFile,
-                    'csv'        => $text,
+                    'namaFile' => $namaFile,
+                    'csv'      => $text,
                     // 'contentType' => $contentTypeMeta
                 ]);
             }
@@ -1291,16 +1295,16 @@ class ReportController extends Controller
      */
     public function actionPenjualanPerKategori()
     {
-        $model  = new ReportPenjualanPerKategoriForm();
+        $model = new ReportPenjualanPerKategoriForm();
         /*
         $report = [];
         if (isset($_POST['ReportPenjualanPerKategoriForm'])) {
-            $model->attributes = $_POST['ReportPenjualanPerKategoriForm'];
-            if ($model->validate()) {
-                $report = $model->report();                
-            }            
+        $model->attributes = $_POST['ReportPenjualanPerKategoriForm'];
+        if ($model->validate()) {
+        $report = $model->report();
         }
-         * 
+        }
+         *
          */
 
         $profil = new Profil('search');
@@ -1319,9 +1323,9 @@ class ReportController extends Controller
         // $printers             = Device::model()->listDevices($tipePrinterAvailable);
         // $kertasUntukPdf = ReportPenjualanForm::listKertas();
         $this->render('penjualan_per_kategori', [
-            'model'    => $model,
-            'profil'   => $profil,
-            'user'     => $user,
+            'model'  => $model,
+            'profil' => $profil,
+            'user'   => $user,
             //'report'   => $report,
         ]);
     }
@@ -1359,7 +1363,7 @@ class ReportController extends Controller
         }
 
         $user = new User('search');
-        $user->unsetAttributes();  // clear any default values
+        $user->unsetAttributes(); // clear any default values
         if (isset($_GET['User'])) {
             $user->attributes = $_GET['User'];
         }
@@ -1413,7 +1417,7 @@ class ReportController extends Controller
          */
         $listNamaKertas = ReportStockOpnameForm::listKertas();
         require_once __DIR__ . '/../vendor/autoload.php';
-        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('_stockopname_pdf', [
             'report'               => $report,
             'nilaiDenganHargaJual' => ReportStockOpnameForm::isHitungDenganHargaJual(),

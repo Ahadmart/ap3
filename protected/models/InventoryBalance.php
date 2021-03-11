@@ -14,24 +14,27 @@
  * @property string $pembelian_detail_id
  * @property string $retur_penjualan_detail_id
  * @property string $stock_opname_detail_id
+ * @property string $retur_pembelian_detail_id
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
  *
  * The followings are the available model relations:
- * @property StockOpnameDetail $stockOpnameDetail
  * @property Barang $barang
  * @property PembelianDetail $pembelianDetail
- * @property PenjualanDetail $penjualanDetail
+ * @property ReturPembelianDetail $returPembelianDetail
+ * @property ReturPenjualanDetail $returPenjualanDetail
+ * @property StockOpnameDetail $stockOpnameDetail
  * @property User $updatedBy
- * @property PenjualanDetail[] $penjualanDetails
+ * @property ReturPembelianDetail[] $returPembelianDetails
  */
 class InventoryBalance extends CActiveRecord
 {
 
     const ASAL_PEMBELIAN = 1;
     const ASAL_RETURJUAL = 2;
-    const ASAL_SO = 3;
+    const ASAL_SO        = 3;
+    const ASAL_RETURBELI = 4; // Dari status Posted
 
     public $jumlah;
 
@@ -50,17 +53,17 @@ class InventoryBalance extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('asal, barang_id, qty_awal, qty', 'required'),
-            array('asal, qty_awal, qty', 'numerical', 'integerOnly' => true),
-            array('nomor_dokumen', 'length', 'max' => 45),
-            array('barang_id, pembelian_detail_id, retur_penjualan_detail_id, stock_opname_detail_id, updated_by', 'length', 'max' => 10),
-            array('harga_beli', 'length', 'max' => 18),
-            array('created_at, updated_at, updated_by', 'safe'),
+        return [
+            ['asal, barang_id, qty_awal, qty', 'required'],
+            ['asal, qty_awal, qty', 'numerical', 'integerOnly' => true],
+            ['nomor_dokumen', 'length', 'max' => 45],
+            ['barang_id, pembelian_detail_id, retur_penjualan_detail_id, stock_opname_detail_id, retur_pembelian_detail_id, updated_by', 'length', 'max' => 10],
+            ['harga_beli', 'length', 'max' => 18],
+            ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor_dokumen, barang_id, harga_beli, qty_awal, qty, pembelian_detail_id, retur_penjualan_detail_id, stock_opname_detail_id, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
-        );
+            ['id, nomor_dokumen, barang_id, harga_beli, qty_awal, qty, pembelian_detail_id, retur_penjualan_detail_id, stock_opname_detail_id, retur_pembelian_detail_id, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -70,13 +73,15 @@ class InventoryBalance extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-            'barang' => array(self::BELONGS_TO, 'Barang', 'barang_id'),
-            'pembelianDetail' => array(self::BELONGS_TO, 'PembelianDetail', 'pembelian_detail_id'),
-            'returPenjualanDetail' => array(self::BELONGS_TO, 'ReturPenjualanDetail', 'retur_penjualan_detail_id'),
-            'stockOpnameDetail' => array(self::BELONGS_TO, 'StockOpnameDetail', 'stock_opname_detail_id'),
-            'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
-        );
+        return [
+            'barang'                => [self::BELONGS_TO, 'Barang', 'barang_id'],
+            'pembelianDetail'       => [self::BELONGS_TO, 'PembelianDetail', 'pembelian_detail_id'],
+            'returPembelianDetail'  => [self::BELONGS_TO, 'ReturPembelianDetail', 'retur_pembelian_detail_id'],
+            'returPenjualanDetail'  => [self::BELONGS_TO, 'ReturPenjualanDetail', 'retur_penjualan_detail_id'],
+            'stockOpnameDetail'     => [self::BELONGS_TO, 'StockOpnameDetail', 'stock_opname_detail_id'],
+            'updatedBy'             => [self::BELONGS_TO, 'User', 'updated_by'],
+            'returPembelianDetails' => [self::HAS_MANY, 'ReturPembelianDetail', 'inventory_balance_id'],
+        ];
     }
 
     /**
@@ -84,21 +89,22 @@ class InventoryBalance extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'asal' => 'Asal',
-            'nomor_dokumen' => 'Dokumen',
-            'barang_id' => 'Barang',
-            'harga_beli' => 'Harga Beli',
-            'qty_awal' => 'Qty Awal',
-            'qty' => 'Qty',
-            'pembelian_detail_id' => 'Pembelian Detail',
+        return [
+            'id'                        => 'ID',
+            'asal'                      => 'Asal',
+            'nomor_dokumen'             => 'Dokumen',
+            'barang_id'                 => 'Barang',
+            'harga_beli'                => 'Harga Beli',
+            'qty_awal'                  => 'Qty Awal',
+            'qty'                       => 'Qty',
+            'pembelian_detail_id'       => 'Pembelian Detail',
             'retur_penjualan_detail_id' => 'Retur Penjualan Detail',
-            'stock_opname_detail_id' => 'Stock Opname Detail',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-            'created_at' => 'Created At',
-        );
+            'stock_opname_detail_id'    => 'Stock Opname Detail',
+            'retur_pembelian_detail_id' => 'Retur Pembelian Detail',
+            'updated_at'                => 'Updated At',
+            'updated_by'                => 'Updated By',
+            'created_at'                => 'Created At',
+        ];
     }
 
     /**
@@ -113,7 +119,7 @@ class InventoryBalance extends CActiveRecord
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search($defaultOrder = NULL)
+    public function search($defaultOrder = null)
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
@@ -129,20 +135,21 @@ class InventoryBalance extends CActiveRecord
         $criteria->compare('pembelian_detail_id', $this->pembelian_detail_id, true);
         $criteria->compare('retur_penjualan_detail_id', $this->retur_penjualan_detail_id, true);
         $criteria->compare('stock_opname_detail_id', $this->stock_opname_detail_id, true);
+        $criteria->compare('retur_pembelian_detail_id', $this->retur_pembelian_detail_id, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
         $orderBy = is_null($defaultOrder) ? 't.id desc' : $defaultOrder;
-        $sort = array(
-            'defaultOrder' => $orderBy
-        );
+        $sort    = [
+            'defaultOrder' => $orderBy,
+        ];
 
-        return new CActiveDataProvider($this, array(
-            'criteria' => $criteria,
-            'sort' => $sort,
-            'pagination' => array('pageSize' => 5),
-        ));
+        return new CActiveDataProvider($this, [
+            'criteria'   => $criteria,
+            'sort'       => $sort,
+            'pagination' => ['pageSize' => 5],
+        ]);
     }
 
     /**
@@ -184,13 +191,13 @@ class InventoryBalance extends CActiveRecord
 
     public function beli($asal, $nomorDokumen, $pembelianDetailId, $barangId, $hargaBeli, $qty)
     {
-        $this->asal = $asal;
-        $this->nomor_dokumen = $nomorDokumen;
+        $this->asal                = $asal;
+        $this->nomor_dokumen       = $nomorDokumen;
         $this->pembelian_detail_id = $pembelianDetailId;
-        $this->barang_id = $barangId;
-        $this->harga_beli = $hargaBeli;
-        $this->qty_awal = $qty;
-        $this->qty = $qty;
+        $this->barang_id           = $barangId;
+        $this->harga_beli          = $hargaBeli;
+        $this->qty_awal            = $qty;
+        $this->qty                 = $qty;
 
         $layerTerakhir = $this->layerTerakhir($barangId);
         if (!is_null($layerTerakhir)) {
@@ -217,10 +224,11 @@ class InventoryBalance extends CActiveRecord
 
     public function jual($barangId, $qty)
     {
-        $inventories = InventoryBalance::model()->findAll(array(
+        $inventories = InventoryBalance::model()->findAll([
             'condition' => 'barang_id=:barangId and qty <>0',
-            'order' => 'id',
-            'params' => array(':barangId' => $barangId)));
+            'order'     => 'id',
+            'params'    => [':barangId' => $barangId],
+        ]);
 
         if (empty($inventories)) {
             /* Jika kosong cari lagi inventory terakhir */
@@ -230,13 +238,13 @@ class InventoryBalance extends CActiveRecord
                 throw new Exception('Inventory barang tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
             }
             /* Variabel $inventories diisi hanya dengan layer terakhir */
-            $inventories = array($layerTerakhir);
+            $inventories = [$layerTerakhir];
         }
 
-        $inventoryTerpakai = array();
-        $layer = count($inventories);
-        $curLayer = $layer;
-        $sisa = $qty;
+        $inventoryTerpakai = [];
+        $layer             = count($inventories);
+        $curLayer          = $layer;
+        $sisa              = $qty;
         foreach ($inventories as $inventory) {
             $curLayer--;
             $qtyTerpakai = 0;
@@ -254,7 +262,7 @@ class InventoryBalance extends CActiveRecord
                 /* Inventory cukup. 0 (nol) kan sisa, kurangi inventory */
                 $inventory->qty -= $sisa;
                 $qtyTerpakai = $sisa;
-                $sisa = 0;
+                $sisa        = 0;
             } else if ($inventory->qty <= $sisa && $inventory->qty > 0) {
                 /*
                  * Inventory kurang (tapi masih positif). Kurangi sisa. 0 (nol) kan.
@@ -269,12 +277,12 @@ class InventoryBalance extends CActiveRecord
              * Jika ada qtyTerpakai, catat.
              */
             if ($qtyTerpakai > 0) {
-                $inventoryTerpakai[] = array(
-                    'id' => $inventory->id,
+                $inventoryTerpakai[] = [
+                    'id'                => $inventory->id,
                     'pembelianDetailId' => $inventory->pembelian_detail_id,
-                    'hargaBeli' => $inventory->harga_beli,
-                    'qtyTerpakai' => $qtyTerpakai,
-                );
+                    'hargaBeli'         => $inventory->harga_beli,
+                    'qtyTerpakai'       => $qtyTerpakai,
+                ];
             }
 
             /*
@@ -285,16 +293,15 @@ class InventoryBalance extends CActiveRecord
             if (0 === $curLayer && $inventory->qty <= 0 && $sisa > 0) {
                 /* Kurangi inventory. 0 (nol) kan sisa */
                 $inventory->qty -= $sisa;
-                $inventoryTerpakai[] = array(
-                    'id' => $inventory->id,
+                $inventoryTerpakai[] = [
+                    'id'                => $inventory->id,
                     'pembelianDetailId' => $inventory->pembelian_detail_id,
-                    'hargaBeli' => $inventory->harga_beli,
-                    'qtyTerpakai' => $sisa,
-                    'negatif' => true
-                );
+                    'hargaBeli'         => $inventory->harga_beli,
+                    'qtyTerpakai'       => $sisa,
+                    'negatif'           => true,
+                ];
                 $sisa = 0;
             }
-
 
             /*
              * Simpan inventory
@@ -314,10 +321,10 @@ class InventoryBalance extends CActiveRecord
      */
     public function returBeli($returBeliDetail)
     {
-        $inventoryBalance = InventoryBalance::model()->findByPk($returBeliDetail->inventory_balance_id);
-        $inventoryTerpakai = array();
-        $sisa = $returBeliDetail->qty;
-        $qtyTerpakai = 0;
+        $inventoryBalance  = InventoryBalance::model()->findByPk($returBeliDetail->inventory_balance_id);
+        $inventoryTerpakai = [];
+        $sisa              = $returBeliDetail->qty;
+        $qtyTerpakai       = 0;
 
         if ($inventoryBalance->qty >= $sisa) {
             $qtyTerpakai = $sisa;
@@ -329,11 +336,11 @@ class InventoryBalance extends CActiveRecord
             $inventoryBalance->qty = 0;
         }
 
-        $inventoryTerpakai[] = array(
-            'id' => $inventoryBalance->id,
-            'qtyTerpakai' => $qtyTerpakai,
-            'pembelianDetailId' => $inventoryBalance->pembelian_detail_id
-        );
+        $inventoryTerpakai[] = [
+            'id'                => $inventoryBalance->id,
+            'qtyTerpakai'       => $qtyTerpakai,
+            'pembelianDetailId' => $inventoryBalance->pembelian_detail_id,
+        ];
 
         /*
          * Simpan inventory
@@ -342,107 +349,102 @@ class InventoryBalance extends CActiveRecord
             throw new Exception("Gagal simpan inventory#{$inventoryBalance->id} qty {$inventoryBalance->qty}", 500);
         }
 
-
-
-
-
-
-//      $pembelianDetail = PembelianDetail::model()->findByPk($returBeliDetail->pembelian_detail_id);
-//      $barangId = $pembelianDetail->barang_id;
-////		$inventories = InventoryBalance::model()->findAll('barang_id=:barangId and qty <> 0 order by id', array(
-////			 ':barangId' => $barangId,
-////		));
-//
-//      $inventories = InventoryBalance::model()->findAll(array(
-//          'condition' => 'barang_id=:barangId and qty <>0',
-//          'order' => 'id',
-//          'params' => array(':barangId' => $barangId)));
-//
-//      if (empty($inventories)) {
-//         /* Jika kosong cari lagi inventory terakhir */
-//         $layerTerakhir = $this->layerTerakhir($barangId);
-//         /* Jika kosong juga, berarti belum ada proses pembelian ?? */
-//         if (is_null($layerTerakhir)) {
-//            throw new Exception('Inventory barang tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
-//         }
-//         /* Variabel $inventories diisi hanya dengan layer terakhir */
-//         /* Seharusnya tidak ke sini !!, jika ini terjadi berarti
-//          * STOK MINUS: Retur beli untuk barang yang tidak ada stok nya !! */
-//         $inventories = array($layerTerakhir);
-//      }
-//
-//      $inventoryTerpakai = array();
-//      $layer = count($inventories);
-//      $curLayer = $layer;
-//      $sisa = $returBeliDetail->qty;
-//      $ketemu = false; // Untuk mencatat permulaan layer inventory yang sesuai dengan pilihan
-//      foreach ($inventories as $inventory) {
-//         //print_r($inventory);
-//         $curLayer--;
-//         $qtyTerpakai = 0;
-//         /* Jika sudah tidak ada sisa. Keluar */
-//         if ($sisa == 0) {
-//            break;
-//         }
-//
-//         /* Jika layernya sesuai, atau sudah ketemu (layer setelah ketemu) */
-//         if ($inventory->pembelian_detail_id == $pembelianDetail->id || $ketemu) {
-//            $ketemu = true;
-//
-//            if ($inventory->qty > $sisa) {
-//               /* Inventory cukup. 0 (nol) kan sisa, kurangi inventory */
-//               $inventory->qty -= $sisa;
-//               $qtyTerpakai = $sisa;
-//               $sisa = 0;
-//            } else if ($inventory->qty <= $sisa && $inventory->qty > 0) {
-//               /*
-//                * Inventory kurang (tapi masih positif). Kurangi sisa. 0 (nol) kan.
-//                */
-//               $qtyTerpakai = $inventory->qty;
-//               $sisa -= $inventory->qty;
-//               /* Inventory di 0 (nol) kan */
-//               $inventory->qty = 0;
-//            }
-//
-//            /*
-//             * Jika ada qtyTerpakai, catat.
-//             */
-//            if ($qtyTerpakai > 0) {
-//               $inventoryTerpakai[] = array(
-//                   'id' => $inventory->id,
-//                   'qtyTerpakai' => $qtyTerpakai,
-//                   'pembelianDetailId' => $inventory->pembelian_detail_id
-//               );
-//            }
-//
-//
-//            /* Ini seharusnya TIDAK terjadi
-//             * Jika inventory layer terakhir dan
-//             * Jika inventory <= 0. Stok MINUS/HABIS
-//             * 0 kan sisa, sesuaikan inventory
-//             */
-//            /*
-//              if (0 === $curLayer && $inventory->qty <= 0) {
-//              // Kurangi inventory. 0 (nol) kan sisa
-//              $inventory->qty -= $sisa;
-//              $inventoryTerpakai[] = array(
-//              'id' => $inventory->id,
-//              'hargaBeli' => $inventory->harga_beli,
-//              'qtyTerpakai' => $sisa,
-//              'negatif' => true
-//              );
-//              $sisa = 0;
-//              }
-//             */
-//
-//            /*
-//             * Simpan inventory
-//             */
-//            if (!$inventory->save()) {
-//               throw new Exception("Gagal simpan inventory#{$inventory->id} qty {$inventory->qty}", 500);
-//            }
-//         }
-//      }
+        //      $pembelianDetail = PembelianDetail::model()->findByPk($returBeliDetail->pembelian_detail_id);
+        //      $barangId = $pembelianDetail->barang_id;
+        ////        $inventories = InventoryBalance::model()->findAll('barang_id=:barangId and qty <> 0 order by id', array(
+        ////             ':barangId' => $barangId,
+        ////        ));
+        //
+        //      $inventories = InventoryBalance::model()->findAll(array(
+        //          'condition' => 'barang_id=:barangId and qty <>0',
+        //          'order' => 'id',
+        //          'params' => array(':barangId' => $barangId)));
+        //
+        //      if (empty($inventories)) {
+        //         /* Jika kosong cari lagi inventory terakhir */
+        //         $layerTerakhir = $this->layerTerakhir($barangId);
+        //         /* Jika kosong juga, berarti belum ada proses pembelian ?? */
+        //         if (is_null($layerTerakhir)) {
+        //            throw new Exception('Inventory barang tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
+        //         }
+        //         /* Variabel $inventories diisi hanya dengan layer terakhir */
+        //         /* Seharusnya tidak ke sini !!, jika ini terjadi berarti
+        //          * STOK MINUS: Retur beli untuk barang yang tidak ada stok nya !! */
+        //         $inventories = array($layerTerakhir);
+        //      }
+        //
+        //      $inventoryTerpakai = array();
+        //      $layer = count($inventories);
+        //      $curLayer = $layer;
+        //      $sisa = $returBeliDetail->qty;
+        //      $ketemu = false; // Untuk mencatat permulaan layer inventory yang sesuai dengan pilihan
+        //      foreach ($inventories as $inventory) {
+        //         //print_r($inventory);
+        //         $curLayer--;
+        //         $qtyTerpakai = 0;
+        //         /* Jika sudah tidak ada sisa. Keluar */
+        //         if ($sisa == 0) {
+        //            break;
+        //         }
+        //
+        //         /* Jika layernya sesuai, atau sudah ketemu (layer setelah ketemu) */
+        //         if ($inventory->pembelian_detail_id == $pembelianDetail->id || $ketemu) {
+        //            $ketemu = true;
+        //
+        //            if ($inventory->qty > $sisa) {
+        //               /* Inventory cukup. 0 (nol) kan sisa, kurangi inventory */
+        //               $inventory->qty -= $sisa;
+        //               $qtyTerpakai = $sisa;
+        //               $sisa = 0;
+        //            } else if ($inventory->qty <= $sisa && $inventory->qty > 0) {
+        //               /*
+        //                * Inventory kurang (tapi masih positif). Kurangi sisa. 0 (nol) kan.
+        //                */
+        //               $qtyTerpakai = $inventory->qty;
+        //               $sisa -= $inventory->qty;
+        //               /* Inventory di 0 (nol) kan */
+        //               $inventory->qty = 0;
+        //            }
+        //
+        //            /*
+        //             * Jika ada qtyTerpakai, catat.
+        //             */
+        //            if ($qtyTerpakai > 0) {
+        //               $inventoryTerpakai[] = array(
+        //                   'id' => $inventory->id,
+        //                   'qtyTerpakai' => $qtyTerpakai,
+        //                   'pembelianDetailId' => $inventory->pembelian_detail_id
+        //               );
+        //            }
+        //
+        //
+        //            /* Ini seharusnya TIDAK terjadi
+        //             * Jika inventory layer terakhir dan
+        //             * Jika inventory <= 0. Stok MINUS/HABIS
+        //             * 0 kan sisa, sesuaikan inventory
+        //             */
+        //            /*
+        //              if (0 === $curLayer && $inventory->qty <= 0) {
+        //              // Kurangi inventory. 0 (nol) kan sisa
+        //              $inventory->qty -= $sisa;
+        //              $inventoryTerpakai[] = array(
+        //              'id' => $inventory->id,
+        //              'hargaBeli' => $inventory->harga_beli,
+        //              'qtyTerpakai' => $sisa,
+        //              'negatif' => true
+        //              );
+        //              $sisa = 0;
+        //              }
+        //             */
+        //
+        //            /*
+        //             * Simpan inventory
+        //             */
+        //            if (!$inventory->save()) {
+        //               throw new Exception("Gagal simpan inventory#{$inventory->id} qty {$inventory->qty}", 500);
+        //            }
+        //         }
+        //      }
         /* Jika ternyata masih ada sisa
          * Ulangi lagi cari inventory dari awal
          * Karena sebelumnya (di atas) mengurangi inventory dimulai dari layer yang cocok
@@ -466,30 +468,30 @@ class InventoryBalance extends CActiveRecord
      */
     public function returJual($returPenjualanDetail)
     {
-        $hpps = HargaPokokPenjualan::model()->findAll('penjualan_detail_id=:penjualanDetail', array(':penjualanDetail' => $returPenjualanDetail->penjualan_detail_id));
+        $hpps = HargaPokokPenjualan::model()->findAll('penjualan_detail_id=:penjualanDetail', [':penjualanDetail' => $returPenjualanDetail->penjualan_detail_id]);
         $sisa = $returPenjualanDetail->qty;
         foreach ($hpps as $hpp) {
             if ($sisa == 0) {
                 break;
             }
 
-            $inventoryBalance = new InventoryBalance;
-            $inventoryBalance->asal = InventoryBalance::ASAL_RETURJUAL;
-            $inventoryBalance->nomor_dokumen = $returPenjualanDetail->returPenjualan->nomor;
-            $inventoryBalance->pembelian_detail_id = $hpp->pembelian_detail_id;
+            $inventoryBalance                            = new InventoryBalance;
+            $inventoryBalance->asal                      = InventoryBalance::ASAL_RETURJUAL;
+            $inventoryBalance->nomor_dokumen             = $returPenjualanDetail->returPenjualan->nomor;
+            $inventoryBalance->pembelian_detail_id       = $hpp->pembelian_detail_id;
             $inventoryBalance->retur_penjualan_detail_id = $returPenjualanDetail->id;
-            $inventoryBalance->barang_id = $returPenjualanDetail->penjualanDetail->barang_id;
-            $inventoryBalance->harga_beli = $hpp->harga_beli;
+            $inventoryBalance->barang_id                 = $returPenjualanDetail->penjualanDetail->barang_id;
+            $inventoryBalance->harga_beli                = $hpp->harga_beli;
 
             /* Jika hpp jumlahnya cukup, nol kan sisa. catat qtynya di inventory */
             if ($hpp->qty >= $sisa) {
                 $inventoryBalance->qty_awal = $sisa;
-                $inventoryBalance->qty = $sisa;
-                $sisa = 0;
+                $inventoryBalance->qty      = $sisa;
+                $sisa                       = 0;
             } else {
                 /* Jika hpp tidak cukup, catat di inventory secukupnya, cari lagi di hpp berikutnya (jika ada) */
                 $inventoryBalance->qty_awal = $hpp->qty;
-                $inventoryBalance->qty = $hpp->qty;
+                $inventoryBalance->qty      = $hpp->qty;
                 $sisa -= $hpp->qty;
             }
 
@@ -537,10 +539,11 @@ class InventoryBalance extends CActiveRecord
 
     public function soMinus($barangId, $selisih)
     {
-        $inventories = InventoryBalance::model()->findAll(array(
+        $inventories = InventoryBalance::model()->findAll([
             'condition' => 'barang_id=:barangId and qty <>0',
-            'order' => 'id',
-            'params' => array(':barangId' => $barangId)));
+            'order'     => 'id',
+            'params'    => [':barangId' => $barangId],
+        ]);
 
         if (empty($inventories)) {
             /* Jika kosong cari lagi inventory terakhir */
@@ -550,12 +553,12 @@ class InventoryBalance extends CActiveRecord
                 throw new Exception('[SO-]Inventory barang ID#' . $barangId . ' tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
             }
             /* Variabel $inventories diisi hanya dengan layer terakhir */
-            $inventories = array($layerTerakhir);
+            $inventories = [$layerTerakhir];
         }
 
-        $layer = count($inventories);
+        $layer    = count($inventories);
         $curLayer = $layer;
-        $sisa = abs($selisih);
+        $sisa     = abs($selisih);
         foreach ($inventories as $inventory) {
             $curLayer--;
             /* Jika sudah tidak ada sisa. Keluar */
@@ -593,7 +596,6 @@ class InventoryBalance extends CActiveRecord
                 $sisa = 0;
             }
 
-
             /*
              * Simpan inventory
              */
@@ -605,10 +607,11 @@ class InventoryBalance extends CActiveRecord
 
     public function soPlus($soModel, $soDetailId, $barangId, $selisih)
     {
-        $inventory = InventoryBalance::model()->find(array(
+        $inventory = InventoryBalance::model()->find([
             'condition' => 'barang_id=:barangId and qty <>0',
-            'order' => 'id',
-            'params' => array(':barangId' => $barangId)));
+            'order'     => 'id',
+            'params'    => [':barangId' => $barangId],
+        ]);
 
         if (is_null($inventory)) {
             /* Jika kosong cari lagi inventory terakhir */
@@ -647,11 +650,12 @@ class InventoryBalance extends CActiveRecord
 
     public function soInvSebelumnya($soModel, $soDetailId, $invId, $barangId, $selisih, $pembelianDetailIdTerakhir, $hargaBeli = null)
     {
-        $sisa = $selisih;
-        $inventory = InventoryBalance::model()->find(array(
+        $sisa      = $selisih;
+        $inventory = InventoryBalance::model()->find([
             'condition' => 'barang_id=:barangId and id < :invId',
-            'order' => 'id desc',
-            'params' => array(':barangId' => $barangId, ':invId' => $invId)));
+            'order'     => 'id desc',
+            'params'    => [':barangId' => $barangId, ':invId' => $invId],
+        ]);
 
         if (is_null($inventory)) {
             //throw new Exception("Layer inventory tidak ditemukan lagi", 500);
@@ -660,14 +664,14 @@ class InventoryBalance extends CActiveRecord
              * kecil dibanding stok fisik, maka diperlukan menambah layer inventory
              * yang berasal dari SO / tidak dari pembelian, dan tidak menimbulkan hutang
              */
-            $i = new InventoryBalance;
-            $i->barang_id = $barangId;
-            $i->harga_beli = $hargaBeli;
-            $i->qty_awal = $selisih;
-            $i->qty = $selisih;
-            $i->asal = self::ASAL_SO;
-            $i->nomor_dokumen = $soModel->nomor;
-            $i->pembelian_detail_id = $pembelianDetailIdTerakhir; // Diisi dengan pembelian terakhir, untuk kompatibilitas dg proses lain
+            $i                         = new InventoryBalance;
+            $i->barang_id              = $barangId;
+            $i->harga_beli             = $hargaBeli;
+            $i->qty_awal               = $selisih;
+            $i->qty                    = $selisih;
+            $i->asal                   = self::ASAL_SO;
+            $i->nomor_dokumen          = $soModel->nomor;
+            $i->pembelian_detail_id    = $pembelianDetailIdTerakhir; // Diisi dengan pembelian terakhir, untuk kompatibilitas dg proses lain
             $i->stock_opname_detail_id = $soDetailId;
             if (!$i->save()) {
                 throw new Exception("Gagal membuat layer dari SO", 500);
@@ -710,6 +714,9 @@ class InventoryBalance extends CActiveRecord
 
             case InventoryBalance::ASAL_SO:
                 return 'SO';
+
+            case InventoryBalance::ASAL_RETURBELI:
+                return 'Retur Beli';
         }
     }
 
@@ -720,19 +727,21 @@ class InventoryBalance extends CActiveRecord
      */
     public function getHargaBeliAwal($barangId)
     {
-        $inventory = InventoryBalance::model()->find(array(
+        $inventory = InventoryBalance::model()->find([
             'condition' => 'barang_id=:barangId and qty <>0',
-            'order' => 'id',
-            'params' => array(':barangId' => $barangId)));
+            'order'     => 'id',
+            'params'    => [':barangId' => $barangId],
+        ]);
 
         /* Jika tidak ada stok yang pantas (stok = 0 semua)
          * maka cari inventory yang paling baru
          */
         if (is_null($inventory)) {
-            $inventory = InventoryBalance::model()->find(array(
+            $inventory = InventoryBalance::model()->find([
                 'condition' => 'barang_id=:barangId',
-                'order' => 'id desc',
-                'params' => array(':barangId' => $barangId)));
+                'order'     => 'id desc',
+                'params'    => [':barangId' => $barangId],
+            ]);
         }
         return is_null($inventory) ? 0 : $inventory->harga_beli;
     }
@@ -754,6 +763,9 @@ class InventoryBalance extends CActiveRecord
 
             case InventoryBalance::ASAL_SO;
                 return 'stockopname';
+
+            case InventoryBalance::ASAL_RETURBELI;
+                return 'returpembelian';
         }
     }
 
@@ -769,13 +781,16 @@ class InventoryBalance extends CActiveRecord
 
             case InventoryBalance::ASAL_SO;
                 return StockOpname::model()->find("nomor={$this->nomor_dokumen}");
+
+            case InventoryBalance::ASAL_RETURBELI;
+                return ReturPembelian::model()->find("nomor={$this->nomor_dokumen}");
         }
     }
 
     public function totalInventory()
     {
         $sql = "
-            SELECT 
+            SELECT
                 SUM(harga_beli * qty) total
             FROM
                 inventory_balance ib
@@ -785,10 +800,46 @@ class InventoryBalance extends CActiveRecord
             WHERE
                 ib.qty > 0
                ";
-        $inventory = Yii::app()->db->createCommand($sql)->
-                bindValue(':statusAktif', Barang::STATUS_AKTIF)->
-                queryRow();
+        $inventory = Yii::app()->db->createCommand($sql)->bindValue(':statusAktif', Barang::STATUS_AKTIF)->queryRow();
         return $inventory['total'];
     }
 
+    public function totalNilaiReturBeliPosted()
+    {
+        $sql = "
+        SELECT
+            SUM(d.qty * ib.harga_beli) total
+        FROM
+            retur_pembelian_detail d
+                JOIN
+            retur_pembelian r ON r.id = d.retur_pembelian_id
+                AND r.status = :statusPosted
+                JOIN
+            inventory_balance ib ON ib.id = d.inventory_balance_id
+               ";
+        $nilai = Yii::app()->db->createCommand($sql)->bindValue(':statusPosted', ReturPembelian::STATUS_POSTED)->queryRow();
+        return $nilai['total'];
+    }
+
+    /**
+     * Menambah layer inventory untuk proses retur pembelian batal (dari posted)
+     * @param object $detail Objek model ReturPembelianDetail
+     * @return boolean true jika berhasil
+     * @throws Exception
+     */
+    public static function returBeliBatal($detail)
+    {
+        $ib                            = new InventoryBalance();
+        $ib->asal                      = InventoryBalance::ASAL_RETURBELI;
+        $ib->nomor_dokumen             = $detail->returPembelian->nomor;
+        $ib->retur_pembelian_detail_id = $detail->id;
+        $ib->barang_id                 = $detail->inventoryBalance->barang_id;
+        $ib->harga_beli                = $detail->inventoryBalance->harga_beli;
+        $ib->qty_awal                  = $detail->qty;
+        $ib->qty                       = $detail->qty;
+        if (!$ib->save()) {
+            throw new Exception("Gagal simpan layer inventory untuk retur beli");
+        }
+        return true;
+    }
 }
