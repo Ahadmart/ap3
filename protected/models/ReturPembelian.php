@@ -286,7 +286,7 @@ class ReturPembelian extends CActiveRecord
              * Save sekaligus mengubah status dari draft jadi posted
              */
             if ($this->save()) {
-                $details = ReturPembelianDetail::model()->findAll("retur_pembelian_id={$this->id}");
+                $details = ReturPembelianDetail::model()->findAll("retur_pembelian_id=:id", [':id' => $this->id]);
                 if (is_null($details)) {
                     throw new Exception("Tidak ada detail");
                 }
