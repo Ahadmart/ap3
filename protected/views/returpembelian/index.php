@@ -55,6 +55,7 @@ $this->boxHeader['normal'] = 'Retur Pembelian';
                         ReturPembelian::STATUS_POSTED  => 'Posted',
                         ReturPembelian::STATUS_PIUTANG => 'Piutang',
                         ReturPembelian::STATUS_LUNAS   => 'Lunas',
+                        ReturPembelian::STATUS_BATAL   => 'Batal',
                     ],
                 ],
                 [

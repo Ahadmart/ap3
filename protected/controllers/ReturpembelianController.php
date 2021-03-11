@@ -538,4 +538,22 @@ class ReturpembelianController extends Controller
             }
         }
     }
+
+    /**
+     * Mengubah status menjadi batal, dan menambah stok
+     */
+    public function actionBatal($id)
+    {
+        $return = ['sukses' => false];
+        if (isset($_POST['batal']) && $_POST['batal']) {
+            $returBeli = $this->loadModel($id);
+            if ($returBeli->status == ReturPembelian::STATUS_POSTED) {
+                /*
+                 * bisa batal jika hanya dan hanya jika status posted
+                 */
+                $return = $returBeli->batal();
+            }
+        }
+        $this->renderJSON($return);
+    }
 }

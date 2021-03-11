@@ -28,6 +28,7 @@ class ReturPembelian extends CActiveRecord
     const STATUS_PIUTANG = 1;
     const STATUS_LUNAS   = 2;
     const STATUS_POSTED  = 3; // Request sponsor: Proses diantara draft dan piutang. Mengurangi stok, tapi tidak mengurangi stok total.
+    const STATUS_BATAL   = 4;
     /* ===================== */
     const KERTAS_LETTER = 10;
     const KERTAS_A4     = 20;
@@ -141,7 +142,8 @@ class ReturPembelian extends CActiveRecord
             'defaultOrder' => 'case t.status when ' . self::STATUS_DRAFT . ' then 0 '
                 . 'when ' . self::STATUS_POSTED . ' then 1 '
                 . 'when ' . self::STATUS_PIUTANG . ' then 2 '
-                . 'else 3 end, t.tanggal desc',
+                . 'when ' . self::STATUS_LUNAS . ' then 3 '
+                . 'else 4 end, t.tanggal desc',
             'attributes'   => [
                 'namaSupplier'  => [
                     'asc'  => 'profil.nama',
@@ -236,6 +238,7 @@ class ReturPembelian extends CActiveRecord
             ReturPembelian::STATUS_POSTED  => 'Posted',
             ReturPembelian::STATUS_PIUTANG => 'Piutang',
             ReturPembelian::STATUS_LUNAS   => 'Lunas',
+            ReturPembelian::STATUS_BATAL   => 'Batal',
         ];
         return $status[$this->status];
     }
@@ -585,6 +588,34 @@ class ReturPembelian extends CActiveRecord
                 throw new Exception("Gagal update status dan simpan hutang_id");
             }
 
+            $transaction->commit();
+            return ['sukses' => true];
+        } catch (Exception $ex) {
+            $transaction->rollback();
+            return [
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+                ],
+            ];
+        }
+    }
+
+    public function batal()
+    {
+        $transaction = $this->dbConnection->beginTransaction();
+        try {
+            // $this->status = self::STATUS_BATAL;
+            // if (!($this->save())) {
+            //     throw new Exception("Gagal membatalkan retur beli: " . $returBeli->nomor);
+            // }
+            ReturPembelian::model()->updateByPk($this->id, ['status' => self::STATUS_BATAL]);
+            $details      = ReturPembelianDetail::model()->findAll("retur_pembelian_id=:id", [':id' => $this->id]);
+            foreach ($details as $detail) {
+                // Untuk setiap item, tambahkan qty ke inventory baru
+                InventoryBalance::returBeliBatal($detail);
+            }
             $transaction->commit();
             return ['sukses' => true];
         } catch (Exception $ex) {

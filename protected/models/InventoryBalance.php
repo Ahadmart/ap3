@@ -714,6 +714,9 @@ class InventoryBalance extends CActiveRecord
 
             case InventoryBalance::ASAL_SO:
                 return 'SO';
+
+            case InventoryBalance::ASAL_RETURBELI:
+                return 'Retur Beli';
         }
     }
 
@@ -824,16 +827,16 @@ class InventoryBalance extends CActiveRecord
      * @return boolean true jika berhasil
      * @throws Exception
      */
-    public function returBeliBatal($detail)
+    public static function returBeliBatal($detail)
     {
         $ib                            = new InventoryBalance();
         $ib->asal                      = InventoryBalance::ASAL_RETURBELI;
         $ib->nomor_dokumen             = $detail->returPembelian->nomor;
         $ib->retur_pembelian_detail_id = $detail->id;
-        $ib->barang_id = $detail->inventoryBalance->barang_id;
-        $ib->harga_beli = $detail->inventoryBalance->harga_beli;
-        $ib->qty_awal = $detail->qty;
-        $ib->qty = $detail->qty;
+        $ib->barang_id                 = $detail->inventoryBalance->barang_id;
+        $ib->harga_beli                = $detail->inventoryBalance->harga_beli;
+        $ib->qty_awal                  = $detail->qty;
+        $ib->qty                       = $detail->qty;
         if (!$ib->save()) {
             throw new Exception("Gagal simpan layer inventory untuk retur beli");
         }
