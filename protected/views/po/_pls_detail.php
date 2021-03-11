@@ -21,14 +21,14 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'filter'            => false,
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'value'             => 'number_format($data->harga_beli,0,",",".")'
+                    'value'             => 'number_format($data->harga_beli,0,",",".")',
                 ],
                 [
                     'name'              => 'harga_jual',
                     'filter'            => false,
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'value'             => 'number_format($data->harga_jual,0,",",".")'
+                    'value'             => 'number_format($data->harga_jual,0,",",".")',
                 ],
                 [
                     'name'              => 'ads',
@@ -77,10 +77,11 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'value'             => [$this, 'renderTombolSetOrder'],
                     'headerHtmlOptions' => ['class' => 'rata-tengah'],
                     'htmlOptions'       => ['class' => 'rata-tengah'],
-                    'header'            => '<a id="tombol-order-semua" href="' . $this->createUrl('ordersemua', ['id' => $poModel->id]) . '"><i class="fa fa-plus"></i> All</a>'
+                    'header'            => '<a id="tombol-order-semua" href="' . $this->createUrl('ordersemua', ['id' => $poModel->id]) . '"><i class="fa fa-plus"></i> All</a>',
                 ],
                 [
                     'name'              => 'tgl_jual_max',
+                    'value'             => '!is_null($data->tgl_jual_max) ? date_format(date_create_from_format(\'Y-m-d H:i:s\', $data->tgl_jual_max), \'d-m-Y\') : ""',
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
                     'filter'            => false,
