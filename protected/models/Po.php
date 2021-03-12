@@ -529,7 +529,10 @@ class Po extends CActiveRecord
                     JOIN
                 barang ON barang.id = po_detail.barang_id
             SET
-                `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
+                `saran_order` = CASE
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`) > 0 THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`)
+                        ELSE 0
+                        END,
                 `qty_order` = CASE
                         WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`) > 0 THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`)
                         ELSE 0
@@ -540,6 +543,7 @@ class Po extends CActiveRecord
                 po_id = :poId
                 ';
         /*
+        `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
          `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
          */
 
