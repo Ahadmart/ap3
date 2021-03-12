@@ -490,6 +490,7 @@ class Po extends CActiveRecord
                             'barcode'      => $row['barcode'],
                             'nama'         => $row['nama'],
                             'harga_beli'   => 0,
+                            'stok'         => $row['stok'],
                             'restock_min'  => $row['restock_min'],
                             'tgl_jual_max' => $row['tgl'],
                             'updated_by'   => Yii::app()->user->id,
@@ -529,17 +530,17 @@ class Po extends CActiveRecord
                 barang ON barang.id = po_detail.barang_id
             SET
                 `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
-                `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
+                `qty_order` = CASE
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`) > 0 THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`)
+                        ELSE 0
+                        END,
                 `po_detail`.`harga_jual` = bhj.harga,
                 `po_detail`.`harga_beli` = belid.harga_beli
             WHERE
                 po_id = :poId
                 ';
         /*
-        CASE
-        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`) > po_detail.restock_min THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`)
-        ELSE po_detail.restock_min
-        END,
+         `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
          */
 
         try {
@@ -599,7 +600,7 @@ class Po extends CActiveRecord
 
         $sql = "
         SELECT
-            barang.id, barang.barcode, barang.nama, barang.restock_min, t_barang.tgl
+            barang.id, barang.barcode, barang.nama, barang.restock_min, t_barang.tgl, t_stok.qty stok
         FROM
         (
             SELECT
@@ -622,6 +623,12 @@ class Po extends CActiveRecord
                     WHERE
                         b.status = :barangAktif AND pod.id IS NULL {$whereStruk})
             GROUP BY barang_id) t_barang
+            JOIN
+            (SELECT
+                barang_id, SUM(qty) qty
+            FROM
+                inventory_balance
+            GROUP BY barang_id) AS t_stok ON t_stok.barang_id = t_barang.barang_id
                 JOIN
             barang ON barang.id = t_barang.barang_id;
         ";
