@@ -400,6 +400,8 @@ class ReportController extends Controller
             $model->attributes = $_POST['ReportTopRankForm'];
             if ($model->validate()) {
                 $report = $model->reportTopRank();
+                // var_dump($report);
+                // Yii::app()->end();
             }
         }
 
@@ -428,16 +430,16 @@ class ReportController extends Controller
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->topRankPdf($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['kertas']);
+                    $this->topRankPdf($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    $this->topRankCsv($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy']);
+                    $this->topRankCsv($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3']);
                     break;
             }
         }
     }
 
-    public function topRankPdf($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $kertas)
+    public function topRankPdf($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3, $kertas)
     {
         $model             = new ReportTopRankForm;
         $model->profilId   = $profilId;
@@ -447,6 +449,9 @@ class ReportController extends Controller
         $model->rakId      = $rakId;
         $model->limit      = $limit;
         $model->sortBy     = $sortBy;
+        $model->strukLv1   = $strukLv1;
+        $model->strukLv2   = $strukLv2;
+        $model->strukLv3   = $strukLv3;
 
         $report = $model->reportTopRank();
 
@@ -479,7 +484,7 @@ class ReportController extends Controller
         $mpdf->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
-    public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy)
+    public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3)
     {
         $model             = new ReportTopRankForm;
         $model->profilId   = $profilId;
@@ -489,12 +494,27 @@ class ReportController extends Controller
         $model->rakId      = $rakId;
         $model->limit      = $limit;
         $model->sortBy     = $sortBy;
+        $model->strukLv1   = $strukLv1;
+        $model->strukLv2   = $strukLv2;
+        $model->strukLv3   = $strukLv3;
 
         $text = $model->toCsv();
-
+        $namaStruk = '';
+        if (!empty($model->strukLv1)) :
+            $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
+            $namaStruk .= $strukLv1->nama;
+        endif;
+        if (!empty($model->strukLv2)) :
+            $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
+            $namaStruk .= '_' . $strukLv2->nama;
+        endif;
+        if (!empty($model->strukLv3)) :
+            $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
+            $namaStruk .= '_' . $strukLv3->nama;
+        endif;
         $timeStamp  = date('Ymd His');
         $keterangan = $model->dari . '-' . $model->sampai;
-        $namaFile   = "Laporan Top Rank {$keterangan} {$timeStamp}.csv";
+        $namaFile   = "Laporan Top Rank {$namaStruk} {$keterangan} {$timeStamp}.csv";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
