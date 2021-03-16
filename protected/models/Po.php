@@ -418,6 +418,9 @@ class Po extends CActiveRecord
 
     public function analisaPLS($hariPenjualan, $orderPeriod, $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3, $semuaBarang)
     {
+        // Keseluruhan proses bisa menjadi butuh memory banyak jika semuaBarang dicentang
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
         /* Analisa PLS
         Kode diambil dari Report PLS
          */
