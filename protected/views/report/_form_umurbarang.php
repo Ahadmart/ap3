@@ -96,7 +96,7 @@ $form = $this->beginWidget('CActiveForm', [
     <div class="small-12 medium-4 columns">
         <?php echo $form->labelEx($model, 'strukLv2'); ?>
         <?php
-        $strukLv2List = ['prompt' => '[SEMUA]'];
+        $strukLv2List = ['' => '[SEMUA]'];
         if (!empty($model->strukLv1)) {
             $strukLv2List = StrukturBarang::listStrukLv2($model->strukLv1);
             // var_dump($strukLv2List);
@@ -108,7 +108,7 @@ $form = $this->beginWidget('CActiveForm', [
     <div class="small-12 medium-4 columns">
         <?php echo $form->labelEx($model, 'strukLv3'); ?>
         <?php
-        $strukLv3List = ['prompt' => '[SEMUA]'];
+        $strukLv3List = ['' => '[SEMUA]'];
         if (!empty($model->strukLv2)) {
             $strukLv3List = StrukturBarang::listStrukLv3($model->strukLv2);
         }
