@@ -727,16 +727,16 @@ class ReportController extends Controller
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->umurBarangPdf($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1'], $_GET['kertas']);
+                    $this->umurBarangPdf($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    $this->umurBarangCsv($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1']);
+                    $this->umurBarangCsv($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3']);
                     break;
             }
         }
     }
 
-    public function umurBarangCsv($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1)
+    public function umurBarangCsv($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $strukLv1, $strukLv2, $strukLv3)
     {
         $model = new ReportUmurBarangForm();
 
@@ -747,13 +747,28 @@ class ReportController extends Controller
         $model->limit      = $limit;
         $model->sortBy0    = $sortBy0;
         $model->sortBy1    = $sortBy1;
+        $model->strukLv1   = $strukLv1;
+        $model->strukLv2   = $strukLv2;
+        $model->strukLv3   = $strukLv3;
         //$report            = $model->reportUmurBarang();
 
-        $text = $model->toCsv();
-
+        $text      = $model->toCsv();
+        $namaStruk = '';
+        if (!empty($model->strukLv1)) :
+            $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
+            $namaStruk .= $strukLv1->nama;
+        endif;
+        if (!empty($model->strukLv2)) :
+            $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
+            $namaStruk .= '_' . $strukLv2->nama;
+        endif;
+        if (!empty($model->strukLv3)) :
+            $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
+            $namaStruk .= '_' . $strukLv3->nama;
+        endif;
         $timeStamp       = date('Ymd His');
         $keteranganWaktu = $model->bulan > 0 ? '>=' . $model->bulan : $model->dari . '-' . $model->sampai;
-        $namaFile        = "Laporan Umur Barang {$keteranganWaktu} {$timeStamp}.csv";
+        $namaFile        = "Laporan Umur Barang {$namaStruk} {$keteranganWaktu} {$timeStamp}.csv";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
@@ -761,7 +776,7 @@ class ReportController extends Controller
         ]);
     }
 
-    public function umurBarangPdf($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $kertas)
+    public function umurBarangPdf($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $strukLv1, $strukLv2, $strukLv3, $kertas)
     {
         ini_set('memory_limit', '-1');
         set_time_limit(0);
@@ -776,6 +791,9 @@ class ReportController extends Controller
         $model->limit      = $limit;
         $model->sortBy0    = $sortBy0;
         $model->sortBy1    = $sortBy1;
+        $model->strukLv1   = $strukLv1;
+        $model->strukLv2   = $strukLv2;
+        $model->strukLv3   = $strukLv3;
         $report            = $model->reportUmurBarang();
 
         $configs = Config::model()->findAll();

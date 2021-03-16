@@ -18,7 +18,7 @@ if (isset($report)) {
         'printers' => $printers,
         'kertasPdf' => $kertasPdf
     ]);
-    ?>
+?>
     <div class="row">
         <div class="small-12 columns">
             <table class="tabel-index responsive">
@@ -41,8 +41,8 @@ if (isset($report)) {
                 <tbody>
                     <?php
                     $i = 1;
-                    foreach ($report as $baris):
-                        ?>
+                    foreach ($report as $baris) :
+                    ?>
                         <tr>
                             <td class="rata-kanan"><?php echo $i; ?></td>
                             <td><?php echo $baris['barcode']; ?></td>
@@ -54,7 +54,7 @@ if (isset($report)) {
                             <td class="rata-kanan"><?php echo number_format($baris['umur_bulan'], 0, ',', '.'); ?></td>
                             <td class="rata-kanan"><?php echo number_format($baris['total_stok'], 0, ',', '.'); ?></td>
                         </tr>
-                        <?php
+                    <?php
                         $i++;
                     endforeach;
                     ?>
@@ -62,5 +62,5 @@ if (isset($report)) {
             </table>
         </div>
     </div>
-    <?php
+<?php
 }
