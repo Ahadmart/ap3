@@ -79,13 +79,13 @@ class Barang extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            ['barcode, nama, kategori_id, satuan_id', 'required'],
+            ['barcode, nama, satuan_id', 'required'],
             ['barcode', 'unique'],
             ['status', 'numerical', 'integerOnly' => true],
             ['barcode', 'length', 'max' => 30],
             ['nama', 'length', 'max' => 45],
             ['struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, updated_by', 'length', 'max' => 10],
-            ['created_at, updated_at, updated_by', 'safe'],
+            ['kategori_id, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             ['id, barcode, nama, struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, variant_coefficient, status, daftarSupplier, strukturFullPath', 'safe', 'on' => 'search'],
@@ -356,7 +356,7 @@ class Barang extends CActiveRecord
             ORDER BY pembelian_detail.id DESC
             LIMIT 1
 	")->queryRow();
-        return $hasil['tanggal_terakhir'];
+        return empty($hasil) ? NULL : $hasil['tanggal_terakhir'];
     }
 
     /**

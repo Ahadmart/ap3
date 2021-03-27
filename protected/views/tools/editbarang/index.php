@@ -120,7 +120,7 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
                 ],
                 [
                     'name'   => 'kategori_id',
-                    'value'  => '$data->kategori->nama',
+                    'value'  => '$data->kategori == null ? "NULL" : $data->kategori->nama',
                     'filter' => $model->filterKategori(),
                 ],
                 [
@@ -155,7 +155,7 @@ Yii::app()->clientScript->registerScript('barcodeFocus', ''
                 ],
                 [
                     'name'   => 'Pembelian Terakhir',
-                    'value'  => '$data->tanggalBeliTerakhir',
+                    'value'  => '$data->tanggalBeliTerakhir == null ? "NULL" : $data->tanggalBeliTerakhir',
                     'filter' => false,
                 ],
             ],

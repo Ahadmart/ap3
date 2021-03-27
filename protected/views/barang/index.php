@@ -50,7 +50,7 @@ Yii::app()->clientScript->registerScript('editableQty', ''
                 ],
                 [
                     'name'   => 'kategori_id',
-                    'value'  => '$data->kategori->nama',
+                    'value'  => '$data->kategori == null ? "NULL" : $data->kategori->nama',
                     'filter' => $model->filterKategori(),
                 ],
                 [
