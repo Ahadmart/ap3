@@ -404,7 +404,7 @@ class Po extends CActiveRecord
     {
         $sql = '
         SELECT
-            barcode, nama, harga_beli harga, qty_order qty
+            barcode, nama, harga_beli harga, qty_order qty, stok
         FROM
             po_detail
         WHERE
@@ -416,14 +416,23 @@ class Po extends CActiveRecord
         return $this->array2csv($report);
     }
 
-    public function analisaPLS($hariPenjualan, $sisaHari, $profilId, $rakId)
+    public function analisaPLS($hariPenjualan, $orderPeriod, $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3, $semuaBarang)
     {
+        // Keseluruhan proses bisa menjadi butuh memory banyak jika semuaBarang dicentang
+        ini_set('memory_limit', '-1');
+        set_time_limit(0);
         /* Analisa PLS
         Kode diambil dari Report PLS
          */
         $model              = new ReportPlsForm;
         $model->jumlahHari  = $hariPenjualan;
-        $model->sisaHariMax = $sisaHari;
+        $model->orderPeriod = $orderPeriod;
+        $model->leadTime    = $leadTime;
+        $model->ssd         = $ssd;
+        $model->strukLv1    = $strukLv1;
+        $model->strukLv2    = $strukLv2;
+        $model->strukLv3    = $strukLv3;
+        $model->semuaBarang = $semuaBarang;
         $model->sortBy      = ReportPlsForm::SORT_BY_SISA_HARI_ASC;
         if (!is_null($profilId)) {
             $model->profilId = $profilId;
@@ -438,35 +447,70 @@ class Po extends CActiveRecord
             // return ['sukses' => true, 'data' => 0];
             return ['sukses' => false, 'error' => ['msg' => 'Data tidak ditemukan!', 'code' => 404]];
         }
+        // print_r($hasil);
+        // Yii::app()->end();
 
         /* Hapus data yang masih draft */
         PoDetail::model()->deleteAll('po_id=:poId AND status=:sDraft', [':poId' => $this->id, ':sDraft' => PoDetail::STATUS_DRAFT]);
 
         /* Insert data hasil report ke po_detail */
         $data = [];
-        foreach ($hasil as $row) {
-            $data[] = [
-                'po_id'         => $this->id,
-                'barang_id'     => $row['barang_id'],
-                'barcode'       => $row['barcode'],
-                'nama'          => $row['nama'],
-                'harga_beli'    => 0, // dinol kan terlebih dahulu, nanti akan diupdate ان شاءالله
-                'ads'           => $row['ads'],
-                'stok'          => $row['stok'],
-                'est_sisa_hari' => $row['sisa_hari'],
-                'updated_by'    => 1, // User administrator
-            ];
+        foreach ($hasil as $strukturLv3) {
+            foreach ($strukturLv3 as $row) {
+                $data[] = [
+                    'po_id'         => $this->id,
+                    'barang_id'     => $row['barang_id'],
+                    'barcode'       => $row['barcode'],
+                    'nama'          => $row['nama'],
+                    // dinol kan terlebih dahulu, akan diupdate oleh hitungSaranOrder ان شاءالله
+                    'harga_beli'    => 0,
+                    'ads'           => $row['ads'],
+                    'stok'          => $row['stok'],
+                    'est_sisa_hari' => $row['sisa_hari'],
+                    'restock_min'   => $row['restock_min'],
+                    'updated_by'    => Yii::app()->user->id,
+                ];
+            }
+        }
+        if (empty($data)) {
+            return ['sukses' => false, 'error' => ['msg' => 'Data tidak ditemukan!', 'code' => 404]];
         }
         Yii::app()->db->commandBuilder->createMultipleInsertCommand('po_detail', $data)->execute();
 
+        if ($semuaBarang === true) {
+            $barangTambahan = $this->tambahBarangTanpaPenjualan($strukLv1, $strukLv2, $strukLv3);
+            // print_r($barangTambahan);
+            // Yii::app()->end();
+
+            // Jika ada ingin semuaBarang dan ada maka tambahkan
+            if (!empty($barangTambahan)) {
+                $data = []; //init
+                foreach ($barangTambahan as $strukturLv3) {
+                    foreach ($strukturLv3 as $row) {
+                        $data[] = [
+                            'po_id'        => $this->id,
+                            'barang_id'    => $row['id'],
+                            'barcode'      => $row['barcode'],
+                            'nama'         => $row['nama'],
+                            'harga_beli'   => 0,
+                            'stok'         => $row['stok'],
+                            'restock_min'  => $row['restock_min'],
+                            'tgl_jual_max' => $row['tgl'],
+                            'updated_by'   => Yii::app()->user->id,
+                        ];
+                    }
+                }
+                Yii::app()->db->commandBuilder->createMultipleInsertCommand('po_detail', $data)->execute();
+            }
+        }
+
         /* Update dengan perhitungan saran order, untuk persediaan selama $sisaHari + buffer 30% */
-        return $this->hitungSaranOrder($sisaHari, 0.3);
+        return $this->hitungSaranOrder($orderPeriod, $leadTime, $ssd);
     }
 
-    public function hitungSaranOrder($hariPersediaan, $buffer)
+    public function hitungSaranOrder($orderPeriod, $leadTime, $ssd)
     {
-        $bufferHari = $buffer * $hariPersediaan;
-        $sql        = '
+        $sql = '
             UPDATE po_detail
                     JOIN
                 barang_harga_jual bhj ON bhj.barang_id = po_detail.barang_id
@@ -485,21 +529,34 @@ class Po extends CActiveRecord
                 FROM
                     pembelian_detail
                 GROUP BY barang_id) belidx ON belidx.max_id = belid.id
-
+                    JOIN
+                barang ON barang.id = po_detail.barang_id
             SET
-                `saran_order` = CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`),
-                `qty_order` = CEIL(`ads` * (:hariPersediaan + :bufferHari) - `stok`),
+                `saran_order` = CASE
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`) > 0 THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`)
+                        ELSE 0
+                        END,
+                `qty_order` = CASE
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`) > 0 THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`)
+                        ELSE 0
+                        END,
                 `po_detail`.`harga_jual` = bhj.harga,
                 `po_detail`.`harga_beli` = belid.harga_beli
             WHERE
                 po_id = :poId
                 ';
+        /*
+        `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
+         `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
+         */
+
         try {
             $command = Yii::app()->db->createCommand($sql);
             $hasil   = $command->execute([
-                ':hariPersediaan' => $hariPersediaan,
-                ':bufferHari'     => $bufferHari,
-                ':poId'           => $this->id,
+                ':orderPeriod' => $orderPeriod,
+                ':leadTime'    => $leadTime,
+                ':ssd'         => $ssd,
+                ':poId'        => $this->id,
             ]);
             return [
                 'sukses' => true,
@@ -514,5 +571,83 @@ class Po extends CActiveRecord
                 ],
             ];
         }
+    }
+
+    public function tambahBarangTanpaPenjualan($strukLv1, $strukLv2, $strukLv3)
+    {
+        $strukturList = [];
+        if ($strukLv3 > 0) {
+            $strukturList[] = $strukLv3;
+        } else if ($strukLv2 > 0) {
+            $strukturList = StrukturBarang::listChildStruk($strukLv2);
+        } else if ($strukLv1 > 0) {
+            $strukturListLv2 = StrukturBarang::listChildStruk($strukLv1);
+            foreach ($strukturListLv2 as $strukturIdLv2) {
+                $strukturList = array_merge($strukturList, StrukturBarang::listChildStruk($strukturIdLv2));
+            }
+        } else {
+            // Struktur tidak dipilih, return all
+            $r['all'] = $this->tambahBarangTanpaPenjualanLv3(null);
+            return $r;
+        }
+
+        $r = [];
+        foreach ($strukturList as $strukId) {
+            $r[$strukId] = $this->tambahBarangTanpaPenjualanLv3($strukId);
+        }
+        return $r;
+    }
+
+    public function tambahBarangTanpaPenjualanLv3($strukId)
+    {
+        $whereStruk = '';
+        if (!empty($strukId)) {
+            $whereStruk = ' AND b.struktur_id = :strukturLv3';
+        }
+
+        $sql = "
+        SELECT
+            barang.id, barang.barcode, barang.nama, barang.restock_min, t_barang.tgl, t_stok.qty stok
+        FROM
+        (
+            SELECT
+                barang_id, MAX(pj.tanggal) tgl
+            FROM
+                penjualan_detail pjd
+                    JOIN
+                penjualan pj ON pj.id = pjd.penjualan_id
+            WHERE
+                barang_id IN (SELECT
+                        b.id
+                    FROM
+                        barang b
+                            JOIN
+                        supplier_barang sb ON sb.barang_id = b.id
+                            AND sb.supplier_id = :supplierId
+                            LEFT JOIN
+                        po_detail pod ON pod.barang_id = b.id
+                            AND pod.po_id = :poId
+                    WHERE
+                        b.status = :barangAktif AND pod.id IS NULL {$whereStruk})
+            GROUP BY barang_id) t_barang
+            JOIN
+            (SELECT
+                barang_id, SUM(qty) qty
+            FROM
+                inventory_balance
+            GROUP BY barang_id) AS t_stok ON t_stok.barang_id = t_barang.barang_id
+                JOIN
+            barang ON barang.id = t_barang.barang_id;
+        ";
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValues([
+            ':barangAktif' => Barang::STATUS_AKTIF,
+            ':poId'        => $this->id,
+            ':supplierId'  => $this->profil_id,
+        ]);
+        if (!empty($strukId)) {
+            $command->bindValue(':strukturLv3', $strukId);
+        }
+        return $command->queryAll();
     }
 }

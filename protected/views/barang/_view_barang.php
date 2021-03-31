@@ -22,6 +22,8 @@ $this->widget('BDetailView', array(
             'name'  => 'rak.nama',
             'label' => 'Rak',
         ),
+        'restock_min',
+        'variant_coefficient',
         /*
         'restock_point',
         'restock_level',

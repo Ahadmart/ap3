@@ -10,14 +10,14 @@ class EditbarangController extends Controller
         if (isset($_GET['Barang'])) {
             $model->attributes = $_GET['Barang'];
         }
-        
+
         $lv1 = new StrukturBarang('search');
-        $lv1->unsetAttributes();  // clear any default values
+        $lv1->unsetAttributes(); // clear any default values
         $lv1->setAttribute('level', 1); // default yang tampil
         $lv1->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
 
         $strukturDummy = new StrukturBarang('search');
-        $strukturDummy->unsetAttributes();  // clear any default values
+        $strukturDummy->unsetAttributes(); // clear any default values
         $strukturDummy->setAttribute('level', 0);
 
         $this->render('index', [
@@ -249,7 +249,8 @@ class EditbarangController extends Controller
                 ':barangId' => $item,
                 ':default'  => 1, // set as default!
                 ':userId'   => Yii::app()->user->id,
-                ':waktu'    => $sekarang];
+                ':waktu'    => $sekarang,
+            ];
         }
         $command     = Yii::app()->db->createCommand($sql);
         $rowAffected = 0;
@@ -332,8 +333,7 @@ class EditbarangController extends Controller
 
     public function actionFormGantiStruktur()
     {
-        $this->renderPartial('_form_ganti_struktur', [
-        ]);
+        $this->renderPartial('_form_ganti_struktur', []);
     }
 
     private function _setStruktur($items, $strukturL3Id)
@@ -347,12 +347,12 @@ class EditbarangController extends Controller
             if (!$pertamax) {
                 $condition .= ',';
             }
-            $condition    .= $key;
+            $condition .= $key;
             $params[$key] = $item;
             $pertamax     = false;
             $i++;
         }
-        $condition   .= ')';
+        $condition .= ')';
         $rowAffected = Barang::model()->updateAll(['struktur_id' => $strukturL3Id], $condition, $params);
         $struktur    = StrukturBarang::model()->findByPk($strukturL3Id);
         return [
@@ -380,4 +380,50 @@ class EditbarangController extends Controller
         }
     }
 
+    public function actionFormMinimumRestock()
+    {
+        $this->renderPartial('_form_set_minimum_restock');
+    }
+
+    public function actionSetMinimumRestock()
+    {
+        if (isset($_POST['ajaxminrestock']) && !empty($_POST['minrestock-value']) && !empty($_POST['items'])) {
+            $items            = $_POST['items'];
+            $minrestock_value = $_POST['minrestock-value'];
+            $this->renderJSON($this->_setMinRestock($items, $minrestock_value));
+        } else {
+            $this->renderJSON([
+                'sukses' => false,
+                'error'  => [
+                    'code' => 500,
+                    'msg'  => 'Tidak ada data!',
+                ],
+            ]);
+        }
+    }
+
+    private function _setMinRestock($items, $value)
+    {
+        $condition = 'id in (';
+        $i         = 1;
+        $params    = [];
+        $pertamax  = true;
+        foreach ($items as $item) {
+            $key = ':item' . $i;
+            if (!$pertamax) {
+                $condition .= ',';
+            }
+            $condition .= $key;
+            $params[$key] = $item;
+            $pertamax     = false;
+            $i++;
+        }
+        $condition .= ')';
+        $rowAffected = Barang::model()->updateAll(['restock_min' => $value], $condition, $params);
+        return [
+            'sukses'           => true,
+            'rowAffected'      => $rowAffected,
+            'minrestock_value' => $value,
+        ];
+    }
 }

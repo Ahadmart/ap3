@@ -33,7 +33,7 @@ class PoController extends Controller
             'model'          => $model,
             'poDetail'       => $poDetail,
             'printerPo'      => $printerPo,
-            'kertasUntukPdf' => $kertasUntukPdf
+            'kertasUntukPdf' => $kertasUntukPdf,
         ]);
     }
 
@@ -82,7 +82,7 @@ class PoController extends Controller
         }
 
         /*  Mode untuk input item barang,
-          bisa manual, atau bisa lewat analisa PLS (Potensi Lost Sales) terlebih dahulu
+        bisa manual, atau bisa lewat analisa PLS (Potensi Lost Sales) terlebih dahulu
          */
         $modeManual = true;
         if (isset($_GET['modepls']) && $_GET['modepls']) {
@@ -108,7 +108,7 @@ class PoController extends Controller
         }
 
         // Untuk menampilkan daftar barang, pada pencarian tabel
-        $barangList         = new Barang('search');
+        $barangList = new Barang('search');
         $barangList->unsetAttributes();
         $barangList->aktif();
         $barangList->setAttribute('nama', '=" "'); // Init data: agar barang tidak tampil
@@ -124,7 +124,7 @@ class PoController extends Controller
             }
         }
 
-        $PODetail         = new PoDetail('search');
+        $PODetail = new PoDetail('search');
         $PODetail->unsetAttributes();
         $PODetail->setAttribute('po_id', '=' . $id);
         $PODetail->status = PoDetail::STATUS_ORDER;
@@ -143,7 +143,7 @@ class PoController extends Controller
 
         $modelReportPls = new ReportPlsForm;
 
-        $PLSDetail         = new PoDetail('search');
+        $PLSDetail = new PoDetail('search');
         $PLSDetail->unsetAttributes();
         $PLSDetail->setAttribute('po_id', '=' . $id);
         $PLSDetail->status = PoDetail::STATUS_DRAFT;
@@ -176,7 +176,7 @@ class PoController extends Controller
             'modelReportPls' => $modelReportPls,
             'plsDetail'      => $PLSDetail,
             'pageSize'       => $pageSize,
-            'scanBarcode'    => $scanBarcode
+            'scanBarcode'    => $scanBarcode,
         ]);
     }
 
@@ -316,14 +316,14 @@ class PoController extends Controller
         }
 
         $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
-            ':filterPerSupplier' => 'po.filterpersupplier'
+            ':filterPerSupplier' => 'po.filterpersupplier',
         ]);
 
         if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
             $po          = Po::model()->findByPk($id);
             $cekSupplier = SupplierBarang::model()->find('barang_id=:barangId AND supplier_id=:supplierId', [
                 ':barangId'   => $barangId,
-                ':supplierId' => $po->profil_id
+                ':supplierId' => $po->profil_id,
             ]);
 
             if (!is_null($cekSupplier)) {
@@ -340,15 +340,15 @@ class PoController extends Controller
                 ];
                 $this->renderJSON([
                     'sukses' => true,
-                    'info'   => $arr
+                    'info'   => $arr,
                 ]);
             } elseif (is_null($cekSupplier)) {
                 $this->renderJSON([
                     'sukses' => false,
                     'error'  => [
                         'code' => 500,
-                        'msg'  => 'Barang "' . $barang->nama . '" (' . $barang->barcode . ') tidak ditemukan di profil ini'
-                    ]
+                        'msg'  => 'Barang "' . $barang->nama . '" (' . $barang->barcode . ') tidak ditemukan di profil ini',
+                    ],
                 ]);
             }
         } elseif ($configFilterPerSup->nilai == 0) {
@@ -365,7 +365,7 @@ class PoController extends Controller
             ];
             $this->renderJSON([
                 'sukses' => true,
-                'info'   => $arr
+                'info'   => $arr,
             ]);
         }
     }
@@ -375,7 +375,7 @@ class PoController extends Controller
         $return = [
             'sukses' => false,
         ];
-        $model  = $this->loadModel($id);
+        $model = $this->loadModel($id);
         if (isset($_POST['Barang'])) {
             $barang             = new Barang;
             $barang->attributes = $_POST['Barang'];
@@ -423,6 +423,7 @@ class PoController extends Controller
             $detail->harga_beli = $_POST['hargabeli'];
             $detail->harga_jual = $_POST['hargajual'];
             $detail->status     = PoDetail::STATUS_ORDER;
+            $detail->stok       = $barang->stok;
 
             // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
             // echo terlihat di console
@@ -441,8 +442,8 @@ class PoController extends Controller
     public function actionUpdateQty()
     {
         if (isset($_POST['pk'])) {
-            $pk                = $_POST['pk'];
-            $qty               = $_POST['value'];
+            $pk  = $_POST['pk'];
+            $qty = $_POST['value'];
 
             if (PoDetail::model()->updateByPk($pk, ['qty_order' => $qty]) > 0) {
                 $return = ['sukses' => true];
@@ -517,8 +518,8 @@ class PoController extends Controller
 
     public function exportPdf($id, $kertas = Po::KERTAS_A4, $draft = false)
     {
-        $modelHeader  = $this->loadModel($id);
-        $configs      = Config::model()->findAll();
+        $modelHeader = $this->loadModel($id);
+        $configs     = Config::model()->findAll();
         /*
          * Ubah config (object) jadi array
          */
@@ -537,7 +538,7 @@ class PoController extends Controller
          */
         $poDetail = PoDetail::model()->findAll([
             'condition' => "po_id={$id}",
-            'order'     => 'nama'
+            'order'     => 'nama',
         ]);
 
         /*
@@ -558,7 +559,7 @@ class PoController extends Controller
                 'modelHeader'  => $modelHeader,
                 'branchConfig' => $branchConfig,
                 'profil'       => $profil,
-                'poDetail'     => $poDetail
+                'poDetail'     => $poDetail,
             ],
             true
         ));
@@ -586,7 +587,7 @@ class PoController extends Controller
         $this->renderPartial('_file_text', [
             'namaFile'    => $namaFile,
             'text'        => $text,
-            'contentType' => $contentTypeMeta
+            'contentType' => $contentTypeMeta,
         ]);
     }
 
@@ -607,22 +608,28 @@ class PoController extends Controller
             'sukses' => false,
             'error'  => [
                 'code' => 500,
-                'msg'  => 'UNDER CONSTRUCTION! Belum Bisa dipakai'
-            ]
+                'msg'  => 'UNDER CONSTRUCTION! Belum Bisa dipakai',
+            ],
         ];
-        $model  = $this->loadModel($id);
+        $model = $this->loadModel($id);
 
         $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
-            ':filterPerSupplier' => 'po.filterpersupplier'
+            ':filterPerSupplier' => 'po.filterpersupplier',
         ]);
 
         $profilId = null;
         if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
             $profilId = $model->profil_id;
         }
-        $rakId = empty($_POST['rakId']) ? NULL : $_POST['rakId'];
+        $rakId    = empty($_POST['rakId']) ? null : $_POST['rakId'];
+        $strukLv1 = empty($_POST['strukLv1']) ? null : $_POST['strukLv1'];
+        $strukLv2 = empty($_POST['strukLv2']) ? null : $_POST['strukLv2'];
+        $strukLv3 = empty($_POST['strukLv3']) ? null : $_POST['strukLv3'];
+        $leadTime = empty($_POST['leadTime']) ? 0 : $_POST['leadTime'];
+        $ssd      = empty($_POST['ssd']) ? 0 : $_POST['ssd'];
+        $semuaBarang = $_POST['semuaBarang'] == 'true' ? true : false;
 
-        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['hariSisa'], $profilId, $rakId);
+        $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['orderPeriod'], $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3, $semuaBarang);
         // $return['rakId'] = $_POST['rakId'];
         $this->renderJSON($return);
         // print_r($return);
@@ -636,16 +643,16 @@ class PoController extends Controller
      */
     public function actionCariBarang($profilId, $term)
     {
-        $q         = new CDbCriteria();
+        $q = new CDbCriteria();
         $q->addCondition('(barcode like :term OR nama like :term) AND status=:status');
         $q->order  = 'nama';
         $q->params = [
             ':term'   => "%{$term}%",
-            ':status' => Barang::STATUS_AKTIF
+            ':status' => Barang::STATUS_AKTIF,
         ];
 
         $configFilterPerSup = Config::model()->find('nama=:filterPerSupplier', [
-            ':filterPerSupplier' => 'po.filterpersupplier'
+            ':filterPerSupplier' => 'po.filterpersupplier',
         ]);
 
         if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
@@ -659,7 +666,7 @@ class PoController extends Controller
             $r[] = [
                 'label' => $barang->nama,
                 'value' => $barang->barcode,
-                'id'    => $barang->id
+                'id'    => $barang->id,
             ];
         }
 
@@ -686,7 +693,7 @@ class PoController extends Controller
     {
         return CHtml::link('<i class="fa fa-plus-square"><i>', Yii::app()->controller->createUrl('setorder'), [
             'data-detailid' => $data->id,
-            'class'         => 'tombol-setorder'
+            'class'         => 'tombol-setorder',
         ]);
     }
 
@@ -720,7 +727,7 @@ class PoController extends Controller
             $pk          = $_POST['pk'];
             $rowAffected = PoDetail::model()->updateByPk($pk, [
                 'qty_order' => $_POST['value'],
-                'status'    => PoDetail::STATUS_ORDER
+                'status'    => PoDetail::STATUS_ORDER,
             ]);
             if ($rowAffected > 0) {
                 $return = ['sukses' => true];
@@ -748,8 +755,18 @@ class PoController extends Controller
 
     public function actionOrderSemua($id)
     {
-        $return      = ['sukses' => false];
-        $rowAffected = PoDetail::model()->updateAll(['status' => PoDetail::STATUS_ORDER], 'po_id=:POId', [':POId' => $id]);
+        $return          = ['sukses' => false];
+        $condition       = 'po_id=:POId ';
+        $params[':POId'] = $id;
+        if (!empty($_GET['barcode'])) {
+            $condition .= 'AND barcode LIKE :barcode ';
+            $params[':barcode'] = "%{$_GET['barcode']}%";
+        }
+        if (!empty($_GET['nama'])) {
+            $condition .= 'AND nama LIKE :nama';
+            $params[':nama'] = "%{$_GET['nama']}%";
+        }
+        $rowAffected = PoDetail::model()->updateAll(['status' => PoDetail::STATUS_ORDER], $condition, $params);
         if ($rowAffected > 0) {
             $return = ['sukses' => true];
         }
@@ -762,6 +779,81 @@ class PoController extends Controller
         $rowAffected = PoDetail::model()->updateAll(['status' => PoDetail::STATUS_DRAFT], 'po_id=:POId', [':POId' => $id]);
         if ($rowAffected > 0) {
             $return = ['sukses' => true];
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionAmbilStrukturLv2()
+    {
+        $lv1Id   = $_GET['parent-id'];
+        $listLv2 = StrukturBarang::listStrukLv2($lv1Id);
+        $r       = '';
+        foreach ($listLv2 as $key => $value) {
+            $r .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        echo $r;
+    }
+
+    public function actionAmbilStrukturLv3()
+    {
+        $lv2Id   = $_GET['parent-id'];
+        $listLv3 = StrukturBarang::listStrukLv3($lv2Id);
+        $r       = '';
+        foreach ($listLv3 as $key => $value) {
+            $r .= '<option value="' . $key . '">' . $value . '</option>';
+        }
+        echo $r;
+    }
+
+    /**
+     * Render html link (<a>) untuk edit restock_min (minimum restock)
+     * @param  activeRecord $data
+     * @param  type         $row
+     * @return html         link editable
+     */
+    public function renderRestockMinEditable($data, $row)
+    {
+        $ak = '';
+        if ($row == 0) {
+            $ak = 'accesskey="r"';
+        }
+        return '<a href="#" class="editable-order" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
+            Yii::app()->controller->createUrl('editrestockmin') . '">' . $data->restock_min . '</a>';
+    }
+
+    public function actionEditRestockMin()
+    {
+        $return = ['sukses' => false];
+        if (isset($_POST['pk'])) {
+            $pk          = $_POST['pk'];
+            $poDetail    = PoDetail::model()->findByPk($pk);
+            $rowAffected = $poDetail->updateByPk($pk, [
+                'restock_min' => $_POST['value'],
+                // 'saran_order' => $poDetail->saran_order - $poDetail->restock_min + $_POST['value'],
+                'qty_order'   => $poDetail->saran_order + $_POST['value'],
+                'updated_by'  => Yii::app()->user->id,
+            ]);
+            // if ($_POST['value'] > $poDetail->qty_order) {
+            //     $rowAffected = $poDetail->updateByPk($pk, [
+            //         'restock_min' => $_POST['value'],
+            //         'qty_order'   => $_POST['value'],
+            //         'updated_by'  => Yii::app()->user->id,
+            //     ]);
+            // } else {
+            //     $rowAffected = $poDetail->updateByPk($pk, [
+            //         'restock_min' => $_POST['value'],
+            //         'updated_by'  => Yii::app()->user->id,
+            //     ]);
+            // }
+            if ($rowAffected > 0) {
+                $return = ['sukses' => true];
+            }
+            // Barang juga diupdate mudah-mudahan lancar tanpa transaction
+            $barangId = PoDetail::model()->findByPk($pk)->barang_id;
+            Barang::model()->updateByPk($barangId, [
+                'restock_min' => $_POST['value'],
+                'updated_by'  => Yii::app()->user->id,
+            ]);
         }
         $this->renderJSON($return);
     }

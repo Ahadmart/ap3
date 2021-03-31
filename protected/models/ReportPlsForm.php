@@ -22,10 +22,19 @@ class ReportPlsForm extends CFormModel
 
     public $jumlahHari;
     public $profilId;
-    public $sisaHariMax;
+    // public $sisaHariMax; // diganti dengan orderPeriod
+    public $orderPeriod;
+    /* Parameter untuk PO: */
+    public $leadTime; // Jarak antar order, sampai ordernya sampai
+    public $ssd; // Safety Stock Day (Stok jaga-jaga)
+    public $semuaBarang = false; // Jika true, juga mengambil barang tanpa penjualan
+    /* end Parameter untuk PO */
     public $rakId;
     public $sortBy;
     public $kertas;
+    public $strukLv1;
+    public $strukLv2;
+    public $strukLv3;
 
     /**
      * Declares the validation rules.
@@ -33,8 +42,8 @@ class ReportPlsForm extends CFormModel
     public function rules()
     {
         return [
-            ['jumlahHari, sortBy, sisaHariMax', 'required', 'message' => '{attribute} tidak boleh kosong'],
-            ['profilId, rakId, kertas', 'safe'],
+            ['jumlahHari, sortBy, orderPeriod', 'required', 'message' => '{attribute} tidak boleh kosong'],
+            ['profilId, rakId, kertas, leadTime, ssd, semuaBarang', 'safe'],
         ];
     }
 
@@ -46,9 +55,16 @@ class ReportPlsForm extends CFormModel
         return [
             'jumlahHari'  => 'Range Analisa Penjualan',
             'profilId'    => 'Profil (Opsional)',
-            'sisaHariMax' => 'Limit Estimasi Sisa Hari <=',
+            // 'sisaHariMax' => 'Limit Estimasi Sisa Hari <=',
+            'orderPeriod' => 'Order Period',
+            'leadTime'    => 'Lead Time',
+            'ssd'         => 'Safety Stock Day',
+            'semuaBarang' => 'Semua barang',
             'rakId'       => 'Rak (Opsional)',
             'sortBy'      => 'Urut berdasarkan',
+            'strukLv1'    => 'Struktur Level 1',
+            'strukLv2'    => 'Struktur Level 2',
+            'strukLv3'    => 'Struktur Level 3',
         ];
     }
 
@@ -58,13 +74,76 @@ class ReportPlsForm extends CFormModel
         return $model->nama;
     }
 
+    public function listChildStruk($id)
+    {
+        $criteria = new CDbCriteria();
+        if (empty($id)) {
+            $criteria->condition = 'status=:publish AND parent_id IS NULL';
+            $criteria->params    = [
+                ':publish' => StrukturBarang::STATUS_PUBLISH,
+            ];
+        } else {
+            $criteria->condition = 'status=:publish AND parent_id=:id';
+            $criteria->params    = [
+                ':publish' => StrukturBarang::STATUS_PUBLISH,
+                ':id'      => $id,
+            ];
+        }
+        $criteria->order = 'nama';
+
+        $childStruk = StrukturBarang::model()->findAll($criteria);
+
+        $r = [];
+        foreach ($childStruk as $struk) {
+            $r[] = $struk->id;
+        }
+        return $r;
+    }
+
     public function reportPls()
     {
+        $strukturList = [];
+        if ($this->strukLv3 > 0) {
+            $strukturList[] = $this->strukLv3;
+            // echo ',this->strukId: ' . $this->strukLv3;
+        } else if ($this->strukLv2 > 0) {
+            $strukturList = $this->listChildStruk($this->strukLv2);
+        } else if ($this->strukLv1 > 0) {
+            $strukturListLv2 = $this->listChildStruk($this->strukLv1);
+            foreach ($strukturListLv2 as $strukturIdLv2) {
+                $strukturList = array_merge($strukturList, $this->listChildStruk($strukturIdLv2));
+            }
+        } else {
+            // Struktur tidak dipilih, return all
+            $r['all'] = $this->reportPlsLevel3(null);
+            return $r;
+        }
+
+        $r = [];
+        foreach ($strukturList as $strukId) {
+            // echo ', strukId: ' . $strukId;
+            $r[$strukId] = $this->reportPlsLevel3($strukId);
+        }
+        return $r;
+    }
+
+    public function reportPlsLevel3($strukId)
+    {
+        $whereStruk = '';
+        if (!empty($strukId)) {
+            $whereStruk = "
+                JOIN
+            barang ON barang.id = penjualan_detail.barang_id
+                AND barang.struktur_id = :strukId
+        ";
+        }
+
         $command = Yii::app()->db->createCommand();
         $command->select("
             t_jualan.*,
             barang.barcode,
             barang.nama,
+            barang.restock_min,
             t_jualan.qty / :range ads,
             t_stok.qty stok,
             t_stok.qty / (t_jualan.qty / :range) sisa_hari
@@ -77,6 +156,7 @@ class ReportPlsForm extends CFormModel
                     JOIN
                 penjualan ON penjualan.id = penjualan_detail.penjualan_id
                     AND penjualan.status != :statusDraft
+                    {$whereStruk}
             WHERE
                 penjualan.created_at BETWEEN DATE_SUB(NOW(), INTERVAL :range DAY) AND NOW()
             GROUP BY barang_id) AS t_jualan
@@ -89,7 +169,7 @@ class ReportPlsForm extends CFormModel
             GROUP BY barang_id) AS t_stok
                 ", "t_stok.barang_id = t_jualan.barang_id");
         $command->join("barang", "t_jualan.barang_id = barang.id");
-        $command->where("t_stok.qty / (t_jualan.qty / :range) <= :sisaHariMax");
+        $command->where("t_stok.qty / (t_jualan.qty / :range) <= :orderPeriod");
         $command->order("t_stok.qty / (t_jualan.qty / :range)" . $this->listNamaSortBy()[$this->sortBy]);
 
         if (!empty($this->profilId)) {
@@ -105,7 +185,7 @@ class ReportPlsForm extends CFormModel
 
         $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
         $command->bindValue(":range", $this->jumlahHari);
-        $command->bindValue(":sisaHariMax", $this->sisaHariMax);
+        $command->bindValue(":orderPeriod", $this->orderPeriod);
         $command->bindValue(":statusBarang", Barang::STATUS_AKTIF);
 
         if (!empty($this->profilId)) {
@@ -114,7 +194,12 @@ class ReportPlsForm extends CFormModel
         if (!empty($this->rakId)) {
             $command->bindValue(":rakId", $this->rakId);
         }
+        if (!empty($strukId)) {
+            $command->bindValue(":strukId", $strukId);
+        }
 
+        // echo $command->getText();
+        // Yii::app()->end();
         // return $command->getText();
         return $command->queryAll();
     }

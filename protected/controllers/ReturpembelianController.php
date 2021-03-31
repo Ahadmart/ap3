@@ -27,7 +27,8 @@ class ReturpembelianController extends Controller
     public function accessRules()
     {
         return array(
-            array('deny', // deny guest
+            array(
+                'deny', // deny guest
                 'users' => array('guest'),
             ),
         );
@@ -79,7 +80,8 @@ class ReturpembelianController extends Controller
         $supplierList = Profil::model()->findAll(array(
             'select' => 'id, nama',
             'condition' => 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_SUPPLIER,
-            'order' => 'nama'));
+            'order' => 'nama'
+        ));
 
         $this->render('tambah', array(
             'model' => $model,
@@ -216,8 +218,8 @@ class ReturpembelianController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('view', array('id' => $data->id)) . '">' .
-                    $data->nomor . '</a>';
+                $this->createUrl('view', array('id' => $data->id)) . '">' .
+                $data->nomor . '</a>';
         }
         return $return;
     }
@@ -226,8 +228,8 @@ class ReturpembelianController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                    $this->createUrl('ubah', array('id' => $data->id)) . '">' .
-                    $data->tanggal . '</a>';
+                $this->createUrl('ubah', array('id' => $data->id)) . '">' .
+                $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -237,8 +239,8 @@ class ReturpembelianController extends Controller
     function renderLinkToSupplier($data)
     {
         return '<a href="' .
-                $this->createUrl('supplier/view', array('id' => $data->profil_id)) . '">' .
-                $data->profil->nama . '</a>';
+            $this->createUrl('supplier/view', array('id' => $data->profil_id)) . '">' .
+            $data->profil->nama . '</a>';
     }
 
     public function renderRadioButton($data, $row)
@@ -377,12 +379,13 @@ class ReturpembelianController extends Controller
         $profilList = Profil::model()->findAll(array(
             'select' => 'id, nama',
             'condition' => $condition,
-            'order' => 'nama'));
+            'order' => 'nama'
+        ));
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
         foreach ($profilList as $profil) {
-            $string.='<option value="' . $profil->id . '">';
-            $string.=$profil->nama . '</option>';
+            $string .= '<option value="' . $profil->id . '">';
+            $string .= $profil->nama . '</option>';
         }
         echo $string;
     }
@@ -449,12 +452,15 @@ class ReturpembelianController extends Controller
         if ($draft) {
             $viewCetak = '_pdf_draft';
         }
-        $mpdf->WriteHTML($this->renderPartial($viewCetak, array(
-                    'modelHeader' => $modelHeader,
-                    'branchConfig' => $branchConfig,
-                    'profil' => $profil,
-                    'returPembelianDetail' => $returPembelianDetail
-                        ), true
+        $mpdf->WriteHTML($this->renderPartial(
+            $viewCetak,
+            array(
+                'modelHeader' => $modelHeader,
+                'branchConfig' => $branchConfig,
+                'profil' => $profil,
+                'returPembelianDetail' => $returPembelianDetail
+            ),
+            true
         ));
 
         $mpdf->SetDisplayMode('fullpage');
@@ -481,7 +487,7 @@ class ReturpembelianController extends Controller
 
     public function exportCsv($id, $device)
     {
-        
+
         $model = $this->loadModel($id);
         $csv = $model->keCsv();
 
@@ -492,7 +498,6 @@ class ReturpembelianController extends Controller
             'namaFile' => $namaFile,
             'csv' => $csv
         ));
-        
     }
 
     public function actionPrintReturPembelian($id)
@@ -517,4 +522,38 @@ class ReturpembelianController extends Controller
         }
     }
 
+    /**
+     * Menerbitkan piutang untuk retur_pembelian ID
+     */
+    public function actionPiutang($id)
+    {
+        if (!empty($id)) {
+            $model = $this->loadModel($id);
+            $result = $model->terbitkanPiutang();
+
+            if ($result['sukses']) {
+                $this->redirect(['returpembelian/view', 'id' => $id]);
+            } else {
+                throw new CHttpException(500, 'Gagal terbit piutang');
+            }
+        }
+    }
+
+    /**
+     * Mengubah status menjadi batal, dan menambah stok
+     */
+    public function actionBatal($id)
+    {
+        $return = ['sukses' => false];
+        if (isset($_POST['batal']) && $_POST['batal']) {
+            $returBeli = $this->loadModel($id);
+            if ($returBeli->status == ReturPembelian::STATUS_POSTED) {
+                /*
+                 * bisa batal jika hanya dan hanya jika status posted
+                 */
+                $return = $returBeli->batal();
+            }
+        }
+        $this->renderJSON($return);
+    }
 }

@@ -88,7 +88,7 @@ class ReportController extends Controller
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
                     /* Ada tambahan parameter kertas untuk tipe pdf */
-                    $this->hutangPiutangPdf($_GET['kertas']);
+                    // $this->hutangPiutangPdf($_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
                     $this->penjualanCsv();
@@ -150,17 +150,6 @@ class ReportController extends Controller
     {
         $this->layout = '//layouts/box_kecil';
         $model        = new ReportHarianForm;
-        if (isset($_REQUEST['ReportHarianForm'])) {
-            $model->attributes = $_REQUEST['ReportHarianForm'];
-            if ($model->validate()) {
-                $report             = $model->reportHarianDetail();
-                $report['tanggal']  = $model->tanggal;
-                $report['namaToko'] = $this->namaToko();
-                $report['kodeToko'] = $this->kodeToko();
-                $this->harianDetailPdf($report);
-                Yii::app()->end();
-            }
-        }
 
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
@@ -396,7 +385,11 @@ class ReportController extends Controller
     public function actionTotalStok()
     {
         $this->layout = '//layouts/box_kecil';
-        $this->render('totalstok', ['totalStok' => InventoryBalance::model()->totalInventory()]);
+        $this->render('totalstok', [
+            'stokNet'       => InventoryBalance::model()->totalInventory(),
+            'stokReturBeli' => InventoryBalance::model()->totalNilaiReturBeliPosted(),
+            'totalStok'     => (int) InventoryBalance::model()->totalInventory() + (int) InventoryBalance::model()->totalNilaiReturBeliPosted(),
+        ]);
     }
 
     public function actionTopRank()
@@ -407,6 +400,8 @@ class ReportController extends Controller
             $model->attributes = $_POST['ReportTopRankForm'];
             if ($model->validate()) {
                 $report = $model->reportTopRank();
+                // var_dump($report);
+                // Yii::app()->end();
             }
         }
 
@@ -435,16 +430,16 @@ class ReportController extends Controller
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->topRankPdf($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['kertas']);
+                    $this->topRankPdf($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    $this->topRankCsv($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy']);
+                    $this->topRankCsv($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3']);
                     break;
             }
         }
     }
 
-    public function topRankPdf($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $kertas)
+    public function topRankPdf($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3, $kertas)
     {
         $model             = new ReportTopRankForm;
         $model->profilId   = $profilId;
@@ -454,6 +449,9 @@ class ReportController extends Controller
         $model->rakId      = $rakId;
         $model->limit      = $limit;
         $model->sortBy     = $sortBy;
+        $model->strukLv1   = $strukLv1;
+        $model->strukLv2   = $strukLv2;
+        $model->strukLv3   = $strukLv3;
 
         $report = $model->reportTopRank();
 
@@ -486,7 +484,7 @@ class ReportController extends Controller
         $mpdf->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
-    public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy)
+    public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3)
     {
         $model             = new ReportTopRankForm;
         $model->profilId   = $profilId;
@@ -496,16 +494,31 @@ class ReportController extends Controller
         $model->rakId      = $rakId;
         $model->limit      = $limit;
         $model->sortBy     = $sortBy;
+        $model->strukLv1   = $strukLv1;
+        $model->strukLv2   = $strukLv2;
+        $model->strukLv3   = $strukLv3;
 
         $text = $model->toCsv();
-
+        $namaStruk = '';
+        if (!empty($model->strukLv1)) :
+            $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
+            $namaStruk .= $strukLv1->nama;
+        endif;
+        if (!empty($model->strukLv2)) :
+            $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
+            $namaStruk .= '_' . $strukLv2->nama;
+        endif;
+        if (!empty($model->strukLv3)) :
+            $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
+            $namaStruk .= '_' . $strukLv3->nama;
+        endif;
         $timeStamp  = date('Ymd His');
         $keterangan = $model->dari . '-' . $model->sampai;
-        $namaFile   = "Laporan Top Rank {$keterangan} {$timeStamp}.csv";
+        $namaFile   = "Laporan Top Rank {$namaStruk} {$keterangan} {$timeStamp}.csv";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
-            'csv'      => $text
+            'csv'      => $text,
         ]);
     }
 
@@ -734,16 +747,16 @@ class ReportController extends Controller
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->umurBarangPdf($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1'], $_GET['kertas']);
+                    $this->umurBarangPdf($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    $this->umurBarangCsv($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1']);
+                    $this->umurBarangCsv($_GET['bulan'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['limit'], $_GET['sortBy0'], $_GET['sortBy1'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3']);
                     break;
             }
         }
     }
 
-    public function umurBarangCsv($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1)
+    public function umurBarangCsv($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $strukLv1, $strukLv2, $strukLv3)
     {
         $model = new ReportUmurBarangForm();
 
@@ -754,21 +767,36 @@ class ReportController extends Controller
         $model->limit      = $limit;
         $model->sortBy0    = $sortBy0;
         $model->sortBy1    = $sortBy1;
+        $model->strukLv1   = $strukLv1;
+        $model->strukLv2   = $strukLv2;
+        $model->strukLv3   = $strukLv3;
         //$report            = $model->reportUmurBarang();
 
-        $text  = $model->toCsv();
-
+        $text      = $model->toCsv();
+        $namaStruk = '';
+        if (!empty($model->strukLv1)) :
+            $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
+            $namaStruk .= $strukLv1->nama;
+        endif;
+        if (!empty($model->strukLv2)) :
+            $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
+            $namaStruk .= '_' . $strukLv2->nama;
+        endif;
+        if (!empty($model->strukLv3)) :
+            $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
+            $namaStruk .= '_' . $strukLv3->nama;
+        endif;
         $timeStamp       = date('Ymd His');
         $keteranganWaktu = $model->bulan > 0 ? '>=' . $model->bulan : $model->dari . '-' . $model->sampai;
-        $namaFile        = "Laporan Umur Barang {$keteranganWaktu} {$timeStamp}.csv";
+        $namaFile        = "Laporan Umur Barang {$namaStruk} {$keteranganWaktu} {$timeStamp}.csv";
 
         $this->renderPartial('_csv', [
-            'namaFile'    => $namaFile,
-            'csv'        => $text
+            'namaFile' => $namaFile,
+            'csv'      => $text,
         ]);
     }
 
-    public function umurBarangPdf($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $kertas)
+    public function umurBarangPdf($bulan, $dari, $sampai, $kategoriId, $limit, $sortBy0, $sortBy1, $strukLv1, $strukLv2, $strukLv3, $kertas)
     {
         ini_set('memory_limit', '-1');
         set_time_limit(0);
@@ -783,6 +811,9 @@ class ReportController extends Controller
         $model->limit      = $limit;
         $model->sortBy0    = $sortBy0;
         $model->sortBy1    = $sortBy1;
+        $model->strukLv1   = $strukLv1;
+        $model->strukLv2   = $strukLv2;
+        $model->strukLv3   = $strukLv3;
         $report            = $model->reportUmurBarang();
 
         $configs = Config::model()->findAll();
@@ -826,8 +857,14 @@ class ReportController extends Controller
             $model->attributes = $_POST['ReportPlsForm'];
             if ($model->validate()) {
                 $report = $model->reportPls();
+            } else {
+                throw new CHttpException(500, 'Gagal mengambil report PLS');
             }
         }
+        // echo '<pre>';
+        // print_r($report);
+        // echo '</pre>';
+        // Yii::app()->end();
         $profil = new Profil('search');
         $profil->unsetAttributes(); // clear any default values
         if (isset($_GET['Profil'])) {
@@ -852,13 +889,13 @@ class ReportController extends Controller
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->plsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['sisaHariMax'], $_GET['sortBy'], $_GET['kertas']);
+                    $this->plsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['orderPeriod'], $_GET['sortBy'], $_GET['kertas']);
                     break;
             }
         }
     }
 
-    public function plsPdf($jumlahHari, $profilId, $sisaHariMax, $sortBy, $kertas)
+    public function plsPdf($jumlahHari, $profilId, $orderPeriod, $sortBy, $kertas)
     {
         /* Agar tetap muncul, walaupun "agak" lama */
         ini_set('memory_limit', '-1');
@@ -868,7 +905,7 @@ class ReportController extends Controller
 
         $model->jumlahHari  = $jumlahHari;
         $model->profilId    = $profilId;
-        $model->sisaHariMax = $sisaHariMax;
+        $model->orderPeriod = $orderPeriod;
         $model->sortBy      = $sortBy;
         $report             = $model->reportPls();
 
@@ -1046,11 +1083,11 @@ class ReportController extends Controller
 
     public function daftarBarangCsv($model, $report, $profilId)
     {
-        $profil    = Profil::model()->findByPk($profilId);
+        $profil     = Profil::model()->findByPk($profilId);
         $namaProfil = is_null($profil) ? 'Semua-Profil' : $profil->nama;
-        $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp = date("Y-m-d-H-i");
-        $namaFile  = "Daftar Barang_{$namaProfil}_{$namaToko->nilai}_{$timeStamp}";
+        $namaToko   = Config::model()->find("nama = 'toko.nama'");
+        $timeStamp  = date("Y-m-d-H-i");
+        $namaFile   = "Daftar Barang_{$namaProfil}_{$namaToko->nilai}_{$timeStamp}";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
@@ -1133,26 +1170,26 @@ class ReportController extends Controller
 
     public function actionPrintDiskon()
     {
-        $model = new ReportDiskonForm();
+        $model  = new ReportDiskonForm();
         $report = [];
         if (isset($_GET['printId'])) {
             // Saat ini baru ada csv. Jika ada yang lain, fixme!
-            $model->profilId = $_GET['profilId'];
-            $model->userId = $_GET['userId'];
+            $model->profilId     = $_GET['profilId'];
+            $model->userId       = $_GET['userId'];
             $model->tipeDiskonId = $_GET['tipeDiskonId'];
-            $model->dari = $_GET['dari'];
-            $model->sampai = $_GET['sampai'];
-            // print_r($model->attributes); 
+            $model->dari         = $_GET['dari'];
+            $model->sampai       = $_GET['sampai'];
+            // print_r($model->attributes);
             if ($model->validate()) {
-                $report = $model->reportDiskon();
-                $text = $model->toCsv($report['detail']);
-                $timeStamp       = date('Ymd His');
-                $namaFile        = "Laporan Diskon_{$model->dari}_{$model->sampai}_{$timeStamp}.csv";
+                $report    = $model->reportDiskon();
+                $text      = $model->toCsv($report['detail']);
+                $timeStamp = date('Ymd His');
+                $namaFile  = "Laporan Diskon_{$model->dari}_{$model->sampai}_{$timeStamp}.csv";
                 // $contentTypeMeta = 'text/csv';
 
                 $this->renderPartial('_csv', [
-                    'namaFile'    => $namaFile,
-                    'csv'        => $text,
+                    'namaFile' => $namaFile,
+                    'csv'      => $text,
                     // 'contentType' => $contentTypeMeta
                 ]);
             }
@@ -1296,16 +1333,16 @@ class ReportController extends Controller
      */
     public function actionPenjualanPerKategori()
     {
-        $model  = new ReportPenjualanPerKategoriForm();
+        $model = new ReportPenjualanPerKategoriForm();
         /*
         $report = [];
         if (isset($_POST['ReportPenjualanPerKategoriForm'])) {
-            $model->attributes = $_POST['ReportPenjualanPerKategoriForm'];
-            if ($model->validate()) {
-                $report = $model->report();                
-            }            
+        $model->attributes = $_POST['ReportPenjualanPerKategoriForm'];
+        if ($model->validate()) {
+        $report = $model->report();
         }
-         * 
+        }
+         *
          */
 
         $profil = new Profil('search');
@@ -1324,9 +1361,9 @@ class ReportController extends Controller
         // $printers             = Device::model()->listDevices($tipePrinterAvailable);
         // $kertasUntukPdf = ReportPenjualanForm::listKertas();
         $this->render('penjualan_per_kategori', [
-            'model'    => $model,
-            'profil'   => $profil,
-            'user'     => $user,
+            'model'  => $model,
+            'profil' => $profil,
+            'user'   => $user,
             //'report'   => $report,
         ]);
     }
@@ -1364,7 +1401,7 @@ class ReportController extends Controller
         }
 
         $user = new User('search');
-        $user->unsetAttributes();  // clear any default values
+        $user->unsetAttributes(); // clear any default values
         if (isset($_GET['User'])) {
             $user->attributes = $_GET['User'];
         }
@@ -1418,7 +1455,7 @@ class ReportController extends Controller
          */
         $listNamaKertas = ReportStockOpnameForm::listKertas();
         require_once __DIR__ . '/../vendor/autoload.php';
-        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('_stockopname_pdf', [
             'report'               => $report,
             'nilaiDenganHargaJual' => ReportStockOpnameForm::isHitungDenganHargaJual(),

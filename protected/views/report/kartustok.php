@@ -8,25 +8,25 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
 
-$this->breadcrumbs = array(
-    'Laporan' => array('index'),
+$this->breadcrumbs = [
+    'Laporan' => ['index'],
     'Kartu Stok',
-);
+];
 
-$this->boxHeader['small'] = 'Kartu Stok';
+$this->boxHeader['small']  = 'Kartu Stok';
 $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu Stok';
 ?>
 
 <div class="row">
     <div class="large-4 columns" style="padding-left: 0; padding-right: 0">
         <?php
-        $this->renderPartial('_form_kartustok', array('model' => $model, 'scanBarcode' => $scanBarcode));
+        $this->renderPartial('_form_kartustok', ['model' => $model, 'scanBarcode' => $scanBarcode]);
         ?>
     </div>
 
     <?php
-    if (!empty($report['detail'])):
-        ?>
+    if (!empty($report['detail'])) :
+    ?>
         <div class="small-12 large-8 columns">
             <h6><?= $model->namaBarang ?> <small><?= $model->barcode ?></small></h6>
             <table class="tabel-index responsive">
@@ -43,20 +43,29 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                 </thead>
                 <tbody>
                     <?php
-                    $balance = $report['balance'];
-                    $totalIn = 0;
+                    $balance  = $report['balance'];
+                    $totalIn  = 0;
                     $totalOut = 0;
                     ?>
                     <tr>
                         <td></td>
-                        <td colspan="5" style="font-weight: bold">< <?= $model->dari ?></td>
+                        <td colspan="5" style="font-weight: bold">
+                            < <?= $model->dari ?></td>
                         <td class="rata-kanan" style="font-weight: bold"><?= number_format($balance, 0, ',', '.') ?></td>
                     </tr>
                     <?php
                     $i = 1;
-                    foreach ($report['detail'] as $barisReport):
-                        $in = in_array($barisReport['kode'], [KodeDokumen::PEMBELIAN, KodeDokumen::RETUR_PENJUALAN]) ? $barisReport['qty'] : 0;
-                        $out = in_array($barisReport['kode'], [KodeDokumen::PENJUALAN, KodeDokumen::RETUR_PEMBELIAN]) ? $barisReport['qty'] : 0;
+                    foreach ($report['detail'] as $barisReport) :
+                        $in  = in_array($barisReport['kode'], [KodeDokumen::PEMBELIAN, KodeDokumen::RETUR_PENJUALAN]) ? $barisReport['qty'] : 0;
+                        $out = in_array($barisReport['kode'], [KodeDokumen::PENJUALAN]) ? $barisReport['qty'] : 0;
+                        /* Jika Retur Beli lihat tanda nya */
+                        if ($barisReport['kode'] == KodeDokumen::RETUR_PEMBELIAN) {
+                            if ($barisReport['qty'] > 0) {
+                                $out = $barisReport['qty'];
+                            } else {
+                                $in = abs($barisReport['qty']);
+                            }
+                        }
                         /* Jika SO lihat tanda nya */
                         if ($barisReport['kode'] == KodeDokumen::SO) {
                             if ($barisReport['qty'] > 0) {
@@ -65,11 +74,11 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                                 $out = abs($barisReport['qty']);
                             }
                         }
-                        $balance+=$in;
-                        $balance-=$out;
-                        $totalIn+=$in;
-                        $totalOut+=$out;
-                        ?>
+                        $balance += $in;
+                        $balance -= $out;
+                        $totalIn += $in;
+                        $totalOut += $out;
+                    ?>
                         <tr>
                             <td class="rata-kanan"><?= $i ?></td>
                             <td><?= date_format(date_create_from_format('Y-m-d H:i:s', $barisReport['tanggal']), 'd-m-Y H:i:s'); ?></td>
@@ -85,49 +94,49 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                                 <?= number_format($balance, 0, ',', '.') ?>
                             </td>
                         </tr>
-                        <?php
+                    <?php
                         $i++;
                     endforeach;
                     ?>
                     <tr>
                         <td></td>
-                        <td colspan="3" style="font-weight: bold">Total / Balance</td>                        
+                        <td colspan="3" style="font-weight: bold">Total / Balance</td>
                         <td class="rata-kanan" style="font-weight: bold">
                             <?= number_format($totalIn, 0, ',', '.') ?>
-                        </td>  
+                        </td>
                         <td class="rata-kanan" style="font-weight: bold">
                             <?= number_format($totalOut, 0, ',', '.') ?>
-                        </td>  
+                        </td>
                         <td class="rata-kanan" style="font-weight: bold">
                             <?= number_format($balance, 0, ',', '.') ?>
-                        </td>                            
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <?php
+    <?php
     endif;
     ?>
 </div>
 <script>
-    $(function () {
+    $(function() {
         $('.tanggalan').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
         });
     });
 
-    $("#tombol-browse-profil").click(function () {
+    $("#tombol-browse-profil").click(function() {
         $("#tabel-profil").slideToggle(500);
         $("input[name='Profil[nama]']").focus();
     });
 
-    $("#tombol-browse-user").click(function () {
+    $("#tombol-browse-user").click(function() {
         $("#tabel-user").slideToggle(500);
         $("input[name='User[nama_lengkap]']").focus();
     });
 
-    $("body").on("click", "a.pilih.profil", function () {
+    $("body").on("click", "a.pilih.profil", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -136,7 +145,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
         return false;
     });
 
-    $("body").on("click", "a.pilih.user", function () {
+    $("body").on("click", "a.pilih.user", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -159,11 +168,11 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
         $("#ReportKartuStokForm_userId").val(data.id);
     }
 
-    $("body").on("focusin", "a.pilih", function () {
+    $("body").on("focusin", "a.pilih", function() {
         $(this).parent('td').parent('tr').addClass('pilih');
     });
 
-    $("body").on("focusout", "a.pilih", function () {
+    $("body").on("focusout", "a.pilih", function() {
         $(this).parent('td').parent('tr').removeClass('pilih');
     });
 </script>

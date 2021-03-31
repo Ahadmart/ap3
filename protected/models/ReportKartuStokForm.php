@@ -111,7 +111,7 @@ class ReportKartuStokForm extends CFormModel
                 retur_pembelian_detail rd
             JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
                 AND ib.barang_id = :barangId
-            JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status != :draftReturPembelian 
+            JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status != :draftReturPembelian
                 AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             UNION SELECT 
                     hpp.id,
@@ -133,7 +133,14 @@ class ReportKartuStokForm extends CFormModel
             JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
             JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id AND retur.status != :draftReturPenjualan
-                AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai) t1
+                AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai UNION SELECT 
+                rd.id, :kodeReturPembelianBatal kode, -(rd.qty), ib.harga_beli, retur.nomor, retur.updated_at
+            FROM
+                retur_pembelian_detail rd
+            JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
+                AND ib.barang_id = :barangId
+            JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status = :batalReturPembelian
+                AND DATE_FORMAT(retur.updated_at, '%Y-%m-%d') BETWEEN :dari AND :sampai) t1
             ORDER BY tanggal            
                 ";
         $sql = " 
@@ -157,6 +164,7 @@ class ReportKartuStokForm extends CFormModel
             ':kodeSo' => KodeDokumen::SO,
             ':kodePembelian' => KodeDokumen::PEMBELIAN,
             ':kodeReturPembelian' => KodeDokumen::RETUR_PEMBELIAN,
+            ':kodeReturPembelianBatal' => KodeDokumen::RETUR_PEMBELIAN,
             ':kodePenjualan' => KodeDokumen::PENJUALAN,
             ':kodeReturPenjualan' => KodeDokumen::RETUR_PENJUALAN,
             ':dari' => $dari,
@@ -164,12 +172,13 @@ class ReportKartuStokForm extends CFormModel
             ':draftSo' => StockOpname::STATUS_DRAFT,
             ':draftPembelian' => Pembelian::STATUS_DRAFT,
             ':draftReturPembelian' => ReturPembelian::STATUS_DRAFT,
+            ':batalReturPembelian' => ReturPembelian::STATUS_BATAL,
             ':draftPenjualan' => Penjualan::STATUS_DRAFT,
             ':draftReturPenjualan' => ReturPenjualan::STATUS_DRAFT
         ]);
 
         $com = Yii::app()->db->createCommand()
-                ->from($tempTableName);
+            ->from($tempTableName);
 
         $comBalance = Yii::app()->db->createCommand("
             SELECT 
@@ -194,7 +203,7 @@ class ReportKartuStokForm extends CFormModel
                     retur_pembelian_detail rd
                 JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
                     AND ib.barang_id = :barangId
-                JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status != :draftReturPembelian 
+                JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status != :draftReturPembelian
                     AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') < :dari
                 UNION SELECT 
                     3 tipe, 0-SUM(hpp.qty) qty
@@ -211,13 +220,21 @@ class ReportKartuStokForm extends CFormModel
                 JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
                     AND pd.barang_id = :barangId
                 JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id AND retur.status != :draftReturPenjualan
-                    AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') < :dari) AS t1
+                    AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') < :dari UNION SELECT 
+                    5 tipe, 0-SUM(rd.qty) qty
+                FROM
+                    retur_pembelian_detail rd
+                JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
+                    AND ib.barang_id = :barangId
+                JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status = :batalReturPembelian
+                    AND DATE_FORMAT(retur.updated_at, '%Y-%m-%d') < :dari) AS t1 
                  ")->queryRow(true, [
             ':dari' => $dari,
             ':barangId' => $this->barangId,
             ':draftSo' => StockOpname::STATUS_DRAFT,
             ':draftPembelian' => Pembelian::STATUS_DRAFT,
             ':draftReturPembelian' => ReturPembelian::STATUS_DRAFT,
+            ':batalReturPembelian' => ReturPembelian::STATUS_BATAL,
             ':draftPenjualan' => Penjualan::STATUS_DRAFT,
             ':draftReturPenjualan' => ReturPenjualan::STATUS_DRAFT
         ]);
@@ -254,5 +271,4 @@ class ReportKartuStokForm extends CFormModel
             self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA
         ];
     }
-
 }

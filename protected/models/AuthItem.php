@@ -17,7 +17,7 @@
  */
 class AuthItem extends CActiveRecord
 {
-//	public $authTypeName;
+    //    public $authTypeName;
 
     /**
      * @return string the associated database table name
@@ -34,15 +34,15 @@ class AuthItem extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('name, type', 'required'),
-            array('type', 'numerical', 'integerOnly' => true),
-            array('name', 'length', 'max' => 64),
-            array('description, bizrule, data', 'safe'),
+        return [
+            ['name, type', 'required'],
+            ['type', 'numerical', 'integerOnly' => true],
+            ['name', 'length', 'max' => 64],
+            ['description, bizrule, data', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('name, type, description, bizrule, data', 'safe', 'on' => 'search'),
-        );
+            ['name, type, description, bizrule, data', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -52,11 +52,11 @@ class AuthItem extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-            'authAssignments' => array(self::HAS_MANY, 'AuthAssignment', 'itemname'),
-            'authItemChildren' => array(self::HAS_MANY, 'AuthItemChild', 'parent'),
-            'authItemChildren1' => array(self::HAS_MANY, 'AuthItemChild', 'child'),
-        );
+        return [
+            'authAssignments'   => [self::HAS_MANY, 'AuthAssignment', 'itemname'],
+            'authItemChildren'  => [self::HAS_MANY, 'AuthItemChild', 'parent'],
+            'authItemChildren1' => [self::HAS_MANY, 'AuthItemChild', 'child'],
+        ];
     }
 
     /**
@@ -64,13 +64,13 @@ class AuthItem extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'name' => 'Nama',
-            'type' => 'Tipe',
+        return [
+            'name'        => 'Nama',
+            'type'        => 'Tipe',
             'description' => 'Keterangan',
-            'bizrule' => 'Bizrule',
-            'data' => 'Data',
-        );
+            'bizrule'     => 'Bizrule',
+            'data'        => 'Data',
+        ];
     }
 
     /**
@@ -97,15 +97,15 @@ class AuthItem extends CActiveRecord
         $criteria->compare('bizrule', $this->bizrule, true);
         $criteria->compare('data', $this->data, true);
 
-        return new CActiveDataProvider($this, array(
-            'criteria' => $criteria,
-            'sort' => array(
-                'defaultOrder' => 'type desc, name'
-            ),
-            'pagination' => array(
+        return new CActiveDataProvider($this, [
+            'criteria'   => $criteria,
+            'sort'       => [
+                'defaultOrder' => 'type desc, name',
+            ],
+            'pagination' => [
                 'pageSize' => 50,
-            ),
-        ));
+            ],
+        ]);
     }
 
     /**
@@ -128,57 +128,61 @@ class AuthItem extends CActiveRecord
 
     public function getAuthTypeName()
     {
-        $type = array('0' => 'Operation', '1' => 'Task', '2' => 'Role');
+        $type = ['0' => 'Operation', '1' => 'Task', '2' => 'Role'];
         return $type[$this->type];
     }
 
     public function listAuthItem($type, $name)
     {
         return Yii::app()->db->createCommand()
-                        ->selectDistinct('name')
-                        ->from($this->tableName())
-                        ->where("name not in(
+            ->selectDistinct('name')
+            ->from($this->tableName())
+            ->where(
+                "name not in(
                                     select distinct name
                                     from AuthItem as item
                                     left join AuthItemChild as c on c.child = item.name
                                     left join AuthItemChild as p on p.parent = item.name
                                     where c.parent=:name or p.child=:name )
-                                    and name!=:name and type=:type", array(':name' => $name, ':type' => $type)
-                        )
-                        ->order('name')
-                        ->query()
-                        ->readAll();
+                                    and name!=:name and type=:type",
+                [':name' => $name, ':type' => $type]
+            )
+            ->order('name')
+            ->query()
+            ->readAll();
     }
 
     public function listNotAssignedItem($userid)
     {
         $result = Yii::app()->db->createCommand()
-                ->selectDistinct("name, type")
-                ->from($this->tableName())
-                ->where("name not in(
+            ->selectDistinct("name, type")
+            ->from($this->tableName())
+            ->where(
+                "name not in(
                                     select a.itemname
                                     from AuthAssignment as a
                                     join AuthItem as i on i.name = a.itemname
-                                    where userid=:userid)", array(':userid' => $userid)
-                )
-                ->order('type desc, name')
-                ->query()
-                ->readAll();
+                                    where userid=:userid)",
+                [':userid' => $userid]
+            )
+            ->order('type desc, name')
+            ->query()
+            ->readAll();
 
         // Init variable
-        $authItem['operation'] = array();
-        $authItem['task'] = array();
-        $authItem['role'] = array();
+        $authItem['operation'] = [];
+        $authItem['task']      = [];
+        $authItem['role']      = [];
         foreach ($result as $item) :
             switch ($item['type']):
-                case 0 :
-                    $authItem['operation'][] = array('name' => $item['name']);
+                case 0:
+                    $authItem['operation'][] = ['name' => $item['name']];
                     break;
                 case 1:
-                    $authItem['task'][] = array('name' => $item['name']);
+                    $authItem['task'][] = ['name' => $item['name']];
                     break;
                 case 2:
-                    $authItem['role'][] = array('name' => $item['name']);
+                    $authItem['role'][] = ['name' => $item['name']];
                     break;
             endswitch;
         endforeach;
@@ -191,31 +195,33 @@ class AuthItem extends CActiveRecord
      */
     public static function getControllerActions($items = null)
     {
-        if ($items === null)
+        if ($items === null) {
             $items = AuthItem::model()->getAllControllers();
+        }
 
         foreach ($items['controllers'] as $controllerName => $controller) {
-            $actions = array();
-            $file = fopen($controller['path'], 'r');
+            $actions    = [];
+            $file       = fopen($controller['path'], 'r');
             $lineNumber = 0;
             while (feof($file) === false) {
                 ++$lineNumber;
                 $line = fgets($file);
                 preg_match('/public[ \t]+function[ \t]+action([A-Z]{1}[a-zA-Z0-9]+)[ \t]*\(/', $line, $matches);
-                if ($matches !== array()) {
-                    $name = $matches[1];
-                    $actions[strtolower($name)] = array(
+                if ($matches !== []) {
+                    $name                       = $matches[1];
+                    $actions[strtolower($name)] = [
                         'name' => $name,
-                        'line' => $lineNumber
-                    );
+                        'line' => $lineNumber,
+                    ];
                 }
             }
 
             $items['controllers'][$controllerName]['actions'] = $actions;
         }
 
-        foreach ($items['modules'] as $moduleName => $module)
+        foreach ($items['modules'] as $moduleName => $module) {
             $items['modules'][$moduleName] = self::getControllerActions($module);
+        }
 
         return $items;
     }
@@ -226,9 +232,9 @@ class AuthItem extends CActiveRecord
      */
     protected function getAllControllers()
     {
-        $basePath = Yii::app()->basePath;
+        $basePath             = Yii::app()->basePath;
         $items['controllers'] = $this->getControllersInPath($basePath . DIRECTORY_SEPARATOR . 'controllers');
-        $items['modules'] = $this->getControllersInModules($basePath);
+        $items['modules']     = $this->getControllersInModules($basePath);
         return $items;
     }
 
@@ -239,25 +245,27 @@ class AuthItem extends CActiveRecord
      */
     protected function getControllersInPath($path)
     {
-        $controllers = array();
+        $controllers = [];
 
         if (file_exists($path) === true) {
             $controllerDirectory = scandir($path);
             foreach ($controllerDirectory as $entry) {
-                if ($entry{0} !== '.') {
+                if ($entry[0] !== '.') {
                     $entryPath = $path . DIRECTORY_SEPARATOR . $entry;
                     if (strpos(strtolower($entry), 'controller') !== false) {
-                        $name = substr($entry, 0, -14);
-                        $controllers[strtolower($name)] = array(
+                        $name                           = substr($entry, 0, -14);
+                        $controllers[strtolower($name)] = [
                             'name' => $name,
                             'file' => $entry,
                             'path' => $entryPath,
-                        );
+                        ];
                     }
 
-                    if (is_dir($entryPath) === true)
-                        foreach ($this->getControllersInPath($entryPath) as $controllerName => $controller)
-                            $controllers[$entry.'/'.$controllerName] = $controller;
+                    if (is_dir($entryPath) === true) {
+                        foreach ($this->getControllersInPath($entryPath) as $controllerName => $controller) {
+                            $controllers[$entry . '/' . $controllerName] = $controller;
+                        }
+                    }
                 }
             }
         }
@@ -272,7 +280,7 @@ class AuthItem extends CActiveRecord
      */
     protected function getControllersInModules($path)
     {
-        $items = array();
+        $items = [];
 
         $modulePath = $path . DIRECTORY_SEPARATOR . 'modules';
         if (file_exists($modulePath) === true) {
@@ -282,7 +290,7 @@ class AuthItem extends CActiveRecord
                     $subModulePath = $modulePath . DIRECTORY_SEPARATOR . $entry;
                     if (file_exists($subModulePath) === true) {
                         $items[$entry]['controllers'] = $this->getControllersInPath($subModulePath . DIRECTORY_SEPARATOR . 'controllers');
-                        $items[$entry]['modules'] = $this->getControllersInModules($subModulePath);
+                        $items[$entry]['modules']     = $this->getControllersInModules($subModulePath);
                     }
                 }
             }
@@ -290,5 +298,4 @@ class AuthItem extends CActiveRecord
 
         return $items;
     }
-
 }

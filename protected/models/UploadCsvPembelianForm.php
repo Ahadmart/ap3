@@ -78,8 +78,18 @@ class UploadCsvPembelianForm extends CFormModel
 
                         // Jika ada struktur, maka (langsung) input struktur.
                         if (!empty($line[13])) {
-                            $strukLv1Ada = StrukturBarang::model()->find('nama=:strukLv1 AND level=1', [':strukLv1' => $line[11]]);
-                            if (is_null($strukLv1Ada)) {
+                            $sql = "
+                                SELECT 
+                                    id, parent_id
+                                FROM
+                                    barang_struktur
+                                WHERE
+                                    nama = :namaStruk AND `level` = :level            
+                                ";
+
+                            $strukLv1Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[11], ':level' => 1])->queryRow();
+                            // $strukLv1Ada = StrukturBarang::model()->find('nama=:strukLv1 AND level=1', [':strukLv1' => $line[11]]);
+                            if (empty($strukLv1Ada)) {
                                 $strukLv1Baru        = new StrukturBarang();
                                 $strukLv1Baru->nama  = $line[11];
                                 $strukLv1Baru->level = 1;
@@ -88,11 +98,24 @@ class UploadCsvPembelianForm extends CFormModel
                                 }
                                 $strukLv1Id = $strukLv1Baru->id;
                             } else {
-                                $strukLv1Id = $strukLv1Ada->id;
+                                // $strukLv1Id = $strukLv1Ada->id;
+                                $strukLv1Id = $strukLv1Ada['id'];
                             }
 
-                            $strukLv2Ada = StrukturBarang::model()->find('nama=:strukLv2 AND level=2', [':strukLv2' => $line[12]]);
-                            if (is_null($strukLv2Ada)) {
+                            $sql = "
+                                SELECT 
+                                    lv2.id, lv2.parent_id
+                                FROM
+                                    barang_struktur lv2
+                                        JOIN
+                                    barang_struktur lv1 ON lv1.id = lv2.parent_id
+                                WHERE
+                                    lv2.nama = :namaStruk AND lv2.`level` = :level
+                                        AND lv1.nama = :namaLevel1         
+                                ";
+                            $strukLv2Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[12], ':level' => 2, ':namaLevel1' => $line[11]])->queryRow();
+                            // $strukLv2Ada = StrukturBarang::model()->find('nama=:strukLv2 AND level=2', [':strukLv2' => $line[12]]);
+                            if (empty($strukLv2Ada)) {
                                 $strukLv2Baru            = new StrukturBarang();
                                 $strukLv2Baru->nama      = $line[12];
                                 $strukLv2Baru->level     = 2;
@@ -103,13 +126,30 @@ class UploadCsvPembelianForm extends CFormModel
                                 $strukLv2Id = $strukLv2Baru->id;
                             } else {
                                 // Update parent nya, jika ada perubahan maka ikuti csv
-                                $strukLv2Ada->parent_id = $strukLv1Id;
-                                $strukLv2Ada->update();
-                                $strukLv2Id = $strukLv2Ada->id;
+                                // $strukLv2Ada->parent_id = $strukLv1Id;
+                                // $strukLv2Ada->update();
+                                // $strukLv2Id = $strukLv2Ada->id;
+                                Yii::app()->db->createCommand("UPDATE barang_struktur SET parent_id = {$strukLv2Ada['parent_id']} WHERE id = {$strukLv2Ada['id']}")->execute();
+                                $strukLv2Id = $strukLv2Ada['id'];
                             }
 
-                            $strukLv3Ada = StrukturBarang::model()->find('nama=:strukLv3 AND level=3', [':strukLv3' => $line[13]]);
-                            if (is_null($strukLv3Ada)) {
+                            $sql = "
+                                SELECT 
+                                    lv3.id, lv3.parent_id
+                                FROM
+                                    barang_struktur lv3
+                                        JOIN
+                                    barang_struktur lv2 ON lv2.id = lv3.parent_id
+                                        JOIN
+                                    barang_struktur lv1 ON lv1.id = lv2.parent_id
+                                WHERE
+                                    lv3.nama = :namaStruk AND lv3.`level` = :level
+                                        AND lv2.nama = :namaLevel2
+                                        AND lv1.nama = :namaLevel1        
+                                ";
+                            $strukLv3Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[13], ':level' => 3, ':namaLevel2' => $line[12], ':namaLevel1' => $line[11]])->queryRow();
+                            // $strukLv3Ada = StrukturBarang::model()->find('nama=:strukLv3 AND level=3', [':strukLv3' => $line[13]]);
+                            if (empty($strukLv3Ada)) {
                                 $strukLv3Baru            = new StrukturBarang();
                                 $strukLv3Baru->nama      = $line[13];
                                 $strukLv3Baru->level     = 3;
@@ -120,9 +160,11 @@ class UploadCsvPembelianForm extends CFormModel
                                 $strukLv3Id = $strukLv3Baru->id;
                             } else {
                                 // Update parent nya, jika ada perubahan maka ikuti csv
-                                $strukLv3Ada->parent_id = $strukLv2Id;
-                                $strukLv3Ada->update();
-                                $strukLv3Id = $strukLv3Ada->id;
+                                // $strukLv3Ada->parent_id = $strukLv2Id;
+                                // $strukLv3Ada->update();
+                                // $strukLv3Id = $strukLv3Ada->id;
+                                Yii::app()->db->createCommand("UPDATE barang_struktur SET parent_id = {$strukLv3Ada['parent_id']} WHERE id = {$strukLv3Ada['id']}")->execute();
+                                $strukLv3Id = $strukLv3Ada['id'];
                             }
                         }
 

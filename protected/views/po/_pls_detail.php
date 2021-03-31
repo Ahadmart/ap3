@@ -21,19 +21,19 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'filter'            => false,
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'value'             => 'number_format($data->harga_beli,0,",",".")'
+                    'value'             => 'number_format($data->harga_beli,0,",",".")',
                 ],
                 [
                     'name'              => 'harga_jual',
                     'filter'            => false,
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'value'             => 'number_format($data->harga_jual,0,",",".")'
+                    'value'             => 'number_format($data->harga_jual,0,",",".")',
                 ],
                 [
                     'name'              => 'ads',
                     'filter'            => false,
-                    'headerHtmlOptions' => ['class' => 'rata-kanan', 'data-tooltip', 'title'=>'Average Daily Sales'],
+                    'headerHtmlOptions' => ['class' => 'rata-kanan', 'data-tooltip', 'title' => 'Average Daily Sales'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
                 ],
                 [
@@ -45,7 +45,15 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                 [
                     'name'              => 'est_sisa_hari',
                     'filter'            => false,
-                    'headerHtmlOptions' => ['class' => 'rata-kanan', 'data-tooltip', 'title'=>'Stok saat ini masih bisa bertahan selama beberapa hari'],
+                    'headerHtmlOptions' => ['class' => 'rata-kanan', 'data-tooltip', 'title' => 'Stok saat ini masih bisa bertahan selama beberapa hari'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                ],
+                [
+                    'name'              => 'restock_min',
+                    'filter'            => false,
+                    'type'              => 'raw',
+                    'value'             => [$this, 'renderRestockMinEditable'],
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
                     'htmlOptions'       => ['class' => 'rata-kanan'],
                 ],
                 [
@@ -69,12 +77,19 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'value'             => [$this, 'renderTombolSetOrder'],
                     'headerHtmlOptions' => ['class' => 'rata-tengah'],
                     'htmlOptions'       => ['class' => 'rata-tengah'],
-                    'header'            => '<a id="tombol-order-semua" href="' . $this->createUrl('ordersemua', ['id' => $poModel->id]) . '"><i class="fa fa-plus"></i> All</a>'
+                    'header'            => '<a id="tombol-order-semua" href="' . $this->createUrl('ordersemua', ['id' => $poModel->id]) . '"><i class="fa fa-plus"></i> All</a>',
+                ],
+                [
+                    'name'              => 'tgl_jual_max',
+                    'value'             => '!is_null($data->tgl_jual_max) ? date_format(date_create_from_format(\'Y-m-d H:i:s\', $data->tgl_jual_max), \'d-m-Y\') : ""',
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'filter'            => false,
                 ],
                 [
                     'class'           => 'BButtonColumn',
-                    'header'          => CHtml::dropDownList('pageSize', $pageSize, [20=>20, 50=>50, 100=>100, $model->search()->getTotalItemCount()=> 'SEMUA'], [
-                        'onchange'=> "$.fn.yiiGridView.update('pls-detail-grid',{ data:{pageSize: $(this).val() }})",
+                    'header'          => CHtml::dropDownList('pageSize', $pageSize, [20 => 20, 50 => 50, 100 => 100, $model->search()->getTotalItemCount() => 'SEMUA'], [
+                        'onchange' => "$.fn.yiiGridView.update('pls-detail-grid',{ data:{pageSize: $(this).val() }})",
                     ]),
                     'deleteButtonUrl' => 'Yii::app()->controller->createUrl("po/hapusdetail", array("id"=>$data->primaryKey))',
                 ],
@@ -84,17 +99,19 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
     </div>
 </div>
 <script>
-    $(function () {
-        $(document).on('click', ".tombol-setorder", function () {
+    $(function() {
+        $(document).on('click', ".tombol-setorder", function() {
             dataUrl = '<?php echo $this->createUrl('setorder', ['id' => $poModel->id]); ?>';
-            dataKirim = {detailId: $(this).data('detailid')};
+            dataKirim = {
+                detailId: $(this).data('detailid')
+            };
             console.log(dataUrl);
 
             $.ajax({
                 type: 'POST',
                 url: dataUrl,
                 data: dataKirim,
-                success: function (data) {
+                success: function(data) {
                     if (data.sukses) {
                         $.fn.yiiGridView.update("pls-detail-grid");
                         $.fn.yiiGridView.update("po-detail-grid");
@@ -110,7 +127,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
         $(".editable-order").editable({
             mode: "inline",
             inputclass: "input-editable-qty",
-            success: function (response, newValue) {
+            success: function(response, newValue) {
                 if (response.sukses) {
                     $.fn.yiiGridView.update("pls-detail-grid");
                     $.fn.yiiGridView.update("po-detail-grid");
@@ -118,27 +135,32 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                 }
             }
         });
-        $('.editable-order').on('shown', function (e, editable) {
-            setTimeout(function () {
+        $('.editable-order').on('shown', function(e, editable) {
+            setTimeout(function() {
                 editable.input.$input.select();
             }, 0);
-<?php /* Menambahkan selector agar width bisa diatur */ ?>
+            <?php /* Menambahkan selector agar width bisa diatur */ ?>
             //$(".input-editable-qty").parent('.editable-input').addClass('input-editable-qty-p');
         });
     }
 
-    $(function () {
+    $(function() {
         enableQtyOrderEditable();
     });
-    $(document).ajaxComplete(function () {
+    $(document).ajaxComplete(function() {
         enableQtyOrderEditable();
     });
 
-    $("body").on("click", "#tombol-order-semua", function () {
+    $("body").on("click", "#tombol-order-semua", function() {
         var dataurl = $(this).attr('href');
+        var dataKirim = {
+            'barcode': $("input:text[name='PoDetail[barcode]']").val(),
+            'nama': $("input:text[name='PoDetail[nama]']").val(),
+        }
         $.ajax({
             url: dataurl,
-            success: function (data) {
+            data: dataKirim,
+            success: function(data) {
                 if (data.sukses) {
                     ambilTotal();
                     $.fn.yiiGridView.update("pls-detail-grid");

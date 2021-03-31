@@ -31,14 +31,16 @@ mysql -e "create database ahadpos3"
 ##mysql -e "UPDATE mysql . user SET authentication_string = PASSWORD( 'YourPasswordHere' ), plugin = 'mysql_native_password' WHERE user = 'root' ; flush privileges;"
 ## again remember, MySQL 5.7 will NOT accept empty password
 
-## Mysql 8.0.23. Cara ganti password root menggunakan mysql native password
+## NOTE: Mysql 8.0.23. Cara ganti password root dengan mysql native password
 ## 1) login ke mysql pakai sudo
 sudo mysql -u root
-## 2) 
-UPDATE user SET plugin='mysql_native_password' WHERE User='root';
+## 2) Ganti database ke mysql
+use mysql
 ## 3) 
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'passwordterpilih';
+UPDATE user SET plugin='mysql_native_password' WHERE User='root';
 ## 4) 
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'passwordterpilih';
+## 5) 
 FLUSH PRIVILEGES;
 
 # need to enable the Rewrite commands in .htaccess file, by changing "AllowOverride None" into "AllowOverride All"
