@@ -1207,7 +1207,7 @@ class ReportController extends Controller
             }
         }
 
-        $tipePrinterAvailable = [];
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
 
         $this->render('rekapdiskon', [
@@ -1215,6 +1215,31 @@ class ReportController extends Controller
             'report'   => $report,
             'printers' => $printers,
         ]);
+    }
+
+    public function actionPrintRekapDiskon()
+    {
+        $model  = new ReportRekapDiskonForm();
+        $report = [];
+        if (isset($_GET['printId'])) {
+            $model->tipeDiskonId = $_GET['tipeDiskonId'];
+            $model->dari         = $_GET['dari'];
+            $model->sampai       = $_GET['sampai'];
+            // print_r($model->attributes);
+            if ($model->validate()) {
+                $report    = $model->reportRekapDiskon();
+                $text      = $model->toCsv($report['detail']);
+                $timeStamp = date('Ymd His');
+                $namaFile  = "Laporan Rekap Diskon_{$model->dari}_{$model->sampai}_{$timeStamp}.csv";
+                // $contentTypeMeta = 'text/csv';
+
+                $this->renderPartial('_csv', [
+                    'namaFile' => $namaFile,
+                    'csv'      => $text,
+                    // 'contentType' => $contentTypeMeta
+                ]);
+            }
+        }
     }
 
     public function pengeluaranPenerimaanCsv($dari, $sampai, $itemKeuId, $profilId)

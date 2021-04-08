@@ -1008,6 +1008,7 @@ class Penjualan extends CActiveRecord
                     $hpp->harga_beli_temp = $layer['hargaBeli'];
                 }
                 if (!$hpp->save()) {
+                    Yii::log("Gagal simpan HPP: " . var_export($hpp->getErrors(), true), "info");
                     throw new Exception("Gagal simpan HPP", 500);
                 }
                 /* Tambahan untuk transfer mode,

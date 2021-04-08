@@ -341,7 +341,8 @@ class DiskonBarang extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ]
+            ];
         }
     }
 
@@ -363,4 +364,8 @@ class DiskonBarang extends CActiveRecord
         ];
     }
 
+    public static function namaTipeDiskon($tipeId)
+    {
+        return self::listNamaTipe()[$tipeId];
+    }
 }

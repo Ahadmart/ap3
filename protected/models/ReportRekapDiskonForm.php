@@ -57,9 +57,9 @@ class ReportRekapDiskonForm extends CFormModel
         FROM
             (SELECT 
                 barang_id,
-                    SUM(qty) qty,
                     SUM(harga_normal) harga_normal,
                     SUM(total) harga_jual,
+                    SUM(qty) qty,
                     SUM(hpp) hpp,
                     SUM(total) - SUM(hpp) margin,
                     MIN(tipe_diskon_id) tipe_diskon_id,
@@ -106,5 +106,34 @@ class ReportRekapDiskonForm extends CFormModel
             'detail' => $command->queryAll()
         ];
     }
+    public function array2csv(array &$array)
+    {
+        if (count($array) == 0) {
+            return null;
+        }
+        ob_start();
+        $df = fopen('php://output', 'w');
+        // fputcsv($df, array_merge(array_keys(reset($array)), ['nama_tipe_diskon']));
+        fputcsv($df, array_keys(reset($array)));
+        foreach ($array as $row) {
+            fputcsv($df, $row);
+        }
+        fclose($df);
+        return ob_get_clean();
+    }
 
+    /**
+     * Export Laporan Diskon ke CSV
+     * @return text csv beserta header
+     */
+    public function toCsv($report)
+    {
+        $baris = [];
+        foreach ($report as $row) {
+            // Tambahkan kolom jenis_diskon untuk menampilkan nama tipe diskon di file csv
+            $baris[] = array_merge($row, ['jenis_diskon' => DiskonBarang::namaTipeDiskon($row['tipe_diskon_id'])]);
+        }
+        // Yii::log(print_r($baris, true));
+        return $this->array2csv($baris);
+    }
 }

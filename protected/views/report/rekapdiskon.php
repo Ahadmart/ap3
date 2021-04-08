@@ -16,17 +16,26 @@ $this->boxHeader['normal'] = 'Laporan Rekap Diskon';
 $this->renderPartial('_form_rekap_diskon', ['model' => $model]);
 
 if (isset($report['rekap']) && $report['rekap']) {
-    ?>
+?>
     <div class="row">
         <div class="small-12 columns rata-kanan">
             <h6>Total : <?= number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
         </div>
     </div>
-    <?php
+<?php
 }
-if (!empty($report['detail'])):
-    ?>
+if (!empty($report['detail'])) :
+?>
     <div class="row">
+        <div class="small-6 columns">
+            <?php
+            $this->renderPartial('_form_rekap_diskon_cetak', [
+                'model'    => $model,
+                'printers' => $printers,
+                //'kertasPdf' => $kertasPdf
+            ]);
+            ?>
+        </div>
         <div class="small-12 columns">
             <table class="tabel-index responsive">
                 <thead>
@@ -49,8 +58,8 @@ if (!empty($report['detail'])):
                     $totalPenjualan = 0;
                     $totalHPP = 0;
                     $totalMargin = 0;
-                    foreach ($report['detail'] as $barisReport):
-                        ?>
+                    foreach ($report['detail'] as $barisReport) :
+                    ?>
                         <tr>
                             <td class="rata-kanan"><?= $i ?></td>
                             <td><?= $barisReport['barcode']; ?> </td>
@@ -62,7 +71,7 @@ if (!empty($report['detail'])):
                             <td class="rata-kanan<?= $barisReport['margin'] < 0 ? ' angka-negatif' : '' ?>"><?= number_format($barisReport['margin'], 0, ',', '.'); ?></td>
                             <td><?= $tipeDiskon[$barisReport['tipe_diskon_id']]; ?> <?= $barisReport['banyak_tipe_diskon_id'] > 1 ? '...' : '' ?> </td> <?php /* FixMe: jika banyak_tipe_diskon_id > 1 : Maka tampilkan semua tipe-tipe diskon nya */ ?>
                         </tr>
-                        <?php
+                    <?php
                         $totalPenjualan += $barisReport['harga_jual'];
                         $totalHPP += $barisReport['hpp'];
                         $i++;
@@ -81,28 +90,28 @@ if (!empty($report['detail'])):
             </table>
         </div>
     </div>
-    <?php
+<?php
 endif;
 ?>
 <script>
-    $(function () {
+    $(function() {
         $('.tanggalan').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
         });
     });
 
-    $("#tombol-browse-profil").click(function () {
+    $("#tombol-browse-profil").click(function() {
         $("#tabel-profil").slideToggle(500);
         $("input[name='Profil[nama]']").focus();
     });
 
-    $("#tombol-browse-user").click(function () {
+    $("#tombol-browse-user").click(function() {
         $("#tabel-user").slideToggle(500);
         $("input[name='User[nama_lengkap]']").focus();
     });
 
-    $("body").on("click", "a.pilih.profil", function () {
+    $("body").on("click", "a.pilih.profil", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -111,7 +120,7 @@ endif;
         return false;
     });
 
-    $("body").on("click", "a.pilih.user", function () {
+    $("body").on("click", "a.pilih.user", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -134,11 +143,11 @@ endif;
         $("#ReportDiskonForm_userId").val(data.id);
     }
 
-    $("body").on("focusin", "a.pilih", function () {
+    $("body").on("focusin", "a.pilih", function() {
         $(this).parent('td').parent('tr').addClass('pilih');
     });
 
-    $("body").on("focusout", "a.pilih", function () {
+    $("body").on("focusout", "a.pilih", function() {
         $(this).parent('td').parent('tr').removeClass('pilih');
     });
 </script>

@@ -833,6 +833,7 @@ class InventoryBalance extends CActiveRecord
         $ib->asal                      = InventoryBalance::ASAL_RETURBELI;
         $ib->nomor_dokumen             = $detail->returPembelian->nomor;
         $ib->retur_pembelian_detail_id = $detail->id;
+        $ib->pembelian_detail_id       = $detail->inventoryBalance->pembelian_detail_id;
         $ib->barang_id                 = $detail->inventoryBalance->barang_id;
         $ib->harga_beli                = $detail->inventoryBalance->harga_beli;
         $ib->qty_awal                  = $detail->qty;
