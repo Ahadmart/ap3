@@ -25,6 +25,7 @@
           mpdf-->
     <div id="header1">
         <div>Rekap Diskon <?php echo $config['toko.nama']; ?></div>
+        <div><?= $dari ?> s.d <?= $sampai ?></div>
         <br />
         <br />
         <table style="margin:0 auto" class="table-bordered bordered">

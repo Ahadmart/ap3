@@ -1266,6 +1266,8 @@ class ReportController extends Controller
             'report'     => $report,
             'config'     => $branchConfig,
             'waktuCetak' => $timeStamp,
+            'dari'       => $dari,
+            'sampai'     => $sampai,
         ], true));
 
         $mpdf->SetDisplayMode('fullpage');
