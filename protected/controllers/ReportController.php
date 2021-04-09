@@ -498,7 +498,7 @@ class ReportController extends Controller
         $model->strukLv2   = $strukLv2;
         $model->strukLv3   = $strukLv3;
 
-        $text = $model->toCsv();
+        $text      = $model->toCsv();
         $namaStruk = '';
         if (!empty($model->strukLv1)) :
             $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
@@ -1207,13 +1207,14 @@ class ReportController extends Controller
             }
         }
 
-        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER, Device::TIPE_PDF_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
 
         $this->render('rekapdiskon', [
-            'model'    => $model,
-            'report'   => $report,
-            'printers' => $printers,
+            'model'     => $model,
+            'report'    => $report,
+            'printers'  => $printers,
+            'kertasPdf' => ReportRekapDiskonForm::listKertas(),
         ]);
     }
 
@@ -1222,24 +1223,56 @@ class ReportController extends Controller
         $model  = new ReportRekapDiskonForm();
         $report = [];
         if (isset($_GET['printId'])) {
+            $printId             = $_GET['printId'];
             $model->tipeDiskonId = $_GET['tipeDiskonId'];
             $model->dari         = $_GET['dari'];
             $model->sampai       = $_GET['sampai'];
             // print_r($model->attributes);
             if ($model->validate()) {
-                $report    = $model->reportRekapDiskon();
-                $text      = $model->toCsv($report['detail']);
-                $timeStamp = date('Ymd His');
-                $namaFile  = "Laporan Rekap Diskon_{$model->dari}_{$model->sampai}_{$timeStamp}.csv";
-                // $contentTypeMeta = 'text/csv';
-
-                $this->renderPartial('_csv', [
-                    'namaFile' => $namaFile,
-                    'csv'      => $text,
-                    // 'contentType' => $contentTypeMeta
-                ]);
+                $report = $model->reportRekapDiskon();
+                $device = Device::model()->findByPk($printId);
+                switch ($device->tipe_id) {
+                    case Device::TIPE_CSV_PRINTER:
+                        $text      = $model->toCsv($report['detail']);
+                        $timeStamp = date('Ymd His');
+                        $namaFile  = "Laporan Rekap Diskon_{$model->dari}_{$model->sampai}_{$timeStamp}.csv";
+                        $this->renderPartial('_csv', [
+                            'namaFile' => $namaFile,
+                            'csv'      => $text,
+                        ]);
+                        break;
+                    case Device::TIPE_PDF_PRINTER:
+                        $this->rekapDiskonPdf($report, $_GET['kertas'], $_GET['dari'], $_GET['sampai']);
+                }
             }
         }
+    }
+
+    public function rekapDiskonPdf($report, $kertas, $dari, $sampai)
+    {
+        /*
+         * Persiapan render PDF
+         */
+        $timeStamp    = date('Ymd His');
+        $configs      = Config::model()->findAll();
+        $branchConfig = [];
+        foreach ($configs as $config) {
+            $branchConfig[$config->nama] = $config->nilai;
+        }
+        $listNamaKertas = ReportRekapDiskonForm::listKertas();
+        require_once __DIR__ . '/../vendor/autoload.php';
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('_rekap_diskon_pdf', [
+            'report'     => $report,
+            'config'     => $branchConfig,
+            'waktuCetak' => $timeStamp,
+        ], true));
+
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
+        // Render PDF
+        $mpdf->Output("Laporan Rekap Diskon_{$dari}-{$sampai}_{$timeStamp}.pdf", 'I');
     }
 
     public function pengeluaranPenerimaanCsv($dari, $sampai, $itemKeuId, $profilId)

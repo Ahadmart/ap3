@@ -10,7 +10,7 @@ $this->breadcrumbs = [
     'Rekap Diskon',
 ];
 
-$this->boxHeader['small'] = 'Rkp Diskon';
+$this->boxHeader['small']  = 'Rkp Diskon';
 $this->boxHeader['normal'] = 'Laporan Rekap Diskon';
 
 $this->renderPartial('_form_rekap_diskon', ['model' => $model]);
@@ -30,9 +30,9 @@ if (!empty($report['detail'])) :
         <div class="small-6 columns">
             <?php
             $this->renderPartial('_form_rekap_diskon_cetak', [
-                'model'    => $model,
-                'printers' => $printers,
-                //'kertasPdf' => $kertasPdf
+                'model'     => $model,
+                'printers'  => $printers,
+                'kertasPdf' => $kertasPdf,
             ]);
             ?>
         </div>
@@ -53,11 +53,11 @@ if (!empty($report['detail'])) :
                 </thead>
                 <tbody>
                     <?php
-                    $i = 1;
-                    $tipeDiskon = DiskonBarang::listNamaTipe();
+                    $i              = 1;
+                    $tipeDiskon     = DiskonBarang::listNamaTipe();
                     $totalPenjualan = 0;
-                    $totalHPP = 0;
-                    $totalMargin = 0;
+                    $totalHPP       = 0;
+                    $totalMargin    = 0;
                     foreach ($report['detail'] as $barisReport) :
                     ?>
                         <tr>
