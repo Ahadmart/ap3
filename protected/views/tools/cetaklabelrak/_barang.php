@@ -20,7 +20,7 @@ $this->widget('BGridView', array(
         ),
         array(
             'name' => 'kategoriId',
-            'value' => '$data->barang->kategori->nama',
+            'value' => 'isset($data->barang->kategori) ? $data->barang->kategori->nama : ""',
             'filter' => LabelRakCetak::model()->filterKategori()
         ),
         array(
@@ -41,12 +41,11 @@ $this->widget('BGridView', array(
 ));
 ?>
 <script>
-
-    $("body").on("click", "#tombol-hapus-semua", function () {
+    $("body").on("click", "#tombol-hapus-semua", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
-            success: function () {
+            success: function() {
                 $.fn.yiiGridView.update('label-rak-cetak-grid')
             }
         });
