@@ -152,6 +152,7 @@ class ReportPenjualanForm extends CFormModel
         $sql = "
             INSERT INTO
             {$tableName}
+            (penjualan_id, nomor, tanggal, profil_id, updated_by, total, total_modal, nama, margin, user_id)
             {$sqlSelect}
                 ";
 
