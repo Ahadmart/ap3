@@ -8,49 +8,49 @@
         <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
             <?php
             foreach ($printers as $printer) {
-                ?>
+            ?>
                 <?php
                 if ($printer['tipe_id'] == Device::TIPE_PDF_PRINTER) {
                     /* Jika printer pdf, tambahkan pilihan ukuran kertas */
-                    ?>
+                ?>
                     <span class="sub-dropdown"><?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></span>
                     <ul>
                         <?php
-                        foreach ($kertasPdf as $key => $value):
-                            ?>
+                        foreach ($kertasPdf as $key => $value) :
+                        ?>
                             <li><a target="blank" href="<?=
-                                $this->createUrl('printstockopname', [
-                                    'printId' => $printer['id'],
-                                    'kertas'  => $key,
-                                    'dari'    => $model->dari,
-                                    'sampai'  => $model->sampai,
-                                    'user'    => $model->userId,
-                                ])
-                                ?>"><?= $value; ?></a></li>
-                                <?php
-                            endforeach;
-                            ?>
+                                                        $this->createUrl('printstockopname', [
+                                                            'printId' => $printer['id'],
+                                                            'dari'    => $model->dari,
+                                                            'sampai'  => $model->sampai,
+                                                            'user'    => $model->userId,
+                                                            'kertas'  => $key,
+                                                        ])
+                                                        ?>"><?= $value; ?></a></li>
+                        <?php
+                        endforeach;
+                        ?>
                     </ul>
-                    <?php
+                <?php
                 } else {
-                    ?>
+                ?>
                     <li>
                         <a href="<?=
-                        $this->createUrl('printstockopname', [
-                            'printId' => $printer['id'],
-                            'dari'    => $model->dari,
-                            'sampai'  => $model->sampai,
-                            'user'    => $model->userId,
-                        ])
-                        ?>">
+                                    $this->createUrl('printstockopname', [
+                                        'printId' => $printer['id'],
+                                        'dari'    => $model->dari,
+                                        'sampai'  => $model->sampai,
+                                        'user'    => $model->userId,
+                                    ])
+                                    ?>">
                             <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
                     </li>
-                    <?php
+                <?php
                 }
                 ?>
-                <?php
+            <?php
             }
             ?>
         </ul>
     </li>
-</ul>  
+</ul>

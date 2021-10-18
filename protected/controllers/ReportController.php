@@ -1466,7 +1466,7 @@ class ReportController extends Controller
             $user->attributes = $_GET['User'];
         }
 
-        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER, Device::TIPE_PDF_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $kertasPdf            = ReportStockOpnameForm::listKertas();
 
@@ -1480,7 +1480,7 @@ class ReportController extends Controller
         ]);
     }
 
-    public function actionPrintStockOpname($printId, $kertas, $dari, $sampai, $user)
+    public function actionPrintStockOpname($printId, $dari, $sampai, $user, $kertas = null)
     {
         $model         = new ReportStockOpnameForm();
         $model->dari   = $dari;
@@ -1498,6 +1498,9 @@ class ReportController extends Controller
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
                     $this->stockOpnamePdf($report, $kertas);
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    $this->stockOpnameCsv($report);
                     break;
             }
             Yii::app()->end();
@@ -1526,6 +1529,18 @@ class ReportController extends Controller
         $mpdf->pagenumSuffix = ' / ';
         // Render PDF
         $mpdf->Output("Laporan SO {$report['kodeToko']} {$report['namaToko']} {$report['dari']} {$report['sampai']} {$report['timestamp']}.pdf", 'I');
+    }
+
+    public function stockOpnameCsv($report)
+    {
+        $timeStamp  = date("Y-m-d-H-i");
+        $namaFile   = "Stock Opname_{$report['namaToko']}_{$report['dari']}-{$report['sampai']}_{$timeStamp}";
+        $model = new ReportStockOpnameForm;
+
+        $this->renderPartial('_csv', [
+            'namaFile' => $namaFile,
+            'csv'      => $model->reportKeCsv($report['detail']),
+        ]);
     }
 
     /**
