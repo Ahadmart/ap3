@@ -79,12 +79,13 @@ class UploadCsvPembelianForm extends CFormModel
                         // Jika ada struktur, maka (langsung) input struktur.
                         if (!empty($line[13])) {
                             $sql = "
-                                SELECT 
+                                SELECT
                                     id, parent_id
                                 FROM
                                     barang_struktur
+
                                 WHERE
-                                    nama = :namaStruk AND `level` = :level            
+                                    nama = :namaStruk AND `level` = :level
                                 ";
 
                             $strukLv1Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[11], ':level' => 1])->queryRow();
@@ -103,7 +104,7 @@ class UploadCsvPembelianForm extends CFormModel
                             }
 
                             $sql = "
-                                SELECT 
+                                SELECT
                                     lv2.id, lv2.parent_id
                                 FROM
                                     barang_struktur lv2
@@ -111,7 +112,7 @@ class UploadCsvPembelianForm extends CFormModel
                                     barang_struktur lv1 ON lv1.id = lv2.parent_id
                                 WHERE
                                     lv2.nama = :namaStruk AND lv2.`level` = :level
-                                        AND lv1.nama = :namaLevel1         
+                                        AND lv1.nama = :namaLevel1
                                 ";
                             $strukLv2Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[12], ':level' => 2, ':namaLevel1' => $line[11]])->queryRow();
                             // $strukLv2Ada = StrukturBarang::model()->find('nama=:strukLv2 AND level=2', [':strukLv2' => $line[12]]);
@@ -134,7 +135,7 @@ class UploadCsvPembelianForm extends CFormModel
                             }
 
                             $sql = "
-                                SELECT 
+                                SELECT
                                     lv3.id, lv3.parent_id
                                 FROM
                                     barang_struktur lv3
@@ -145,7 +146,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 WHERE
                                     lv3.nama = :namaStruk AND lv3.`level` = :level
                                         AND lv2.nama = :namaLevel2
-                                        AND lv1.nama = :namaLevel1        
+                                        AND lv1.nama = :namaLevel1
                                 ";
                             $strukLv3Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[13], ':level' => 3, ':namaLevel2' => $line[12], ':namaLevel1' => $line[11]])->queryRow();
                             // $strukLv3Ada = StrukturBarang::model()->find('nama=:strukLv3 AND level=3', [':strukLv3' => $line[13]]);
@@ -233,11 +234,12 @@ class UploadCsvPembelianForm extends CFormModel
                                 Barang::model()->updateByPk($barangId, ['nama' => $line[2]]);
                             }
 
-                            /* Jika struktur beda, update dari csv */
+                            /* --Jika struktur beda, update dari csv */
+                            /* Update: tetap update struktur id */
                             if (
                                 $updateStruktur
                                 && !empty($line[13])
-                                && (empty($barangAda->struktur_id) || (isset($barangAda->struktur) && $barangAda->struktur->nama != $line[13]))
+                                //&& (empty($barangAda->struktur_id) || (isset($barangAda->struktur) && $barangAda->struktur->nama != $line[13]))
                             ) {
                                 Barang::model()->updateByPk($barangId, ['struktur_id' => $strukLv3Id]);
                             }
