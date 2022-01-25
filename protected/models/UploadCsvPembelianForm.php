@@ -243,6 +243,21 @@ class UploadCsvPembelianForm extends CFormModel
                             ) {
                                 Barang::model()->updateByPk($barangId, ['struktur_id' => $strukLv3Id]);
                             }
+
+                            if (is_null(SupplierBarang::model()->find('supplier_id=:supplierId AND barang_id=:barangId', [':supplierId' => $profilId, ':barangId' => $barangId]))) {
+                                $supplierBarang = new SupplierBarang;
+                                $supplierBarang->barang_id = $barangId;
+                                $supplierBarang->supplier_id = $profilId;
+                                if (!$supplierBarang->save()) {
+                                    throw new Exception("Gagal simpan ke SupplierBarang: supplier_id=" . $profilId . ", barang_id=" . $barangId, 500);
+                                }
+                            }
+
+                            if (SupplierBarang::belumAdaSupDefault($barangId)) {
+                                /* Jika belum ada supplier default, assign supplier ini ke default */
+                                $supplierBarang = new SupplierBarang;
+                                $supplierBarang->setDefaultSupplier($profilId, $barangId);
+                            }
                         }
 
                         $detail               = new PembelianDetail;
