@@ -387,7 +387,7 @@ class EditbarangController extends Controller
 
     public function actionSetMinimumRestock()
     {
-        if (isset($_POST['ajaxminrestock']) && !empty($_POST['minrestock-value']) && !empty($_POST['items'])) {
+        if (isset($_POST['ajaxminrestock']) && $_POST['minrestock-value']>=0 && !empty($_POST['items'])) {
             $items            = $_POST['items'];
             $minrestock_value = $_POST['minrestock-value'];
             $this->renderJSON($this->_setMinRestock($items, $minrestock_value));
