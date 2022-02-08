@@ -396,7 +396,7 @@ class EditbarangController extends Controller
                 'sukses' => false,
                 'error'  => [
                     'code' => 500,
-                    'msg'  => 'Tidak ada data!',
+                    'msg'  => 'Data salah/tidak ada!',
                 ],
             ]);
         }
