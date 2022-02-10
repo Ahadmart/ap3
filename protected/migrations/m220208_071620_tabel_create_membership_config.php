@@ -50,7 +50,7 @@ class m220208_071620_tabel_create_membership_config extends CDbMigration
 
         $this->insertMultiple('membership_config', [
             [
-                'nama'       => 'toko.kode',
+                'nama'       => 'login.kode',
                 'nilai'      => $tokoKode['nilai'],
                 'deskripsi'  => 'Kode Toko untuk Login',
                 'updated_at' => $now,
@@ -58,7 +58,7 @@ class m220208_071620_tabel_create_membership_config extends CDbMigration
                 'created_at' => $now
             ],
             [
-                'nama'       => 'toko.nama',
+                'nama'       => 'login.nama',
                 'nilai'      => $tokoNama['nilai'],
                 'deskripsi'  => 'Nama Toko untuk login',
                 'updated_at' => $now,
@@ -66,7 +66,7 @@ class m220208_071620_tabel_create_membership_config extends CDbMigration
                 'created_at' => $now
             ],
             [
-                'nama'       => 'password',
+                'nama'       => 'login.password',
                 'nilai'      => '-',
                 'deskripsi'  => 'Password untuk login',
                 'updated_at' => $now,

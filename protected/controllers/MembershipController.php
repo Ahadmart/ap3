@@ -6,4 +6,10 @@ class MembershipController extends Controller
     {
         $this->render('index');
     }
+
+    public function actionRegistrasi()
+    {
+        $model = new MembershipRegistrationForm;
+        $this->render('registrasi',['model' => $model]);
+    }
 }
