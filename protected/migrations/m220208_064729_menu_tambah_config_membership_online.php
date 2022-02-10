@@ -12,7 +12,7 @@ class m220208_064729_menu_tambah_config_membership_online extends CDbMigration
 				'root_id'    => 1,
 				'nama'       => 'Membership',
 				'icon'       => '<i class="fa fa-vcard-o fa-fw"></i>',
-				'link'       => '/membership/index',
+				'link'       => '/membershipconfig/index',
 				'keterangan' => 'Konfigurasi Ahad Membership (Online)',
 				'level'      => 3,
 				'urutan'     => 4,
