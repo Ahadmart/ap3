@@ -57,6 +57,7 @@ $this->boxHeader['normal'] = 'Konfigurasi Ahad Membership';
                     'name'      => 'nilai',
                     'value'     => [$this, 'renderEditableNilai'],
                     'type'      => 'raw',
+                    'headerHtmlOptions' => ['style' => 'width:100px'],
                     'class'     => 'BDataColumn',
                     'header'    => 'Ni<span class="ak">l</span>ai',
                     'accesskey' => 'l',

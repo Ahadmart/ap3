@@ -9,13 +9,8 @@ $this->breadcrumbs = [
 
 $this->boxHeader['small']  = 'Registrasi';
 $this->boxHeader['normal'] = 'Registrasi Member';
-?>
-<div class="row">
-    <div class="large-6 columns">
-        <?php $this->renderPartial('_form_registrasi',['model' => $model]); ?>
-    </div>
-</div>
-<?php
+
+$this->renderPartial('_form_registrasi', ['model' => $model]);
 
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],

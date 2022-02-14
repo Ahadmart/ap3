@@ -32,7 +32,7 @@ class MembershipconfigController extends Controller
         }
 
         if ($data->nama == 'bearer_token') {
-            return $nilai;
+            return substr($nilai, 0, 12) . '. . .';
         }
 
         return CHtml::link($nilai, '#', [
