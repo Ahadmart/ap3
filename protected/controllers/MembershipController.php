@@ -12,25 +12,25 @@ class MembershipController extends Controller
         $model = new MembershipRegistrationForm;
 
         if (isset($_POST['MembershipRegistrationForm'])) {
+            $form = $_POST['MembershipRegistrationForm'];
+            $form['tanggalLahir'] = date_format(date_create_from_format('d-m-Y', $form['tanggalLahir']), 'Y-m-d'); // Ubah dari d-m-Y ke Y-m-d
+            $form['userName'] = Yii::app()->user->namaLengkap;
             $clientAPI = new AhadMembershipClient();
-            $login = $clientAPI->login();
-            if ($login == false) {
-                $srUrl = MembershipConfig::model()->find('nama="url"');
-                throw new CHttpException(404, 'Web Service ' . $srUrl['nilai'] . ' Not Found');
-            }
-            $login = json_decode($login, true);
-            if (!empty($login['error']) || $login['statusCode'] != 200) {
-                throw new CHttpException($login['statusCode'], $login['error']['type'] . ': ' . $login['error']['description']);
-            }
-            // echo "<pre>";
-            // print_r($login);
-            // echo "</pre>";
-            $token = $login['data']['token'];
-            $tokenConfig = MembershipConfig::model()->find('nama="bearer_token"');
-            $tokenConfig->nilai = $token;
-            $tokenConfig->update();
+            $r = $clientAPI->registrasi($form);            
         }
 
         $this->render('registrasi', ['model' => $model]);
     }
+
+    /**
+     * Displays a particular model.
+     * @param string $nomor Nomor member yang akan di display
+     */
+    public function actionViewByNomor($nomor)
+    {
+        $clientAPI = new AhadMembershipClient();
+        $r = json_decode($clientAPI->view($nomor));
+        
+    }
+
 }
