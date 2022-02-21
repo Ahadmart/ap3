@@ -4,6 +4,10 @@
 <?= CHtml::link('&#215;', '', ['class' => 'close-reveal-modal', 'aria-label' => 'Close']) ?>
 
 <script>
+    $(document).on('opened.fndtn.reveal', '#ganti-kat-m[data-reveal]', function() {
+        var modal = $(this);
+        $("#kat-dropdown").focus();
+    });
     $("#tombol-submit-kat").click(function () {
         var kat = $("#kat-dropdown").val();
         var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
