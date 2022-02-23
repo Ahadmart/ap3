@@ -13,6 +13,7 @@ class MembershipRegistrationForm extends CFormModel
     public $tanggalLahir;
     public $pekerjaan;
     public $alamat;
+    public $keterangan;
 
     /**
      * Declares the validation rules.
@@ -22,7 +23,7 @@ class MembershipRegistrationForm extends CFormModel
     {
         return [
             ['noTelp, namaLengkap', 'required', 'message' => '{attribute} tidak boleh kosong'],
-            ['tanggalLahir, pekerjaan, alamat, username', 'safe'],
+            ['tanggalLahir, pekerjaan, alamat, keterangan, username', 'safe'],
         ];
     }
 

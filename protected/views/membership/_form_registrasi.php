@@ -10,7 +10,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
 <div class="form">
     <?php
     $form = $this->beginWidget('CActiveForm', [
-        'id'                   => 'barang-form',
+        'id'                   => 'registrasi-member-form',
         // Please note: When you enable ajax validation, make sure the corresponding
         // controller action is handling ajax validation correctly.
         // There is a call to performAjaxValidation() commented in generated controller code.
@@ -51,6 +51,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             <?php echo $form->error($model, 'alamat', ['class' => 'error']); ?>
         </div>
     </div>
+    <div class="row">
+        <div class="medium-6 columns">
+            <?php echo $form->labelEx($model, 'keterangan'); ?>
+            <?php echo $form->textField($model, 'keterangan', ['maxlength' => 500]); ?>
+            <?php echo $form->error($model, 'keterangan', ['class' => 'error']); ?>
+        </div>
+    </div>
 
     <div class="row">
         <div class="small-12 columns">
@@ -65,6 +72,27 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         $('.tanggalan').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
+        });
+    });
+    $(document).ready(function() {
+        $("#registrasi-member-form").submit(function(event) {
+            var formData = {
+                noTelp: $("#MembershipRegistrationForm_noTelp").val(),
+                namaLengkap: $("#MembershipRegistrationForm_namaLengkap").val(),
+                tanggalLahir: $("#MembershipRegistrationForm_tanggalLahir").val(),
+                pekerjaan: $("#MembershipRegistrationForm_pekerjaan").val(),
+                alamat: $("#MembershipRegistrationForm_alamat").val(),
+                keterangan: $("#MembershipRegistrationForm_keterangan").val(),
+            };
+            $.ajax({
+                type: "POST",
+                url: "<?= $this->createUrl('prosesregistrasi') ?>",
+                data: formData,
+            }).done(function(data) {
+                console.log(data);
+            });
+
+            event.preventDefault();
         });
     });
 </script>

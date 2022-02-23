@@ -27,8 +27,8 @@ class AhadMembershipClient
                 'pwd'      => UnsafeCrypto::decrypt($configArr['login.password'], UnsafeCrypto::AHADMEMBERSHIP_KEY, true),
                 'userName' => Yii::app()->user->namaLengkap,
             ];
-            $login = json_decode($this->login($credentials),true);
-            
+            $login = json_decode($this->login($credentials), true);
+
             // Yii::log("Hasil login: " . print_r($login,true));
             // Update token
             $this->token = $login['data']['token'];
@@ -39,15 +39,22 @@ class AhadMembershipClient
         }
     }
 
-    private function errorHandle($r){
+    private function errorHandle($r)
+    {
+        $err = [];
         if ($r == false) {
             $srUrl = MembershipConfig::model()->find('nama="url"');
-            throw new CHttpException(404, 'Web Service ' . $srUrl['nilai'] . ' Not Found');
+            // throw new CHttpException(404, 'Web Service ' . $srUrl['nilai'] . ' Not Found');
+            $err['statusCode']           = 404;
+            $err['error']['type']        = 'CONNECTION_ERROR';
+            $err['error']['description'] = 'Web Service ' . $srUrl['nilai'] . ' Not Found';
+            return json_encode($err);
         }
-        $result = json_decode($r, true);
-        if (!empty($result['error']) || $result['statusCode'] != 200) {
-            throw new CHttpException($result['statusCode'], $result['error']['type'] . ': ' . $result['error']['description']);
-        }
+        return $r;
+        // $result = json_decode($r, true);
+        // if (!empty($result['error']) || $result['statusCode'] != 200) {
+        // throw new CHttpException($result['statusCode'], $result['error']['type'] . ': ' . $result['error']['description']);
+        // }
     }
 
     private function postRequest($url, $data, $login = false)
@@ -71,11 +78,11 @@ class AhadMembershipClient
         // $response = curl_getinfo($ch);
         curl_close($ch);
         // $httpResponseCode = $response['http_code'];
-        $this->errorHandle($r);
-        return $r;
+        return $this->errorHandle($r);
     }
 
-    private function getRequest($url){
+    private function getRequest($url)
+    {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $r = curl_exec($ch);
@@ -90,8 +97,7 @@ class AhadMembershipClient
         //     $input . PHP_EOL,
         //     FILE_APPEND
         // );
-        $this->errorHandle($r);
-        return $r;
+        return $this->errorHandle($r);
     }
 
     public function login($credentials)
@@ -116,8 +122,9 @@ class AhadMembershipClient
         return $this->postRequest($url, $form);
     }
 
-    public function view($nomor){
-        $url = $this->baseUrl.'/profil'.$nomor;
+    public function view($nomor)
+    {
+        $url = $this->baseUrl . '/profil' . $nomor;
         return $this->getRequest($url);
     }
 }
