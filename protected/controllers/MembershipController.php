@@ -9,6 +9,7 @@ class MembershipController extends Controller
 
     public function actionRegistrasi()
     {
+        $this->layout = '//layouts/box_kecil';
         $model = new MembershipRegistrationForm;
         $this->render('registrasi', ['model' => $model]);
     }
@@ -37,13 +38,29 @@ class MembershipController extends Controller
      */
     public function actionView($id)
     {
-        $clientAPI             = new AhadMembershipClient();
-        $data                  = json_decode($clientAPI->view($id));
+        $clientAPI = new AhadMembershipClient();
+        $data      = json_decode($clientAPI->view($id));
+        if ($data->statusCode != 200) {
+            throw new CHttpException($data->statusCode, $data->error->type . ': ' . $data->error->description);
+        }
+
         $profil                = $data->data->profil;
         $tglLahir              = !empty($profil->tanggal_lahir) ? date_format(date_create_from_format('Y-m-d', $profil->tanggal_lahir), 'd-m-Y') : '';
         $profil->tanggal_lahir = $tglLahir;
-        
+
         $this->layout = '//layouts/box_kecil';
-        $this->render('view', ['data' => $profil]);
+        $this->render('view', ['model' => $profil]);
+    }
+
+    public function actionUbah($id)
+    {
+        $clientAPI = new AhadMembershipClient();
+        $data      = json_decode($clientAPI->view($id));
+        if ($data->statusCode != 200) {
+            throw new CHttpException($data->statusCode, $data->error->type . ': ' . $data->error->description);
+        }
+        $profil    = $data->data->profil;
+        $this->layout = '//layouts/box_kecil';
+        $this->render('ubah',['model'=>$profil]);
     }
 }

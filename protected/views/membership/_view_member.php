@@ -2,7 +2,7 @@
 <hr />
 <?php
 $this->widget('BDetailView', [
-    'data'       => $data,
+    'data'       => $model,
     'attributes' => [
         'nomor',
         'nomor_telp',
