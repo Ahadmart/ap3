@@ -84,6 +84,10 @@ class AhadMembershipClient
     private function getRequest($url)
     {
         $ch = curl_init($url);
+        $headers = [
+            'Authorization: Bearer ' . $this->token,
+        ];
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $r = curl_exec($ch);
         curl_close($ch);
@@ -124,7 +128,7 @@ class AhadMembershipClient
 
     public function view($nomor)
     {
-        $url = $this->baseUrl . '/profil' . $nomor;
+        $url = $this->baseUrl . '/profil/' . $nomor;
         return $this->getRequest($url);
     }
 }

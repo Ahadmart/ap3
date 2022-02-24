@@ -17,7 +17,7 @@ class MembershipController extends Controller
     {
         if (isset($_POST['noTelp']) && isset($_POST['namaLengkap'])) {
             $tglLahir = !empty($_POST['tanggalLahir']) ? date_format(date_create_from_format('d-m-Y', $_POST['tanggalLahir']), 'Y-m-d') : '';
-            $form = [
+            $form     = [
                 'noTelp'       => $_POST['noTelp'],
                 'namaLengkap'  => $_POST['namaLengkap'],
                 'tanggalLahir' => $tglLahir,
@@ -33,11 +33,17 @@ class MembershipController extends Controller
 
     /**
      * Displays a particular model.
-     * @param string $nomor Nomor member yang akan di display
+     * @param string $id Nomor member yang akan di display
      */
-    public function actionViewByNomor($nomor)
+    public function actionView($id)
     {
-        $clientAPI = new AhadMembershipClient();
-        $r         = json_decode($clientAPI->view($nomor));
+        $clientAPI             = new AhadMembershipClient();
+        $data                  = json_decode($clientAPI->view($id));
+        $profil                = $data->data->profil;
+        $tglLahir              = !empty($profil->tanggal_lahir) ? date_format(date_create_from_format('Y-m-d', $profil->tanggal_lahir), 'd-m-Y') : '';
+        $profil->tanggal_lahir = $tglLahir;
+        
+        $this->layout = '//layouts/box_kecil';
+        $this->render('view', ['data' => $profil]);
     }
 }
