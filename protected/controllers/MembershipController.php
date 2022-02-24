@@ -16,10 +16,11 @@ class MembershipController extends Controller
     public function actionProsesRegistrasi()
     {
         if (isset($_POST['noTelp']) && isset($_POST['namaLengkap'])) {
+            $tglLahir = !empty($_POST['tanggalLahir']) ? date_format(date_create_from_format('d-m-Y', $_POST['tanggalLahir']), 'Y-m-d') : '';
             $form = [
                 'noTelp'       => $_POST['noTelp'],
                 'namaLengkap'  => $_POST['namaLengkap'],
-                'tanggalLahir' => date_format(date_create_from_format('d-m-Y', $_POST['tanggalLahir']), 'Y-m-d'),
+                'tanggalLahir' => $tglLahir,
                 'pekerjaan'    => $_POST['pekerjaan'],
                 'alamat'       => $_POST['alamat'],
                 'keterangan'   => $_POST['keterangan'],

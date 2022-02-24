@@ -7,6 +7,14 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/fou
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/foundation-datepicker.js', CClientScript::POS_HEAD);
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/locales/foundation-datepicker.id.js', CClientScript::POS_HEAD);
 ?>
+<div class="row">
+    <div class="small-12 column">
+        <div data-alert class="alert-box radius" style="display:none">
+        <span></span>
+            <a href="#" class="close button">&times;</a>
+        </div>
+    </div>
+</div>
 <div class="form">
     <?php
     $form = $this->beginWidget('CActiveForm', [
@@ -76,6 +84,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
     });
     $(document).ready(function() {
         $("#registrasi-member-form").submit(function(event) {
+            $(".alert-box").slideUp();
             var formData = {
                 noTelp: $("#MembershipRegistrationForm_noTelp").val(),
                 namaLengkap: $("#MembershipRegistrationForm_namaLengkap").val(),
@@ -89,7 +98,20 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
                 url: "<?= $this->createUrl('prosesregistrasi') ?>",
                 data: formData,
             }).done(function(data) {
-                console.log(data);
+                // console.log(data);
+                data = JSON.parse(data)
+                $(".alert-box").slideDown(500, function() {
+                    if (data.statusCode == 200) {
+                        $(".alert-box").removeClass("alert");
+                        $(".alert-box").addClass("warning");
+                        $(".alert-box>span").html("Sukses: " + data.data.msg + ". Nomor: <strong>" + data.data.nomor+"</strong>")
+                    } else {
+                        $(".alert-box").removeClass("warning");
+                        $(".alert-box").addClass("alert");
+                        $(".alert-box>span").html(data.statusCode + ":" + data.error.type + ". " + data.error.description)
+                    }
+                })
+
             });
 
             event.preventDefault();
