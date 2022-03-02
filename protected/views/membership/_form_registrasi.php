@@ -60,7 +60,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         </div>
     </div>
     <div class="row">
-        <div class="medium-6 columns">
+        <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'keterangan'); ?>
             <?php echo $form->textField($model, 'keterangan', ['maxlength' => 500]); ?>
             <?php echo $form->error($model, 'keterangan', ['class' => 'error']); ?>

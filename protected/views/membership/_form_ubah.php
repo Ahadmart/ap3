@@ -56,7 +56,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         </div>
     </div>
     <div class="row">
-        <div class="medium-6 columns">
+        <div class="small-12 columns">
             <?php echo CHtml::label('Keterangan', 'keterangan'); ?>
             <?php echo CHtml::textField('keterangan', $model->keterangan); ?>
         </div>
@@ -64,6 +64,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
 
     <div class="row">
         <div class="small-12 columns">
+            <?php echo CHtml::link('Kembali', $this->createUrl('index'), ['class' => 'tiny bigfont button']); ?>
             <?php echo CHtml::submitButton('Update', ['class' => 'tiny bigfont success button right']); ?>
         </div>
     </div>
@@ -81,30 +82,31 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         $("#ubah-member-form").submit(function(event) {
             $(".alert-box").slideUp();
             var formData = {
-                noTelp: $("#MembershipRegistrationForm_noTelp").val(),
-                namaLengkap: $("#MembershipRegistrationForm_namaLengkap").val(),
-                tanggalLahir: $("#MembershipRegistrationForm_tanggalLahir").val(),
-                pekerjaan: $("#MembershipRegistrationForm_pekerjaan").val(),
-                alamat: $("#MembershipRegistrationForm_alamat").val(),
-                keterangan: $("#MembershipRegistrationForm_keterangan").val(),
+                noTelp: $("#noTelp").val(),
+                namaLengkap: $("#namaLengkap").val(),
+                tanggalLahir: $("#tanggalLahir").val(),
+                pekerjaan: $("#pekerjaan").val(),
+                alamat: $("#alamat").val(),
+                keterangan: $("#keterangan").val(),
             };
             $.ajax({
                 type: "POST",
-                url: "<?= $this->createUrl('prosesregistrasi') ?>",
+                url: "<?= $this->createUrl('prosesubah', ['id' => $model->nomor]) ?>",
                 data: formData,
             }).done(function(data) {
                 // console.log(data);
                 data = JSON.parse(data)
-                $(".alert-box").slideDown(500, function() {
+                $(".alert-box").slideUp(500, function() {
                     if (data.statusCode == 200) {
                         $(".alert-box").removeClass("alert");
                         $(".alert-box").addClass("warning");
-                        $(".alert-box>span").html("Sukses: " + data.data.msg + ". Nomor: <strong>" + data.data.nomor + "</strong>")
+                        $(".alert-box>span").html("Sukses: " + data.data.msg) // + ". Nomor: <strong>" + data.data.nomor + "</strong>")
                     } else {
                         $(".alert-box").removeClass("warning");
                         $(".alert-box").addClass("alert");
                         $(".alert-box>span").html(data.statusCode + ":" + data.error.type + ". " + data.error.description)
                     }
+                    $(".alert-box").slideDown(500)
                 })
 
             });

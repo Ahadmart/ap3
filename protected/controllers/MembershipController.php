@@ -2,6 +2,7 @@
 
 class MembershipController extends Controller
 {
+    public $layout = '//layouts/box_kecil';
     public function actionIndex()
     {
         $this->render('index');
@@ -9,8 +10,7 @@ class MembershipController extends Controller
 
     public function actionRegistrasi()
     {
-        $this->layout = '//layouts/box_kecil';
-        $model = new MembershipRegistrationForm;
+        $model        = new MembershipRegistrationForm;
         $this->render('registrasi', ['model' => $model]);
     }
 
@@ -48,7 +48,6 @@ class MembershipController extends Controller
         $tglLahir              = !empty($profil->tanggal_lahir) ? date_format(date_create_from_format('Y-m-d', $profil->tanggal_lahir), 'd-m-Y') : '';
         $profil->tanggal_lahir = $tglLahir;
 
-        $this->layout = '//layouts/box_kecil';
         $this->render('view', ['model' => $profil]);
     }
 
@@ -59,8 +58,34 @@ class MembershipController extends Controller
         if ($data->statusCode != 200) {
             throw new CHttpException($data->statusCode, $data->error->type . ': ' . $data->error->description);
         }
-        $profil    = $data->data->profil;
-        $this->layout = '//layouts/box_kecil';
-        $this->render('ubah',['model'=>$profil]);
+        $profil                = $data->data->profil;
+        $tglLahir              = !empty($profil->tanggal_lahir) ? date_format(date_create_from_format('Y-m-d', $profil->tanggal_lahir), 'd-m-Y') : '';
+        $profil->tanggal_lahir = $tglLahir;
+        $this->render('ubah', ['model' => $profil]);
+    }
+
+    /**
+     * ActionProsesUbah function
+     *
+     * @param string $id Nomor member
+     * @return json
+     */
+    public function actionProsesUbah($id)
+    {
+        if (isset($_POST['noTelp']) && isset($_POST['namaLengkap'])) {
+            $tglLahir = !empty($_POST['tanggalLahir']) ? date_format(date_create_from_format('d-m-Y', $_POST['tanggalLahir']), 'Y-m-d') : '';
+            $data     = [
+                'noTelp'       => $_POST['noTelp'],
+                'namaLengkap'  => $_POST['namaLengkap'],
+                'tanggalLahir' => $tglLahir,
+                'pekerjaan'    => $_POST['pekerjaan'],
+                'alamat'       => $_POST['alamat'],
+                'keterangan'   => $_POST['keterangan'],
+                'userName'     => Yii::app()->user->namaLengkap,
+            ];
+            // $this->renderJSON($data);
+            $clientAPI = new AhadMembershipClient();
+            echo $clientAPI->update($id, $data);
+        }
     }
 }

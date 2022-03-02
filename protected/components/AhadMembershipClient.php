@@ -104,6 +104,30 @@ class AhadMembershipClient
         return $this->errorHandle($r);
     }
 
+    private function putRequest($url, $data, $login = false)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $headers = [
+            'content-type: application/json; charset=utf-8',
+            'Authorization: Bearer ' . $this->token,
+        ];
+        if ($login) {
+            $headers = [
+                'content-type: application/json; charset=utf-8',
+            ];
+        }
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $r = curl_exec($ch);
+        // $response = curl_getinfo($ch);
+        curl_close($ch);
+        // $httpResponseCode = $response['http_code'];
+        return $this->errorHandle($r);
+    }
+
     public function login($credentials)
     {
         $url = $this->baseUrl . '/toko/login';
@@ -120,15 +144,39 @@ class AhadMembershipClient
         return false;
     }
 
+    /**
+     * Registrasi function
+     * Daftar member baru
+     * @param array $form Form pendaftaran
+     * @return string (JSON encoded string) hasil/error dalam format json 
+     */
     public function registrasi($form)
     {
         $url = $this->baseUrl . '/profil/register';
         return $this->postRequest($url, $form);
     }
 
+    /**
+     * View function
+     *
+     * @param string $nomor Nomor member
+     * @return string (JSON encoded string) Data profil member (satu)
+     */
     public function view($nomor)
     {
         $url = $this->baseUrl . '/profil/' . $nomor;
         return $this->getRequest($url);
+    }
+
+    /**
+     * Update Profil Member function
+     *
+     * @param string $nomor
+     * @param array $data
+     * @return json
+     */
+    public function update($nomor, $data){
+        $url = $this->baseUrl . '/profil/' . $nomor;
+        return $this->putRequest($url, $data);
     }
 }
