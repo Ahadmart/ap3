@@ -11,7 +11,7 @@ $this->breadcrumbs = [
 $this->boxHeader['small']  = 'Membership';
 $this->boxHeader['normal'] = 'Membership';
 
-// $this->renderPartial('_form', array('model' => $model));
+$this->renderPartial('_form_search');
 
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => ''],

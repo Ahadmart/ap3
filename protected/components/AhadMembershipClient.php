@@ -175,8 +175,15 @@ class AhadMembershipClient
      * @param array $data
      * @return json
      */
-    public function update($nomor, $data){
+    public function update($nomor, $data)
+    {
         $url = $this->baseUrl . '/profil/' . $nomor;
         return $this->putRequest($url, $data);
+    }
+
+    public function cari($kataKunci)
+    {
+        $url = $this->baseUrl . '/profil/cari';
+        return $this->postRequest($url, ['kataKunci' => $kataKunci]);
     }
 }

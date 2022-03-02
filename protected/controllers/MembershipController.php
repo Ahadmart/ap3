@@ -10,7 +10,7 @@ class MembershipController extends Controller
 
     public function actionRegistrasi()
     {
-        $model        = new MembershipRegistrationForm;
+        $model = new MembershipRegistrationForm;
         $this->render('registrasi', ['model' => $model]);
     }
 
@@ -87,5 +87,13 @@ class MembershipController extends Controller
             $clientAPI = new AhadMembershipClient();
             echo $clientAPI->update($id, $data);
         }
+    }
+
+    public function actionCari()
+    {
+        $data = $_POST['data'];
+
+        $clientAPI = new AhadMembershipClient();
+        echo $clientAPI->cari($data);
     }
 }
