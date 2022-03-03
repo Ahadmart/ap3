@@ -23,7 +23,7 @@
                     <?php echo CHtml::textField('cari-input', '', ['autofocus' => 'autofocus']); ?>
                 </div>
                 <div class="small-3 columns">
-                    <?php echo CHtml::submitButton('Cari', ['class' => 'button postfix', 'value' => 'cari']); ?>
+                    <?php echo CHtml::submitButton('cari', ['class' => 'button postfix', 'value' => 'Cari']); ?>
                 </div>
             </div>
         </div>
@@ -31,26 +31,6 @@
     <?php
     echo CHtml::endForm();
     ?>
-</div>
-<div class="row">
-    <div class="small-12 columns">
-        <table id="list-profil" style="width:100%">
-            <thead>
-                <tr>
-                    <th onclick="sortTable(0)"><i class="fa fa-sort"></i> NOMOR</th>
-                    <th onclick="sortTable(1)"><i class="fa fa-sort"></i> NO TELP</th>
-                    <th onclick="sortTable(2)"><i class="fa fa-sort"></i> NAMA LENGKAP</th>
-                    <th onclick="sortTable(3)"><i class="fa fa-sort"></i> TANGGAL LAHIR</th>
-                    <th onclick="sortTable(3)"><i class="fa fa-sort"></i> PEKERJAAN</th>
-                    <th onclick="sortTable(3)"><i class="fa fa-sort"></i> ALAMAT</th>
-                    <th onclick="sortTable(3)"><i class="fa fa-sort"></i> KETERANGAN</th>
-                </tr>
-            </thead>
-            <tbody>
-
-            </tbody>
-        </table>
-    </div>
 </div>
 <script>
     $(document).ready(function() {
@@ -87,20 +67,4 @@
             event.preventDefault();
         });
     });
-
-    function isiTabel(data) {
-        var tableBody = $("#list-profil>tbody");
-        tableBody.html("");
-        data.forEach(function(object) {
-            var tr = document.createElement('tr');
-            tr.innerHTML = '<td><a href="<?= $this->createUrl('/membership') ?>/' + object.nomor + '">' + object.nomor + '</a></td>' +
-                '<td>' + object.nomor_telp + '</td>' +
-                '<td>' + object.nama_lengkap + '</td>' +
-                '<td>' + object.tanggal_lahir + '</td>' +
-                '<td>' + object.pekerjaan + '</td>' +
-                '<td>' + object.alamat + '</td>' +
-                '<td>' + object.keterangan + '</td>';
-            tableBody.append(tr);
-        });
-    }
 </script>

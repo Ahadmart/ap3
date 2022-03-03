@@ -12,7 +12,45 @@ $this->boxHeader['small']  = 'Membership';
 $this->boxHeader['normal'] = 'Membership';
 
 $this->renderPartial('_form_search');
+?>
+<div class="row">
+    <div class="small-12 columns">
+        <table id="list-profil" class="tabel-index" style="width:100%">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Nomor</th>
+                    <th onclick="sortTable(1)">No Telp</th>
+                    <th onclick="sortTable(2)">Nama Lengkap</th>
+                    <th onclick="sortTable(3)">Tanggal Lahir</th>
+                    <th onclick="sortTable(3)">Pekerjaan</th>
+                    <th onclick="sortTable(3)">Alamat</th>
+                    <th onclick="sortTable(3)">Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
 
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function isiTabel(data) {
+        var tableBody = $("#list-profil>tbody");
+        tableBody.html("");
+        data.forEach(function(object) {
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><a href="<?= $this->createUrl('/membership') ?>/' + object.nomor + '">' + object.nomor + '</a></td>' +
+                '<td>' + object.nomor_telp + '</td>' +
+                '<td>' + object.nama_lengkap + '</td>' +
+                '<td>' + object.tanggal_lahir + '</td>' +
+                '<td>' + object.pekerjaan + '</td>' +
+                '<td>' + object.alamat + '</td>' +
+                '<td>' + object.keterangan + '</td>';
+            tableBody.append(tr);
+        });
+    }
+</script>
+<?php
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => ''],
     [

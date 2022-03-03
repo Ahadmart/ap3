@@ -3,8 +3,10 @@
 class MembershipController extends Controller
 {
     public $layout = '//layouts/box_kecil';
+
     public function actionIndex()
     {
+        $this->layout = '//layouts/box';
         $this->render('index');
     }
 

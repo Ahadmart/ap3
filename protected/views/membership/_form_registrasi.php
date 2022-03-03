@@ -10,7 +10,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
 <div class="row">
     <div class="small-12 column">
         <div data-alert class="alert-box radius" style="display:none">
-        <span></span>
+            <span></span>
             <a href="#" class="close button">&times;</a>
         </div>
     </div>
@@ -97,18 +97,19 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
                 type: "POST",
                 url: "<?= $this->createUrl('prosesregistrasi') ?>",
                 data: formData,
-            }).done(function(data) {
+            }).done(function(r) {
                 // console.log(data);
-                data = JSON.parse(data)
+                r = JSON.parse(r)
                 $(".alert-box").slideDown(500, function() {
-                    if (data.statusCode == 200) {
+                    if (r.statusCode == 200) {
                         $(".alert-box").removeClass("alert");
                         $(".alert-box").addClass("warning");
-                        $(".alert-box>span").html("Sukses: " + data.data.msg + ". Nomor: <strong>" + data.data.nomor+"</strong>")
+                        $(".alert-box>span").html("Sukses: " + r.data.msg + ". Nomor: <strong>" + r.data.nomor + "</strong>")
+                        setTimeout(openView(r.data.nomor), 3000)
                     } else {
                         $(".alert-box").removeClass("warning");
                         $(".alert-box").addClass("alert");
-                        $(".alert-box>span").html(data.statusCode + ":" + data.error.type + ". " + data.error.description)
+                        $(".alert-box>span").html(r.statusCode + ":" + r.error.type + ". " + r.error.description)
                     }
                 })
 
@@ -117,4 +118,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             event.preventDefault();
         });
     });
+
+    function openView(nomor) {
+        window.location.href = "<?= $this->createUrl('/membership') ?>/" + nomor;
+    }
 </script>
