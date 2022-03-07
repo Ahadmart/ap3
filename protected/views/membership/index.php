@@ -22,9 +22,9 @@ $this->renderPartial('_form_search');
                     <th onclick="sortTable(1)">No Telp</th>
                     <th onclick="sortTable(2)">Nama Lengkap</th>
                     <th onclick="sortTable(3)">Tanggal Lahir</th>
-                    <th onclick="sortTable(3)">Pekerjaan</th>
-                    <th onclick="sortTable(3)">Alamat</th>
-                    <th onclick="sortTable(3)">Keterangan</th>
+                    <th onclick="sortTable(4)">Pekerjaan</th>
+                    <th onclick="sortTable(5)">Alamat</th>
+                    <th onclick="sortTable(6)">Keterangan</th>
                 </tr>
             </thead>
             <tbody>

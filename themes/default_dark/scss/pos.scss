@@ -241,11 +241,11 @@ table tr th, table tr td {
     cursor: pointer;
 }
 
-#ganti-customer{
+#ganti-customer, #ganti-member{
     margin-top: 10px;
 }
 
-#data-customer{
+#data-customer, #data-member{
     color: #fff;
     margin-top: 10px;
     margin-bottom: 15px;
@@ -295,7 +295,7 @@ table tr th, table tr td {
     animation: flash 2s infinite;
 }
 
-#scan, input[name="kasbank[]"].uang-dibayar, input[name="tarik-tunai"].tarik-tunai, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password, #akm-no, 
+#scan, input[name="kasbank[]"].uang-dibayar, input[name="tarik-tunai"].tarik-tunai, #account, #jenisbayar, #nomor-customer, #nomor-member, #admin-user, #admin-password, #akm-no, 
 #pesanan-no, #infaq, #diskon-nota{
     background-color: rgba(0, 0, 0, 0.5);
     color: rgb(255, 255, 0);
@@ -303,7 +303,7 @@ table tr th, table tr td {
 }
 
 #scan:focus, .uang-dibayar:focus, #account:focus,
-#jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus, #akm-no:focus, 
+#jenisbayar:focus, #nomor-customer:focus, #nomor-member:focus, #admin-user:focus, #admin-password:focus, #akm-no:focus, 
 #pesanan-no:focus, #infaq:focus, #diskon-nota:focus{
     border-color: #00BCD4;
     box-shadow: 0px 0px 15px #00BCD4;
