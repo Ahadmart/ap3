@@ -509,6 +509,19 @@ class PosController extends Controller
         $this->renderJSON($return);
     }
 
+    public function actionGantiMember($id){
+        $return = [
+            'sukses' => false,
+            'error' => [
+                'code' => '500',
+                'msg' => 'Sempurnakan input!'
+            ]
+            ];
+
+            if (isset($_POST['nomor']) && !empty($_POST['nomor'])){
+            }
+    }
+
     public function actionAdminLogout()
     {
         $return = [

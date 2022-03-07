@@ -36,7 +36,7 @@
                 </div>
             </div>
         </form>
-        <span class="label" id="label-member" accesskey="r">Membe<span class="ak">r</span></span>
+        <span class="label" id="label-member" accesskey="r">Membe<span class="ak">r</span> Online</span>
 
         <div id="data-customer">
             <nomor>Nomor: <?php echo $this->profil->nomor; ?>
@@ -50,14 +50,9 @@
             </address>
         </div>
         <div id="data-member">
-            <nomor>Nomor: <?php //echo $this->profil->nomor; ?></nomor>
-            <nama><?php // echo $this->namaProfil; ?>
-            </nama>
-            <address>
-                <?php //echo !empty($this->profil->alamat1) ? $this->profil->alamat1 : ''; ?>
-                <?php //echo !empty($this->profil->alamat2) ? '<br>' . $this->profil->alamat2 : ''; ?>
-                <?php //echo !empty($this->profil->alamat3) ? '<br>' . $this->profil->alamat3 : ''; ?>
-            </address>
+            <nomor>Nomor: </nomor>
+            <nama></nama>
+            <address></address>
         </div>
         <form id="form-admin-login">
             <div class="row admin-input" style="display: none">
@@ -209,6 +204,10 @@
                 $("#form-nomor-customer").submit();
             });
 
+            $("#tombol-ganti-member").click(function() {
+                $("#form-nomor-member").submit();
+            });
+
             $("#tombol-admin-login").click(function() {
                 $("#form-admin-login").submit();
             });
@@ -255,6 +254,40 @@
                         }
                         $("#nomor-customer").val("");
                         $("#ganti-customer").hide(500);
+                        $("#scan").focus();
+                    }
+                });
+                return false;
+            });
+
+            $("#form-nomor-member").submit(function() {
+                dataUrl =
+                    '<?php echo $this->createUrl('gantimember', ['id' => $this->penjualanId]); ?>';
+                dataKirim = {
+                    nomor: $("#nomor-member").val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: dataUrl,
+                    data: dataKirim,
+                    success: function(data) {
+                        if (data.sukses) {
+                            $("#data-member nomor").html('Nomor: ' + data.nomor);
+                            $("#data-member nama").html(data.nama);
+                            $("#data-member address").html(data.address);
+
+                            $.fn.yiiGridView.update('penjualan-detail-grid');
+                            updateTotal();
+                        } else {
+                            $.gritter.add({
+                                title: 'Error ' + data.error.code,
+                                text: data.error.msg,
+                                time: 3000,
+                            });
+                        }
+                        $("#nomor-member").val("");
+                        $("#ganti-member").hide(500);
                         $("#scan").focus();
                     }
                 });
