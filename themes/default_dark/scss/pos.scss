@@ -4,23 +4,24 @@
 */
 
 $biru: #0b62a4;
-$biru-muda: #7A92A3;
+$biru-muda: #7a92a3;
 $hijau: #4da74d;
 $toska: #afd8f8;
 $oranye: #edc240;
 $merah: #cb4b4b;
 $violet: #9440ed;
-$primary-color: #1976D2; 
+$primary-color: #1976d2;
 $secondary-color: #e7e7e7;
 $alert-color: #d32f2f;
-$success-color: #388E3C; 
-$warning-color: #F57C00;
-$info-color: #03A9F4;
+$success-color: #388e3c;
+$warning-color: #f57c00;
+$info-color: #03a9f4;
 
-body, html {
+body,
+html {
     height: 100%;
 }
-body{
+body {
     color: #222222;
     background: #dddcd6 url(../img/bg-b.jpg) repeat-y center fixed;
     padding: 0;
@@ -32,27 +33,27 @@ body{
     position: relative;
     cursor: default;
 }
-a{
+a {
     color: #35e9c5;
 }
-.prefix .fa-2x{
-    padding-top:4px;
+.prefix .fa-2x {
+    padding-top: 4px;
 }
-.postfix .fa-2x{
-    padding-top:4px;
+.postfix .fa-2x {
+    padding-top: 4px;
 }
 
 .sidebar {
     // height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    padding-top: 15px;	
+    background-color: rgba(0, 0, 0, 0.5);
+    padding-top: 15px;
     /*    .prefix .fa-2x{
             padding-top:4px;
         }
         .postfix .fa-2x{
             padding-top:4px;
         }*/
-    .huruf{
+    .huruf {
         /*font-weight: bold;*/
         font-size: 1.5rem;
     }
@@ -65,139 +66,141 @@ a{
           left: 0;
        }*/
 }
-#info-tabel{
+#info-tabel {
     width: 100%;
-    .key{
+    .key {
         font-weight: bold;
         text-align: right;
     }
-    td{
+    td {
         font-size: 0.825rem;
         padding: 2px;
     }
 }
-#transaksi{
+#transaksi {
     padding-bottom: 30px;
 }
-.tabel-detail-jual{
+.tabel-detail-jual {
     width: 100%;
 }
-#subtotal-belanja{
+#subtotal-belanja {
     font-size: 2rem;
-    color: #FF0;
+    color: #ff0;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
-
+    text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
 }
-#total-belanja{
+#total-belanja {
     font-size: 3.5rem;
-    color: #FF0;
+    color: #ff0;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
-
+    text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
 }
-#surcharge{
+#surcharge {
     font-size: 2rem;
-    color: #F00;
+    color: #f00;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
     text-shadow: 1px 1px black;
 }
-#kembali{
+#kembali {
     font-size: 2rem;
-    color: #ADFF2F;
+    color: #adff2f;
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow:rgba(0,0,0,.2) 2px 6px 5px,rgba(255,255,255,.4) 0 -4px 30px;
-    border-bottom: 1px solid rgba(255,255,255,0.5);
+    text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     margin-bottom: 15px;
-    &.negatif{
+    &.negatif {
         color: $alert-color;
     }
 }
 
-#logo{
+#logo {
     /*background-color: #fff;*/
     /*padding: 10px;*/
     margin-bottom: 35px;
 }
 
-#tombol-simpan{
+#tombol-simpan {
     float: right;
 }
 
-#tombol-batal{
+#tombol-batal {
     float: left;
 }
 
-.off-canvas-wrap, .main-section, .inner-wrap{
-    height: 100%;
+.off-canvas-wrap,
+.main-section,
+.inner-wrap {
+    height: 100vh;
 }
 
-#gritter-notice-wrapper{
-    left:33%;
-    right:33%;
-    top:3px;
+#gritter-notice-wrapper {
+    left: 33%;
+    right: 33%;
+    top: 3px;
 }
 /* Custom editable untuk POS */
-.editable-input{
+.editable-input {
     width: 50px;
-    &.input-editable-harga-p{
+    &.input-editable-harga-p {
         width: 75px;
     }
 }
 
 .editable-buttons {
-    button{
+    button {
         height: 25px;
         line-height: 12px;
         text-transform: capitalize;
         width: 30px;
-        &.editable-cancel{
+        &.editable-cancel {
             top: -25px;
             left: 31px;
             width: 30px;
         }
-    }   
+    }
 }
 
-.editable-container{
+.editable-container {
     height: 20px;
     margin-top: -10px;
 }
 
-.tabel-index input.edit-input, .tabel-index .editable-input input{
+.tabel-index input.edit-input,
+.tabel-index .editable-input input {
     height: 25px;
     padding: 2px 2px;
 }
 .editable-clear-x {
     margin-top: -7px;
 }
-.tabel-index tr td{
+.tabel-index tr td {
     font-family: "Open Sans";
     font-size: 0.875rem;
     font-weight: 700;
     text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
-    &.barcode{
+    &.barcode {
         font-size: 0.7rem;
         font-weight: 700;
     }
 }
 
-tr{
+tr {
     transition: background-color 0.5s ease;
-    &.pilih, &.selected{
-        background-color: rgba(0,0,0,0.5) !important;
-        a{
-            color: #388E3C;
+    &.pilih,
+    &.selected {
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        a {
+            color: #388e3c;
         }
-        td{
+        td {
             color: #fff;
         }
     }
@@ -208,44 +211,48 @@ tr{
     margin-bottom: 15px;
 }
 
-.main-section{
+.main-section {
     margin: 15px;
 }
 
-table, table thead{
+table,
+table thead {
     background: none;
 }
 
-table thead tr th, table thead tr td {
-    color: #E0E0E0;
+table thead tr th,
+table thead tr td {
+    color: #e0e0e0;
     font-size: 0.9rem;
     font-weight: normal;
     padding: 0.5rem 0.625rem 0.625rem;
     background-color: rgba(19, 37, 49, 0.7);
 }
 
-table tr.even, table tr.alt, table tr:nth-of-type(even) {
+table tr.even,
+table tr.alt,
+table tr:nth-of-type(even) {
     background-color: rgba(12, 28, 41, 0.7);
-
 }
 
-table tr.odd{
+table tr.odd {
     background-color: rgba(7, 81, 108, 0.45);
 }
 
-table tr th, table tr td {
-    color: #FFEB3B;
+table tr th,
+table tr td {
+    color: #ffeb3b;
 }
 
-#label-customer{
+#label-customer {
     cursor: pointer;
 }
 
-#ganti-customer{
+#ganti-customer {
     margin-top: 10px;
 }
 
-#data-customer{
+#data-customer {
     color: #fff;
     margin-top: 10px;
     margin-bottom: 15px;
@@ -253,37 +260,37 @@ table tr th, table tr td {
     font-size: 0.9rem;
     border-top: 1px solid $biru-muda;
     border-bottom: 1px solid $biru-muda;
-    nomor{
+    nomor {
         font-weight: bold;
         color: $hijau;
         display: block;
-    }   
-    nama{
+    }
+    nama {
         font-weight: bold;
         display: block;
         margin: 10px 0;
     }
 }
-.ac-nama{
-    float:left;
+.ac-nama {
+    float: left;
     width: 45%;
 }
-.ac-harga{
+.ac-harga {
     color: $violet;
     font-weight: bold;
-    float:left;
+    float: left;
     width: 15%;
     text-align: right;
 }
-.ac-barcode{
-    float:left;
+.ac-barcode {
+    float: left;
     width: 30%;
     padding-left: 5px;
 }
-.ac-stok{
+.ac-stok {
     color: $violet;
     font-weight: bold;
-    float:left;
+    float: left;
     width: 10%;
     text-align: right;
 }
@@ -295,49 +302,69 @@ table tr th, table tr td {
     animation: flash 2s infinite;
 }
 
-#scan, input[name="kasbank[]"].uang-dibayar, input[name="tarik-tunai"].tarik-tunai, #account, #jenisbayar, #nomor-customer, #admin-user, #admin-password, #akm-no, 
-#pesanan-no, #infaq, #diskon-nota{
+#scan,
+input[name="kasbank[]"].uang-dibayar,
+input[name="tarik-tunai"].tarik-tunai,
+#account,
+#jenisbayar,
+#nomor-customer,
+#admin-user,
+#admin-password,
+#akm-no,
+#pesanan-no,
+#infaq,
+#diskon-nota {
     background-color: rgba(0, 0, 0, 0.5);
     color: rgb(255, 255, 0);
     border-color: transparent;
 }
 
-#scan:focus, .uang-dibayar:focus, #account:focus,
-#jenisbayar:focus, #nomor-customer:focus, #admin-user:focus, #admin-password:focus, #akm-no:focus, 
-#pesanan-no:focus, #infaq:focus, #diskon-nota:focus{
-    border-color: #00BCD4;
-    box-shadow: 0px 0px 15px #00BCD4;
+#scan:focus,
+.uang-dibayar:focus,
+#account:focus,
+#jenisbayar:focus,
+#nomor-customer:focus,
+#admin-user:focus,
+#admin-password:focus,
+#akm-no:focus,
+#pesanan-no:focus,
+#infaq:focus,
+#diskon-nota:focus {
+    border-color: #00bcd4;
+    box-shadow: 0px 0px 15px #00bcd4;
 }
 
-#scan-icon, span.prefix, span.postfix{
+#scan-icon,
+span.prefix,
+span.postfix {
     background-color: rgba(0, 0, 0, 0.5);
     color: $toska;
     border-color: transparent;
 }
 
-.ui-autocomplete{
+.ui-autocomplete {
     background-color: rgba(0, 0, 0, 0.95);
     border-color: transparent;
 }
 
 .ui-menu-item a {
-    color: #FFF;
+    color: #fff;
 }
 
 .ui-menu .ui-menu-item {
     border-bottom: 1px solid;
 }
 
-.ui-menu-item.ui-state-focus{
+.ui-menu-item.ui-state-focus {
     background-color: #263238;
 }
 
-div.summary{
+div.summary {
     text-align: center;
 }
 
-.grid-loading{        
-    th{
+.grid-loading {
+    th {
         animation: bgpulse 0.5s infinite;
     }
 }
@@ -354,6 +381,51 @@ div.summary{
     }
 }
 
-.prefix .fa-inverse{
+.prefix .fa-inverse {
     color: darken($toska, 30%);
+}
+
+// Untuk tampilan small
+aside > ul.stack,
+aside > form,
+aside > span,
+aside > div,
+aside > a#tombol-simpan,
+aside > a#tombol-batal,
+aside > a#tombol-baru,
+aside > a#tombol-print {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+aside > a#tombol-baru {
+    width: 14.4rem;
+}
+
+aside > #total-belanja {
+    font-size: 2rem;
+}
+
+aside > #subtotal-belanja,
+aside > #kembali {
+    font-size: 1.5rem;
+}
+
+aside > #subtotal-belanja,
+aside > #total-belanja,
+aside > #kembali {
+    padding-right: 20px;
+}
+aside > .row {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.left-off-canvas-menu,
+.right-off-canvas-menu {
+    background: none;
+}
+
+.left-off-canvas-menu {
+    padding-top: 10px;
 }
