@@ -18,7 +18,8 @@ $this->boxHeader['normal'] = "Pesanan (Sales Order): {$model->nomorF}";
     <h4><small>Pesanan (Sales Order) :</small> <?= $nomor ?></h4>
     <div class=" row collapse">
         <div class="small-2 medium-1 columns">
-            <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+            <a class="prefix" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('pesananubah', ['id' => $model->id, 'barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a>
+            <!-- <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span> -->
         </div>
         <div class="small-6 medium-9 columns">
             <input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus" />
@@ -242,6 +243,16 @@ Yii::app()->clientScript->registerScriptFile(
         });
         return false;
     });
+    <?php
+    if (!is_null($scanBarcode)) {
+    ?>
+        $(function() {
+            $("#scan").val("<?= $scanBarcode ?>");
+            kirimBarcode("<?= $scanBarcode ?>");
+        });
+    <?php
+    }
+    ?>
 </script>
 <?php
 $this->menu = [

@@ -8,6 +8,7 @@ class PosmController extends PosController
     public $SOId;
     public $SOTotal;
     public $showPembayaran = false;
+
     /**
      * Updates a particular model.
      * @param integer $id the ID of the model to be updated
@@ -68,6 +69,12 @@ class PosmController extends PosController
         $this->showInfaq         = $showInfaq;
         $this->showTarikTunai    = $showTarikTunai;
 
+        $scanBarcode = null;
+        /* Ada scan dari aplikasi barcode scanner (android) */
+        if (isset($_GET['barcodescan'])) {
+            $scanBarcode = (string) $_GET['barcodescan'];
+        }
+
         $this->render(
             'ubah',
             [
@@ -76,6 +83,7 @@ class PosmController extends PosController
                 'barang'               => $barang,
                 'tipeCari'             => $configCariBarang->nilai,
                 'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
+                'scanBarcode'          => $scanBarcode,
             ]
         );
     }
@@ -122,6 +130,11 @@ class PosmController extends PosController
         $this->SOStatus = $model->status;
         $this->SOTotal  = $model->getTotal();
 
+        $scanBarcode = null;
+        /* Ada scan dari aplikasi barcode scanner (android) */
+        if (isset($_GET['barcodescan'])) {
+            $scanBarcode = (string) $_GET['barcodescan'];
+        }
         $this->render(
             'pesanan_ubah',
             [
@@ -129,6 +142,7 @@ class PosmController extends PosController
                 'modelDetail' => $modelDetail,
                 'barang'      => $barang,
                 'tipeCari'    => $configCariBarang->nilai,
+                'scanBarcode' => $scanBarcode,
             ]
         );
     }
@@ -183,6 +197,15 @@ class PosmController extends PosController
 
     public function actionCekHarga()
     {
-        $this->render('cekharga');
+        $urlCallback = $this->createAbsoluteUrl('cekharga');
+        $scanBarcode = null;
+        /* Ada scan dari aplikasi barcode scanner (android) */
+        if (isset($_GET['barcodescan'])) {
+            $scanBarcode = (string) $_GET['barcodescan'];
+        }
+        $this->render('cekharga',[
+            'urlCallback' => $urlCallback,
+            'scanBarcode' => $scanBarcode,
+        ]);
     }
 }

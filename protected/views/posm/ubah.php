@@ -15,7 +15,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     <div class="small-12 columns">
         <div class="row collapse">
             <div class="small-2 medium-1 columns">
-            <a class="prefix" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('ubah', ['id' => $model->id, 'barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a>
+                <a class="prefix" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('ubah', ['id' => $model->id, 'barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a>
 
                 <!-- <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span> -->
             </div>
@@ -474,6 +474,17 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         });
         return false;
     });
+
+    <?php
+    if (!is_null($scanBarcode)) {
+    ?>
+        $(function() {
+            $("#scan").val("<?= $scanBarcode ?>");
+            kirimBarcode("<?= $scanBarcode ?>");
+        });
+    <?php
+    }
+    ?>
 </script>
 <?php
 $this->menu = array(
