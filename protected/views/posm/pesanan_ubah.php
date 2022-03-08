@@ -12,7 +12,7 @@ $model->id => array('view', 'id' => $model->id),
 $this->boxHeader['small']  = 'Pesanan';
 $this->boxHeader['normal'] = "Pesanan (Sales Order): {$model->nomorF}";
 ?>
-<div class="row">
+<div class="row collapse">
     <div class="small-12 columns"">
     <?php $nomor = empty($model->nomorF) ? 'DRAFT' : $model->nomorF; ?>
     <h4><small>Pesanan (Sales Order) :</small> <?= $nomor ?></h4>

@@ -7,14 +7,16 @@ class PosmController extends PosController
     public $SOStatus;
     public $SOId;
     public $SOTotal;
-     /**
+    public $showPembayaran = false;
+    /**
      * Updates a particular model.
      * @param integer $id the ID of the model to be updated
      */
     public function actionUbah($id)
     {
-        $this->penjualanId = $id;
-        $model             = $this->loadModel($id);
+        $this->showPembayaran = true;
+        $this->penjualanId    = $id;
+        $model                = $this->loadModel($id);
         // Penjualan tidak bisa diubah kecuali statusnya draft
         if ($model->status != Penjualan::STATUS_DRAFT) {
             $this->redirect(['index']);
@@ -76,8 +78,8 @@ class PosmController extends PosController
                 'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
             ]
         );
-    }  
-    
+    }
+
     public function actionPesananUbah($id)
     {
         $this->layout = '//layouts/pos_mobile_pesanan';
@@ -116,9 +118,9 @@ class PosmController extends PosController
         $configCariBarang = Config::model()->find("nama='pos.caribarangmode'");
 
         // Variabel untuk layout
-        $this->SOId = $model->id;
+        $this->SOId     = $model->id;
         $this->SOStatus = $model->status;
-        $this->SOTotal = $model->getTotal();
+        $this->SOTotal  = $model->getTotal();
 
         $this->render(
             'pesanan_ubah',
@@ -131,18 +133,17 @@ class PosmController extends PosController
         );
     }
 
-
     public function renderBarang($data, $row)
     {
-        $diskon          = $data->diskon > 0 ? ' (' . rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',') . ')' : '';
-        $text = $data->barang->nama . ' ('. $data->barang->barcode.')'.
-        '<br />' .
-        rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
-        $diskon .
-        ' x ' . $data->qty . ' ' . $data->barang->satuan->nama.
-        '<br />'.
-        'Sub Total: '. $data->total;
-        
+        $diskon = $data->diskon > 0 ? ' (' . rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',') . ')' : '';
+        $text   = $data->barang->nama . ' (' . $data->barang->barcode . ')' .
+            '<br />' .
+            rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
+            $diskon .
+            ' x ' . $data->qty . ' ' . $data->barang->satuan->nama .
+            '<br />' .
+            'Sub Total: ' . $data->total;
+
         return $text;
     }
 
@@ -169,5 +170,19 @@ class PosmController extends PosController
 
                 break;
         }
+    }
+
+    public function renderBarangList($data, $row)
+    {
+        $text = $data->nama . ' (' . $data->barcode . ')' .
+            '<br />' .
+            $data->hargaJual;
+
+        return $text;
+    }
+
+    public function actionCekHarga()
+    {
+        $this->render('cekharga');
     }
 }

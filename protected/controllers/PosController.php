@@ -434,7 +434,7 @@ class PosController extends Controller
 
     public function actionCekHarga()
     {
-        $this->render('//pos/cekharga');
+        $this->render('cekharga');
     }
 
     /**

@@ -152,114 +152,126 @@
                     </li>
                     <li><a href="<?= $this->createUrl('/app/logout') ?>">Logout</a>
                     </li>
-                    <li><label>Pembayaran</label></li>
+                    <?php
+                    if ($this->showPembayaran) {
+                    ?>
+                        <li><label>Pembayaran</label></li>
+                    <?php
+                    }
+                    ?>
                 </ul>
-                <div id="subtotal-belanja" style=" display: none; opacity: 0">
-                    <span class="left">Sub Total</span><span class="angka"><?php echo $this->totalPenjualan; ?></span>
-                </div>
-                <div id="total-belanja">
-                    <?php echo $this->totalPenjualan; ?>
-                </div>
-                <div id="kembali" class="negatif">
-                    0
-                </div>
-                <div class="row collapse">
-                    <?php /* Jenis Pembayaran */ ?>
-                    <div class="small-3 large-2 columns">
-                        <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
-                    </div>
-                    <div class="small-6 large-7 columns">
-                        <?php
-                        echo CHtml::dropDownList('jenisbayar', 1, CHtml::listData(JenisTransaksi::model()->findAll(), 'id', 'nama'), [
-                            'accesskey' => 'd',
-                            'id'        => 'jenisbayar',
-                        ]);
-                        ?>
-                    </div>
-                    <div class="small-3 large-3 columns">
-                        <span class="postfix">[D]</span>
-                    </div>
-                </div>
                 <?php
-                if ($this->showDiskonPerNota) {
+                if ($this->showPembayaran) :
                 ?>
+                    <div id="subtotal-belanja" style=" display: none; opacity: 0">
+                        <span class="left">Sub Total</span><span class="angka"><?php echo $this->totalPenjualan; ?></span>
+                    </div>
+                    <div id="total-belanja">
+                        <?php echo $this->totalPenjualan; ?>
+                    </div>
+                    <div id="kembali" class="negatif">
+                        0
+                    </div>
                     <div class="row collapse">
+                        <?php /* Jenis Pembayaran */ ?>
                         <div class="small-3 large-2 columns">
-                            <!--<span class="prefix"><i class="fa fa-2x fa-chevron-down"></i></span>-->
-                            <span class="prefix">
-                                <span class="fa-stack fa-lg">
-                                    <i class="fa fa-tag fa-stack-2x"></i>
-                                    <i class="fa fa-percent fa-inverse fa-stack-1x" style="transform: rotate(-45deg)"></i>
-                                </span>
-                            </span>
+                            <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
                         </div>
-                        <div class="small-9 large-10 columns">
-                            <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r" />
-                        </div>
-                    </div>
-                <?php
-                }
-                ?>
-                <?php
-                if ($this->showTarikTunai) {
-                ?>
-                    <div class="row collapse input-tarik-tunai" style="display: none">
-                        <?php /* Company account */ ?>
-                        <div class="small-3 large-2 columns">
-                            <span class="prefix"><i class="fa fa-2x fa-exchange"></i></span>
-                        </div>
-                        <div class="small-4 large-5 columns">
+                        <div class="small-6 large-7 columns">
                             <?php
-                            echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
-                                'accesskey' => 'a',
-                                'class'     => 'account',
-                            ]); ?>
-                        </div>
-                        <div class="small-5 large-5 columns">
-                            <input type="text" id="tarik-tunai" class="tarik-tunai" name="tarik-tunai" placeholder="Tarik Tunai" />
-                        </div>
-                    </div>
-                <?php
-                }
-                ?>
-                <div id="uang-dibayar-master">
-                    <div class="row collapse input-uang-dibayar">
-                        <?php /* Company account */ ?>
-                        <div class="small-3 large-2 columns">
-                            <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
-                        </div>
-                        <div class="small-4 large-5 columns">
-                            <?php
-                            echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
-                                'accesskey' => 'a',
-                                'class'     => 'account',
+                            echo CHtml::dropDownList('jenisbayar', 1, CHtml::listData(JenisTransaksi::model()->findAll(), 'id', 'nama'), [
+                                'accesskey' => 'd',
+                                'id'        => 'jenisbayar',
                             ]);
                             ?>
                         </div>
-                        <div class="small-5 large-5 columns">
-                            <input type="text" class="uang-dibayar" name="kasbank[]" placeholder="[U]ang Dibayar" accesskey="u" />
+                        <div class="small-3 large-3 columns">
+                            <span class="postfix">[D]</span>
                         </div>
                     </div>
-                </div>
-                <div id="uang-dibayar-clone">
-                </div>
+                    <?php
+                    if ($this->showDiskonPerNota) {
+                    ?>
+                        <div class="row collapse">
+                            <div class="small-3 large-2 columns">
+                                <!--<span class="prefix"><i class="fa fa-2x fa-chevron-down"></i></span>-->
+                                <span class="prefix">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-tag fa-stack-2x"></i>
+                                        <i class="fa fa-percent fa-inverse fa-stack-1x" style="transform: rotate(-45deg)"></i>
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="small-9 large-10 columns">
+                                <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r" />
+                            </div>
+                        </div>
+                    <?php
+                    }
+                    ?>
+                    <?php
+                    if ($this->showTarikTunai) {
+                    ?>
+                        <div class="row collapse input-tarik-tunai" style="display: none">
+                            <?php /* Company account */ ?>
+                            <div class="small-3 large-2 columns">
+                                <span class="prefix"><i class="fa fa-2x fa-exchange"></i></span>
+                            </div>
+                            <div class="small-4 large-5 columns">
+                                <?php
+                                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
+                                    'accesskey' => 'a',
+                                    'class'     => 'account',
+                                ]); ?>
+                            </div>
+                            <div class="small-5 large-5 columns">
+                                <input type="text" id="tarik-tunai" class="tarik-tunai" name="tarik-tunai" placeholder="Tarik Tunai" />
+                            </div>
+                        </div>
+                    <?php
+                    }
+                    ?>
+                    <div id="uang-dibayar-master">
+                        <div class="row collapse input-uang-dibayar">
+                            <?php /* Company account */ ?>
+                            <div class="small-3 large-2 columns">
+                                <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
+                            </div>
+                            <div class="small-4 large-5 columns">
+                                <?php
+                                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
+                                    'accesskey' => 'a',
+                                    'class'     => 'account',
+                                ]);
+                                ?>
+                            </div>
+                            <div class="small-5 large-5 columns">
+                                <input type="text" class="uang-dibayar" name="kasbank[]" placeholder="[U]ang Dibayar" accesskey="u" />
+                            </div>
+                        </div>
+                    </div>
+                    <div id="uang-dibayar-clone">
+                    </div>
 
-                <?php
-                if ($this->showInfaq) {
-                ?>
-                    <div class="row collapse">
-                        <div class="small-3 large-2 columns">
-                            <span class="prefix"><i class="fa fa-2x fa-chevron-up"></i></span>
+                    <?php
+                    if ($this->showInfaq) {
+                    ?>
+                        <div class="row collapse">
+                            <div class="small-3 large-2 columns">
+                                <span class="prefix"><i class="fa fa-2x fa-chevron-up"></i></span>
+                            </div>
+                            <div class="small-9 large-10 columns">
+                                <input type="text" id="infaq" placeholder="In[f]ak/Sedekah" accesskey="f" />
+                            </div>
                         </div>
-                        <div class="small-9 large-10 columns">
-                            <input type="text" id="infaq" placeholder="In[f]ak/Sedekah" accesskey="f" />
-                        </div>
-                    </div>
+                    <?php
+                    }
+                    ?>
+                    <a href="" class="success bigfont tiny button" id="tombol-simpan" style="width: 6.5rem">Simpan</a>
+                    <a href="" class="warning bigfont tiny button" id="tombol-batal" style="width: 6.5rem">Batal</a>\
                 <?php
-                }
+                endif;
                 ?>
-                <a href="" class="success bigfont tiny button" id="tombol-simpan" style="width: 6.5rem">Simpan</a>
-                <a href="" class="warning bigfont tiny button" id="tombol-batal" style="width: 6.5rem">Batal</a>
             </aside>
 
             <section class="main-section">
