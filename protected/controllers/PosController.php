@@ -2,7 +2,6 @@
 
 class PosController extends Controller
 {
-
     public $layout      = '//layouts/pos_column3';
     public $namaProfil  = null;
     public $profil      = null;
@@ -33,18 +32,18 @@ class PosController extends Controller
     public function actionTambah()
     {
         /*
-          Jika ada suspended sale (Status Draft, Profil = Umum, User ybs, dan belum ada detail) yang masih 0 (NOL)
-          Maka ini dipakai terlebih dahulu
+        Jika ada suspended sale (Status Draft, Profil = Umum, User ybs, dan belum ada detail) yang masih 0 (NOL)
+        Maka ini dipakai terlebih dahulu
          */
         $suspendedSale = Penjualan::model()->find([
-            'condition' => "t.status=:sDraft and t.profil_id=:pUmum and t.updated_by=:userId and penjualan_detail.id IS NULL",
+            'condition' => 't.status=:sDraft and t.profil_id=:pUmum and t.updated_by=:userId and penjualan_detail.id IS NULL',
             'order'     => 't.id',
             'join'      => 'LEFT JOIN penjualan_detail ON t.id=penjualan_detail.penjualan_id',
             'params'    => [
                 ':sDraft' => Penjualan::STATUS_DRAFT,
                 ':pUmum'  => Profil::PROFIL_UMUM,
-                ':userId' => Yii::app()->user->id
-            ]
+                ':userId' => Yii::app()->user->id,
+            ],
         ]);
         if (!is_null($suspendedSale)) {
             $this->redirect(['ubah', 'id' => $suspendedSale->id]);
@@ -54,8 +53,9 @@ class PosController extends Controller
 
         $model->profil_id = Profil::PROFIL_UMUM;
 
-        if ($model->save())
+        if ($model->save()) {
             $this->redirect(['ubah', 'id' => $model->id]);
+        }
 
         $this->render('tambah', [
             'model' => $model,
@@ -99,15 +99,15 @@ class PosController extends Controller
             $barang->setDbCriteria($criteria);
         }
 
-        $configCariBarang = Config::model()->find("nama='pos.caribarangmode'");
+        $configCariBarang           = Config::model()->find("nama='pos.caribarangmode'");
         $configTarikTunaiMinBelanja = Config::model()->find("nama='pos.tariktunaiminlimit'");
-        
+
         $posModeAdmin = Yii::app()->user->getState('posModeAdminAlwaysON');
         if ($posModeAdmin) {
             Yii::app()->user->setState('kasirOtorisasiAdmin', $id);
             Yii::app()->user->setState('kasirOtorisasiUserId', Yii::app()->user->id);
         }
-        
+
         $configShowDiskonNota = Config::model()->find("nama='pos.showdiskonpernota'");
         $configShowInfaq      = Config::model()->find("nama='pos.showinfak'");
         $configShowTarikTunai = Config::model()->find("nama='pos.showtariktunai'");
@@ -116,17 +116,19 @@ class PosController extends Controller
         $showInfaq         = is_null($configShowInfaq) ? 0 : $configShowInfaq->nilai;
         $showTarikTunai    = is_null($configShowTarikTunai) ? 0 : $configShowTarikTunai->nilai;
 
-        $this->render('ubah',
-                [
-                    'model'                => $model,
-                    'penjualanDetail'      => $penjualanDetail,
-                    'barang'               => $barang,
-                    'tipeCari'             => $configCariBarang->nilai,
-                    'showDiskonPerNota'    => $showDiskonPerNota,
-                    'showInfaq'            => $showInfaq,
-                    'showTarikTunai'       => $showTarikTunai,
-                    'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
-        ]);
+        $this->render(
+            'ubah',
+            [
+                'model'                => $model,
+                'penjualanDetail'      => $penjualanDetail,
+                'barang'               => $barang,
+                'tipeCari'             => $configCariBarang->nilai,
+                'showDiskonPerNota'    => $showDiskonPerNota,
+                'showInfaq'            => $showInfaq,
+                'showTarikTunai'       => $showTarikTunai,
+                'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
+            ]
+        );
     }
 
     /**
@@ -151,8 +153,8 @@ class PosController extends Controller
                 'sukses' => false,
                 'error'  => [
                     'code' => '501',
-                    'msg'  => 'Harus dengan Otorisasi Admin'
-                ]
+                    'msg'  => 'Harus dengan Otorisasi Admin',
+                ],
             ]);
         }
     }
@@ -162,10 +164,11 @@ class PosController extends Controller
      */
     public function actionIndex()
     {
-        $model             = new Penjualan('search');
-        $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['Penjualan']))
+        $model = new Penjualan('search');
+        $model->unsetAttributes(); // clear any default values
+        if (isset($_GET['Penjualan'])) {
             $model->attributes = $_GET['Penjualan'];
+        }
 
         $this->render('index', [
             'model' => $model,
@@ -179,10 +182,12 @@ class PosController extends Controller
     public function posAktif()
     {
         return Kasir::model()
-                        ->find('user_id=:userId and waktu_tutup is null',
-                                [
-                            ':userId' => Yii::app()->user->id
-        ]);
+            ->find(
+                'user_id=:userId and waktu_tutup is null',
+                [
+                    ':userId' => Yii::app()->user->id,
+                ]
+            );
     }
 
     /**
@@ -195,8 +200,10 @@ class PosController extends Controller
     public function loadModel($id)
     {
         $model = Pos::model('Pos')->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+
         return $model;
     }
 
@@ -213,55 +220,55 @@ class PosController extends Controller
     }
 
     /*
-      public function actionCariBarang($term)
-      {
-      $arrTerm = explode(' ', $term);
-      $wBarcode = '(';
-      $wNama = '(';
-      $pBarcode = array();
-      $param = array();
-      $firstRow = true;
-      $i = 1;
-      foreach ($arrTerm as $bTerm) {
-      if (!$firstRow) {
-      $wBarcode.=' AND ';
-      $wNama.=' AND ';
-      }
-      $wBarcode.="barcode like :term{$i}";
-      $wNama.="nama like :term{$i}";
-      $param[":term{$i}"] = "%{$bTerm}%";
-      $firstRow = FALSE;
-      $i++;
-      }
-      $wBarcode .= ')';
-      $wNama .= ')';
-      //      echo $wBarcode.' AND '.$wNama;
-      //      print_r($param);
+    public function actionCariBarang($term)
+    {
+    $arrTerm = explode(' ', $term);
+    $wBarcode = '(';
+    $wNama = '(';
+    $pBarcode = array();
+    $param = array();
+    $firstRow = true;
+    $i = 1;
+    foreach ($arrTerm as $bTerm) {
+    if (!$firstRow) {
+    $wBarcode.=' AND ';
+    $wNama.=' AND ';
+    }
+    $wBarcode.="barcode like :term{$i}";
+    $wNama.="nama like :term{$i}";
+    $param[":term{$i}"] = "%{$bTerm}%";
+    $firstRow = FALSE;
+    $i++;
+    }
+    $wBarcode .= ')';
+    $wNama .= ')';
+    //      echo $wBarcode.' AND '.$wNama;
+    //      print_r($param);
 
-      $q = new CDbCriteria();
-      $q->addCondition("{$wBarcode} OR {$wNama}");
-      $q->order = 'nama';
-      $q->params = $param;
-      $barangs = Barang::model()->findAll($q);
+    $q = new CDbCriteria();
+    $q->addCondition("{$wBarcode} OR {$wNama}");
+    $q->order = 'nama';
+    $q->params = $param;
+    $barangs = Barang::model()->findAll($q);
 
-      $r = array();
-      foreach ($barangs as $barang) {
-      $r[] = array(
-      'label' => $barang->nama,
-      'value' => $barang->barcode,
-      'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
-      'harga' => $barang->hargaJual
-      );
-      }
+    $r = array();
+    foreach ($barangs as $barang) {
+    $r[] = array(
+    'label' => $barang->nama,
+    'value' => $barang->barcode,
+    'stok' => is_null($barang->stok) ? 'null' : $barang->stok,
+    'harga' => $barang->hargaJual
+    );
+    }
 
-      $this->renderJSON($r);
-      }
+    $this->renderJSON($r);
+    }
      */
 
     public function actionCariBarang($term)
     {
-        $q         = new CDbCriteria();
-        $q->addCondition("(barcode like :term OR nama like :term) AND status = :status");
+        $q = new CDbCriteria();
+        $q->addCondition('(barcode like :term OR nama like :term) AND status = :status');
         $q->order  = 'nama';
         $q->params = [':term' => "%{$term}%", ':status' => Barang::STATUS_AKTIF];
         $barangs   = Barang::model()->findAll($q);
@@ -273,7 +280,7 @@ class PosController extends Controller
                 'value'  => $barang->barcode,
                 'stok'   => is_null($barang->stok) ? 'null' : $barang->stok,
                 'harga'  => $barang->hargaJual,
-                'status' => $barang->status
+                'status' => $barang->status,
             ];
         }
 
@@ -292,17 +299,17 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
         if (isset($_POST['barcode'])) {
             $penjualan = $this->loadModel($id);
-// Tambah barang hanya bisa jika status masih draft
+            // Tambah barang hanya bisa jika status masih draft
             if ($penjualan->status == Penjualan::STATUS_DRAFT) {
                 $barcode = $_POST['barcode'];
                 $return  = $penjualan->tambahBarang($barcode, 1);
             }
-//            $barang = Barang::model()->find("barcode = '" . $barcode . "'");
-//            $return['error']['msg'] = $penjualan->cekDiskon($barang->id);
+            //            $barang = Barang::model()->find("barcode = '" . $barcode . "'");
+            //            $return['error']['msg'] = $penjualan->cekDiskon($barang->id);
         }
         $this->renderJSON($return);
     }
@@ -310,8 +317,8 @@ class PosController extends Controller
     public function actionKembalian()
     {
         /*
-          echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
-          number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
+        echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
+        number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
          */
         echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'] - $_POST['tarikTunai'], 0, ',', '.');
     }
@@ -323,8 +330,8 @@ class PosController extends Controller
             $ak = 'accesskey="q"';
         }
         return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
-                Yii::app()->controller->createUrl('updateqty') . '">' .
-                $data->qty . '</a>';
+            Yii::app()->controller->createUrl('updateqty') . '">' .
+            $data->qty . '</a>';
     }
 
     public function renderHargaLinkEditable($data, $row)
@@ -335,14 +342,17 @@ class PosController extends Controller
             if ($row == 0) {
                 $ak = 'accesskey="t"';
             }
-            return CHtml::link(rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ','), "",
-                            [
-                        'class'     => 'editable-harga',
-                        'data-type' => 'text',
-                        'data-pk'   => $data->id,
-                        'data-url'  => Yii::app()->controller->createUrl('updatehargamanual'),
-                        'accesskey' => $row == 0 ? 't' : ''
-            ]);
+            return CHtml::link(
+                rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ','),
+                '',
+                [
+                    'class'     => 'editable-harga',
+                    'data-type' => 'text',
+                    'data-pk'   => $data->id,
+                    'data-url'  => Yii::app()->controller->createUrl('updatehargamanual'),
+                    'accesskey' => $row == 0 ? 't' : '',
+                ]
+            );
         } else {
             /* Yang tidak, tampilkan text harga */
             return rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ',');
@@ -359,7 +369,7 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
         if (isset($_POST['pk'])) {
             $pk       = $_POST['pk'];
@@ -376,11 +386,13 @@ class PosController extends Controller
                 if ($this->isOtorisasiAdmin($detail->penjualan_id)) {
                     $barang    = Barang::model()->findByPk($detail->barang_id);
                     $penjualan = Penjualan::model()->findByPk($detail->penjualan_id);
-                    $details   = PenjualanDetail::model()->findAll('barang_id=:barangId AND penjualan_id=:penjualanId',
-                            [
-                        ':barangId'    => $detail->barang_id,
-                        ':penjualanId' => $detail->penjualan_id
-                    ]);
+                    $details   = PenjualanDetail::model()->findAll(
+                        'barang_id=:barangId AND penjualan_id=:penjualanId',
+                        [
+                            ':barangId'    => $detail->barang_id,
+                            ':penjualanId' => $detail->penjualan_id,
+                        ]
+                    );
                     foreach ($details as $d) {
                         $this->simpanHapusDetail($d); // Simpan barang yang dihapus ke tabel "lain"
                     }
@@ -398,7 +410,7 @@ class PosController extends Controller
     public function actionSuspended()
     {
         $model = new Penjualan('search');
-        $model->unsetAttributes();  // clear any default values
+        $model->unsetAttributes(); // clear any default values
         if (isset($_GET['Penjualan'])) {
             $model->attributes = $_GET['Penjualan'];
         }
@@ -423,8 +435,8 @@ class PosController extends Controller
     public function renderLinkToUbah($data)
     {
         $return = '<a href="' .
-                $this->createUrl('ubah', ['id' => $data->id]) . '">' .
-                $data->tanggal . '</a>';
+            $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+            $data->tanggal . '</a>';
 
         return $return;
     }
@@ -438,7 +450,7 @@ class PosController extends Controller
                 'msg'  => 'Sempurnakan input!',
             ],
         ];
-             
+
         if (isset($_POST['pos'])) {
             $pos = Pos::model('Pos')->findByPk($id);
 
@@ -479,7 +491,7 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
 
         if (isset($_POST['nomor'])) {
@@ -500,26 +512,30 @@ class PosController extends Controller
                 $return = [
                     'sukses' => false,
                     'error'  => [
-                        'code' => '500',
+                        'code' => '404',
                         'msg'  => 'Data Customer tidak ditemukan',
-                    ]
+                    ],
                 ];
             }
         }
         $this->renderJSON($return);
     }
 
-    public function actionGantiMember($id){
+    public function actionGantiMember($id)
+    {
         $return = [
             'sukses' => false,
-            'error' => [
+            'error'  => [
                 'code' => '500',
-                'msg' => 'Sempurnakan input!'
-            ]
-            ];
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
 
-            if (isset($_POST['nomor']) && !empty($_POST['nomor'])){
-            }
+        if (isset($_POST['nomor']) && !empty($_POST['nomor'])) {
+            $clientAPI = new AhadMembershipClient();
+            $this->renderJSON(json_decode($clientAPI->view($_POST['nomor']), true));
+        }
+        $this->renderJSON($return);
     }
 
     public function actionAdminLogout()
@@ -529,7 +545,7 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Input Error!',
-            ]
+            ],
         ];
         if (isset($_POST['confirm']) && $_POST['confirm'] == '1') {
             $this->adminLogout();
@@ -553,7 +569,7 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
         if (isset($_POST['usr'])) {
             $return = $this->authenticateAdmin($_POST['usr'], $_POST['pwd'], $_POST['id']);
@@ -578,17 +594,17 @@ class PosController extends Controller
                 'error'  => [
                     'code' => '500',
                     'msg'  => 'Invalid User Name',
-                ]
+                ],
             ];
-        } else if (!$user->validatePassword($pwd)) {
+        } elseif (!$user->validatePassword($pwd)) {
             return [
                 'sukses' => false,
                 'error'  => [
                     'code' => '500',
                     'msg'  => 'Invalid Password',
-                ]
+                ],
             ];
-        } else if ($this->isAdmin($user)) {
+        } elseif ($this->isAdmin($user)) {
             Yii::app()->user->setState('kasirOtorisasiAdmin', $penjualanId);
             Yii::app()->user->setState('kasirOtorisasiUserId', $user->id);
             return [
@@ -604,7 +620,7 @@ class PosController extends Controller
      */
     public function isAdmin($user)
     {
-        return Yii::app()->authManager->getAuthAssignment(Yii::app()->params['useradmin'], $user->id) === null ? FALSE : TRUE;
+        return Yii::app()->authManager->getAuthAssignment(Yii::app()->params['useradmin'], $user->id) === null ? false : true;
     }
 
     public function isOtorisasiAdmin($penjualanId)
@@ -616,13 +632,13 @@ class PosController extends Controller
     {
         $diskon          = $data->diskon > 0 ? ' (' . rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',') . ')' : '';
         $smallMediumText = $data->barang->nama .
-                '<br />' .
-                rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
-                $diskon .
-                ' x ' . $data->qty . ' ' . $data->barang->satuan->nama;
-        $largeUpText     = $data->barang->nama;
+            '<br />' .
+            rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
+            $diskon .
+            ' x ' . $data->qty . ' ' . $data->barang->satuan->nama;
+        $largeUpText = $data->barang->nama;
         return '<span class="show-for-large-up">' . $largeUpText . '</span>' .
-                '<span class="hide-for-large-up">' . $smallMediumText . '</span>';
+            '<span class="hide-for-large-up">' . $smallMediumText . '</span>';
     }
 
     public function actionUpdateHargaManual()
@@ -632,7 +648,7 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
         if (isset($_POST['pk'])) {
             $pk              = $_POST['pk'];
@@ -692,7 +708,7 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
         if (isset($_POST['nomor']) && trim($_POST['nomor']) != '') {
             $nomor  = trim($_POST['nomor']);
@@ -704,9 +720,8 @@ class PosController extends Controller
 
     public function actionPesanan()
     {
-
         $model = new So('search');
-        $model->unsetAttributes();  // clear any default values
+        $model->unsetAttributes(); // clear any default values
         if (isset($_GET['So'])) {
             $model->attributes = $_GET['So'];
         }
@@ -727,13 +742,18 @@ class PosController extends Controller
         switch ($dataColumn->name) {
             case 'nomorTanggal':
                 $nomor = empty($data->nomorF) ? '' : $data->nomorF . ' / ';
-                return CHtml::link($nomor . $data->tanggal,
-                                Yii::app()->controller->createUrl('pos/pesananubah', ['id' => $data->id]));
+                return CHtml::link(
+                    $nomor . $data->tanggal,
+                    Yii::app()->controller->createUrl('pos/pesananubah', ['id' => $data->id])
+                );
                 break;
             case 'tombolJual':
                 if ($data->status == So::STATUS_PESAN) {
-                    return CHtml::link('<i class="fa fa-shopping-cart fa-fw"></i>',
-                                    $this->createUrl('pesanansimpan', ['id' => $data->id]), ['class' => 'link-jual']);
+                    return CHtml::link(
+                        '<i class="fa fa-shopping-cart fa-fw"></i>',
+                        $this->createUrl('pesanansimpan', ['id' => $data->id]),
+                        ['class' => 'link-jual']
+                    );
                 } else {
                     return '';
                 }
@@ -749,7 +769,7 @@ class PosController extends Controller
         $this->pesananId = $id;
         $model           = So::model()->findByPk($id);
         // Penjualan tidak bisa diubah kecuali statusnya draft atau pesan
-        if ($model->status != So::STATUS_DRAFT AND $model->status != So::STATUS_PESAN) {
+        if ($model->status != So::STATUS_DRAFT and $model->status != So::STATUS_PESAN) {
             $this->redirect(['index']);
         }
 
@@ -779,13 +799,15 @@ class PosController extends Controller
 
         $configCariBarang = Config::model()->find("nama='pos.caribarangmode'");
 
-        $this->render('pesanan_ubah',
-                [
-            'model'       => $model,
-            'modelDetail' => $modelDetail,
-            'barang'      => $barang,
-            'tipeCari'    => $configCariBarang->nilai
-        ]);
+        $this->render(
+            'pesanan_ubah',
+            [
+                'model'       => $model,
+                'modelDetail' => $modelDetail,
+                'barang'      => $barang,
+                'tipeCari'    => $configCariBarang->nilai,
+            ]
+        );
     }
 
     /**
@@ -800,7 +822,7 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
         if (isset($_POST['barcode'])) {
             $pesanan = So::model()->findByPk($id);
@@ -831,15 +853,18 @@ class PosController extends Controller
                 if ($row == 0) {
                     $ak = ['accesskey' => 'q'];
                 }
-                return CHtml::link($data->qty, '#',
-                                array_merge($ak,
-                                        [
+                return CHtml::link(
+                    $data->qty,
+                    '#',
+                    array_merge(
+                        $ak,
+                        [
                             'class'     => 'editable-qty',
                             'data-type' => 'text',
                             'data-pk'   => $data->id,
-                            'data-url'  => Yii::app()->controller->createUrl('pesananupdateqty')
-                                        ]
-                                )
+                            'data-url'  => Yii::app()->controller->createUrl('pesananupdateqty'),
+                        ]
+                    )
                 );
                 break;
         }
@@ -855,7 +880,7 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
         if (isset($_POST['pk'])) {
             $pk       = $_POST['pk'];
@@ -871,13 +896,15 @@ class PosController extends Controller
                 /* qty=0 / hapus barang */
                 $barang  = Barang::model()->findByPk($detail->barang_id);
                 $pesanan = So::model()->findByPk($detail->so_id);
-                $details = SoDetail::model()->findAll('barang_id=:barangId AND so_id=:pesananID',
-                        [
-                    ':barangId'  => $detail->barang_id,
-                    ':pesananID' => $detail->so_id
-                ]);
+                $details = SoDetail::model()->findAll(
+                    'barang_id=:barangId AND so_id=:pesananID',
+                    [
+                        ':barangId'  => $detail->barang_id,
+                        ':pesananID' => $detail->so_id,
+                    ]
+                );
                 $pesanan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
-                $return  = ['sukses' => true];
+                $return = ['sukses' => true];
             }
         }
         $this->renderJSON($return);
@@ -890,7 +917,7 @@ class PosController extends Controller
         if ($pesanan->save()) {
             $this->redirect(['pesananubah', 'id' => $pesanan->id]);
         } else {
-            throw new CHttpException("Gagal simpan pesanan!");
+            throw new CHttpException('Gagal simpan pesanan!');
         }
     }
 
@@ -931,7 +958,7 @@ class PosController extends Controller
             'error'  => [
                 'code' => '500',
                 'msg'  => 'Sempurnakan input!',
-            ]
+            ],
         ];
         if (isset($_POST['nomor']) && trim($_POST['nomor']) != '') {
             $nomor  = trim($_POST['nomor']);
@@ -946,7 +973,7 @@ class PosController extends Controller
         $kasir   = $this->posAktif();
         $printId = $kasir->device->default_printer_id;
         if (is_null($printId)) {
-            throw new CHttpException("Tidak ada default Printer!");
+            throw new CHttpException('Tidak ada default Printer!');
         }
         $device  = Device::model()->findByPk($printId);
         $pesanan = So::model()->findByPk($id);
@@ -957,18 +984,16 @@ class PosController extends Controller
             $device->cashdrawer_kick = 0;
             $device->printLpr($text);
             $this->redirect(['pesananubah', 'id' => $id]);
-        } else if ($device->tipe_id == Device::TIPE_TEXT_PRINTER) {
+        } elseif ($device->tipe_id == Device::TIPE_TEXT_PRINTER) {
             $nomor    = $pesanan->nomor;
             $namaFile = "pesanan-{$nomor}";
-            header("Content-type: text/plain");
+            header('Content-type: text/plain');
             header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
-            header("Pragma: no-cache");
-            header("Expire: 0");
+            header('Pragma: no-cache');
+            header('Expire: 0');
             echo $device->revisiText($text);
             Yii::app()->end();
-        } else if ($device->tipe_id == Device::TIPE_BROWSER_PRINTER) {
-            
+        } elseif ($device->tipe_id == Device::TIPE_BROWSER_PRINTER) {
         }
     }
-
 }

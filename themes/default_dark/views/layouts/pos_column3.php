@@ -272,17 +272,18 @@
                     url: dataUrl,
                     data: dataKirim,
                     success: function(data) {
-                        if (data.sukses) {
-                            $("#data-member nomor").html('Nomor: ' + data.nomor);
-                            $("#data-member nama").html(data.nama);
-                            $("#data-member address").html(data.address);
+                        if (data.statusCode == 200) {
+                            var profil = data.data.profil;
+                            $("#data-member nomor").html('Nomor: ' + profil.nomor);
+                            $("#data-member nama").html(profil.nama_lengkap);
+                            $("#data-member address").html(profil.alamat);
 
                             $.fn.yiiGridView.update('penjualan-detail-grid');
                             updateTotal();
                         } else {
                             $.gritter.add({
-                                title: 'Error ' + data.error.code,
-                                text: data.error.msg,
+                                title: 'Error ' + data.statusCode,
+                                text: data.error.type + ': ' + data.error.description,
                                 time: 3000,
                             });
                         }
