@@ -20,7 +20,7 @@ class AhadMembershipClient
         $this->token   = $configArr['bearer_token'];
 
         // Periksa token. Login jika belum ada, atau expired
-        if (empty($this->token) || $this->isTokenExpired()) {
+        if (empty($this->token) || $this->token == '-' || $this->isTokenExpired()) {
             $credentials = [
                 'kode'     => $configArr['login.kode'],
                 'nama'     => $configArr['login.nama'],
