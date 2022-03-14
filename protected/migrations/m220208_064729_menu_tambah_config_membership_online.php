@@ -10,10 +10,10 @@ class m220208_064729_menu_tambah_config_membership_online extends CDbMigration
 			[
 				'parent_id'  => 14,
 				'root_id'    => 1,
-				'nama'       => 'Membership',
+				'nama'       => 'Membership Online',
 				'icon'       => '<i class="fa fa-vcard-o fa-fw"></i>',
 				'link'       => '/membershipconfig/index',
-				'keterangan' => 'Konfigurasi Ahad Membership (Online)',
+				'keterangan' => 'Konfigurasi Ahad Membership Online',
 				'level'      => 3,
 				'urutan'     => 4,
 				'status'     => 1,
