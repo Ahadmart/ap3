@@ -83,7 +83,7 @@ class AhadMembershipClient
 
     private function getRequest($url)
     {
-        $ch = curl_init($url);
+        $ch      = curl_init($url);
         $headers = [
             'Authorization: Bearer ' . $this->token,
         ];
@@ -148,7 +148,7 @@ class AhadMembershipClient
      * Registrasi function
      * Daftar member baru
      * @param array $form Form pendaftaran
-     * @return string (JSON encoded string) hasil/error dalam format json 
+     * @return string (JSON encoded string) hasil/error dalam format json
      */
     public function registrasi($form)
     {
@@ -185,5 +185,11 @@ class AhadMembershipClient
     {
         $url = $this->baseUrl . '/profil/cari';
         return $this->postRequest($url, ['kataKunci' => $kataKunci]);
+    }
+
+    public function penjualan($data)
+    {
+        $url = $this->baseUrl . '/transaksi/penjualan';
+        return $this->postRequest($url, ['data' => $data]);
     }
 }

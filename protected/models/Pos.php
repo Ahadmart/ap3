@@ -25,6 +25,12 @@ class Pos extends Penjualan
                 }
             }
             $this->simpanPenjualan();
+            // if ($this->profil->tipe_id == Profil::TIPE_MEMBER_ONLINE) {
+            //     $clientAPI             = new AhadMembershipClient();
+            //     $postPenjualanMemberOL = $clientAPI->penjualan([
+            //         'nomorMember' => '',
+            //     ]);
+            // }
 
             $uangDibayar = 0;
             $bayar       = [];

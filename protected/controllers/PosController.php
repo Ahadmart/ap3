@@ -330,8 +330,8 @@ class PosController extends Controller
             $ak = 'accesskey="q"';
         }
         return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
-            Yii::app()->controller->createUrl('updateqty') . '">' .
-            $data->qty . '</a>';
+        Yii::app()->controller->createUrl('updateqty') . '">' .
+        $data->qty . '</a>';
     }
 
     public function renderHargaLinkEditable($data, $row)
@@ -435,8 +435,8 @@ class PosController extends Controller
     public function renderLinkToUbah($data)
     {
         $return = '<a href="' .
-            $this->createUrl('ubah', ['id' => $data->id]) . '">' .
-            $data->tanggal . '</a>';
+        $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+        $data->tanggal . '</a>';
 
         return $return;
     }
@@ -521,6 +521,13 @@ class PosController extends Controller
         $this->renderJSON($return);
     }
 
+    /**
+     * GantiMember function
+     * Ganti Member Online by nomor member
+     * @param int $id penjualan_id
+     * @uses $_POST['nomor] nomor member online
+     * @return string json profil member online atau error
+     */
     public function actionGantiMember($id)
     {
         $return = [
@@ -533,7 +540,44 @@ class PosController extends Controller
 
         if (isset($_POST['nomor']) && !empty($_POST['nomor'])) {
             $clientAPI = new AhadMembershipClient();
-            $this->renderJSON(json_decode($clientAPI->view($_POST['nomor']), true));
+            $profil    = json_decode($clientAPI->view($_POST['nomor']), true);
+            if ($profil['statusCode'] == 200) {
+                // Ganti customer offline ke profil member online
+                $customer  = Profil::model()->find('tipe_id=:tipeId', [':tipeId' => Profil::TIPE_MEMBER_ONLINE]);
+                $penjualan = $this->loadModel($id);
+                $penjualan->gantiCustomer($customer);
+                // Buat atau ganti penjualan_member_online
+                $penjualanMOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+                if (is_null($penjualanMOL)) {
+                    $penjualanMOL = new PenjualanMemberOnline;
+                }
+                $penjualanMOL->nomor_member          = $_POST['nomor'];
+                $penjualanMOL->penjualan_id          = $id;
+                $penjualanMOL->poin_cashback_dipakai = 0;
+                $penjualanMOL->poin_utama            = 0;
+                $penjualanMOL->poin_cashback         = 0;
+                $penjualanMOL->save();
+            }
+            $this->renderJSON($profil);
+        } else {
+            // Ganti ke profil umum, hapus penjualan_member_online jika ada
+            $customer  = Profil::model()->findByPk(Profil::PROFIL_UMUM);
+            $penjualan = $this->loadModel($id);
+            $penjualan->gantiCustomer($customer);
+            $penjualanMOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+            if (!is_null($penjualanMOL)) {
+                $penjualanMOL->delete();
+            }
+            $return = [
+                'statusCode' => 200,
+                'data'       => [
+                    'profil' => [
+                        'nomor'        => '-',
+                        'nama_lengkap' => 'UMUM',
+                        'alamat'       => ''
+                    ]
+                ]
+            ];
         }
         $this->renderJSON($return);
     }
@@ -632,10 +676,10 @@ class PosController extends Controller
     {
         $diskon          = $data->diskon > 0 ? ' (' . rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',') . ')' : '';
         $smallMediumText = $data->barang->nama .
-            '<br />' .
-            rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
-            $diskon .
-            ' x ' . $data->qty . ' ' . $data->barang->satuan->nama;
+        '<br />' .
+        rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
+        $diskon .
+        ' x ' . $data->qty . ' ' . $data->barang->satuan->nama;
         $largeUpText = $data->barang->nama;
         return '<span class="show-for-large-up">' . $largeUpText . '</span>' .
             '<span class="hide-for-large-up">' . $smallMediumText . '</span>';

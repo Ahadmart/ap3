@@ -50,8 +50,8 @@
             </address>
         </div>
         <div id="data-member">
-            <nomor>Nomor: </nomor>
-            <nama></nama>
+            <nomor>Member:</nomor>
+            <nama>-</nama>
             <address></address>
         </div>
         <form id="form-admin-login">
@@ -274,7 +274,7 @@
                     success: function(data) {
                         if (data.statusCode == 200) {
                             var profil = data.data.profil;
-                            $("#data-member nomor").html('Nomor: ' + profil.nomor);
+                            $("#data-member nomor").html('Member Online: ' + profil.nomor);
                             $("#data-member nama").html(profil.nama_lengkap);
                             $("#data-member address").html(profil.alamat);
 
