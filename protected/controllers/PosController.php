@@ -2,11 +2,12 @@
 
 class PosController extends Controller
 {
-    public $layout      = '//layouts/pos_column3';
-    public $namaProfil  = null;
-    public $profil      = null;
-    public $penjualanId = null;
-    public $pesananId   = null;
+    public $layout       = '//layouts/pos_column3';
+    public $namaProfil   = null;
+    public $profil       = null;
+    public $penjualanId  = null;
+    public $pesananId    = null;
+    public $memberOnline = null;
 
     /**
      * Security tambahan, user yang bisa POS, adalah user dengan role kasir,
@@ -115,6 +116,14 @@ class PosController extends Controller
         $showDiskonPerNota = is_null($configShowDiskonNota) ? 0 : $configShowDiskonNota->nilai;
         $showInfaq         = is_null($configShowInfaq) ? 0 : $configShowInfaq->nilai;
         $showTarikTunai    = is_null($configShowTarikTunai) ? 0 : $configShowTarikTunai->nilai;
+
+        $memberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+        if (!is_null($memberOL)) {
+            $clientAPI = new AhadMembershipClient();
+            $r         = json_decode($clientAPI->view($memberOL->nomor_member));
+
+            $this->memberOnline = $r->data->profil;
+        }
 
         $this->render(
             'ubah',
@@ -573,10 +582,10 @@ class PosController extends Controller
                 'data'       => [
                     'profil' => [
                         'nomor'        => '-',
-                        'nama_lengkap' => 'UMUM',
-                        'alamat'       => ''
-                    ]
-                ]
+                        'nama_lengkap' => '-',
+                        'alamat'       => '',
+                    ],
+                ],
             ];
         }
         $this->renderJSON($return);

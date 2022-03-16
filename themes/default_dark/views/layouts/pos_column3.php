@@ -50,9 +50,9 @@
             </address>
         </div>
         <div id="data-member">
-            <nomor>Member:</nomor>
-            <nama>-</nama>
-            <address></address>
+            <nomor>Member Online: <?= is_null($this->memberOnline) ? '': $this->memberOnline->nomor ?></nomor>
+            <nama><?= is_null($this->memberOnline) ? '-': $this->memberOnline->nama_lengkap ?></nama>
+            <address><?= is_null($this->memberOnline) ? '': $this->memberOnline->alamat ?></address>
         </div>
         <form id="form-admin-login">
             <div class="row admin-input" style="display: none">

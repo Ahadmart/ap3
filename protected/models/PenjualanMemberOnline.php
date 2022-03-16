@@ -36,10 +36,10 @@ class PenjualanMemberOnline extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            ['nomor_member, penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback, updated_at, updated_by', 'required'],
+            ['nomor_member, penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback', 'required'],
             ['nomor_member', 'length', 'max'=>45],
             ['penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback, updated_by', 'length', 'max'=>10],
-            ['created_at', 'safe'],
+            ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             ['id, nomor_member, penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback, updated_at, updated_by, created_at', 'safe', 'on'=>'search'],
