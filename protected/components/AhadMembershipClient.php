@@ -190,6 +190,6 @@ class AhadMembershipClient
     public function penjualan($data)
     {
         $url = $this->baseUrl . '/transaksi/penjualan';
-        return $this->postRequest($url, ['data' => $data]);
+        return $this->postRequest($url, $data);
     }
 }

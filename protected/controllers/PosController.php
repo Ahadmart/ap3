@@ -565,6 +565,10 @@ class PosController extends Controller
                 $penjualanMOL->poin_cashback_dipakai = 0;
                 $penjualanMOL->poin_utama            = 0;
                 $penjualanMOL->poin_cashback         = 0;
+                $penjualanMOL->level                 = 0;
+                $penjualanMOL->levelNama             = '';
+                $penjualanMOL->totalPoin             = 0;
+                $penjualanMOL->totalCashback         = 0;
                 $penjualanMOL->save();
             }
             $this->renderJSON($profil);
