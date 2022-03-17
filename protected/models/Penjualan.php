@@ -1522,6 +1522,17 @@ class Penjualan extends CActiveRecord
             $struk .= ' Total Poin: ' . $this->getTotalPoinPeriodeBerjalan() . PHP_EOL;
         }
 
+        if ($profil->isMemberOL()) {
+            $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
+            $dataMemberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId'=>$this->id]);
+            $nomorNama = $dataMemberOL->nomor_member;
+            $struk .= ' ' . substr($nomorNama, 0, 38) . PHP_EOL;
+            $struk .= ' Poin belanja  : ' . $dataMemberOL->poin_utama . PHP_EOL;
+            $struk .= ' Total Poin    : ' . $dataMemberOL->total_poin . PHP_EOL;
+            $struk .= ' Poin cashback : ' . $dataMemberOL->poin_cashback . PHP_EOL;
+            $struk .= ' Total cashback: ' . $dataMemberOL->total_cashback . PHP_EOL;
+        }
+
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
         $struk .= !empty($branchConfig['struk.footer1']) ? str_pad($branchConfig['struk.footer1'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';
         $struk .= !empty($branchConfig['struk.footer2']) ? str_pad($branchConfig['struk.footer2'], $jumlahKolom, ' ', STR_PAD_BOTH) . PHP_EOL : '';

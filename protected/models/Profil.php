@@ -270,4 +270,14 @@ class Profil extends CActiveRecord
     {
         return is_null($this->nomor) || empty($this->nomor) || $this->nomor == 0 ? false : true;
     }
+
+    /**
+     * isMemberOL function
+     * Memeriksa apakah profil merupakan member online
+     * @return boolean true jika member, false jika bukan
+     */
+    public function isMemberOL()
+    {
+        return $this->tipe_id == self::TIPE_MEMBER_ONLINE ? true : false;
+    }
 }

@@ -187,6 +187,12 @@ class AhadMembershipClient
         return $this->postRequest($url, ['kataKunci' => $kataKunci]);
     }
 
+    /**
+     * Penjualan function
+     * Transaksi penjualan untuk member online
+     * @param array $data
+     * @return json
+     */
     public function penjualan($data)
     {
         $url = $this->baseUrl . '/transaksi/penjualan';
