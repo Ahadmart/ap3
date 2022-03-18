@@ -9,6 +9,11 @@ class PosController extends Controller
     public $pesananId    = null;
     public $memberOnline = null;
 
+    public $totalPenjualan = 0;
+    public $showDiskonPerNota;
+    public $showInfaq;
+    public $showTarikTunai;
+
     /**
      * Security tambahan, user yang bisa POS, adalah user dengan role kasir,
      * dan dalam keadaan kasir buka / aktif
@@ -124,6 +129,10 @@ class PosController extends Controller
 
             $this->memberOnline = $r->data->profil;
         }
+        $this->totalPenjualan    = $model->getTotal();
+        $this->showDiskonPerNota = $showDiskonPerNota;
+        $this->showInfaq         = $showInfaq;
+        $this->showTarikTunai    = $showTarikTunai;
 
         $this->render(
             'ubah',
@@ -179,7 +188,7 @@ class PosController extends Controller
             $model->attributes = $_GET['Penjualan'];
         }
 
-        $this->render('index', [
+        $this->render('//pos/index', [
             'model' => $model,
         ]);
     }
@@ -1041,7 +1050,7 @@ class PosController extends Controller
         $device->cashdrawer_kick = 0;
         if ($device->tipe_id == Device::TIPE_LPR) {
             $device->cashdrawer_kick = 0;
-            $device->printLpr($text);
+            $device->printLpr($pesanan->strukTextLPR());
             $this->redirect(['pesananubah', 'id' => $id]);
         } elseif ($device->tipe_id == Device::TIPE_TEXT_PRINTER) {
             $nomor    = $pesanan->nomor;
@@ -1052,7 +1061,8 @@ class PosController extends Controller
             header('Expire: 0');
             echo $device->revisiText($text);
             Yii::app()->end();
-        } elseif ($device->tipe_id == Device::TIPE_BROWSER_PRINTER) {
+        } else if ($device->tipe_id == Device::TIPE_BROWSER_PRINTER) {
+            $this->renderPartial('//penjualan/_print_autoclose_browser', ['text' => $text]);
         }
     }
 }

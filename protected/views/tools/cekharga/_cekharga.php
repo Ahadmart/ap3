@@ -2,7 +2,7 @@
     <div class="medium-7 large-8 columns">
         <div class="row">
             <div class="small-12 columns">
-                <div class="panel" style="padding: 0.75rem;" >
+                <div class="panel" style="padding: 0.75rem;">
                     <h4>&nbsp;
                         <span class="" id="view-nama"></span>
                     </h4>
@@ -14,7 +14,7 @@
         </div>
         <div class="row">
             <div class="small-12 columns">
-                <div class="panel" style="padding: 0.75rem;" >
+                <div class="panel" style="padding: 0.75rem;">
                     <h1>&nbsp;<span class="right" id="view-harga"></span>
                     </h1>
                 </div>
@@ -30,10 +30,22 @@
 
         <div class="row collapse">
             <div class="small-3 medium-2 columns">
-                <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+                <?php
+                if (isset($urlCallback) && !empty($urlCallback)) {
+                ?>
+                    <a class="prefix" href="zxing://scan/?ret=<?= $urlCallback ?>?barcodescan={CODE}"><i class="fa fa-barcode fa-2x"></i></a>
+                <?php
+                } else {
+                ?>
+                    <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
+                <?php
+                }
+                ?>
+
+
             </div>
             <div class="small-9 medium-10 columns">
-                <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus"/>
+                <input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus" />
             </div>
         </div>
 
@@ -94,7 +106,6 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/jquery-ui.min-ac.js', CClientScript::POS_HEAD);
 ?>
 <script>
-
     function isiView(data) {
         $("#view-barcode").html(data.barcode);
         $("#view-nama").html(data.nama);
@@ -111,7 +122,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             url: '<?php echo Yii::app()->controller->createUrl('tools/cekharga/cekbarcode'); ?>',
             data: dataKirim,
             dataType: "json",
-            success: function (data) {
+            success: function(data) {
                 if (data.sukses) {
                     isiView(data);
                     $("#scan").val("");
@@ -123,7 +134,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         });
     }
 
-    $('a.keynum').click(function (e) {
+    $('a.keynum').click(function(e) {
         var nilai = $(e.target).text();
         console.log(nilai);
         var barcode = $("#scan").val();
@@ -142,7 +153,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         return false;
     });
 
-    $("#scan").keyup(function (e) {
+    $("#scan").keyup(function(e) {
         if (e.keyCode === 13) {
             $("#enter").html('Proses..');
             $("#enter").addClass('disable');
@@ -156,29 +167,38 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         source: "<?php echo $this->createUrl('/tools/cekharga/caribarang'); ?>",
         minLength: 3,
         delay: 1000,
-        search: function (event, ui) {
+        search: function(event, ui) {
             $("#scan-icon").html('<img src="<?php echo Yii::app()->theme->baseUrl; ?>/css/3.gif" />');
         },
-        response: function (event, ui) {
+        response: function(event, ui) {
             $("#scan-icon").html('<i class="fa fa-barcode fa-2x"></i>');
         },
-        select: function (event, ui) {
+        select: function(event, ui) {
             console.log(ui.item ?
-                    "Nama: " + ui.item.label + "; Barcode " + ui.item.value :
-                    "Nothing selected, input was " + this.value);
+                "Nama: " + ui.item.label + "; Barcode " + ui.item.value :
+                "Nothing selected, input was " + this.value);
             if (ui.item) {
                 $("#scan").val(ui.item.value);
             }
         }
-    }).autocomplete("instance")._renderItem = function (ul, item) {
+    }).autocomplete("instance")._renderItem = function(ul, item) {
         return $("<li style='clear:both'>")
-                .append("<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item.stok + "</stok></a>")
-                .appendTo(ul);
+            .append("<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item.stok + "</stok></a>")
+            .appendTo(ul);
     };
+    <?php
+    if (isset($scanBarcode) && !is_null($scanBarcode)) {
+    ?>
+        $(function() {
+            $("#scan").val("<?= $scanBarcode ?>");
+            kirimBarcode("<?= $scanBarcode ?>");
+        });
+    <?php
+    }
+    ?>
 </script>
 <style>
-    <?php /* Override Width */ ?>
-    .ac-stok {
+    <?php /* Override Width */ ?>.ac-stok {
         width: 25%;
     }
 </style>
