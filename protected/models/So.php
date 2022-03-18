@@ -379,7 +379,7 @@ class So extends Penjualan
      * Struk Sales Order
      * @return text
      */
-    public function strukText()
+    public function strukTextLPR()
     {
         $configToko = Config::model()->find('nama=:key', [':key' => 'toko.nama']);
         $total      = $this->getTotal();
@@ -422,6 +422,37 @@ class So extends Penjualan
         $struk .= "perhitungan kasir\n";
         $struk .= chr(27) . "!" . chr(1); //font normal
         //$struk .= chr(29) . "V" . chr(66) . chr(48); //Feed paper & cut
+
+        return $struk;
+    }
+    
+    /**
+     * Struk Sales Order
+     * @return text
+     */
+    public function strukText()
+    {
+        $configToko = Config::model()->find('nama=:key', [':key' => 'toko.nama']);
+        $total      = $this->getTotal();
+        $nomor      = substr($this->nomor, -6) * 1;
+
+        $struk = '';
+        $struk .= strtoupper($configToko->nilai) . "\n";
+        $struk .= "PESANAN\n";
+
+
+        $struk .= "Rp. {$total}\n\n";
+
+        $struk .= "{$nomor}\n\n";
+
+        $struk .= "Ketentuan:\n";
+        $struk .= "Struk ini ";
+
+        $struk .= "BUKAN bukti pembayaran\n";
+        $struk .= "Silahkan melakukan pembayaran di kasir\n"
+                . "Jika ada perbedaan perhitungan,\n"
+                . "Yang benar adalah ";
+        $struk .= "perhitungan kasir\n";
 
         return $struk;
     }

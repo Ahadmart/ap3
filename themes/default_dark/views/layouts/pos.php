@@ -30,7 +30,7 @@
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
-        <!--        <div class="off-canvas-wrap" data-offcanvas>
+                <!-- <div class="off-canvas-wrap" data-offcanvas>
                     <div class="inner-wrap">
                         <nav class="tab-bar">
                             <section class="left-small">
@@ -107,7 +107,7 @@
                         <a class="exit-off-canvas"></a>
 
                     </div>
-                </div>-->
+                </div> -->
         <div class="fixed">
             <nav class="top-bar" data-options="is_hover: true" data-topbar>
                 <ul class="title-area">
