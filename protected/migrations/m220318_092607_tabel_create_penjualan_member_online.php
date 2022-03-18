@@ -1,11 +1,10 @@
 <?php
 
-class m220315_024147_tabel_create_penjualan_member_ol extends CDbMigration
+class m220318_092607_tabel_create_penjualan_member_online extends CDbMigration
 {
-	
-	// Use safeUp/safeDown to do migration with transaction
-	public function safeUp()
-	{
+    // Use safeUp/safeDown to do migration with transaction
+    public function safeUp()
+    {
         $tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4';
 
         $this->createTable(
@@ -33,12 +32,11 @@ class m220315_024147_tabel_create_penjualan_member_ol extends CDbMigration
             ],
             $tableOptions
         );
-	}
+    }
 
-	public function safeDown()
-	{
-		echo "m220315_024147_tabel_create_penjualan_member_ol does not support migration down.\n";
-		return false;
-	}
-
+    public function safeDown()
+    {
+        echo "m220318_092607_tabel_create_penjualan_member_online does not support migration down.\n";
+        return false;
+    }
 }

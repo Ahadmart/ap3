@@ -1,9 +1,10 @@
 <?php
 
-class m220208_071620_tabel_create_membership_config extends CDbMigration
+class m220318_092523_tabel_create_membership_config extends CDbMigration
 {
-    public function safeUp()
-    {
+	// Use safeUp/safeDown to do migration with transaction
+	public function safeUp()
+	{
         $tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4';
 
         $this->createTable(
@@ -90,11 +91,12 @@ class m220208_071620_tabel_create_membership_config extends CDbMigration
                 'created_at' => $now
             ],
         ]);
-    }
+	}
 
-    public function safeDown()
-    {
-        echo "m220208_071620_tabel_create_membership_config does not support migration down.\n";
-        return false;
-    }
+	public function safeDown()
+	{
+		echo "m220318_092523_tabel_create_membership_config does not support migration down.\n";
+		return false;
+	}
+	
 }
