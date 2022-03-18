@@ -45,9 +45,9 @@ class Pos extends Penjualan
                 $penjualanMOL->poin_utama            = $dataPenjualanMOL->poinUtama;
                 $penjualanMOL->poin_cashback         = $dataPenjualanMOL->poinCashback;
                 $penjualanMOL->level                 = $dataPenjualanMOL->level;
-                $penjualanMOL->levelNama             = $dataPenjualanMOL->levelNama;
-                $penjualanMOL->totalPoin             = $dataPenjualanMOL->totalPoin;
-                $penjualanMOL->totalCashback         = $dataPenjualanMOL->totalCashback;
+                $penjualanMOL->level_nama            = $dataPenjualanMOL->levelNama;
+                $penjualanMOL->total_poin            = $dataPenjualanMOL->totalPoin;
+                $penjualanMOL->total_cashback        = $dataPenjualanMOL->totalCashback;
                 if (!$penjualanMOL->save()) {
                     throw new Exception('Gagal simpan penjualan_member_online', 500);
                 }
@@ -185,7 +185,7 @@ class Pos extends Penjualan
             $transaction->commit();
 
             return [
-                'sukses'  => true
+                'sukses' => true,
             ];
         } catch (Exception $ex) {
             $transaction->rollback();

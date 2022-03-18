@@ -36,13 +36,13 @@ class PenjualanMemberOnline extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            ['nomor_member, penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback', 'required'],
-            ['nomor_member', 'length', 'max'=>45],
-            ['penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback, updated_by', 'length', 'max'=>10],
+            ['nomor_member, penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback, level, level_nama, total_poin, total_cashback', 'required'],
+            ['nomor_member', 'length', 'max' => 45],
+            ['penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback, level, level_nama, total_poin, total_cashback, updated_by', 'length', 'max' => 10],
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, nomor_member, penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback, updated_at, updated_by, created_at', 'safe', 'on'=>'search'],
+            ['id, nomor_member, penjualan_id, poin_cashback_dipakai, poin_utama, poin_cashback, level, level_nama, total_poin, total_cashback, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -71,6 +71,10 @@ class PenjualanMemberOnline extends CActiveRecord
             'poin_cashback_dipakai' => 'Poin Cashback Dipakai',
             'poin_utama'            => 'Poin Utama',
             'poin_cashback'         => 'Poin Cashback',
+            'level'                 => 'Level',
+            'level_nama'            => 'Level Nama',
+            'total_poin'            => 'Total Poin',
+            'total_cashback'        => 'Total Cashback',
             'updated_at'            => 'Updated At',
             'updated_by'            => 'Updated By',
             'created_at'            => 'Created At',
@@ -93,7 +97,7 @@ class PenjualanMemberOnline extends CActiveRecord
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
-        $criteria=new CDbCriteria;
+        $criteria = new CDbCriteria;
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('nomor_member', $this->nomor_member, true);
@@ -101,12 +105,16 @@ class PenjualanMemberOnline extends CActiveRecord
         $criteria->compare('poin_cashback_dipakai', $this->poin_cashback_dipakai, true);
         $criteria->compare('poin_utama', $this->poin_utama, true);
         $criteria->compare('poin_cashback', $this->poin_cashback, true);
+        $criteria->compare('level', $this->level, true);
+        $criteria->compare('level_nama', $this->level_nama, true);
+        $criteria->compare('total_poin', $this->total_poin, true);
+        $criteria->compare('total_cashback', $this->total_cashback, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
         return new CActiveDataProvider($this, [
-            'criteria'=> $criteria,
+            'criteria' => $criteria,
         ]);
     }
 
@@ -116,7 +124,7 @@ class PenjualanMemberOnline extends CActiveRecord
      * @param string $className active record class name.
      * @return PenjualanMemberOnline the static model class
      */
-    public static function model($className=__CLASS__)
+    public static function model($className = __CLASS__)
     {
         return parent::model($className);
     }

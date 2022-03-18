@@ -566,10 +566,12 @@ class PosController extends Controller
                 $penjualanMOL->poin_utama            = 0;
                 $penjualanMOL->poin_cashback         = 0;
                 $penjualanMOL->level                 = 0;
-                $penjualanMOL->levelNama             = '';
-                $penjualanMOL->totalPoin             = 0;
-                $penjualanMOL->totalCashback         = 0;
-                $penjualanMOL->save();
+                $penjualanMOL->level_nama            = '-';
+                $penjualanMOL->total_poin            = 0;
+                $penjualanMOL->total_cashback        = 0;
+                if (!$penjualanMOL->save()) {
+                    throw new Exception('Gagal simpan penjualan_member_online: ' . var_export($penjualanMOL->getErrors(), true));
+                }
             }
             $this->renderJSON($profil);
         } else {
