@@ -51,7 +51,7 @@
         </div>
         <div id="data-member">
             <nomor>Member Online: <?= is_null($this->memberOnline) ? '': $this->memberOnline->nomor ?></nomor>
-            <nama><?= is_null($this->memberOnline) ? '-': $this->memberOnline->nama_lengkap ?></nama>
+            <nama><?= is_null($this->memberOnline) ? '-': $this->memberOnline->namaLengkap ?></nama>
             <address><?= is_null($this->memberOnline) ? '': $this->memberOnline->alamat ?></address>
         </div>
         <form id="form-admin-login">
