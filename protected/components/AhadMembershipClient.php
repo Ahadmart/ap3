@@ -22,8 +22,8 @@ class AhadMembershipClient
         // Periksa token. Login jika belum ada, atau expired
         if (empty($this->token) || $this->token == '-' || $this->isTokenExpired()) {
             $credentials = [
-                'kode'     => $configArr['login.kode'],
-                'nama'     => $configArr['login.nama'],
+                'kode'     => trim($configArr['login.kode']),
+                'nama'     => trim($configArr['login.nama']),
                 'pwd'      => UnsafeCrypto::decrypt($configArr['login.password'], UnsafeCrypto::AHADMEMBERSHIP_KEY, true),
                 'userName' => Yii::app()->user->namaLengkap,
             ];
