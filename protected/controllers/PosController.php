@@ -575,9 +575,9 @@ class PosController extends Controller
                 $penjualanMOL->poin_utama            = 0;
                 $penjualanMOL->poin_cashback         = 0;
                 $penjualanMOL->level                 = 0;
-                $penjualanMOL->level_nama            = '-';
-                $penjualanMOL->total_poin            = 0;
-                $penjualanMOL->total_cashback        = 0;
+                $penjualanMOL->level_nama            = $profil['data']['profil']['levelNama'];
+                $penjualanMOL->total_poin            = $profil['data']['profil']['poin'];
+                $penjualanMOL->total_cashback        = $profil['data']['profil']['cb'];
                 if (!$penjualanMOL->save()) {
                     throw new Exception('Gagal simpan penjualan_member_online: ' . var_export($penjualanMOL->getErrors(), true));
                 }
@@ -596,9 +596,9 @@ class PosController extends Controller
                 'statusCode' => 200,
                 'data'       => [
                     'profil' => [
-                        'nomor'        => '-',
-                        'nama_lengkap' => '-',
-                        'alamat'       => '',
+                        'nomor'       => '-',
+                        'namaLengkap' => '-',
+                        'alamat'      => '',
                     ],
                 ],
             ];
