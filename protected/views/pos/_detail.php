@@ -7,6 +7,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/animate.css');
 
 $summaryText = 'Poin struk ini: ' . $penjualan->getCurPoin() . ' | Poin sebelumnya: ' . $penjualan->getTotalPoinPeriodeBerjalan() . ' | {start}-{end} dari {count}';
+if (!is_null($this->memberOnline)) {
+    $summaryText = 'Poin Utama: ' . $poins['poin'] . '| Poin Cashback: ' . $poins['poinCB'] . '| {start}-{end} dari {count}';
+}
 $this->widget('BGridView', array(
     'id' => 'penjualan-detail-grid',
     'dataProvider' => $penjualanDetail->search(),
@@ -46,18 +49,18 @@ $this->widget('BGridView', array(
             'header' => 'Harga',
             'headerHtmlOptions' => array('class' => 'rata-kanan show-for-large-up'),
             'htmlOptions' => array('class' => 'rata-kanan show-for-large-up'),
-            'value' => function($data) {
-        return rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',');
-    }
+            'value' => function ($data) {
+                return rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',');
+            }
         ),
         array(
             'name' => 'diskon',
             'header' => 'Diskon',
             'headerHtmlOptions' => array('class' => 'rata-kanan show-for-large-up'),
             'htmlOptions' => array('class' => 'rata-kanan show-for-large-up'),
-            'value' => function($data) {
-        return rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',');
-    }
+            'value' => function ($data) {
+                return rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',');
+            }
         ),
         /*
           array(
@@ -107,12 +110,11 @@ $this->widget('BGridView', array(
 //echo $penjualan->getCurPoin();
 ?>
 <script>
-
     function enableEditable() {
         $(".editable-qty").editable({
             mode: "inline",
             inputclass: "input-editable-qty",
-            success: function (response, newValue) {
+            success: function(response, newValue) {
                 if (response.sukses) {
                     $("#tombol-admin-mode").removeClass('geleng');
                     $("#tombol-admin-mode").removeClass('alert');
@@ -120,7 +122,7 @@ $this->widget('BGridView', array(
                     updateTotal();
                 }
             },
-            error: function (response, newValue) {
+            error: function(response, newValue) {
                 if (response.status === 500) {
                     $.gritter.add({
                         title: 'Error 500',
@@ -132,14 +134,14 @@ $this->widget('BGridView', array(
                 }
             }
         });
-        $('.editable-qty').on('shown', function (e, editable) {
-            setTimeout(function () {
+        $('.editable-qty').on('shown', function(e, editable) {
+            setTimeout(function() {
                 editable.input.$input.select();
             }, 0);
-<?php /* Menambahkan selector agar width bisa diatur */ ?>
+            <?php /* Menambahkan selector agar width bisa diatur */ ?>
             $(".input-editable-qty").parent('.editable-input').addClass('input-editable-qty-p');
         });
-        $('.editable-qty').on('hidden', function (e, reason) {
+        $('.editable-qty').on('hidden', function(e, reason) {
             // focus on input barcode
             $("#scan").focus();
         });
@@ -147,27 +149,27 @@ $this->widget('BGridView', array(
         $(".editable-harga").editable({
             mode: "inline",
             inputclass: "input-editable-harga",
-            success: function (response, newValue) {
+            success: function(response, newValue) {
                 if (response.sukses) {
                     $.fn.yiiGridView.update("penjualan-detail-grid");
                     updateTotal();
                 }
             }
         });
-        $('.editable-harga').on('shown', function (e, editable) {
-            setTimeout(function () {
+        $('.editable-harga').on('shown', function(e, editable) {
+            setTimeout(function() {
                 editable.input.$input.select();
             }, 0);
-<?php /* Menambahkan selector agar width bisa diatur */ ?>
+            <?php /* Menambahkan selector agar width bisa diatur */ ?>
             $(".input-editable-harga").parent('.editable-input').addClass('input-editable-harga-p');
         });
-        $('.editable-harga').on('hidden', function (e, reason) {
+        $('.editable-harga').on('hidden', function(e, reason) {
             // focus on input barcode
             $("#scan").focus();
         });
     }
 
-    $(document).on('keydown', ".editable-input input.input-editable-qty", function (event) {
+    $(document).on('keydown', ".editable-input input.input-editable-qty", function(event) {
         // console.log(event.which);
         if (event.which === 40) {
             console.log('next');
@@ -178,7 +180,7 @@ $this->widget('BGridView', array(
         }
     });
 
-    $(document).on('keydown', ".editable-input input.input-editable-harga", function (event) {
+    $(document).on('keydown', ".editable-input input.input-editable-harga", function(event) {
         // console.log(event.which);
         if (event.which === 40) {
             console.log('next');
@@ -189,11 +191,11 @@ $this->widget('BGridView', array(
         }
     });
 
-    $(function () {
+    $(function() {
         enableEditable();
     });
 
-    $(document).ajaxComplete(function () {
+    $(document).ajaxComplete(function() {
         enableEditable();
     });
 </script>

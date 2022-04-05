@@ -123,11 +123,14 @@ class PosController extends Controller
         $showTarikTunai    = is_null($configShowTarikTunai) ? 0 : $configShowTarikTunai->nilai;
 
         $memberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+        $poins    = null;
         if (!is_null($memberOL)) {
             $clientAPI = new AhadMembershipClient();
             $r         = json_decode($clientAPI->view($memberOL->nomor_member));
-
             $this->memberOnline = $r->data->profil;
+
+            $infoPoinMOL        = json_decode($clientAPI->infoPoin());
+            $poins              = $model->getCurPoinMOL($infoPoinMOL->data->satuPoin, $infoPoinMOL->data->satuCB);
         }
         $this->totalPenjualan    = $model->getTotal();
         $this->showDiskonPerNota = $showDiskonPerNota;
@@ -145,6 +148,7 @@ class PosController extends Controller
                 'showInfaq'            => $showInfaq,
                 'showTarikTunai'       => $showTarikTunai,
                 'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
+                'poins'                => $poins,
             ]
         );
     }
@@ -1061,7 +1065,7 @@ class PosController extends Controller
             header('Expire: 0');
             echo $device->revisiText($text);
             Yii::app()->end();
-        } else if ($device->tipe_id == Device::TIPE_BROWSER_PRINTER) {
+        } elseif ($device->tipe_id == Device::TIPE_BROWSER_PRINTER) {
             $this->renderPartial('//penjualan/_print_autoclose_browser', ['text' => $text]);
         }
     }

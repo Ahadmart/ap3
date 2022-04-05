@@ -191,11 +191,22 @@ class AhadMembershipClient
      * Penjualan function
      * Transaksi penjualan untuk member online
      * @param array $data
-     * @return json
+     * @return string json formatted
      */
     public function penjualan($data)
     {
         $url = $this->baseUrl . '/transaksi/penjualan';
         return $this->postRequest($url, $data);
+    }
+
+    /**
+     * InfoPOIN function
+     *
+     * @return string json formatted nilai untuk dapat 1 poin dan 1 cashback
+     */
+    public function infoPoin()
+    {
+        $url = $this->baseUrl . '/info/nilai-poin';
+        return $this->getRequest($url);
     }
 }

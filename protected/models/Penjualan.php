@@ -110,7 +110,7 @@ class Penjualan extends CActiveRecord
             'created_at'         => 'Created At',
             'namaProfil'         => 'Customer',
             'nomorHutangPiutang' => 'Nomor Piutang',
-            'namaUpdatedBy'      => 'User'
+            'namaUpdatedBy'      => 'User',
         ];
     }
 
@@ -152,24 +152,24 @@ class Penjualan extends CActiveRecord
             'defaultOrder' => 't.status, tanggal desc',
             'attributes'   => [
                 '*',
-                'namaProfil' => [
+                'namaProfil'    => [
                     'asc'  => 'profil.nama',
-                    'desc' => 'profil.nama desc'
+                    'desc' => 'profil.nama desc',
                 ],
                 'nomorHutangPiutang', [
                     'asc'  => 'hutangPiutang.nomor',
-                    'desc' => 'hutangPiutang.nomor desc'
+                    'desc' => 'hutangPiutang.nomor desc',
                 ],
                 'namaUpdatedBy' => [
                     'asc'  => 'updatedBy.nama_lengkap',
-                    'desc' => 'updatedBy.nama_lengkap desc'
+                    'desc' => 'updatedBy.nama_lengkap desc',
                 ],
-            ]
+            ],
         ];
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort'     => $sort
+            'sort'     => $sort,
         ]);
     }
 
@@ -252,7 +252,7 @@ class Penjualan extends CActiveRecord
                 $qty += $barangAda;
                 PenjualanDetail::model()->deleteAll('barang_id=:barangId AND penjualan_id=:penjualanId', [
                     ':barangId'    => $barang->id,
-                    ':penjualanId' => $this->id
+                    ':penjualanId' => $this->id,
                 ]);
             }
             $this->tambahBarangTransferDetail($barang, $qty);
@@ -263,7 +263,7 @@ class Penjualan extends CActiveRecord
 
             $transaction->commit();
             return [
-                'sukses' => true
+                'sukses' => true,
             ];
         } catch (Exception $ex) {
             $transaction->rollback();
@@ -272,7 +272,7 @@ class Penjualan extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
@@ -350,7 +350,7 @@ class Penjualan extends CActiveRecord
                         ")
             ->bindValues([
                 ':barangId'    => $barang->id,
-                ':penjualanId' => $this->id
+                ':penjualanId' => $this->id,
             ])
             ->execute();
 
@@ -362,13 +362,13 @@ class Penjualan extends CActiveRecord
                         ")
             ->bindValues([
                 ':barangId'    => $barang->id,
-                ':penjualanId' => $this->id
+                ':penjualanId' => $this->id,
             ])
             ->execute();
 
         PenjualanDetail::model()->deleteAll('barang_id=:barangId AND penjualan_id=:penjualanId', [
             ':barangId'    => $barang->id,
-            ':penjualanId' => $this->id
+            ':penjualanId' => $this->id,
         ]);
     }
 
@@ -426,7 +426,7 @@ class Penjualan extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
@@ -501,8 +501,8 @@ class Penjualan extends CActiveRecord
             'params'    => [
                 'barangId'   => $barangId,
                 'status'     => DiskonBarang::STATUS_AKTIF,
-                'tipeDiskon' => DiskonBarang::TIPE_PROMO
-            ]
+                'tipeDiskon' => DiskonBarang::TIPE_PROMO,
+            ],
         ]);
         $sisa = $qty;
         if ($qty > $diskonPromo->qty_max) {
@@ -528,8 +528,8 @@ class Penjualan extends CActiveRecord
                 'kategoriBarangId' => $barang->kategori_id,
                 'status'           => DiskonBarang::STATUS_AKTIF,
                 'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERKATEGORI,
-                'waktu'            => $waktu
-            ]
+                'waktu'            => $waktu,
+            ],
         ]);
 
         $sisa = $qty;
@@ -543,7 +543,7 @@ class Penjualan extends CActiveRecord
 
         $diskonNominal = $diskonPromoKategori->nominal;
         if ($diskonPromoKategori->persen > 0) {
-            $diskonNominal = ((float)$diskonPromoKategori->persen / 100) * $hargaJualNormal;
+            $diskonNominal = ((float) $diskonPromoKategori->persen / 100) * $hargaJualNormal;
         }
         $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
 
@@ -560,8 +560,8 @@ class Penjualan extends CActiveRecord
                 'barangId'    => $barangId,
                 'semuaBarang' => DiskonBarang::SEMUA_BARANG,
                 'status'      => DiskonBarang::STATUS_AKTIF,
-                'tipeDiskon'  => DiskonBarang::TIPE_PROMO_MEMBER
-            ]
+                'tipeDiskon'  => DiskonBarang::TIPE_PROMO_MEMBER,
+            ],
         ]);
         $sisa = $qty;
         if ($qty > $diskonPromo->qty_max) {
@@ -571,7 +571,7 @@ class Penjualan extends CActiveRecord
             $qtyPromo = $qty;
             $sisa     = 0;
         }
-        $diskonNominal   = ($diskonPromo->nominal > 0) ? $diskonPromo->nominal : $hargaJualNormal * ((float)$diskonPromo->persen / 100);
+        $diskonNominal   = ($diskonPromo->nominal > 0) ? $diskonPromo->nominal : $hargaJualNormal * ((float) $diskonPromo->persen / 100);
         $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
         $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonNominal, DiskonBarang::TIPE_PROMO_MEMBER);
         return $sisa;
@@ -586,7 +586,7 @@ class Penjualan extends CActiveRecord
                 'barangId'   => $barangId,
                 'status'     => DiskonBarang::STATUS_AKTIF,
                 'tipeDiskon' => DiskonBarang::TIPE_GROSIR,
-            ]
+            ],
         ]);
 
         if ($qty >= $diskonGrosir->qty_min) {
@@ -606,8 +606,8 @@ class Penjualan extends CActiveRecord
             'params'    => [
                 'barangId'   => $barangId,
                 'status'     => DiskonBarang::STATUS_AKTIF,
-                'tipeDiskon' => DiskonBarang::TIPE_BANDED
-            ]
+                'tipeDiskon' => DiskonBarang::TIPE_BANDED,
+            ],
         ]);
         $sisa = $qty;
         foreach ($diskons as $banded) {
@@ -632,8 +632,8 @@ class Penjualan extends CActiveRecord
             'params'    => [
                 'barangId'   => $barangId,
                 'status'     => DiskonBarang::STATUS_AKTIF,
-                'tipeDiskon' => DiskonBarang::TIPE_QTY_GET_BARANG
-            ]
+                'tipeDiskon' => DiskonBarang::TIPE_QTY_GET_BARANG,
+            ],
         ]);
         $sisa = $qty;
         if ($diskonModel->barang_id == $diskonModel->barang_bonus_id) {
@@ -667,7 +667,7 @@ class Penjualan extends CActiveRecord
 
             $detail = PenjualanDetail::model()->find('penjualan_id = :penjualanId and barang_id = :barangId', [
                 'penjualanId' => $this->id,
-                'barangId'    => $diskonModel->barang_bonus_id
+                'barangId'    => $diskonModel->barang_bonus_id,
             ]);
             if ($qty >= $diskonModel->qty && !is_null($detail)) {
                 // insert barang secara normal
@@ -682,7 +682,7 @@ class Penjualan extends CActiveRecord
             /* Barang bonus discan belakangan (yang discan adalah barang bonus) */
             $detail = PenjualanDetail::model()->find('penjualan_id = :penjualanId and barang_id = :barangId', [
                 'penjualanId' => $this->id,
-                'barangId'    => $diskonModel->barang_id
+                'barangId'    => $diskonModel->barang_id,
             ]);
             if (!is_null($detail)) {
                 $qtyDiskon = 0;
@@ -719,8 +719,8 @@ class Penjualan extends CActiveRecord
             'params'    => [
                 'barangId'   => $barangId,
                 'status'     => DiskonBarang::STATUS_AKTIF,
-                'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG
-            ]
+                'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG,
+            ],
         ]);
         $sisa     = $qty;
         $total    = $this->ambilTotal();
@@ -798,8 +798,8 @@ class Penjualan extends CActiveRecord
                 'params'    => [
                     'barangId'   => $barangId,
                     'status'     => DiskonBarang::STATUS_AKTIF,
-                    'tipeDiskon' => $tipeDiskonId
-                ]
+                    'tipeDiskon' => $tipeDiskonId,
+                ],
             ]);
         }
 
@@ -810,8 +810,8 @@ class Penjualan extends CActiveRecord
                 'params'    => [
                     'barangId'   => $barangId,
                     'status'     => DiskonBarang::STATUS_AKTIF,
-                    'tipeDiskon' => $tipeDiskonId
-                ]
+                    'tipeDiskon' => $tipeDiskonId,
+                ],
             ]);
         }
 
@@ -825,8 +825,8 @@ class Penjualan extends CActiveRecord
                     'kategoriBarangId' => $barang->kategori_id,
                     'status'           => DiskonBarang::STATUS_AKTIF,
                     'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERKATEGORI,
-                    'waktu'            => $waktu
-                ]
+                    'waktu'            => $waktu,
+                ],
             ]);
         }
 
@@ -838,8 +838,8 @@ class Penjualan extends CActiveRecord
                 'barangId'    => $barangId,
                 'semuaBarang' => DiskonBarang::SEMUA_BARANG,
                 'status'      => DiskonBarang::STATUS_AKTIF,
-                'tipeDiskon'  => $tipeDiskonId
-            ]
+                'tipeDiskon'  => $tipeDiskonId,
+            ],
         ]);
     }
 
@@ -850,14 +850,14 @@ class Penjualan extends CActiveRecord
             'order'     => 'id desc',
             'params'    => [
                 'status'     => DiskonBarang::STATUS_AKTIF,
-                'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG
-            ]
+                'tipeDiskon' => DiskonBarang::TIPE_NOMINAL_GET_BARANG,
+            ],
         ]);
 
         if (!is_null($diskon) && $this->ambilTotal() >= $diskon->nominal) {
             $detail = PenjualanDetail::model()->findAll('penjualan_id = :penjualanId and barang_id = :barangId', [
                 'penjualanId' => $this->id,
-                'barangId'    => $diskon->barang_bonus_id
+                'barangId'    => $diskon->barang_bonus_id,
             ]);
             if (!empty($detail)) {
                 // Periksa harga jual apakah sudah ada yang nol (0) ATAU sudah kena diskon nominal
@@ -896,7 +896,7 @@ class Penjualan extends CActiveRecord
         $data  = $this->find(
             [
                 'select'    => 'max(substring(nomor,9)*1) as max',
-                'condition' => "substring(nomor,5,2)='{$tahun}'"
+                'condition' => "substring(nomor,5,2)='{$tahun}'",
             ]
         );
 
@@ -1077,7 +1077,7 @@ class Penjualan extends CActiveRecord
             $this->simpanPenjualan();
             $transaction->commit();
             return [
-                'sukses' => true
+                'sukses' => true,
             ];
         } catch (Exception $ex) {
             $transaction->rollback();
@@ -1086,7 +1086,7 @@ class Penjualan extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
@@ -1096,7 +1096,7 @@ class Penjualan extends CActiveRecord
         return [
             Penjualan::STATUS_DRAFT   => 'Draft',
             Penjualan::STATUS_PIUTANG => 'Piutang',
-            Penjualan::STATUS_LUNAS   => 'Lunas'
+            Penjualan::STATUS_LUNAS   => 'Lunas',
         ];
     }
 
@@ -1156,13 +1156,13 @@ class Penjualan extends CActiveRecord
             ->queryAll();
         /* Kalau perlu harga beli, tambahkan ini ke sql
          * (
-          select case
-          when harga_pokok_penjualan.harga_beli is null then harga_pokok_penjualan.harga_beli_temp else harga_pokok_penjualan.harga_beli
-          end
-          from harga_pokok_penjualan
-          where harga_pokok_penjualan.penjualan_detail_id = pd.id
-          limit 1
-          ) as harga_beli,
+        select case
+        when harga_pokok_penjualan.harga_beli is null then harga_pokok_penjualan.harga_beli_temp else harga_pokok_penjualan.harga_beli
+        end
+        from harga_pokok_penjualan
+        where harga_pokok_penjualan.penjualan_detail_id = pd.id
+        limit 1
+        ) as harga_beli,
          */
 
         // Cari nama toko ini
@@ -1207,7 +1207,7 @@ class Penjualan extends CActiveRecord
             'September',
             'Oktober',
             'November',
-            'Desember'
+            'Desember',
         ];
         return $bulan[$i - 1];
     }
@@ -1297,14 +1297,14 @@ class Penjualan extends CActiveRecord
 
             /* Jika ini seharusnya halaman baru */
             /*
-              if ($rowCount > $rowPerPage) {
-              $halaman++;
-              $halamanStr = $this->nomor . ' ' . $halaman;
+            if ($rowCount > $rowPerPage) {
+            $halaman++;
+            $halamanStr = $this->nomor . ' ' . $halaman;
 
-              $struk .= PHP_EOL;
-              $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
-              $rowCount = 1; // Reset row counter
-              }
+            $struk .= PHP_EOL;
+            $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+            $rowCount = 1; // Reset row counter
+            }
              */
             $struk .= $row;
             $no++;
@@ -1312,25 +1312,25 @@ class Penjualan extends CActiveRecord
         }
         /* Jika ini seharusnya halaman baru */
         /*
-          if ($rowCount > $rowPerPage && $halaman > 0) {
-          $halaman++;
-          $halamanStr = $this->nomor . ' ' . $halaman;
+        if ($rowCount > $rowPerPage && $halaman > 0) {
+        $halaman++;
+        $halamanStr = $this->nomor . ' ' . $halaman;
 
-          $struk .= PHP_EOL;
-          $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
-          $rowCount = 1; // Reset row counter
-          }
+        $struk .= PHP_EOL;
+        $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+        $rowCount = 1; // Reset row counter
+        }
          */
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL . PHP_EOL;
         /*
-          if ($rowCount > $rowPerPage - 6) {
-          $halaman++;
-          $halamanStr = $this->nomor . ' ' . $halaman;
+        if ($rowCount > $rowPerPage - 6) {
+        $halaman++;
+        $halamanStr = $this->nomor . ' ' . $halaman;
 
-          $struk .= PHP_EOL;
-          $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
-          $rowCount = 1; // Reset row counter
-          }
+        $struk .= PHP_EOL;
+        $struk .= str_pad($halamanStr, $jumlahKolom, ' ', STR_PAD_LEFT) . PHP_EOL . PHP_EOL;
+        $rowCount = 1; // Reset row counter
+        }
          */
         if (!$draft) {
             $signatureHead1 = '          Diterima';
@@ -1343,10 +1343,10 @@ class Penjualan extends CActiveRecord
             $struk .= '     (                )         (                )         (                )' . PHP_EOL;
         }
         /*
-          $rowCount+=7;
-          for ($index = 0; $index < $rowPerPage - $rowCount; $index++) {
-          $struk .= PHP_EOL;
-          }
+        $rowCount+=7;
+        for ($index = 0; $index < $rowPerPage - $rowCount; $index++) {
+        $struk .= PHP_EOL;
+        }
          */
         //$halaman++;
         //$halamanStr = $this->nomor . ' ' . $halaman;
@@ -1394,12 +1394,12 @@ class Penjualan extends CActiveRecord
         $penerimaanDetail = [];
         if (!empty($penerimaan)) {
             $penerimaanDetail = Yii::app()->db->createCommand('
-            SELECT 
+            SELECT
                 item_id, jumlah
             FROM
                 penerimaan_detail
             WHERE
-                penerimaan_id = :penerimaanId            
+                penerimaan_id = :penerimaanId
             ')->bindValue(':penerimaanId', $penerimaan['id'])->queryAll();
         }
 
@@ -1463,7 +1463,7 @@ class Penjualan extends CActiveRecord
                             ' ',
                             STR_PAD_LEFT
                         );
-                        $txtDiskonNota        = str_pad('Diskon      : ' . $txtDiskonNotaNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
+                        $txtDiskonNota = str_pad('Diskon      : ' . $txtDiskonNotaNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
                         break;
                     case ItemKeuangan::POS_INFAQ:
                         $infaq    = $strukItem['jumlah'];
@@ -1524,8 +1524,8 @@ class Penjualan extends CActiveRecord
 
         if ($profil->isMemberOL()) {
             $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
-            $dataMemberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId'=>$this->id]);
-            $nomorNama = $dataMemberOL->nomor_member;
+            $dataMemberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
+            $nomorNama    = $dataMemberOL->nomor_member;
             $struk .= ' ' . substr($nomorNama, 0, 38) . PHP_EOL;
             $struk .= ' Poin belanja  : ' . $dataMemberOL->poin_utama . PHP_EOL;
             $struk .= ' Total Poin    : ' . $dataMemberOL->total_poin . PHP_EOL;
@@ -1770,7 +1770,7 @@ class Penjualan extends CActiveRecord
                         //':tahun' => 'year(' . $this->tanggal . ')',
                         ':awal'     => $periodePoin->awal,
                         ':akhir'    => $periodePoin->akhir,
-                        ':profilId' => $profil->id
+                        ':profilId' => $profil->id,
                     ])
                     ->queryRow();
             } else {
@@ -1788,7 +1788,7 @@ class Penjualan extends CActiveRecord
                     if ($curMonth >= $periodePoinL->awal) {
                         $queryPoin->andWhere('YEAR(updated_at) = YEAR(NOW()) AND MONTH(updated_at) BETWEEN :awal AND MONTH(NOW())');
                         $queryPoin->bindValues([
-                            ':awal' => $periodePoinL->awal
+                            ':awal' => $periodePoinL->awal,
                         ]);
                     }
 
@@ -1797,12 +1797,12 @@ class Penjualan extends CActiveRecord
                         $queryPoin->andWhere('((YEAR(tpm.updated_at)=YEAR(NOW()) AND MONTH(tpm.updated_at) <= MONTH(NOW())) OR '
                             . '(YEAR(tpm.updated_at)=YEAR(NOW())-1 AND MONTH(tpm.updated_at) >= :awal))');
                         $queryPoin->bindValues([
-                            ':awal' => $periodePoinL->awal
+                            ':awal' => $periodePoinL->awal,
                         ]);
                     }
 
                     $queryPoin->bindValues([
-                        ':profilId' => $profil->id
+                        ':profilId' => $profil->id,
                     ]);
                     $poin = $queryPoin->queryRow();
                 }
@@ -1833,7 +1833,7 @@ class Penjualan extends CActiveRecord
             $this->insertBarang($barangId, $qty, $hargaJual, $diskon, DiskonBarang::TIPE_MANUAL);
             $transaction->commit();
             return [
-                'sukses' => true
+                'sukses' => true,
             ];
         } catch (Exception $ex) {
             $transaction->rollback();
@@ -1842,7 +1842,7 @@ class Penjualan extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
@@ -1860,7 +1860,7 @@ class Penjualan extends CActiveRecord
             $alamat3 = !empty($customer->alamat3) ? '<br>' . $customer->alamat3 : '';
             /* Ambil data detail */
             $penjualanDetails = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', [
-                'penjualanId' => $this->id
+                'penjualanId' => $this->id,
             ]);
 
             /* Hapus dan re-insert */
@@ -1875,7 +1875,7 @@ class Penjualan extends CActiveRecord
                     WHERE {$tabelPenjualanDetail}.penjualan_id=:penjualanId
                         ")
                 ->bindValues([
-                    ':penjualanId' => $this->id
+                    ':penjualanId' => $this->id,
                 ])
                 ->execute();
             Yii::app()->db->createCommand("
@@ -1883,12 +1883,12 @@ class Penjualan extends CActiveRecord
                     WHERE penjualan_id=:penjualanId
                         ")
                 ->bindValues([
-                    ':penjualanId' => $this->id
+                    ':penjualanId' => $this->id,
                 ])
                 ->execute();
 
             PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', [
-                'penjualanId' => $this->id
+                'penjualanId' => $this->id,
             ]);
 
             foreach ($penjualanDetails as $detail) {
@@ -1902,7 +1902,7 @@ class Penjualan extends CActiveRecord
                 'sukses'  => true,
                 'nama'    => $customer->nama,
                 'nomor'   => $customer->nomor,
-                'address' => $alamat1 . $alamat2 . $alamat3
+                'address' => $alamat1 . $alamat2 . $alamat3,
             ];
         } catch (Exception $ex) {
             $transaction->rollback();
@@ -1911,7 +1911,7 @@ class Penjualan extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
@@ -1956,5 +1956,22 @@ class Penjualan extends CActiveRecord
         if (!$penjualanMultiHJ->save()) {
             throw new Exception('Gagal simpan penjualan multi harga untuk detail #' . $penjualanDetail->id, 500);
         }
+    }
+
+    /**
+     * Ambil nilai poin Member Online untuk penjualan ini
+     *
+     * @param int $nilai1Poin
+     * @param int $nilai1CB
+     * @return array [poin, poinCB]
+     */
+    public function getCurPoinMOL($nilai1Poin, $nilai1CB)
+    {
+        $poin   = floor($this->ambilTotal() / $nilai1Poin);
+        $poinCB = floor($this->ambilTotal() / $nilai1CB);
+        return [
+            'poin'   => $poin,
+            'poinCB' => $poinCB,
+        ];
     }
 }
