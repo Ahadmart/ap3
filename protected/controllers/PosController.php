@@ -13,6 +13,8 @@ class PosController extends Controller
     public $showDiskonPerNota;
     public $showInfaq;
     public $showTarikTunai;
+    public $showCashbackMemberOL;
+    public $showVoucherMOL;
     public $showMember;
     public $showMemberOL;
 
@@ -137,6 +139,10 @@ class PosController extends Controller
 
             $infoPoinMOL = json_decode($clientAPI->infoPoin());
             $poins       = $model->getCurPoinMOL($infoPoinMOL->data->satuPoin, $infoPoinMOL->data->satuCB);
+
+            if ($r->data->profil->cb > 0) {
+                $this->showCashbackMemberOL = true;
+            }
         }
         $this->totalPenjualan    = $model->getTotal();
         $this->showDiskonPerNota = $showDiskonPerNota;
@@ -144,6 +150,8 @@ class PosController extends Controller
         $this->showTarikTunai    = $showTarikTunai;
         $this->showMember        = $showMember;
         $this->showMemberOL      = $showMemberOL;
+
+        $this->showVoucherMOL       = true;
 
         $this->render(
             'ubah',
@@ -360,8 +368,8 @@ class PosController extends Controller
             $ak = 'accesskey="q"';
         }
         return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" ' . $ak . ' data-url="' .
-        Yii::app()->controller->createUrl('updateqty') . '">' .
-        $data->qty . '</a>';
+            Yii::app()->controller->createUrl('updateqty') . '">' .
+            $data->qty . '</a>';
     }
 
     public function renderHargaLinkEditable($data, $row)
@@ -465,8 +473,8 @@ class PosController extends Controller
     public function renderLinkToUbah($data)
     {
         $return = '<a href="' .
-        $this->createUrl('ubah', ['id' => $data->id]) . '">' .
-        $data->tanggal . '</a>';
+            $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+            $data->tanggal . '</a>';
 
         return $return;
     }
@@ -712,10 +720,10 @@ class PosController extends Controller
     {
         $diskon          = $data->diskon > 0 ? ' (' . rtrim(rtrim(number_format($data->diskon, 2, ',', '.'), '0'), ',') . ')' : '';
         $smallMediumText = $data->barang->nama .
-        '<br />' .
-        rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
-        $diskon .
-        ' x ' . $data->qty . ' ' . $data->barang->satuan->nama;
+            '<br />' .
+            rtrim(rtrim(number_format($data->harga_jual + $data->diskon, 2, ',', '.'), '0'), ',') .
+            $diskon .
+            ' x ' . $data->qty . ' ' . $data->barang->satuan->nama;
         $largeUpText = $data->barang->nama;
         return '<span class="show-for-large-up">' . $largeUpText . '</span>' .
             '<span class="hide-for-large-up">' . $smallMediumText . '</span>';
