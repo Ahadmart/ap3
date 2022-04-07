@@ -31,7 +31,7 @@ class Pos extends Penjualan
                     'nomorMember'     => $penjualanMOL->nomor_member,
                     'nomor'           => $this->nomor,
                     'total'           => $this->ambilTotal(),
-                    'cashbackDipakai' => 0,
+                    'cashbackDipakai' => $posData['cashback-mol'],
                 ];
 
                 $clientAPI = new AhadMembershipClient();
@@ -43,6 +43,7 @@ class Pos extends Penjualan
 
                 $penjualanMOL->poin_cashback_dipakai = 0; //update me!
                 $penjualanMOL->poin_utama            = $dataPenjualanMOL->poinUtama;
+                $penjualanMOL->poin_cashback_dipakai = $posData['cashback-mol'];
                 $penjualanMOL->poin_cashback         = $dataPenjualanMOL->poinCashback;
                 $penjualanMOL->level                 = $dataPenjualanMOL->level;
                 $penjualanMOL->level_nama            = $dataPenjualanMOL->levelNama;
@@ -194,7 +195,8 @@ class Pos extends Penjualan
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]];
+                ],
+            ];
         }
     }
 
@@ -225,14 +227,15 @@ class Pos extends Penjualan
                 'sukses' => true,
             ];
         } catch (Exception $ex) {
-//            echo $exc->getTraceAsString();
+            //            echo $exc->getTraceAsString();
             $transaction->rollback();
             return [
                 'sukses' => false,
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]];
+                ],
+            ];
         }
     }
 
@@ -274,7 +277,8 @@ class Pos extends Penjualan
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]];
+                ],
+            ];
         }
     }
 

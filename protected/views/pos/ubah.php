@@ -548,9 +548,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             return false;
         }
         $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
-        dataUrl =
-            '<?php echo $this->createUrl('simpan', ['id' => $model->id]); ?>';
-        dataKirim = {
+        var dataUrl = '<?php echo $this->createUrl('simpan', ['id' => $model->id]); ?>';
+        var cashBack = $("#cashback-mol").length == 0 ? 0 : $("#cashback-mol").val()
+        var dataKirim = {
             'pos[account]': $("#account").val(),
             'pos[jenistr]': $("#jenisbayar").val(),
             'pos[uang]': $("#uang-dibayar").val(),
@@ -559,6 +559,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             'pos[diskon-nota]': $("#diskon-nota").val(),
             'pos[tarik-tunai]': $("#tarik-tunai").val(),
             'pos[tarik-tunai-acc]': $("#tarik-tunai").parent().parent().find(".account").val(),
+            'pos[cashback-mol]': cashBack,
         };
         console.log(dataUrl);
         printWindow = window.open('about:blank', '',

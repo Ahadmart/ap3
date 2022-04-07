@@ -297,15 +297,16 @@
                     data: dataKirim,
                     success: function(data) {
                         if (data.statusCode == 200) {
-                            var profil = data.data.profil;
-                            $("#data-member nomor").html('Member Online: ' + profil.nomor);
-                            $("#data-member nama").html(profil.namaLengkap);
-                            $("#data-member address").html(profil.alamat);
-                            $("#data-member info").html(profil.levelNama + ' | ' + profil.poin + ' | ' +
-                                profil.cb)
+                            // var profil = data.data.profil;
+                            // $("#data-member nomor").html('Member Online: ' + profil.nomor);
+                            // $("#data-member nama").html(profil.namaLengkap);
+                            // $("#data-member address").html(profil.alamat);
+                            // $("#data-member info").html(profil.levelNama + ' | ' + profil.poin + ' | ' +
+                            //     profil.cb)
 
-                            $.fn.yiiGridView.update('penjualan-detail-grid');
-                            updateTotal();
+                            // $.fn.yiiGridView.update('penjualan-detail-grid');
+                            // updateTotal();
+                            location.reload();
                         } else {
                             $.gritter.add({
                                 title: 'Error ' + data.statusCode,
