@@ -1539,12 +1539,12 @@ class Penjualan extends CActiveRecord
         if ($profil->isMemberOL()) {
             $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
             $dataMemberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
-            $nomorNama    = $dataMemberOL->nomor_member;
+            $nomorNama    = 'Member: '.$dataMemberOL->nomor_member.', Lvl: '.$dataMemberOL->level_nama;
             $struk .= ' ' . substr($nomorNama, 0, 38) . PHP_EOL;
-            $struk .= ' Poin belanja  : ' . $dataMemberOL->poin_utama . PHP_EOL;
-            $struk .= ' Total Poin    : ' . $dataMemberOL->total_poin . PHP_EOL;
-            $struk .= ' Poin cashback : ' . $dataMemberOL->poin_cashback . PHP_EOL;
-            $struk .= ' Total cashback: ' . $dataMemberOL->total_cashback . PHP_EOL;
+            $struk .= ' Poin dari belanja ini    : ' . $dataMemberOL->poin_utama . PHP_EOL;
+            $struk .= ' Total poin anda          : ' . $dataMemberOL->total_poin . PHP_EOL;
+            $struk .= ' Cashback belanja ini     : ' . $dataMemberOL->poin_cashback . PHP_EOL;
+            $struk .= ' Total cashback anda      : ' . $dataMemberOL->total_cashback . PHP_EOL;
         }
 
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
