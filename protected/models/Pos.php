@@ -127,6 +127,15 @@ class Pos extends Penjualan
                 $penerimaanDetail->save();
             }
 
+            if (isset($posData['cashback-mol']) && $posData['cashback-mol'] > 0) {
+                $penerimaanDetail                = new PenerimaanDetail;
+                $penerimaanDetail->penerimaan_id = $penerimaan->id;
+                $penerimaanDetail->item_id       = ItemKeuangan::POS_CASHBACK_DIPAKAI;
+                $penerimaanDetail->keterangan    = '[POS] Cashback dipakai (' . $dokumen->keterangan() . ')';
+                $penerimaanDetail->jumlah        = $posData['cashback-mol'];
+
+                $penerimaanDetail->save();
+            }
             //$tarikTunai = $posData['tarik-tunai'];
 
             if (isset($posData['tarik-tunai']) && $posData['tarik-tunai'] > 0) {

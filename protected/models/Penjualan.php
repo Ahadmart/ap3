@@ -1448,10 +1448,11 @@ class Penjualan extends CActiveRecord
 
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
-        $txtTotal = 'Total       : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+        $txtTotal = 'Total : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
 
-        $diskonNota = 0;
-        $infaq      = 0;
+        $diskonNota      = 0;
+        $cashbackDipakai = 0;
+        $infaq           = 0;
         if (!empty($penerimaanDetail)) {
             foreach ($penerimaanDetail as $strukItem) {
                 switch ($strukItem['item_id']) {
@@ -1463,11 +1464,21 @@ class Penjualan extends CActiveRecord
                             ' ',
                             STR_PAD_LEFT
                         );
-                        $txtDiskonNota = str_pad('Diskon      : ' . $txtDiskonNotaNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
+                        $txtDiskonNota = str_pad('Diskon : ' . $txtDiskonNotaNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
+                        break;
+                    case ItemKeuangan::POS_CASHBACK_DIPAKAI:
+                        $cashbackDipakai           = $strukItem['jumlah'];
+                        $txtCashbackDipakaiNominal = str_pad(
+                            '(' . number_format($strukItem['jumlah'], 0, ',', '.') . ')',
+                            12,
+                            ' ',
+                            STR_PAD_LEFT
+                        );
+                        $txtCashbackDipakai = str_pad('Cashback dipakai : ' . $txtCashbackDipakaiNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
                         break;
                     case ItemKeuangan::POS_INFAQ:
                         $infaq    = $strukItem['jumlah'];
-                        $txtInfaq = 'Infak       : ' . str_pad(
+                        $txtInfaq = 'Infak : ' . str_pad(
                             number_format($strukItem['jumlah'], 0, ',', '.'),
                             11,
                             ' ',
@@ -1482,13 +1493,16 @@ class Penjualan extends CActiveRecord
 
         $dibayar = empty($penerimaan['uang_dibayar']) ? null : $penerimaan['uang_dibayar'];
         if (!is_null($dibayar)) {
-            $txtBayar = 'Dibayar     : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-            $txtKbali = 'Kembali     : ' . str_pad(number_format($dibayar - $total + $diskonNota - $infaq - $tarikTunai, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtBayar = 'Dibayar : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtKbali = 'Kembali : ' . str_pad(number_format($dibayar - $total + $diskonNota + $cashbackDipakai - $infaq - $tarikTunai, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
         }
 
         $struk .= str_pad($txtTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         if (isset($txtDiskonNota)) {
             $struk .= str_pad($txtDiskonNota, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+        if (isset($txtCashbackDipakai)) {
+            $struk .= str_pad($txtCashbackDipakai, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
         if (isset($txtInfaq)) {
             $struk .= str_pad($txtInfaq, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
@@ -1505,7 +1519,7 @@ class Penjualan extends CActiveRecord
         }
 
         if ($totalDiskon > 0) {
-            $txtDiskon = 'Anda Hemat  : ' . str_pad(number_format($totalDiskon + $diskonNota, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtDiskon = 'Anda Hemat : ' . str_pad(number_format($totalDiskon + $diskonNota, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
             $struk .= PHP_EOL;
             $struk .= str_pad($txtDiskon, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }

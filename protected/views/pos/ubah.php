@@ -203,9 +203,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     function totalYangHarusDibayar() {
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var cashbackMOL = parseInt($("#cashback-mol").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
         var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
-        return total + infaq - diskonNota + tarikTunai;
+        return total + infaq - diskonNota - cashbackMOL + tarikTunai;
     }
 
     function tampilkanKembalian(input) {
@@ -214,6 +215,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         console.log("tampilkanKembalian dieksekusi");
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var cashbackMOL = parseInt($("#cashback-mol").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
         var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
         // console.log("Total: "+total);
@@ -229,6 +231,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                 total: total,
                 bayar: bayar,
                 diskonNota: diskonNota,
+                cashbackMOL: cashbackMOL,
                 infaq: infaq,
                 tarikTunai: tarikTunai,
             };
@@ -246,6 +249,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     function sesuaikanInputUangDibayar() {
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var cashbackMOL = parseInt($("#cashback-mol").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
         var inputUangDibayar = $("input.uang-dibayar");
         var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
@@ -255,7 +259,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         $.each(inputUangDibayar, function(index, el) {
             var curValue = parseInt($(el).val(), 10);
             var bayar = uangDibayar + curValue;
-            var total1 = total + infaq - diskonNota + tarikTunai;
+            var total1 = total + infaq - diskonNota - cashbackMOL + tarikTunai;
             console.log("bayar= " + bayar + ", total= " + total1);
             if (cukup == false) {
                 uangDibayar += parseInt($(el).val(), 10) || 0;
@@ -263,7 +267,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             } else {
                 $(el).parent().parent().remove();
             }
-            if (bayar >= total + infaq - diskonNota + tarikTunai || $(el).val() == 0) {
+            if (bayar >= total + infaq - diskonNota - cashbackMOL + tarikTunai || $(el).val() == 0) {
                 cukup = true;
             }
             console.log("cukup= " + cukup);
@@ -424,13 +428,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     function hitungYangHarusDibayar() {
         var total = parseFloat($("#total-belanja-h").text());
         var diskonNota = parseInt($("#diskon-nota").val(), 10) || 0;
+        var cashbackMOL = parseInt($("#cashback-mol").val(), 10) || 0;
         var infaq = parseInt($("#infaq").val(), 10) || 0;
         var tarikTunai = parseInt($("#tarik-tunai").val(), 10) || 0;
-        return total - diskonNota + infaq + tarikTunai;
+        return total - diskonNota - cashbackMOL + infaq + tarikTunai;
     }
 
     function showSubTotal() {
-        if ($("#diskon-nota").val() > 0 || $("#infaq").val() > 0 || $("#tarik-tunai").val() > 0) {
+        if ($("#diskon-nota").val() > 0 || $("#cashback-mol").val() > 0 || $("#infaq").val() > 0 || $("#tarik-tunai").val() > 0) {
             console.log("Besar dari 0");
             $("#subtotal-belanja").slideDown(200, function() {
                 $(this).fadeTo(200, 1.00, function() {
@@ -466,6 +471,17 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     });
 
     $("#diskon-nota").keydown(function(e) {
+        if (e.keyCode === 13) {
+            $("#tombol-simpan").click();
+        }
+    });
+
+    $("#cashback-mol").keyup(function() {
+        showSubTotal();
+        tampilkanKembalian();
+    });
+
+    $("#cashback-mol").keydown(function(e) {
         if (e.keyCode === 13) {
             $("#tombol-simpan").click();
         }

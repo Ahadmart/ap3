@@ -358,7 +358,7 @@ class PosController extends Controller
         echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
         number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
          */
-        echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'] - $_POST['tarikTunai'], 0, ',', '.');
+        echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] + $_POST['cashbackMOL'] - $_POST['infaq'] - $_POST['tarikTunai'], 0, ',', '.');
     }
 
     public function renderQtyLinkEditable($data, $row)
