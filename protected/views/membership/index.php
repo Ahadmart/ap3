@@ -56,6 +56,10 @@ $this->menu = [
     [
         'itemOptions' => ['class' => 'has-form hide-for-small-only'], 'label' => '',
         'items'    => [
+            ['label' => '<i class="fa fa-sliders"></i> <span class="ak">C</span>onfig', 'url' => $this->createUrl('/membershipconfig'), 'linkOptions' => [
+                'class'     => 'button',
+                'accesskey' => 'c'
+            ]],
             ['label' => '<i class="fa fa-plus"></i> <span class="ak">R</span>egistrasi', 'url' => $this->createUrl('registrasi'), 'linkOptions' => [
                 'class'     => 'button',
                 'accesskey' => 'r'
@@ -66,6 +70,10 @@ $this->menu = [
     [
         'itemOptions' => ['class' => 'has-form show-for-small-only'], 'label' => '',
         'items'    => [
+            ['label' => '<i class="fa fa-sliders"></i>', 'url' => $this->createUrl('/membershipconfig'), 'linkOptions' => [
+                'class'     => 'button',
+                'accesskey' => 'c'
+            ]],
             ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('registrasi'), 'linkOptions' => [
                 'class'     => 'button',
                 'accesskey' => 'r'
