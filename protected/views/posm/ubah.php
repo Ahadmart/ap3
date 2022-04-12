@@ -371,7 +371,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             });
             return false;
         }
-        if (!(totalYangHarusDibayar() > 0)) {
+        if (!(totalYangHarusDibayar() > 0) && !($("#cashback-mol").val() > 0)) {
             $.gritter.add({
                 title: 'Error! ',
                 text: "Belum ada penjualan!",

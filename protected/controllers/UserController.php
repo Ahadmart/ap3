@@ -165,7 +165,7 @@ class UserController extends Controller
             $string = '<span class="not-set">(not set)</span>';
         }
         foreach ($assignedList as $item) {
-            $string .= '<span class="label success">' . $item['itemname'] . '</span> <span class="label default">' . $item['typename'] . '</span><br />';
+            $string .= '<span class="label success">' . $item['itemname'] . '</span><span class="label default">' . $item['typename'] . '</span><br />';
         }
         foreach ($assignedList as $item) {
             //$string .= ' ' . $item['itemname'];
