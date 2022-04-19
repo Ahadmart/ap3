@@ -31,7 +31,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
     <div class="row">
         <div class="small-12 large-6 columns">
             <?php echo $form->labelEx($model, 'noTelp'); ?>
-            <?php echo $form->textField($model, 'noTelp', ['size' => 45, 'maxlength' => 45, 'autofocus' => 'autofocus']); ?>
+            <div class="row collapse">
+                <div class="small-3 columns">
+                    <span class="prefix"><b>+62</b></span>
+                </div>
+                <div class="small-9 columns">
+                    <?php echo $form->textField($model, 'noTelp', ['size' => 45, 'maxlength' => 45, 'autofocus' => 'autofocus']); ?>
+                </div>
+            </div>
             <?php echo $form->error($model, 'noTelp', ['class' => 'error']); ?>
         </div>
         <div class="small-12 large-6 columns">
@@ -42,14 +49,21 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
     </div>
     <div class="row">
         <div class="small-12 large-6 columns">
+            <?php echo $form->labelEx($model, 'jenisKelamin'); ?>
+            <?php echo $form->dropDownList($model, 'jenisKelamin', $model->listJenisKelamin()); ?>
+            <?php echo $form->error($model, 'jenisKelamin', ['class' => 'error']); ?>
+        </div>
+        <div class="small-12 large-6 columns">
             <?php echo $form->labelEx($model, 'tanggalLahir'); ?>
             <?php echo $form->textField($model, 'tanggalLahir', ['class' => 'tanggalan']); ?>
             <?php echo $form->error($model, 'tanggalLahir', ['class' => 'error']); ?>
         </div>
-        <div class="small-12 large-6 columns">
-            <?php echo $form->labelEx($model, 'pekerjaan'); ?>
-            <?php echo $form->textField($model, 'pekerjaan', ['maxlength' => 255]); ?>
-            <?php echo $form->error($model, 'pekerjaan', ['class' => 'error']); ?>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <?php echo $form->labelEx($model, 'pekerjaanId'); ?>
+            <?php echo $form->dropDownList($model, 'pekerjaanId', CHtml::listData($model->listPekerjaan(), 'id', 'nama')); ?>
+            <?php echo $form->error($model, 'pekerjaanId', ['class' => 'error']); ?>
         </div>
     </div>
     <div class="row">
@@ -88,8 +102,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             var formData = {
                 noTelp: $("#MembershipRegistrationForm_noTelp").val(),
                 namaLengkap: $("#MembershipRegistrationForm_namaLengkap").val(),
+                jenisKelamin: $("#MembershipRegistrationForm_jenisKelamin").val(),
                 tanggalLahir: $("#MembershipRegistrationForm_tanggalLahir").val(),
-                pekerjaan: $("#MembershipRegistrationForm_pekerjaan").val(),
+                pekerjaanId: $("#MembershipRegistrationForm_pekerjaanId").val(),
                 alamat: $("#MembershipRegistrationForm_alamat").val(),
                 keterangan: $("#MembershipRegistrationForm_keterangan").val(),
             };

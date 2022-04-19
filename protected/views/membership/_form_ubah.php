@@ -32,21 +32,34 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
     <div class="row">
         <div class="small-12 large-6 columns">
             <?php echo CHtml::label('No Telp/HP', 'noTelp'); ?>
-            <?php echo CHtml::textField('noTelp', $model->nomor_telp, ['size' => 45, 'maxlength' => 45, 'autofocus' => 'autofocus']); ?>
+            <div class="row collapse">
+                <div class="small-3 columns">
+                    <span class="prefix"><b>+62</b></span>
+                </div>
+                <div class="small-9 columns">
+                    <?php echo CHtml::textField('noTelp', $model->nomorTelp, ['size' => 45, 'maxlength' => 45, 'autofocus' => 'autofocus']); ?>
+                </div>
+            </div>
         </div>
         <div class="small-12 large-6 columns">
             <?php echo CHtml::label('Nama Lengkap', 'namaLengkap'); ?>
-            <?php echo CHtml::textField('namaLengkap', $model->nama_lengkap, ['size' => 45, 'maxlength' => 45, 'autofocus' => 'autofocus']); ?>
+            <?php echo CHtml::textField('namaLengkap', $model->namaLengkap, ['size' => 45, 'maxlength' => 45, 'autofocus' => 'autofocus']); ?>
         </div>
     </div>
     <div class="row">
         <div class="small-12 large-6 columns">
-            <?php echo CHtml::label('Tanggal Lahir', 'tanggalLahir'); ?>
-            <?php echo CHtml::textField('tanggalLahir', $model->tanggal_lahir); ?>
+            <?php echo CHtml::label('Jenis Kelamin', 'jenisKelamin'); ?>
+            <?php echo CHtml::dropDownList('jenisKelamin', $model->jenisKelamin, MembershipRegistrationForm::listJenisKelamin()); ?>
         </div>
         <div class="small-12 large-6 columns">
-            <?php echo CHtml::label('Pekerjaan', 'pekerjaan'); ?>
-            <?php echo CHtml::textField('pekerjaan', $model->pekerjaan); ?>
+            <?php echo CHtml::label('Tanggal Lahir', 'tanggalLahir'); ?>
+            <?php echo CHtml::textField('tanggalLahir', $model->tanggalLahir); ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <?php echo CHtml::label('Pekerjaan', 'pekerjaanId'); ?>
+            <?php echo CHtml::dropDownList('pekerjaanId', $model->pekerjaanId, CHtml::listData(MembershipRegistrationForm::listPekerjaan(), 'id', 'nama')); ?>
         </div>
     </div>
     <div class="row">
@@ -84,8 +97,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             var formData = {
                 noTelp: $("#noTelp").val(),
                 namaLengkap: $("#namaLengkap").val(),
+                jenisKelamin: $("#jenisKelamin").val(),
                 tanggalLahir: $("#tanggalLahir").val(),
-                pekerjaan: $("#pekerjaan").val(),
+                pekerjaanId: $("#pekerjaanId").val(),
                 alamat: $("#alamat").val(),
                 keterangan: $("#keterangan").val(),
             };

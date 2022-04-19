@@ -81,6 +81,12 @@ class AhadMembershipClient
         return $this->errorHandle($r);
     }
 
+    /**
+     * GET Request function
+     *
+     * @param string $url
+     * @return string json string
+     */
     private function getRequest($url)
     {
         $ch      = curl_init($url);
@@ -207,6 +213,17 @@ class AhadMembershipClient
     public function infoPoin()
     {
         $url = $this->baseUrl . '/info/nilai-poin';
+        return $this->getRequest($url);
+    }
+
+    /**
+     * Info Daftar Pekerjaan function
+     *
+     * @return string json formatted array of {'id'==x,'nama'=y}
+     */
+    public function infoListPekerjaan()
+    {
+        $url = $this->baseUrl . '/info/pekerjaan';
         return $this->getRequest($url);
     }
 }

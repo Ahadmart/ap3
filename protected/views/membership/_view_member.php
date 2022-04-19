@@ -5,10 +5,11 @@ $this->widget('BDetailView', [
     'data'       => $model,
     'attributes' => [
         'nomor',
-        'nomor_telp',
-        'nama_lengkap',
-        'tanggal_lahir',
-        'pekerjaan',
+        'nomorTelp',
+        'namaLengkap',
+        'jenisKelamin',
+        'tanggalLahir',
+        'pekerjaanNama',
         'alamat',
         'keterangan'
     ],

@@ -23,8 +23,9 @@ class MembershipController extends Controller
             $form     = [
                 'noTelp'       => $_POST['noTelp'],
                 'namaLengkap'  => $_POST['namaLengkap'],
+                'jenisKelamin' => $_POST['jenisKelamin'],
                 'tanggalLahir' => $tglLahir,
-                'pekerjaan'    => $_POST['pekerjaan'],
+                'pekerjaanid'  => $_POST['pekerjaanId'],
                 'alamat'       => $_POST['alamat'],
                 'keterangan'   => $_POST['keterangan'],
                 'userName'     => Yii::app()->user->namaLengkap,
@@ -46,9 +47,11 @@ class MembershipController extends Controller
             throw new CHttpException($data->statusCode, $data->error->type . ': ' . $data->error->description);
         }
 
-        $profil                = $data->data->profil;
-        $tglLahir              = !empty($profil->tanggal_lahir) ? date_format(date_create_from_format('Y-m-d', $profil->tanggal_lahir), 'd-m-Y') : '';
-        $profil->tanggal_lahir = $tglLahir;
+        $profil               = $data->data->profil;
+        $tglLahir             = !empty($profil->tanggalLahir) ? date_format(date_create_from_format('Y-m-d', $profil->tanggalLahir), 'd-m-Y') : '';
+        $profil->tanggalLahir = $tglLahir;
+        $jenisKelamin         = empty($profil->jenisKelamin) || $profil->jenisKelamin == MembershipRegistrationForm::JENIS_KELAMIN_PRIA ? 'Pria' : 'Wanita';
+        $profil->jenisKelamin = $jenisKelamin;
 
         $this->render('view', ['model' => $profil]);
     }
@@ -60,9 +63,10 @@ class MembershipController extends Controller
         if ($data->statusCode != 200) {
             throw new CHttpException($data->statusCode, $data->error->type . ': ' . $data->error->description);
         }
-        $profil                = $data->data->profil;
-        $tglLahir              = !empty($profil->tanggal_lahir) ? date_format(date_create_from_format('Y-m-d', $profil->tanggal_lahir), 'd-m-Y') : '';
-        $profil->tanggal_lahir = $tglLahir;
+        $profil               = $data->data->profil;
+        $tglLahir             = !empty($profil->tanggalLahir) ? date_format(date_create_from_format('Y-m-d', $profil->tanggalLahir), 'd-m-Y') : '';
+        $profil->tanggalLahir = $tglLahir;
+
         $this->render('ubah', ['model' => $profil]);
     }
 
@@ -79,8 +83,9 @@ class MembershipController extends Controller
             $data     = [
                 'noTelp'       => $_POST['noTelp'],
                 'namaLengkap'  => $_POST['namaLengkap'],
+                'jenisKelamin' => $_POST['jenisKelamin'],
                 'tanggalLahir' => $tglLahir,
-                'pekerjaan'    => $_POST['pekerjaan'],
+                'pekerjaanId'  => $_POST['pekerjaanId'],
                 'alamat'       => $_POST['alamat'],
                 'keterangan'   => $_POST['keterangan'],
                 'userName'     => Yii::app()->user->namaLengkap,
