@@ -13,7 +13,7 @@ class PosController extends Controller
     public $showDiskonPerNota;
     public $showInfaq;
     public $showTarikTunai;
-    public $showCashbackMemberOL;
+    public $showKoinMOL;
     public $showVoucherMOL;
     public $showMember;
     public $showMemberOL;
@@ -138,10 +138,10 @@ class PosController extends Controller
             $this->memberOnline = $r->data->profil;
 
             $infoPoinMOL = json_decode($clientAPI->infoPoin());
-            $poins       = $model->getCurPoinMOL($infoPoinMOL->data->satuPoin, $infoPoinMOL->data->satuCB);
+            $poins       = $model->getCurPoinMOL($infoPoinMOL->data->satuPoin, $infoPoinMOL->data->satuKoin);
 
-            if ($r->data->profil->cb > 0) {
-                $this->showCashbackMemberOL = true;
+            if ($r->data->profil->koin > 0) {
+                $this->showKoinMOL = true;
             }
         }
         $this->totalPenjualan    = $model->getTotal();
@@ -358,7 +358,7 @@ class PosController extends Controller
         echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
         number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
          */
-        echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] + $_POST['cashbackMOL'] - $_POST['infaq'] - $_POST['tarikTunai'], 0, ',', '.');
+        echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] + $_POST['koinMOL'] - $_POST['infaq'] - $_POST['tarikTunai'], 0, ',', '.');
     }
 
     public function renderQtyLinkEditable($data, $row)
@@ -591,13 +591,13 @@ class PosController extends Controller
                 }
                 $penjualanMOL->nomor_member          = $_POST['nomor'];
                 $penjualanMOL->penjualan_id          = $id;
-                $penjualanMOL->poin_cashback_dipakai = 0;
-                $penjualanMOL->poin_utama            = 0;
-                $penjualanMOL->poin_cashback         = 0;
+                $penjualanMOL->koin_dipakai = 0;
+                $penjualanMOL->poin            = 0;
+                $penjualanMOL->koin         = 0;
                 $penjualanMOL->level                 = 0;
                 $penjualanMOL->level_nama            = $profil['data']['profil']['levelNama'];
                 $penjualanMOL->total_poin            = $profil['data']['profil']['poin'];
-                $penjualanMOL->total_cashback        = $profil['data']['profil']['cb'];
+                $penjualanMOL->total_koin        = $profil['data']['profil']['koin'];
                 if (!$penjualanMOL->save()) {
                     throw new Exception('Gagal simpan penjualan_member_online: ' . var_export($penjualanMOL->getErrors(), true));
                 }

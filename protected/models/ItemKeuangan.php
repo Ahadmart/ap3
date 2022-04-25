@@ -41,8 +41,8 @@ class ItemKeuangan extends CActiveRecord
     /* Item Keuangan ID untuk mencatat Penerimaan Bank pada transaksi Tarik Tunai di POS */
     const POS_TARIK_TUNAI_PENERIMAAN = 13;
 
-    /* Item Keuangan ID untuk mencatat poin cashback member online yang dipakai di POS */
-    const POS_CASHBACK_DIPAKAI = 14;
+    /* Item Keuangan ID untuk mencatat koin cashback member online yang dipakai di POS */
+    const POS_KOINCASHBACK_DIPAKAI = 14;
     /* Item Keuangan ID untuk mencatat voucher member online yang dipakai di POS */
     const POS_VOUCHER_MEMBERSHIP = 15;
 

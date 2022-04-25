@@ -76,10 +76,10 @@ class PosmController extends PosController
             $this->memberOnline = $r->data->profil;
 
             $infoPoinMOL = json_decode($clientAPI->infoPoin());
-            $poins       = $model->getCurPoinMOL($infoPoinMOL->data->satuPoin, $infoPoinMOL->data->satuCB);
+            $poins       = $model->getCurPoinMOL($infoPoinMOL->data->satuPoin, $infoPoinMOL->data->satuKoin);
 
-            if ($r->data->profil->cb > 0) {
-                $this->showCashbackMemberOL = true;
+            if ($r->data->profil->koin > 0) {
+                $this->showKoinMOL = true;
             }
         }
 

@@ -5,7 +5,11 @@ $this->widget('BDetailView', [
     'data'       => $model,
     'attributes' => [
         'nomor',
-        'nomorTelp',
+        // 'nomorTelp',
+        [
+            'label' => 'Nomor Telp',
+            'value' => $model->kodeNegara . $model->nomorTelp
+        ],
         'namaLengkap',
         'jenisKelamin',
         'tanggalLahir',

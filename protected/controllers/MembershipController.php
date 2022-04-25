@@ -19,13 +19,15 @@ class MembershipController extends Controller
     public function actionProsesRegistrasi()
     {
         if (isset($_POST['noTelp']) && isset($_POST['namaLengkap'])) {
-            $tglLahir = !empty($_POST['tanggalLahir']) ? date_format(date_create_from_format('d-m-Y', $_POST['tanggalLahir']), 'Y-m-d') : '';
-            $form     = [
+            $kodeNegara = '62'; // Saat ini dibuat tetap 62 (indonesia)
+            $tglLahir   = !empty($_POST['tanggalLahir']) ? date_format(date_create_from_format('d-m-Y', $_POST['tanggalLahir']), 'Y-m-d') : '';
+            $form       = [
+                'kodeNegara'   => $kodeNegara,
                 'noTelp'       => $_POST['noTelp'],
                 'namaLengkap'  => $_POST['namaLengkap'],
                 'jenisKelamin' => $_POST['jenisKelamin'],
                 'tanggalLahir' => $tglLahir,
-                'pekerjaanid'  => $_POST['pekerjaanId'],
+                'pekerjaanId'  => $_POST['pekerjaanId'],
                 'alamat'       => $_POST['alamat'],
                 'keterangan'   => $_POST['keterangan'],
                 'userName'     => Yii::app()->user->namaLengkap,
@@ -79,8 +81,10 @@ class MembershipController extends Controller
     public function actionProsesUbah($id)
     {
         if (isset($_POST['noTelp']) && isset($_POST['namaLengkap'])) {
-            $tglLahir = !empty($_POST['tanggalLahir']) ? date_format(date_create_from_format('d-m-Y', $_POST['tanggalLahir']), 'Y-m-d') : '';
-            $data     = [
+            $kodeNegara = '62';
+            $tglLahir   = !empty($_POST['tanggalLahir']) ? date_format(date_create_from_format('d-m-Y', $_POST['tanggalLahir']), 'Y-m-d') : '';
+            $data       = [
+                'kodeNegara'   => $kodeNegara,
                 'noTelp'       => $_POST['noTelp'],
                 'namaLengkap'  => $_POST['namaLengkap'],
                 'jenisKelamin' => $_POST['jenisKelamin'],

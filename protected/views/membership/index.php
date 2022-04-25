@@ -40,7 +40,7 @@ $this->renderPartial('_form_search');
         data.forEach(function(object) {
             var tr = document.createElement('tr');
             tr.innerHTML = '<td><a href="<?= $this->createUrl('/membership') ?>/' + object.nomor + '">' + object.nomor + '</a></td>' +
-                '<td>' + object.nomor_telp + '</td>' +
+                '<td>' + object.kode_negara + object.nomor_telp + '</td>' +
                 '<td>' + object.nama_lengkap + '</td>' +
                 '<td>' + object.tanggal_lahir + '</td>' +
                 '<td>' + object.pekerjaan + '</td>' +

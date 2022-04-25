@@ -31,7 +31,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
 
     <div class="row">
         <div class="small-12 large-6 columns">
-            <?php echo CHtml::label('No Telp/HP', 'noTelp'); ?>
+            <?php echo CHtml::label('No Telp/HP (Cth: 8123..)', 'noTelp'); ?>
             <div class="row collapse">
                 <div class="small-3 columns">
                     <span class="prefix"><b>+62</b></span>
@@ -53,7 +53,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         </div>
         <div class="small-12 large-6 columns">
             <?php echo CHtml::label('Tanggal Lahir', 'tanggalLahir'); ?>
-            <?php echo CHtml::textField('tanggalLahir', $model->tanggalLahir); ?>
+            <?php echo CHtml::textField('tanggalLahir', $model->tanggalLahir, ['class' => 'tanggalan']); ?>
         </div>
     </div>
     <div class="row">

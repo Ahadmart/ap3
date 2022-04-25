@@ -8,7 +8,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/ani
 
 $summaryText = 'Poin struk ini: ' . $penjualan->getCurPoin() . ' | Poin sebelumnya: ' . $penjualan->getTotalPoinPeriodeBerjalan() . ' | {start}-{end} dari {count}';
 if (!is_null($this->memberOnline)) {
-    $summaryText = 'Poin Utama: ' . $poins['poin'] . '| Poin Cashback: ' . $poins['poinCB'] . '| {start}-{end} dari {count}';
+    $summaryText = 'Poin: ' . $poins['poin'] . '| Koin: ' . $poins['koin'] . '| {start}-{end} dari {count}';
 }
 $this->widget('BGridView', array(
     'id' => 'penjualan-detail-grid',

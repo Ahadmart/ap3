@@ -22,7 +22,7 @@ return [
             'class'    => 'system.gii.GiiModule',
             'password' => 'abc',
             // If removed, Gii defaults to localhost only. Edit carefully to taste.
-            'ipFilters' => ['127.0.0.1', '192.168.1.98', '::1'],
+            'ipFilters' => ['127.0.0.1', '192.168.1.98', '192.168.1.99', '::1'],
         ],
     ],
     // application components

@@ -27,30 +27,30 @@ class Pos extends Penjualan
             if ($this->profil->tipe_id == Profil::TIPE_MEMBER_ONLINE) {
                 $penjualanMOL          = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
                 $postPenjualanMemberOL = [
-                    'userName'        => Yii::app()->user->namaLengkap,
-                    'nomorMember'     => $penjualanMOL->nomor_member,
-                    'nomor'           => $this->nomor,
-                    'total'           => $this->ambilTotal(),
-                    'cashbackDipakai' => $posData['cashback-mol'],
+                    'userName'    => Yii::app()->user->namaLengkap,
+                    'nomorMember' => $penjualanMOL->nomor_member,
+                    'nomor'       => $this->nomor,
+                    'total'       => $this->ambilTotal(),
+                    'koinDipakai' => $posData['koin-mol'],
                 ];
 
                 $clientAPI = new AhadMembershipClient();
                 $r         = json_decode($clientAPI->penjualan($postPenjualanMemberOL));
                 if (isset($r->error)) {
-                    throw new Exception($r->error->type . ': ' . $r->error->description, 500);
+                    throw new Exception('Web Service Error: ' . $r->error->type . ': ' . $r->error->description, 500);
                 }
                 $dataPenjualanMOL = $r->data->member;
 
-                $penjualanMOL->poin_cashback_dipakai = 0; //update me!
-                $penjualanMOL->poin_utama            = $dataPenjualanMOL->poinUtama;
-                $penjualanMOL->poin_cashback_dipakai = $posData['cashback-mol'];
-                $penjualanMOL->poin_cashback         = $dataPenjualanMOL->poinCashback;
-                $penjualanMOL->level                 = $dataPenjualanMOL->level;
-                $penjualanMOL->level_nama            = $dataPenjualanMOL->levelNama;
-                $penjualanMOL->total_poin            = $dataPenjualanMOL->totalPoin;
-                $penjualanMOL->total_cashback        = $dataPenjualanMOL->totalCashback;
+                // $penjualanMOL->koin_dipakai = 0; //update me!
+                $penjualanMOL->poin         = $dataPenjualanMOL->poin;
+                $penjualanMOL->koin_dipakai = empty($posData['koin-mol']) ? 0 : $posData['koin-mol'];
+                $penjualanMOL->koin         = $dataPenjualanMOL->koin;
+                $penjualanMOL->level        = $dataPenjualanMOL->level;
+                $penjualanMOL->level_nama   = $dataPenjualanMOL->levelNama;
+                $penjualanMOL->total_poin   = $dataPenjualanMOL->totalPoin;
+                $penjualanMOL->total_koin   = $dataPenjualanMOL->totalKoin;
                 if (!$penjualanMOL->save()) {
-                    throw new Exception('Gagal simpan penjualan_member_online', 500);
+                    throw new Exception('Gagal simpan penjualan_member_online: ' . print_r($penjualanMOL->getErrors(), true), 500);
                 }
             }
 
@@ -127,12 +127,12 @@ class Pos extends Penjualan
                 $penerimaanDetail->save();
             }
 
-            if (isset($posData['cashback-mol']) && $posData['cashback-mol'] > 0) {
+            if (isset($posData['koin-mol']) && $posData['koin-mol'] > 0) {
                 $penerimaanDetail                = new PenerimaanDetail;
                 $penerimaanDetail->penerimaan_id = $penerimaan->id;
-                $penerimaanDetail->item_id       = ItemKeuangan::POS_CASHBACK_DIPAKAI;
-                $penerimaanDetail->keterangan    = '[POS] Cashback dipakai (' . $dokumen->keterangan() . ')';
-                $penerimaanDetail->jumlah        = $posData['cashback-mol'];
+                $penerimaanDetail->item_id       = ItemKeuangan::POS_KOINCASHBACK_DIPAKAI;
+                $penerimaanDetail->keterangan    = '[POS] Koin Cashback dipakai (' . $dokumen->keterangan() . ')';
+                $penerimaanDetail->jumlah        = $posData['koin-mol'];
 
                 $penerimaanDetail->save();
             }

@@ -72,7 +72,7 @@
                 <nomor>Member Online: <?= is_null($this->memberOnline) ? '' : $this->memberOnline->nomor ?> </nomor>
                 <nama><?= is_null($this->memberOnline) ? '-' : $this->memberOnline->namaLengkap ?> </nama>
                 <address><?= is_null($this->memberOnline) ? '' : $this->memberOnline->alamat ?> </address>
-                <info><?= is_null($this->memberOnline) ? '' : 'Level: ' . $this->memberOnline->levelNama . ' (Poin: ' . $this->memberOnline->poin . ', Cashback: ' . $this->memberOnline->cb . ')' ?>
+                <info><?= is_null($this->memberOnline) ? '' : 'Level: ' . $this->memberOnline->levelNama . ' (Poin: ' . $this->memberOnline->poin . ', Koin: ' . $this->memberOnline->koin . ')' ?>
                 </info>
             </div>
         <?php

@@ -1167,18 +1167,18 @@ class Penjualan extends CActiveRecord
 
         // Cari nama toko ini
         $config = Config::model()->find("nama='toko.nama'");
-        foreach ($details as $detail) :
+        foreach ($details as $detail):
             $csv .= "\"{$detail['barcode']}\","
-                . "\"{$detail['barang_id']}\","
-                . "\"{$detail['nama_barang']}\","
-                . "\"{$detail['qty']}\","
-                . '"",' // harga beli dikosongkan
-                . "\"{$detail['harga_jual']}\","
-                . "\"{$detail['harga_jual_rekomendasi']}\","
-                . "\"{$detail['satuan']}\","
-                . "\"{$detail['kategori']}\","
-                . "\"{$config->nilai}\"," //nama toko/gudang
-                . "\"{$this->updatedBy->nama}\""
+            . "\"{$detail['barang_id']}\","
+            . "\"{$detail['nama_barang']}\","
+            . "\"{$detail['qty']}\","
+            . '"",' // harga beli dikosongkan
+            . "\"{$detail['harga_jual']}\","
+            . "\"{$detail['harga_jual_rekomendasi']}\","
+            . "\"{$detail['satuan']}\","
+            . "\"{$detail['kategori']}\","
+            . "\"{$config->nilai}\","//nama toko/gudang
+            . "\"{$this->updatedBy->nama}\""
                 . PHP_EOL;
         endforeach;
         return $csv;
@@ -1257,16 +1257,16 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'INVOICE '; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+        . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat1'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strTgl, $kananMaxLength, ' ')
+        . str_pad($strTgl, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat2'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strTglDue, $kananMaxLength, ' ')
+        . str_pad($strTglDue, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strKasir, $kananMaxLength, ' ')
+        . str_pad($strKasir, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($strTotal, $jumlahKolom - $kananMaxLength + strlen($strTotal), ' ', STR_PAD_LEFT)
             . PHP_EOL;
@@ -1338,7 +1338,7 @@ class Penjualan extends CActiveRecord
             $signatureHead3 = 'Driver';
 
             $struk .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) .
-                str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
+            str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
             $struk .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
             $struk .= '     (                )         (                )         (                )' . PHP_EOL;
         }
@@ -1450,9 +1450,9 @@ class Penjualan extends CActiveRecord
 
         $txtTotal = 'Total : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
 
-        $diskonNota      = 0;
-        $cashbackDipakai = 0;
-        $infaq           = 0;
+        $diskonNota  = 0;
+        $koinDipakai = 0;
+        $infaq       = 0;
         if (!empty($penerimaanDetail)) {
             foreach ($penerimaanDetail as $strukItem) {
                 switch ($strukItem['item_id']) {
@@ -1466,15 +1466,16 @@ class Penjualan extends CActiveRecord
                         );
                         $txtDiskonNota = str_pad('Diskon : ' . $txtDiskonNotaNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
                         break;
-                    case ItemKeuangan::POS_CASHBACK_DIPAKAI:
-                        $cashbackDipakai           = $strukItem['jumlah'];
-                        $txtCashbackDipakaiNominal = str_pad(
+                    case ItemKeuangan::POS_KOINCASHBACK_DIPAKAI:
+                        $koinDipakai           = $strukItem['jumlah'];
+                        $txtkoinDipakaiNominal = str_pad(
                             '(' . number_format($strukItem['jumlah'], 0, ',', '.') . ')',
                             12,
                             ' ',
                             STR_PAD_LEFT
                         );
-                        $txtCashbackDipakai = str_pad('Cashback dipakai : ' . $txtCashbackDipakaiNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
+                        // $txtkoinDipakai = str_pad('Cashback dipakai : ' . $txtkoinDipakaiNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
+                        $txtkoinDipakai = str_pad('Koin : ' . $txtkoinDipakaiNominal, $jumlahKolom, ' ', STR_PAD_LEFT);
                         break;
                     case ItemKeuangan::POS_INFAQ:
                         $infaq    = $strukItem['jumlah'];
@@ -1494,15 +1495,15 @@ class Penjualan extends CActiveRecord
         $dibayar = empty($penerimaan['uang_dibayar']) ? null : $penerimaan['uang_dibayar'];
         if (!is_null($dibayar)) {
             $txtBayar = 'Dibayar : ' . str_pad(number_format($dibayar, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
-            $txtKbali = 'Kembali : ' . str_pad(number_format($dibayar - $total + $diskonNota + $cashbackDipakai - $infaq - $tarikTunai, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+            $txtKbali = 'Kembali : ' . str_pad(number_format($dibayar - $total + $diskonNota + $koinDipakai - $infaq - $tarikTunai, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
         }
 
         $struk .= str_pad($txtTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         if (isset($txtDiskonNota)) {
             $struk .= str_pad($txtDiskonNota, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
-        if (isset($txtCashbackDipakai)) {
-            $struk .= str_pad($txtCashbackDipakai, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        if (isset($txtkoinDipakai)) {
+            $struk .= str_pad($txtkoinDipakai, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
         if (isset($txtInfaq)) {
             $struk .= str_pad($txtInfaq, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
@@ -1539,12 +1540,12 @@ class Penjualan extends CActiveRecord
         if ($profil->isMemberOL()) {
             $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
             $dataMemberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
-            $nomorNama    = 'Member: '.$dataMemberOL->nomor_member.', Lvl: '.$dataMemberOL->level_nama;
+            $nomorNama    = 'Member: ' . $dataMemberOL->nomor_member . ', Lvl: ' . $dataMemberOL->level_nama;
             $struk .= ' ' . substr($nomorNama, 0, 38) . PHP_EOL;
-            $struk .= ' Poin dari belanja ini    : ' . $dataMemberOL->poin_utama . PHP_EOL;
+            $struk .= ' Poin dari belanja ini    : ' . $dataMemberOL->poin . PHP_EOL;
             $struk .= ' Total poin anda          : ' . $dataMemberOL->total_poin . PHP_EOL;
-            $struk .= ' Cashback belanja ini     : ' . $dataMemberOL->poin_cashback . PHP_EOL;
-            $struk .= ' Total cashback anda      : ' . $dataMemberOL->total_cashback . PHP_EOL;
+            $struk .= ' Koin dari belanja ini    : ' . $dataMemberOL->koin . PHP_EOL;
+            $struk .= ' Total koin anda          : ' . $dataMemberOL->total_koin . PHP_EOL;
         }
 
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
@@ -1606,13 +1607,13 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'NOTA'; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+        . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
             . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header1'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strKasir, $kananMaxLength, ' ')
+        . str_pad($strKasir, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header2'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strWaktu, $kananMaxLength, ' ')
+        . str_pad($strWaktu, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= PHP_EOL;
 
@@ -1976,16 +1977,16 @@ class Penjualan extends CActiveRecord
      * Ambil nilai poin Member Online untuk penjualan ini
      *
      * @param int $nilai1Poin
-     * @param int $nilai1CB
-     * @return array [poin, poinCB]
+     * @param int $nilai1Koin
+     * @return array [poin, koin]
      */
-    public function getCurPoinMOL($nilai1Poin, $nilai1CB)
+    public function getCurPoinMOL($nilai1Poin, $nilai1Koin)
     {
-        $poin   = floor($this->ambilTotal() / $nilai1Poin);
-        $poinCB = floor($this->ambilTotal() / $nilai1CB);
+        $poin = floor($this->ambilTotal() / $nilai1Poin);
+        $koin = floor($this->ambilTotal() / $nilai1Koin);
         return [
-            'poin'   => $poin,
-            'poinCB' => $poinCB,
+            'poin' => $poin,
+            'koin' => $koin,
         ];
     }
 }

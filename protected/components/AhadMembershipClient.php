@@ -208,7 +208,7 @@ class AhadMembershipClient
     /**
      * InfoPOIN function
      *
-     * @return string json formatted nilai untuk dapat 1 poin dan 1 cashback
+     * @return string json formatted nilai untuk dapat 1 poin dan 1 koin
      */
     public function infoPoin()
     {

@@ -1,6 +1,6 @@
 <?php
 
-class m220406_092149_tambah_itemkeu_poincashback_voucher_dipakai extends CDbMigration
+class m220406_092149_tambah_itemkeu_koincashback_voucher_dipakai extends CDbMigration
 {
 
     public function safeUp()
@@ -9,7 +9,7 @@ class m220406_092149_tambah_itemkeu_poincashback_voucher_dipakai extends CDbMigr
         $data = [
             [
                 'id'         => 14,
-                'nama'       => 'Poin Cashback Membership',
+                'nama'       => 'Koin Cashback Membership',
                 'parent_id'  => 7,
                 'jenis'      => 0,
                 'updated_at' => $now,
@@ -32,7 +32,7 @@ class m220406_092149_tambah_itemkeu_poincashback_voucher_dipakai extends CDbMigr
 
     public function safeDown()
     {
-        echo "m220406_092149_tambah_itemkeu_poincashback_voucher_dipakai does not support migration down.\n";
+        echo "m220406_092149_tambah_itemkeu_koincashback_voucher_dipakai does not support migration down.\n";
         return false;
     }
 }

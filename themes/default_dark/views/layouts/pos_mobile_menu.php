@@ -125,7 +125,7 @@
                             <nomor>Member Online: <?= is_null($this->memberOnline) ? '' : $this->memberOnline->nomor ?> </nomor>
                             <nama><?= is_null($this->memberOnline) ? '-' : $this->memberOnline->namaLengkap ?> </nama>
                             <address><?= is_null($this->memberOnline) ? '' : $this->memberOnline->alamat ?> </address>
-                            <info><?= is_null($this->memberOnline) ? '' : 'Level: ' . $this->memberOnline->levelNama . ' (Poin: ' . $this->memberOnline->poin . ', Cashback: ' . $this->memberOnline->cb . ')' ?>
+                            <info><?= is_null($this->memberOnline) ? '' : 'Level: ' . $this->memberOnline->levelNama . ' (Poin: ' . $this->memberOnline->poin . ', Koin: ' . $this->memberOnline->koin . ')' ?>
                             </info>
                         </div>
                     <?php
@@ -232,14 +232,14 @@
                         </div>
                     </div>
                     <?php
-                    if ($this->showCashbackMemberOL) {
+                    if ($this->showKoinMOL) {
                     ?>
                         <div class="row collapse">
                             <div class="small-3 large-2 columns">
                                 <span class="prefix"><i class="fa fa-2x fa-refresh"></i></span>
                             </div>
                             <div class="small-9 large-10 columns">
-                                <input type="text" id="cashback-mol" placeholder="Poin Cashback" />
+                                <input type="text" id="koin-mol" placeholder="Koin Cashback" />
                             </div>
                         </div>
                     <?php
