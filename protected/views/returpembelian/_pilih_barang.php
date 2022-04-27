@@ -152,10 +152,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 <div class="small-12 medium-6 large-4 columns">
                     <label for="retur-qty">Qty</label>
                     <div class="row collapse">
-                        <div class="medium-8 columns">
+                        <div class="small-8 columns">
                             <?php echo CHtml::textField('retur-qty', '', ['id' => 'retur-qty']); ?>
                         </div>
-                        <div class="medium-4 columns">
+                        <div class="small-4 columns">
                             <?php
                             echo CHtml::ajaxSubmitButton('Tambah', $this->createUrl('pilihinv', ['id' => $model->id]), [
                                 'success' => "function () {

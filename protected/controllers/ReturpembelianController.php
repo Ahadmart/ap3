@@ -225,8 +225,8 @@ class ReturpembelianController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('view', ['id' => $data->id]) . '">' .
-            $data->nomor . '</a>';
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->nomor . '</a>';
         }
         return $return;
     }
@@ -235,8 +235,8 @@ class ReturpembelianController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('ubah', ['id' => $data->id]) . '">' .
-            $data->tanggal . '</a>';
+                $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+                $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -246,8 +246,8 @@ class ReturpembelianController extends Controller
     public function renderLinkToSupplier($data)
     {
         return '<a href="' .
-        $this->createUrl('supplier/view', ['id' => $data->profil_id]) . '">' .
-        $data->profil->nama . '</a>';
+            $this->createUrl('supplier/view', ['id' => $data->profil_id]) . '">' .
+            $data->profil->nama . '</a>';
     }
 
     public function renderRadioButton($data, $row)
@@ -559,5 +559,26 @@ class ReturpembelianController extends Controller
             }
         }
         $this->renderJSON($return);
+    }
+
+    public function renderBarang($data, $row)
+    {
+        $pembelian    = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->nomor;
+        $tglPembelian = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->tanggal;
+        $ref          = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->referensi;
+        $tglRef       = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->tanggal_referensi;
+
+        $text = '<strong>' . $data->inventoryBalance->barang->nama . '</strong><br />' . $data->inventoryBalance->barang->barcode .
+            '<br />' .
+            'Stok: ' . $data->inventoryBalance->barang->stok .
+            '<br />' .
+            number_format($data->inventoryBalance->harga_beli, 0, ',', '.') .
+            ' x ' . $data->qty . ' ' . $data->inventoryBalance->barang->satuan->nama . ' = ' . $data->subTotal .
+            '<br />' .
+            'Pembelian: ' . $pembelian . ' ' . $tglPembelian .
+            '<br />' .
+            'Ref: ' . $ref . ' ' . $tglRef;
+
+        return $text;
     }
 }
