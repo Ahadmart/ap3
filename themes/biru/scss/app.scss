@@ -13,7 +13,7 @@ $warning-color: #ffcc9f;
 $info-color: #e8f0fd;
 /* ================================ */
 
-$toska: #00BCD4;
+$toska: #00bcd4;
 $oranye: #edc240;
 $merah: #f74a4c;
 $violet: #9440ed;
@@ -57,7 +57,7 @@ a {
     color: $merah;
 }
 
-// Tambahin garis di bawah 
+// Tambahin garis di bawah
 nav.top-bar {
     box-shadow: 0 1px $warna-menu-border;
     background: #ffffff;
@@ -189,7 +189,7 @@ span.required {
 }
 
 .block {
-    margin-bottom: 10px; //background: url(../img/bg-av.png) top fixed; //rgba(#000, 0.5) 
+    margin-bottom: 10px; //background: url(../img/bg-av.png) top fixed; //rgba(#000, 0.5)
     background-color: #eceff1; //rgba(#000, 0.5);//rgba(34, 45, 45, 0.7);//rgba(14, 39, 40, 0.7);//rgba(0,0,0,0.7);
 }
 
@@ -206,12 +206,12 @@ span.required {
         }
     }
     li {
-        &.name>h1 {
+        &.name > h1 {
             color: $warna-text;
             margin-left: 15px;
             margin-right: 15px;
         }
-        &.name>h6 {
+        &.name > h6 {
             color: #fff;
             margin-left: 15px;
             margin-right: 15px;
@@ -244,7 +244,7 @@ a.button.micro.bigfont {
     padding: 15px 0 1px;
     background: #fff;
     border-top: 1px solid $warna-menu-border;
-    &>table {
+    & > table {
         //margin: 0;
         tr td {
             font-size: 0.75rem;
@@ -283,7 +283,6 @@ a.button.micro.bigfont {
         margin-bottom: 20px;
     }
 }
-
 
 // tombol disebelah kanan input
 .postfix.button {
@@ -378,7 +377,6 @@ footer {
     }
 }
 
-
 .jqstooltip-ovr {
     position: absolute;
     left: 0px;
@@ -454,7 +452,7 @@ label {
         }
         &.old,
         &.new {
-            color: #999
+            color: #999;
         }
         span.hour {
             color: $warna-header-panel;
@@ -540,7 +538,7 @@ tr {
 select {
     -moz-appearance: none;
     text-indent: 0.01px;
-    text-overflow: '';
+    text-overflow: "";
 }
 
 .grid-loading {
@@ -585,7 +583,7 @@ select {
         }
     }
     &.ui-state-focus {
-        box-shadow: 0px 0px 15px #AFD8F8;
+        box-shadow: 0px 0px 15px #afd8f8;
         border: 1px solid $warna-menu-border;
         margin: 0;
         background-color: $warna-background-menu-hover;
@@ -658,7 +656,6 @@ select {
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
     background-color: $primary-color;
     border-color: darken($primary-color, 10%);
-    ;
     color: #fff;
     font-size: 0.9rem;
 }
@@ -675,11 +672,22 @@ select {
     font-weight: bold;
 }
 
-input[type="checkbox"] + label, input[type="radio"] + label{
+input[type="checkbox"] + label,
+input[type="radio"] + label {
     vertical-align: middle;
     margin-top: -0.5rem;
 }
 
-pre{
+pre {
     padding-bottom: 1rem;
+}
+
+.small-only {
+    display: none;
+}
+
+@media only screen and (max-width: 640px) {
+    .small-only {
+        display: table-cell;
+    }
 }
