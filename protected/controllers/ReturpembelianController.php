@@ -2,8 +2,7 @@
 
 class ReturpembelianController extends Controller
 {
-
-    const PROFIL_ALL = 0;
+    const PROFIL_ALL      = 0;
     const PROFIL_SUPPLIER = Profil::TIPE_SUPPLIER;
     /* ============== */
     const PRINT_RETUR_PEMBELIAN = 0;
@@ -13,10 +12,10 @@ class ReturpembelianController extends Controller
      */
     public function filters()
     {
-        return array(
+        return [
             'accessControl', // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
-        );
+        ];
     }
 
     /**
@@ -26,12 +25,12 @@ class ReturpembelianController extends Controller
      */
     public function accessRules()
     {
-        return array(
-            array(
+        return [
+            [
                 'deny', // deny guest
-                'users' => array('guest'),
-            ),
-        );
+                'users' => ['guest'],
+            ],
+        ];
     }
 
     /**
@@ -40,23 +39,22 @@ class ReturpembelianController extends Controller
      */
     public function actionView($id)
     {
-
         $returPembelianDetail = new ReturPembelianDetail('search');
         $returPembelianDetail->unsetAttributes();
         $returPembelianDetail->setAttribute('retur_pembelian_id', '=' . $id);
 
-        $tipePrinterAvailable = array(Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER, Device::TIPE_CSV_PRINTER);
+        $tipePrinterAvailable = [Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER, Device::TIPE_CSV_PRINTER];
 
         $printerReturPembelian = Device::model()->listDevices($tipePrinterAvailable);
 
         $kertasUntukPdf = ReturPembelian::model()->listNamaKertas();
 
-        $this->render('view', array(
-            'model' => $this->loadModel($id),
-            'returPembelianDetail' => $returPembelianDetail,
+        $this->render('view', [
+            'model'                 => $this->loadModel($id),
+            'returPembelianDetail'  => $returPembelianDetail,
             'printerReturPembelian' => $printerReturPembelian,
-            'kertasUntukPdf' => $kertasUntukPdf
-        ));
+            'kertasUntukPdf'        => $kertasUntukPdf,
+        ]);
     }
 
     /**
@@ -66,27 +64,28 @@ class ReturpembelianController extends Controller
     public function actionTambah()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new ReturPembelian;
+        $model        = new ReturPembelian;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
         if (isset($_POST['ReturPembelian'])) {
             $model->attributes = $_POST['ReturPembelian'];
-            if ($model->save())
-                $this->redirect(array('ubah', 'id' => $model->id));
+            if ($model->save()) {
+                $this->redirect(['ubah', 'id' => $model->id]);
+            }
         }
 
-        $supplierList = Profil::model()->findAll(array(
-            'select' => 'id, nama',
+        $supplierList = Profil::model()->findAll([
+            'select'    => 'id, nama',
             'condition' => 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_SUPPLIER,
-            'order' => 'nama'
-        ));
+            'order'     => 'nama',
+        ]);
 
-        $this->render('tambah', array(
-            'model' => $model,
-            'supplierList' => $supplierList
-        ));
+        $this->render('tambah', [
+            'model'        => $model,
+            'supplierList' => $supplierList,
+        ]);
     }
 
     /**
@@ -99,36 +98,37 @@ class ReturpembelianController extends Controller
 
         /* Hanya ubah jika dan hanya jika statusnya masih DRAFT */
         if ($model->status != ReturPembelian::STATUS_DRAFT) {
-            $this->redirect(array('view', 'id' => $model->id));
+            $this->redirect(['view', 'id' => $model->id]);
         }
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
         if (isset($_POST['ReturPembelian'])) {
             $model->attributes = $_POST['ReturPembelian'];
-            if ($model->save())
-                $this->redirect(array('view', 'id' => $id));
+            if ($model->save()) {
+                $this->redirect(['view', 'id' => $id]);
+            }
         }
 
         /*
          * Untuk menampilkan dropdown barang sort by barcode;
          */
         /*
-          $barcode = SupplierBarang::model()->ambilBarangBarcodePerSupplier($model->profil_id);
-          $barangBarcode = array();
-          foreach ($barcode as $barang) {
-          $barangBarcode[$barang['id']] = "{$barang['barcode']} ({$barang['nama']})";
-          }
+        $barcode = SupplierBarang::model()->ambilBarangBarcodePerSupplier($model->profil_id);
+        $barangBarcode = array();
+        foreach ($barcode as $barang) {
+        $barangBarcode[$barang['id']] = "{$barang['barcode']} ({$barang['nama']})";
+        }
          */
         /*
          * Untuk menampilkan dropdown barang sort by nama;
          */
         /*
-          $nama = SupplierBarang::model()->ambilBarangNamaPerSupplier($model->profil_id);
-          $barangNama = array();
-          foreach ($nama as $barang) {
-          $barangNama[$barang['id']] = "{$barang['nama']} ({$barang['barcode']})";
-          }
+        $nama = SupplierBarang::model()->ambilBarangNamaPerSupplier($model->profil_id);
+        $barangNama = array();
+        foreach ($nama as $barang) {
+        $barangNama[$barang['id']] = "{$barang['nama']} ({$barang['barcode']})";
+        }
          */
         $inventoryBalance = new InventoryBalance('search');
         $inventoryBalance->unsetAttributes();
@@ -144,13 +144,17 @@ class ReturpembelianController extends Controller
         $returPembelianDetail->unsetAttributes();
         $returPembelianDetail->setAttribute('retur_pembelian_id', '=' . $id);
 
-        $this->render('ubah', array(
-            'model' => $model,
+        /* Ada scan dari aplikasi barcode scanner (android) */
+        $scanBarcode = $_GET['barcodescan'] ?? null;
+
+        $this->render('ubah', [
+            'model'                => $model,
             //'barangBarcode' => $barangBarcode,
             //'barangNama' => $barangNama,
-            'inventoryBalance' => $inventoryBalance,
-            'returPembelianDetail' => $returPembelianDetail
-        ));
+            'inventoryBalance'     => $inventoryBalance,
+            'returPembelianDetail' => $returPembelianDetail,
+            'scanBarcode'          => $scanBarcode,
+        ]);
     }
 
     /**
@@ -167,8 +171,9 @@ class ReturpembelianController extends Controller
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        if (!isset($_GET['ajax'])) {
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
+        }
     }
 
     /**
@@ -177,13 +182,14 @@ class ReturpembelianController extends Controller
     public function actionIndex()
     {
         $model = new ReturPembelian('search');
-        $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['ReturPembelian']))
+        $model->unsetAttributes(); // clear any default values
+        if (isset($_GET['ReturPembelian'])) {
             $model->attributes = $_GET['ReturPembelian'];
+        }
 
-        $this->render('index', array(
+        $this->render('index', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -196,8 +202,9 @@ class ReturpembelianController extends Controller
     public function loadModel($id)
     {
         $model = ReturPembelian::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
         return $model;
     }
 
@@ -218,8 +225,8 @@ class ReturpembelianController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-                $this->createUrl('view', array('id' => $data->id)) . '">' .
-                $data->nomor . '</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">' .
+            $data->nomor . '</a>';
         }
         return $return;
     }
@@ -228,24 +235,24 @@ class ReturpembelianController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                $this->createUrl('ubah', array('id' => $data->id)) . '">' .
-                $data->tanggal . '</a>';
+            $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+            $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
         return $return;
     }
 
-    function renderLinkToSupplier($data)
+    public function renderLinkToSupplier($data)
     {
         return '<a href="' .
-            $this->createUrl('supplier/view', array('id' => $data->profil_id)) . '">' .
-            $data->profil->nama . '</a>';
+        $this->createUrl('supplier/view', ['id' => $data->profil_id]) . '">' .
+        $data->profil->nama . '</a>';
     }
 
     public function renderRadioButton($data, $row)
     {
-        return CHtml::radioButton('invid', $row == 0, array('value' => $data->id));
+        return CHtml::radioButton('invid', $row == 0, ['value' => $data->id]);
     }
 
     /*
@@ -256,7 +263,7 @@ class ReturpembelianController extends Controller
     {
         if (isset($barcode)) {
             $barang = Barang::model()->find('barcode=:barcode', [':barcode' => $barcode]);
-            $stock = InventoryBalance::model()->find(array('select' => 'sum(qty) jumlah', 'condition' => 'barang_id=:barangId', 'params' => array(':barangId' => $barang->id)));
+            $stock  = InventoryBalance::model()->find(['select' => 'sum(qty) jumlah', 'condition' => 'barang_id=:barangId', 'params' => [':barangId' => $barang->id]]);
             echo "<small>$barang->barcode</small> $barang->nama  <small>Stok</small> $stock->jumlah";
         }
     }
@@ -268,20 +275,20 @@ class ReturpembelianController extends Controller
      */
     public function actionCariBarang($profilId, $term)
     {
-        $q = new CDbCriteria();
+        $q       = new CDbCriteria();
         $q->join = 'JOIN supplier_barang sp ON sp.barang_id = t.id';
-        $q->addCondition("concat(barcode, nama) like :term");
-        $q->addCondition("sp.supplier_id=:profilId");
-        $q->order = 'nama';
+        $q->addCondition('concat(barcode, nama) like :term');
+        $q->addCondition('sp.supplier_id=:profilId');
+        $q->order  = 'nama';
         $q->params = [':term' => "%{$term}%", ':profilId' => $profilId];
-        $barangs = Barang::model()->aktif()->findAll($q);
+        $barangs   = Barang::model()->aktif()->findAll($q);
 
-        $r = array();
+        $r = [];
         foreach ($barangs as $barang) {
-            $r[] = array(
+            $r[] = [
                 'label' => $barang->nama,
                 'value' => $barang->barcode,
-            );
+            ];
         }
 
         $this->renderJSON($r);
@@ -289,16 +296,15 @@ class ReturpembelianController extends Controller
 
     public function actionPilihInv($id)
     {
-
         $inventoryBalanceId = $_POST['invid'];
-        $returQty = $_POST['retur-qty'];
+        $returQty           = $_POST['retur-qty'];
 
         //$model = $this->loadModel($id);
 
-        $detail = new ReturPembelianDetail;
-        $detail->retur_pembelian_id = $id;
+        $detail                       = new ReturPembelianDetail;
+        $detail->retur_pembelian_id   = $id;
         $detail->inventory_balance_id = $inventoryBalanceId;
-        $detail->qty = $returQty;
+        $detail->qty                  = $returQty;
         $detail->save();
     }
 
@@ -308,16 +314,16 @@ class ReturpembelianController extends Controller
 
     public function actionUpdateQty()
     {
-        $return = array('sukses' => false);
+        $return = ['sukses' => false];
         if (isset($_POST['pk'])) {
-            $pk = $_POST['pk'];
+            $pk    = $_POST['pk'];
             $value = $_POST['value'];
             if ($value > 0) {
                 $returPembelianDetail = ReturPembelianDetail::model()->findByPk($pk);
 
                 $returPembelianDetail->qty = $value;
                 if ($returPembelianDetail->save()) {
-                    $return = array('sukses' => true);
+                    $return = ['sukses' => true];
                 }
             }
         }
@@ -331,7 +337,7 @@ class ReturpembelianController extends Controller
     public function actionTotal($id)
     {
         $returPembelian = $this->loadModel($id);
-        $total = $returPembelian->getTotal();
+        $total          = $returPembelian->getTotal();
         echo $total;
     }
 
@@ -356,7 +362,7 @@ class ReturpembelianController extends Controller
 
     public function actionSimpan($id)
     {
-        $return = array('sukses' => false);
+        $return = ['sukses' => false];
         // cek jika 'simpan' ada dan bernilai true
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $returPembelian = $this->loadModel($id);
@@ -375,12 +381,12 @@ class ReturpembelianController extends Controller
         /*
          * Tampilkan daftar sesuai pilihan tipe
          */
-        $condition = $tipe == Profil::TIPE_SUPPLIER ? 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_SUPPLIER : 'id>' . Profil::AWAL_ID;
-        $profilList = Profil::model()->findAll(array(
-            'select' => 'id, nama',
+        $condition  = $tipe == Profil::TIPE_SUPPLIER ? 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_SUPPLIER : 'id>' . Profil::AWAL_ID;
+        $profilList = Profil::model()->findAll([
+            'select'    => 'id, nama',
             'condition' => $condition,
-            'order' => 'nama'
-        ));
+            'order'     => 'nama',
+        ]);
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
         foreach ($profilList as $profil) {
@@ -409,22 +415,21 @@ class ReturpembelianController extends Controller
     public function printLpr($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
-        $text = $this->getText($model, $print);
+        $text  = $this->getText($model, $print);
         $device->printLpr($text);
-        $this->renderPartial('_print_autoclose', array(
-            'text' => $text
-        ));
+        $this->renderPartial('_print_autoclose', [
+            'text' => $text,
+        ]);
     }
 
     public function exportPdf($id, $kertas = ReturPembelian::KERTAS_A4, $draft = false)
     {
-
         $modelHeader = $this->loadModel($id);
-        $configs = Config::model()->findAll();
+        $configs     = Config::model()->findAll();
         /*
          * Ubah config (object) jadi array
          */
-        $branchConfig = array();
+        $branchConfig = [];
         foreach ($configs as $config) {
             $branchConfig[$config->nama] = $config->nilai;
         }
@@ -437,10 +442,10 @@ class ReturpembelianController extends Controller
         /*
          * Retur Pembelian Detail
          */
-        $returPembelianDetail = ReturPembelianDetail::model()->with('inventoryBalance', 'inventoryBalance.barang')->findAll(array(
+        $returPembelianDetail = ReturPembelianDetail::model()->with('inventoryBalance', 'inventoryBalance.barang')->findAll([
             'condition' => "retur_pembelian_id={$id}",
-            'order' => 'barang.nama'
-        ));
+            'order'     => 'barang.nama',
+        ]);
 
         /*
          * Persiapan render PDF
@@ -448,18 +453,18 @@ class ReturpembelianController extends Controller
         require_once __DIR__ . '/../vendor/autoload.php';
         $listNamaKertas = ReturPembelian::listNamaKertas();
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
-        $viewCetak = '_pdf';
+        $viewCetak      = '_pdf';
         if ($draft) {
             $viewCetak = '_pdf_draft';
         }
         $mpdf->WriteHTML($this->renderPartial(
             $viewCetak,
-            array(
-                'modelHeader' => $modelHeader,
-                'branchConfig' => $branchConfig,
-                'profil' => $profil,
-                'returPembelianDetail' => $returPembelianDetail
-            ),
+            [
+                'modelHeader'          => $modelHeader,
+                'branchConfig'         => $branchConfig,
+                'profil'               => $profil,
+                'returPembelianDetail' => $returPembelianDetail,
+            ],
             true
         ));
 
@@ -472,12 +477,12 @@ class ReturpembelianController extends Controller
 
     public function exportText($id, $device, $print = 0)
     {
-        $model = $this->loadModel($id);
+        $model    = $this->loadModel($id);
         $namaFile = $this->getNamaFile($model->nomor, $print);
-        header("Content-type: text/plain");
+        header('Content-type: text/plain');
         header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
-        header("Pragma: no-cache");
-        header("Expire: 0");
+        header('Pragma: no-cache');
+        header('Expire: 0');
         $text = $this->getText($model, $print);
 
         echo $device->revisiText($text);
@@ -487,17 +492,16 @@ class ReturpembelianController extends Controller
 
     public function exportCsv($id, $device)
     {
-
         $model = $this->loadModel($id);
-        $csv = $model->keCsv();
+        $csv   = $model->keCsv();
 
-        $timeStamp = date("Ymd His");
-        $namaFile = "{$model->nomor}_{$model->profil->nama}_{$timeStamp}";
+        $timeStamp = date('Ymd His');
+        $namaFile  = "{$model->nomor}_{$model->profil->nama}_{$timeStamp}";
 
-        $this->renderPartial('_csv', array(
+        $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
-            'csv' => $csv
-        ));
+            'csv'      => $csv,
+        ]);
     }
 
     public function actionPrintReturPembelian($id)
@@ -528,7 +532,7 @@ class ReturpembelianController extends Controller
     public function actionPiutang($id)
     {
         if (!empty($id)) {
-            $model = $this->loadModel($id);
+            $model  = $this->loadModel($id);
             $result = $model->terbitkanPiutang();
 
             if ($result['sukses']) {
