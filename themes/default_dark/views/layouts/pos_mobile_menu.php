@@ -90,7 +90,7 @@
                         <form id="form-nomor-member">
                             <div class="row collapse" id="ganti-member" style="display: none">
                                 <div class="small-9 large-10 columns">
-                                    <input type="text" name="nomor-member" id="nomor-member" placeholder="Nomor member" autocomplete="off" />
+                                    <input type="text" name="nomor-member" id="nomor-member" placeholder="Nomor/Telp(628..) member" autocomplete="off" />
                                 </div>
                                 <div class="small-3 large-2 columns">
                                     <a href="#" class="button postfix" id="tombol-ganti-member"><i class="fa fa-check"></i></a>

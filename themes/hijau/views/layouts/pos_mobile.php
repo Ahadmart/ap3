@@ -20,6 +20,17 @@
                     }
                 });
             });
+            $(document).on('click', "#label-member", function() {
+                $("#ganti-member").toggle(500, function() {
+                    if ($("#ganti-member").is(':visible')) {
+                        $("#nomor-member").focus();
+                        // console.log('nomor focus');
+                    } else {
+                        $("#scan").focus();
+                        // console.log('scan focus');
+                    }
+                })
+            })
             <?php
             if (Yii::app()->user->getState('kasirOtorisasiAdmin') == $this->penjualanId) {
             ?>
@@ -102,6 +113,10 @@
             $("#form-nomor-customer").submit();
         });
 
+        $("#tombol-ganti-member").click(function() {
+            $("#form-nomor-member").submit();
+        });
+
         $("#tombol-admin-login").click(function() {
             $("#form-admin-login").submit();
         });
@@ -147,6 +162,35 @@
                     }
                     $("#nomor-customer").val("");
                     $("#ganti-customer").hide(500);
+                    $("#scan").focus();
+                }
+            });
+            return false;
+        });
+
+        $("#form-nomor-member").submit(function() {
+            dataUrl =
+                '<?php echo $this->createUrl('gantimember', ['id' => $this->penjualanId]); ?>';
+            dataKirim = {
+                nomor: $("#nomor-member").val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: dataUrl,
+                data: dataKirim,
+                success: function(data) {
+                    if (data.statusCode == 200) {
+                        location.reload();
+                    } else {
+                        $.gritter.add({
+                            title: 'Error ' + data.statusCode,
+                            text: data.error.type + ': ' + data.error.description,
+                            time: 3000,
+                        });
+                    }
+                    $("#nomor-member").val("");
+                    $("#ganti-member").hide(500);
                     $("#scan").focus();
                 }
             });

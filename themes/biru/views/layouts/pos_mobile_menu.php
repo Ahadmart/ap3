@@ -66,28 +66,70 @@
                 </ul>
                 <?php if (!is_null($this->namaProfil)) {
                 ?>
-                    <form id="form-nomor-customer">
-                        <div class="row collapse" id="ganti-customer" style="display: none">
-                            <div class="small-9 large-10 columns">
-                                <input type="text" name="nomor-customer" id="nomor-customer" placeholder="Input nomor" accesskey="r" autocomplete="off" />
+                    <?php
+                    if ($this->showMember == 1) {
+                    ?>
+                        <form id="form-nomor-customer">
+                            <div class="row collapse" id="ganti-customer" style="display: none">
+                                <div class="small-9 large-10 columns">
+                                    <input type="text" name="nomor-customer" id="nomor-customer" placeholder="Input nomor" accesskey="r" autocomplete="off" />
+                                </div>
+                                <div class="small-3 large-2 columns">
+                                    <a href="#" class="button postfix" id="tombol-ganti-customer"><i class="fa fa-check"></i></a>
+                                </div>
                             </div>
-                            <div class="small-3 large-2 columns">
-                                <a href="#" class="button postfix" id="tombol-ganti-customer"><i class="fa fa-check"></i></a>
+                        </form>
+                        <span class="label" id="label-customer" accesskey="e">Custom<span class="ak">e</span>r</span>
+                    <?php
+                    }
+                    ?>
+                    <?php
+                    if ($this->showMemberOL == 1) {
+                    ?>
+                        <form id="form-nomor-member">
+                            <div class="row collapse" id="ganti-member" style="display: none">
+                                <div class="small-9 large-10 columns">
+                                    <input type="text" name="nomor-member" id="nomor-member" placeholder="Nomor/Telp(628..) member" autocomplete="off" />
+                                </div>
+                                <div class="small-3 large-2 columns">
+                                    <a href="#" class="button postfix" id="tombol-ganti-member"><i class="fa fa-check"></i></a>
+                                </div>
                             </div>
+                        </form>
+                        <span class="label" id="label-member" accesskey="r">Membe<span class="ak">r</span> Online</span>
+                    <?php
+                    }
+                    ?>
+                    <?php
+                    if ($this->showMember == 1) {
+                    ?>
+                        <div id="data-customer">
+                            <nomor>Nomor: <?php echo $this->profil->nomor; ?>
+                            </nomor>
+                            <nama><?php echo $this->namaProfil; ?>
+                            </nama>
+                            <address>
+                                <?php echo !empty($this->profil->alamat1) ? $this->profil->alamat1 : ''; ?>
+                                <?php echo !empty($this->profil->alamat2) ? '<br>' . $this->profil->alamat2 : ''; ?>
+                                <?php echo !empty($this->profil->alamat3) ? '<br>' . $this->profil->alamat3 : ''; ?>
+                            </address>
                         </div>
-                    </form>
-                    <span class="label" id="label-customer" accesskey="e">Custom<span class="ak">e</span>r</span>
-                    <div id="data-customer">
-                        <nomor>Nomor: <?php echo $this->profil->nomor; ?>
-                        </nomor>
-                        <nama><?php echo $this->namaProfil; ?>
-                        </nama>
-                        <address>
-                            <?php echo !empty($this->profil->alamat1) ? $this->profil->alamat1 : ''; ?>
-                            <?php echo !empty($this->profil->alamat2) ? '<br>' . $this->profil->alamat2 : ''; ?>
-                            <?php echo !empty($this->profil->alamat3) ? '<br>' . $this->profil->alamat3 : ''; ?>
-                        </address>
-                    </div>
+                    <?php
+                    }
+                    ?>
+                    <?php
+                    if ($this->showMemberOL == 1) {
+                    ?>
+                        <div id="data-member">
+                            <nomor>Member Online: <?= is_null($this->memberOnline) ? '' : $this->memberOnline->nomor ?> </nomor>
+                            <nama><?= is_null($this->memberOnline) ? '-' : $this->memberOnline->namaLengkap ?> </nama>
+                            <address><?= is_null($this->memberOnline) ? '' : $this->memberOnline->alamat ?> </address>
+                            <info><?= is_null($this->memberOnline) ? '' : 'Level: ' . $this->memberOnline->levelNama . ' (Poin: ' . $this->memberOnline->poin . ', Koin: ' . $this->memberOnline->koin . ')' ?>
+                            </info>
+                        </div>
+                    <?php
+                    }
+                    ?>
                     <form id="form-admin-login">
                         <div class="row admin-input" style="display: none">
                             <div class="small-12">
