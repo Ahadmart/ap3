@@ -151,7 +151,7 @@ class PosController extends Controller
         $this->showMember        = $showMember;
         $this->showMemberOL      = $showMemberOL;
 
-        $this->showVoucherMOL       = true;
+        $this->showVoucherMOL = true;
 
         $this->render(
             'ubah',
@@ -589,15 +589,15 @@ class PosController extends Controller
                 if (is_null($penjualanMOL)) {
                     $penjualanMOL = new PenjualanMemberOnline;
                 }
-                $penjualanMOL->nomor_member          = $_POST['nomor'];
-                $penjualanMOL->penjualan_id          = $id;
+                $penjualanMOL->nomor_member = $profil['data']['profil']['nomor'];
+                $penjualanMOL->penjualan_id = $id;
                 $penjualanMOL->koin_dipakai = 0;
-                $penjualanMOL->poin            = 0;
+                $penjualanMOL->poin         = 0;
                 $penjualanMOL->koin         = 0;
-                $penjualanMOL->level                 = 0;
-                $penjualanMOL->level_nama            = $profil['data']['profil']['levelNama'];
-                $penjualanMOL->total_poin            = $profil['data']['profil']['poin'];
-                $penjualanMOL->total_koin        = $profil['data']['profil']['koin'];
+                $penjualanMOL->level        = 0;
+                $penjualanMOL->level_nama   = $profil['data']['profil']['levelNama'];
+                $penjualanMOL->total_poin   = $profil['data']['profil']['poin'];
+                $penjualanMOL->total_koin   = $profil['data']['profil']['koin'];
                 if (!$penjualanMOL->save()) {
                     throw new Exception('Gagal simpan penjualan_member_online: ' . var_export($penjualanMOL->getErrors(), true));
                 }
