@@ -39,6 +39,12 @@ class AhadMembershipClient
         }
     }
 
+    /**
+     * Error Handle function
+     *
+     * @param string|bool $r
+     * @return array
+     */
     private function errorHandle($r)
     {
         $err = [];
@@ -57,6 +63,14 @@ class AhadMembershipClient
         // }
     }
 
+    /**
+     * POST request function
+     *
+     * @param string $url
+     * @param array $data
+     * @param boolean $login
+     * @return string (JSON encoded string) hasil/error dalam format json
+     */
     private function postRequest($url, $data, $login = false)
     {
         $ch = curl_init();
@@ -134,6 +148,12 @@ class AhadMembershipClient
         return $this->errorHandle($r);
     }
 
+    /**
+     * Login function
+     *
+     * @param array $credentials
+     * @return string (JSON encoded string) hasil/error dalam format json
+     */
     public function login($credentials)
     {
         $url = $this->baseUrl . '/toko/login';
@@ -165,7 +185,7 @@ class AhadMembershipClient
     /**
      * View function
      *
-     * @param string $nomor Nomor member
+     * @param string $nomor Nomor member atau Nomor Telp (628..) (Dengan kode negara)
      * @return string (JSON encoded string) Data profil member (satu)
      */
     public function view($nomor)

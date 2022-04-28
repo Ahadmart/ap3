@@ -37,7 +37,7 @@ class Pos extends Penjualan
                 $clientAPI = new AhadMembershipClient();
                 $r         = json_decode($clientAPI->penjualan($postPenjualanMemberOL));
                 if (isset($r->error)) {
-                    throw new Exception('Web Service Error: ' . $r->error->type . ': ' . $r->error->description, 500);
+                    throw new Exception('Ahad Membership Error: ' . $r->error->type . ': ' . $r->error->description, 500);
                 }
                 $dataPenjualanMOL = $r->data->member;
 
