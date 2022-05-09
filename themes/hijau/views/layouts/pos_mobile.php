@@ -186,7 +186,7 @@
                         $.gritter.add({
                             title: 'Error ' + data.statusCode,
                             text: data.error.type + ': ' + data.error.description,
-                            time: 3000,
+                            time: 5000,
                         });
                     }
                     $("#nomor-member").val("");

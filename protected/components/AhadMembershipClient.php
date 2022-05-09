@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * AhadMembershipClient class
+ * Object untuk mengakses API ahadMembership
+ */
 class AhadMembershipClient
 {
     public $baseUrl;
