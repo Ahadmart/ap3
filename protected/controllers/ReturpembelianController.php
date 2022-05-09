@@ -563,21 +563,21 @@ class ReturpembelianController extends Controller
 
     public function renderBarang($data, $row)
     {
-        $pembelian    = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->nomor;
-        $tglPembelian = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->tanggal;
-        $ref          = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->referensi;
-        $tglRef       = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->tanggal_referensi;
+        // $pembelian    = $data->inventoryBalance->pembelianDetail == null ? '' : $data->inventoryBalance->pembelianDetail->pembelian->nomor;
+        // $tglPembelian = $data->inventoryBalance->pembelianDetail == null ? '' : $data->inventoryBalance->pembelianDetail->pembelian->tanggal;
+        // $ref          = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->referensi;
+        // $tglRef       = $data->inventoryBalance->pembelianDetail == null ? "" : $data->inventoryBalance->pembelianDetail->pembelian->tanggal_referensi;
 
         $text = '<strong>' . $data->inventoryBalance->barang->nama . '</strong><br />' . $data->inventoryBalance->barang->barcode .
             '<br />' .
             'Stok: ' . $data->inventoryBalance->barang->stok .
             '<br />' .
             number_format($data->inventoryBalance->harga_beli, 0, ',', '.') .
-            ' x ' . $data->qty . ' ' . $data->inventoryBalance->barang->satuan->nama . ' = ' . $data->subTotal .
-            '<br />' .
-            'Pembelian: ' . $pembelian . ' ' . $tglPembelian .
-            '<br />' .
-            'Ref: ' . $ref . ' ' . $tglRef;
+            ' x ' . $data->qty . ' ' . $data->inventoryBalance->barang->satuan->nama . ' = ' . $data->subTotal;
+        // '<br />' .
+        // 'Pembelian: ' . $pembelian . ' ' . $tglPembelian .
+        // '<br />' .
+        // 'Ref: ' . $ref . ' ' . $tglRef;
 
         return $text;
     }

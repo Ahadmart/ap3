@@ -159,12 +159,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                             <?php
                             echo CHtml::ajaxSubmitButton('Tambah', $this->createUrl('pilihinv', ['id' => $model->id]), [
                                 'success' => "function () {
-										  clearInfo();
+								clearInfo();
                                 $.fn.yiiGridView.update('inventory-balance-grid');
                                 $.fn.yiiGridView.update('retur-pembelian-detail-grid');
                                 updateTotal();
                                 $('#scan').val('');
-                                $('#scan').focus();
+                                var lebarLayar = $(window).width();
+                                if (lebarLayar >= 640){
+                                    $('#scan').focus();
+                                };
                             }",
                             ], [
                                 'class' => 'button postfix',
