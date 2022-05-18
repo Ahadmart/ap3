@@ -57,11 +57,13 @@ class Pos extends Penjualan
             $uangDibayar = 0;
             $bayar       = [];
             foreach ($posData['bayar'] as $key => $value) {
+                $val = empty($value) ? 0 : $value;
                 $bayar[] = [
                     'akun'   => $key,
-                    'jumlah' => $value,
+                    'jumlah' => $val,
                 ];
-                $uangDibayar += $value;
+                // Yii::log("Bayar detail; akun: " . $key . ", value: " . $value, "info");
+                $uangDibayar += $val;
             }
 
             $penerimaan          = new Penerimaan;

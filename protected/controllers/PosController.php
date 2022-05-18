@@ -358,7 +358,13 @@ class PosController extends Controller
         echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
         number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
          */
-        echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] + $_POST['koinMOL'] - $_POST['infaq'] - $_POST['tarikTunai'], 0, ',', '.');
+        $bayar      = empty($_POST['bayar']) ? 0 : $_POST['bayar'];
+        $total      = empty($_POST['total']) || $_POST['total'] == 'NaN' ? 0 : $_POST['total'];
+        $diskonNota = empty($_POST['diskonNota']) ? 0 : $_POST['diskonNota'];
+        $koinMOL    = empty($_POST['koinMOL']) ? 0 : $_POST['koinMOL'];
+        $infaq      = empty($_POST['infaq']) ? 0 : $_POST['infaq'];
+        $tarikTunai = empty($_POST['tarikTunai']) ? 0 : $_POST['tarikTunai'];
+        echo number_format($bayar - $total + $diskonNota + $koinMOL - $infaq - $tarikTunai, 0, ',', '.');
     }
 
     public function renderQtyLinkEditable($data, $row)
