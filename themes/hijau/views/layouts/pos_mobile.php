@@ -190,7 +190,7 @@
                             time: 5000,
                         });
                     }
-                        $("#label-member").removeClass("alert geleng")
+                    $("#label-member").removeClass("alert geleng")
                     $("#nomor-member").val("");
                     $("#ganti-member").hide(500);
                     $("#scan").focus();
