@@ -286,6 +286,7 @@
             });
 
             $("#form-nomor-member").submit(function() {
+                $("#label-member").addClass("alert geleng")
                 dataUrl =
                     '<?php echo $this->createUrl('gantimember', ['id' => $this->penjualanId]); ?>';
                 dataKirim = {
@@ -315,6 +316,7 @@
                                 time: 5000,
                             });
                         }
+                        $("#label-member").removeClass("alert geleng")
                         $("#nomor-member").val("");
                         $("#ganti-member").hide(500);
                         $("#scan").focus();
