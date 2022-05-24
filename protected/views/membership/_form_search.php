@@ -36,6 +36,7 @@
     $(document).ready(function() {
         $("#search-member-form").submit(function(event) {
             $(".alert-box").slideUp();
+            $("#list-profil").addClass("grid-loading");
             var formData = {
                 data: $("#cari-input").val()
             };
@@ -60,6 +61,7 @@
                             ". " + r.error.description)
                     }
                     $(".alert-box").slideDown(500)
+                    $("#list-profil").removeClass("grid-loading")
                 })
 
             });
