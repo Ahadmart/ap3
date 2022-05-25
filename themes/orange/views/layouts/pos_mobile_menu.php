@@ -125,7 +125,7 @@
                             <nomor>Member Online: <?= is_null($this->memberOnline) ? '' : $this->memberOnline->nomor ?> </nomor>
                             <nama><?= is_null($this->memberOnline) ? '-' : $this->memberOnline->namaLengkap ?> </nama>
                             <address><?= is_null($this->memberOnline) ? '' : $this->memberOnline->alamat ?> </address>
-                            <info><?= is_null($this->memberOnline) ? '' : 'Level: ' . $this->memberOnline->levelNama . ' (Poin: ' . $this->memberOnline->poin . ', Koin: ' . $this->memberOnline->koin . ')' ?>
+                            <info><?= is_null($this->memberOnline) ? '' : 'Level: ' . $this->memberOnline->level .' ('.$this->memberOnline->levelNama . ')<br />Poin: ' . $this->memberOnline->poin . ', Koin: <span id="info-koinmol">' . $this->memberOnline->koin . '</span>' ?>
                             </info>
                         </div>
                     <?php

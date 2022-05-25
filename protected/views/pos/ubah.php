@@ -18,50 +18,46 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
         </div>
         <div class="small-6 medium-9 columns">
-            <input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b"
-                autofocus="autofocus" />
+            <input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b" autofocus="autofocus" />
         </div>
         <div class="small-2 medium-1 columns">
-            <a href="#" class="button postfix" id="tombol-tambah-barang"><i
-                    class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
+            <a href="#" class="button postfix" id="tombol-tambah-barang"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
         </div>
         <?php
-switch ($tipeCari):
-case Pos::CARI_AUTOCOMPLETE:
-    ?>
-        <div class="small-2 medium-1 columns">
-            <a href="#" class="success button postfix" id="tombol-cari-barang" accesskey="c"><i
-                    class="fa fa-search fa-2x"></i></a>
-        </div>
-        <?php
-break;
+        switch ($tipeCari):
+            case Pos::CARI_AUTOCOMPLETE:
+        ?>
+                <div class="small-2 medium-1 columns">
+                    <a href="#" class="success button postfix" id="tombol-cari-barang" accesskey="c"><i class="fa fa-search fa-2x"></i></a>
+                </div>
+            <?php
+                break;
 
-case Pos::CARI_TABLE:
-    ?>
-        <div class="small-2 medium-1 columns">
-            <a href="#" class="success button postfix" id="tombol-cari-tabel" accesskey="c"><i
-                    class="fa fa-search-plus fa-2x"></i></a>
-        </div>
+            case Pos::CARI_TABLE:
+            ?>
+                <div class="small-2 medium-1 columns">
+                    <a href="#" class="success button postfix" id="tombol-cari-tabel" accesskey="c"><i class="fa fa-search-plus fa-2x"></i></a>
+                </div>
         <?php
-break;
-    endswitch;
-    ?>
+                break;
+        endswitch;
+        ?>
     </div>
     <div id="transaksi">
         <?php
-$this->renderPartial('_detail', [
-        'penjualan'       => $model,
-        'penjualanDetail' => $penjualanDetail,
-        'poins'           => $poins,
-    ]);
-    ?>
+        $this->renderPartial('_detail', [
+            'penjualan'       => $model,
+            'penjualanDetail' => $penjualanDetail,
+            'poins'           => $poins,
+        ]);
+        ?>
     </div>
     <div id="barang-list" style="display:none">
         <?php
-$this->renderPartial('_barang_list', [
-        'barang' => $barang,
-    ]);
-    ?>
+        $this->renderPartial('_barang_list', [
+            'barang' => $barang,
+        ]);
+        ?>
     </div>
 </div>
 <div class="medium-3 large-3 columns sidebar kanan">
@@ -75,91 +71,91 @@ $this->renderPartial('_barang_list', [
         0
     </div>
     <div class="row collapse">
-        <?php /* Jenis Pembayaran */?>
+        <?php /* Jenis Pembayaran */ ?>
         <div class="small-3 large-2 columns">
             <span class="prefix"><i class="fa fa-2x fa-chevron-right"></i></span>
         </div>
         <div class="small-6 large-7 columns">
             <?php
-echo CHtml::dropDownList('jenisbayar', 1, CHtml::listData(JenisTransaksi::model()->findAll(), 'id', 'nama'), [
-        'accesskey' => 'd',
-        'id'        => 'jenisbayar',
-    ]);
-    ?>
+            echo CHtml::dropDownList('jenisbayar', 1, CHtml::listData(JenisTransaksi::model()->findAll(), 'id', 'nama'), [
+                'accesskey' => 'd',
+                'id'        => 'jenisbayar',
+            ]);
+            ?>
         </div>
         <div class="small-3 large-3 columns">
             <span class="postfix">[D]</span>
         </div>
     </div>
     <?php
-if ($this->showKoinMOL) {
-            ?>
-    <div class="row collapse">
-        <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-refresh"></i></span>
+    if ($this->showKoinMOL) {
+    ?>
+        <div class="row collapse">
+            <div class="small-3 large-2 columns">
+                <span class="prefix"><i class="fa fa-2x fa-refresh"></i></span>
+            </div>
+            <div class="small-9 large-10 columns">
+                <input type="text" id="koin-mol" placeholder="Koin Cashback" />
+            </div>
         </div>
-        <div class="small-9 large-10 columns">
-            <input type="text" id="koin-mol" placeholder="Koin Cashback" />
-        </div>
-    </div>
     <?php
-}
+    }
     ?>
     <?php
-if ($showDiskonPerNota) {
-        ?>
-    <div class="row collapse">
-        <div class="small-3 large-2 columns">
-            <!--<span class="prefix"><i class="fa fa-2x fa-chevron-down"></i></span>-->
-            <span class="prefix">
-                <span class="fa-stack fa-lg">
-                    <i class="fa fa-tag fa-stack-2x"></i>
-                    <i class="fa fa-percent fa-inverse fa-stack-1x" style="transform: rotate(-45deg)"></i>
+    if ($showDiskonPerNota) {
+    ?>
+        <div class="row collapse">
+            <div class="small-3 large-2 columns">
+                <!--<span class="prefix"><i class="fa fa-2x fa-chevron-down"></i></span>-->
+                <span class="prefix">
+                    <span class="fa-stack fa-lg">
+                        <i class="fa fa-tag fa-stack-2x"></i>
+                        <i class="fa fa-percent fa-inverse fa-stack-1x" style="transform: rotate(-45deg)"></i>
+                    </span>
                 </span>
-            </span>
+            </div>
+            <div class="small-9 large-10 columns">
+                <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r" />
+            </div>
         </div>
-        <div class="small-9 large-10 columns">
-            <input type="text" id="diskon-nota" placeholder="Diskon pe[r] Nota" accesskey="r" />
-        </div>
-    </div>
     <?php
-}
+    }
     ?>
     <?php
-if ($showTarikTunai) {
-        ?>
-    <div class="row collapse input-tarik-tunai" style="display: none">
-        <?php /* Company account */?>
-        <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-exchange"></i></span>
+    if ($showTarikTunai) {
+    ?>
+        <div class="row collapse input-tarik-tunai" style="display: none">
+            <?php /* Company account */ ?>
+            <div class="small-3 large-2 columns">
+                <span class="prefix"><i class="fa fa-2x fa-exchange"></i></span>
+            </div>
+            <div class="small-4 large-5 columns">
+                <?php
+                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
+                    'accesskey' => 'a',
+                    'class'     => 'account',
+                ]); ?>
+            </div>
+            <div class="small-5 large-5 columns">
+                <input type="text" id="tarik-tunai" class="tarik-tunai" name="tarik-tunai" placeholder="Tarik Tunai" />
+            </div>
         </div>
-        <div class="small-4 large-5 columns">
-            <?php
-echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
-            'accesskey' => 'a',
-            'class'     => 'account',
-        ]); ?>
-        </div>
-        <div class="small-5 large-5 columns">
-            <input type="text" id="tarik-tunai" class="tarik-tunai" name="tarik-tunai" placeholder="Tarik Tunai" />
-        </div>
-    </div>
     <?php
-}
+    }
     ?>
     <div id="uang-dibayar-master">
         <div class="row collapse input-uang-dibayar">
-            <?php /* Company account */?>
+            <?php /* Company account */ ?>
             <div class="small-3 large-2 columns">
                 <span class="prefix"><i class="fa fa-2x fa-arrow-right"></i></span>
             </div>
             <div class="small-4 large-5 columns">
                 <?php
-echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
-        'accesskey' => 'a',
-        'class'     => 'account',
-    ]);
-    ?>
+                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll(), 'id', 'nama'), [
+                    'accesskey' => 'a',
+                    'class'     => 'account',
+                ]);
+                ?>
             </div>
             <div class="small-5 large-5 columns">
                 <input type="text" class="uang-dibayar" name="kasbank[]" placeholder="[U]ang Dibayar" accesskey="u" />
@@ -170,18 +166,18 @@ echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->findAll
     </div>
 
     <?php
-if ($this->showInfaq) {
-        ?>
-    <div class="row collapse">
-        <div class="small-3 large-2 columns">
-            <span class="prefix"><i class="fa fa-2x fa-chevron-up"></i></span>
+    if ($this->showInfaq) {
+    ?>
+        <div class="row collapse">
+            <div class="small-3 large-2 columns">
+                <span class="prefix"><i class="fa fa-2x fa-chevron-up"></i></span>
+            </div>
+            <div class="small-9 large-10 columns">
+                <input type="text" id="infaq" placeholder="In[f]ak/Sedekah" accesskey="f" />
+            </div>
         </div>
-        <div class="small-9 large-10 columns">
-            <input type="text" id="infaq" placeholder="In[f]ak/Sedekah" accesskey="f" />
-        </div>
-    </div>
     <?php
-}
+    }
     ?>
     <a href="" class="success bigfont tiny button" id="tombol-simpan">Simpan</a>
     <a href="" class="warning bigfont tiny button" id="tombol-batal">Batal</a>
@@ -190,10 +186,10 @@ if ($this->showInfaq) {
 </div>
 <?php
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
-    Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 
-    Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwithdelay.js', CClientScript::POS_HEAD);
-    ?>
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwithdelay.js', CClientScript::POS_HEAD);
+?>
 <script>
     function totalUangDibayar() {
         var inputUangDibayar = $("input.uang-dibayar"); //$('input[name^=kasbank]');
@@ -386,7 +382,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
         }
     }).autocomplete("instance")._renderItem = function(ul, item) {
         return $("<li style='clear:both'>")
-            .append(item.status == <?=Barang::STATUS_AKTIF?> ?
+            .append(item.status == <?= Barang::STATUS_AKTIF ?> ?
                 "<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-harga'>" + item.harga +
                 "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item
                 .stok + "</stok></a>" :
@@ -411,20 +407,21 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     tampilkanKembalian();
                     // console.log(data.totalF);
                     <?php
-if ($showTarikTunai) {
-        ?>
-                    if (data.total >=
-                        <?=$tarikTunaiBelanjaMin?> ) {
-                        $(".input-tarik-tunai").show(500);
-                    } else {
-                        $(".input-tarik-tunai").hide(500);
-                        $("#tarik-tunai").val("");
-                        showSubTotal();
-                        tampilkanKembalian();
-                    }
+                    if ($showTarikTunai) {
+                    ?>
+                        if (data.total >=
+                            <?= $tarikTunaiBelanjaMin ?>
+                        ) {
+                            $(".input-tarik-tunai").show(500);
+                        } else {
+                            $(".input-tarik-tunai").hide(500);
+                            $("#tarik-tunai").val("");
+                            showSubTotal();
+                            tampilkanKembalian();
+                        }
                     <?php
-}
-    ?>
+                    }
+                    ?>
                 }
             }
         });
@@ -441,7 +438,7 @@ if ($showTarikTunai) {
 
     function showSubTotal() {
         if ($("#diskon-nota").val() > 0 || $("#koin-mol").val() > 0 || $("#infaq").val() > 0 || $("#tarik-tunai")
-        .val() > 0) {
+            .val() > 0) {
             console.log("Besar dari 0");
             $("#subtotal-belanja").slideDown(200, function() {
                 $(this).fadeTo(200, 1.00, function() {
@@ -515,8 +512,9 @@ if ($showTarikTunai) {
         }
     });
 
-    $("#tombol-simpan").click(function() {
-        <?php /* Jika total pembayaran kurang tampilkan error, kemudian exit */?>
+    $("#tombol-simpan").click(function(event) {
+        event.preventDefault();
+        <?php /* Jika total pembayaran kurang tampilkan error, kemudian exit */ ?>
         if (totalYangHarusDibayar() > totalUangDibayar()) {
             $.gritter.add({
                 title: 'Error! ',
@@ -529,6 +527,16 @@ if ($showTarikTunai) {
             $.gritter.add({
                 title: 'Error! ',
                 text: "Belum ada penjualan!",
+                time: 5000,
+            });
+            return false;
+        }
+        <?php /* Jika koin cashback dipakai lebih besar, tampilkan error, kemudian exit */ ?>
+        console.log("#koin-mol: " + $("#koin-mol").val() + " | #info-koinmol: " + $("#info-koinmol").text())
+        if (parseInt($("#koin-mol").val()) > parseInt($("#info-koinmol").text())) {
+            $.gritter.add({
+                title: 'Error! ',
+                text: "Koin Cashback tidak cukup!",
                 time: 5000,
             });
             return false;
@@ -551,7 +559,7 @@ if ($showTarikTunai) {
             }
             bayar[$(el).parent().parent().find(".account").val()] = $(el).val();
         })
-        <?php /* Jika pembayaran pada akun tarik tunai kurang, tampilkan error, kemudian exit */?>
+        <?php /* Jika pembayaran pada akun tarik tunai kurang, tampilkan error, kemudian exit */ ?>
         if (pembayaranCukup == false) {
             $.gritter.add({
                 title: 'Error! ',
@@ -560,7 +568,7 @@ if ($showTarikTunai) {
             });
             return false;
         }
-        <?php /* Jika akun bank tarik tunai tidak ditemukan, tampilkan error, kemudian exit */?>
+        <?php /* Jika akun bank tarik tunai tidak ditemukan, tampilkan error, kemudian exit */ ?>
         if (akunTarikTunaiAda == false && $("#tarik-tunai").val() > 0) {
             $.gritter.add({
                 title: 'Error! ',
@@ -641,31 +649,31 @@ if ($showTarikTunai) {
 </script>
 <?php
 $this->menu = [
-        ['itemOptions' => ['class' => 'divider'], 'label' => false],
-        [
-            'itemOptions'    => ['class' => 'has-form hide-for-small-only'], 'label' => false,
-            'items'          => [
-                ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
-                    'class'     => 'button',
-                    'accesskey' => 't',
-                ]],
-                ['label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => [
-                    'class'     => 'success button',
-                    'accesskey' => 'i',
-                ]],
-            ],
-            'submenuOptions' => ['class' => 'button-group'],
+    ['itemOptions' => ['class' => 'divider'], 'label' => false],
+    [
+        'itemOptions'    => ['class' => 'has-form hide-for-small-only'], 'label' => false,
+        'items'          => [
+            ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
+                'class'     => 'button',
+                'accesskey' => 't',
+            ]],
+            ['label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => [
+                'class'     => 'success button',
+                'accesskey' => 'i',
+            ]],
         ],
-        [
-            'itemOptions'    => ['class' => 'has-form show-for-small-only'], 'label' => false,
-            'items'          => [
-                ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
-                    'class' => 'button',
-                ]],
-                ['label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => [
-                    'class' => 'success button',
-                ]],
-            ],
-            'submenuOptions' => ['class' => 'button-group'],
+        'submenuOptions' => ['class' => 'button-group'],
+    ],
+    [
+        'itemOptions'    => ['class' => 'has-form show-for-small-only'], 'label' => false,
+        'items'          => [
+            ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
+                'class' => 'button',
+            ]],
+            ['label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => [
+                'class' => 'success button',
+            ]],
         ],
-    ];
+        'submenuOptions' => ['class' => 'button-group'],
+    ],
+];
