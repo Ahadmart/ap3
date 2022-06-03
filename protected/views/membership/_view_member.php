@@ -15,6 +15,12 @@ $this->widget('BDetailView', [
         'tanggalLahir',
         'pekerjaanNama',
         'alamat',
-        'keterangan'
+        'keterangan',
+        [
+            'label' => 'Level',
+            'value' => $model->level . " [" . $model->levelNama . "]",
+        ],
+        'poin',
+        'koin'
     ],
 ]);
