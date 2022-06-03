@@ -251,4 +251,10 @@ class AhadMembershipClient
         $url = $this->baseUrl . '/info/pekerjaan';
         return $this->getRequest($url);
     }
+
+    public function mutasiPoin($data)
+    {
+        $url = $this->baseUrl . '/report/mutasipoin';
+        return $this->postRequest($url, $data);
+    }
 }
