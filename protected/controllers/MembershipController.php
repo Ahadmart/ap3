@@ -107,4 +107,15 @@ class MembershipController extends Controller
         $clientAPI = new AhadMembershipClient();
         echo $clientAPI->cari($data);
     }
+
+    public function actionReportMutasi()
+    {
+        $data           = [];
+        $data['nomor']  = $_POST['nomor'];
+        $data['dari']   = !empty($_POST['dari']) ? date_format(date_create_from_format('d-m-Y', $_POST['dari']), 'Y-m-d') : '';
+        $data['sampai'] = !empty($_POST['sampai']) ? date_format(date_create_from_format('d-m-Y', $_POST['sampai']), 'Y-m-d') : '';
+
+        $clientAPI = new AhadMembershipClient();
+        echo $clientAPI->mutasiPoin($data);
+    }
 }

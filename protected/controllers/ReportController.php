@@ -1758,15 +1758,8 @@ class ReportController extends Controller
     {
         $model = new ReportMutasiPoinForm();
 
-        $report = null;
-        if (isset($_POST['ReportMutasiPoinForm'])) {
-            $model->attributes = $_POST['ReportMutasiPoinForm'];
-            $report            = $model->reportMutasiPoin();
-        }
-
         $this->render('mutasipoin', [
             'model'  => $model,
-            'report' => $report,
         ]);
     }
 }

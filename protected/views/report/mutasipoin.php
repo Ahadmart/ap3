@@ -10,98 +10,50 @@ $this->boxHeader['small']  = 'Mutasi Poin';
 $this->boxHeader['normal'] = '<i class="fa fa-star fa-lg"></i> Laporan Mutasi Poin';
 
 $this->renderPartial('_form_mutasipoin', ['model' => $model]);
-/*
+
 ?>
 <div class="row">
     <div class="small-12 columns">
-        <div id="tabel-profil" style="display: none">
-            <?php $this->renderPartial('_profil', ['profil' => $profil]); ?>
-        </div>
+        <table id="tabel-mutasipoin" class="tabel-index" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Tgl</th>
+                    <th>Penjualan</th>
+                    <th>Jumlah</th>
+                    <th>Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </div>
-<?php
-*/
-if (isset($report)) {
-    echo '<pre>';
-    print_r($report);
-    echo '</pre>';
-    // $this->renderPartial('_form_toprank_cetak', [
-    //     'model'     => $model,
-    //     'printers'  => $printers,
-    //     'kertasPdf' => $kertasPdf
-    // ]);
-    ?>
-    <!-- <div class="row">
-        <div class="small-12 columns">
-            <table class="tabel-index responsive">
-                <thead>
-                    <tr>
-                        <th class="rata-kanan">No</th>
-                        <th>Barcode</th>
-                        <th>Nama</th>
-                        <th class="rata-kanan">Qty</th>
-                        <th class="rata-kanan">Omset</th>
-                        <th class="rata-kanan">Profit</th>
-                        <th class="rata-kanan">Avg / Day</th>
-                        <th class="rata-kanan">Stok</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    /*
-                    $i = 1;
-                    foreach ($report as $baris):
-                        ?>
-                        <tr>
-                            <td class="rata-kanan"><?php echo $i; ?></td>
-                            <td><?php echo $baris['barcode']; ?></td>
-                            <td><?php echo $baris['nama']; ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['totalqty'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['total'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['margin'], 0, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['avgday'], 2, ',', '.'); ?></td>
-                            <td class="rata-kanan"><?php echo number_format($baris['stok'], 0, ',', '.'); ?></td>
-                        </tr>
-                        <?php
-                        $i++;
-                    endforeach;
-                    */
-                    ?>
-                </tbody>
-            </table>
-        </div>
-    </div> -->
-    <?php
-}
-?>
-
 <script>
-    $("#tombol-browse-profil").click(function () {
-        $("#tabel-profil").slideToggle(500);
-        $("input[name='Profil[nama]']").focus();
-    });
-
-    $("body").on("click", "a.pilih.profil", function () {
-        var dataurl = $(this).attr('href');
-        $.ajax({
-            url: dataurl,
-            success: isiProfil
+    function isiTabel(data) {
+        var tableBody = $("#tabel-mutasipoin>tbody");
+        tableBody.html("");
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+            '<td></td>' +
+            '<td>Saldo Awal</td>' +
+            '<td>' + data.saldoAwal + '</td>' +
+            '<td></td>';
+        tableBody.append(tr);
+        data.mutasi.forEach(function(object) {
+            var tr = document.createElement('tr');
+            tr.innerHTML =
+                '<td>' + object.tanggal + '</td>' +
+                '<td>' + object.penjualan + '</td>' +
+                '<td>' + object.jumlah + '</td>' +
+                '<td>' + object.keterangan + '</td>';
+            tableBody.append(tr);
         });
-        return false;
-    });
-
-    function isiProfil(data) {
-        console.log(data);
-        $("#profil").val(data.nama);
-        $("#tabel-profil").slideUp(500);
-        $("#ReportTopRankForm_profilId").val(data.id);
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+            '<td></td>' +
+            '<td>Saldo Akhir</td>' +
+            '<td>' + data.saldoAkhir + '</td>' +
+            '<td></td>';
+        tableBody.append(tr);
     }
-
-    $("body").on("focusin", "a.pilih", function () {
-        $(this).parent('td').parent('tr').addClass('pilih');
-    });
-
-    $("body").on("focusout", "a.pilih", function () {
-        $(this).parent('td').parent('tr').removeClass('pilih');
-    });
 </script>

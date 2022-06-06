@@ -3,6 +3,14 @@
 /* @var $model ReportTopRankForm */
 /* @var $form CActiveForm */
 ?>
+<div class="row">
+    <div class="small-12 column">
+        <div data-alert class="alert-box radius" style="display:none">
+            <span></span>
+            <a href="#" class="close button">&times;</a>
+        </div>
+    </div>
+</div>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
     'id' => 'report-mutasipoin-form',
@@ -52,6 +60,44 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         $('.tanggalan').fdatepicker({
             format: 'dd-mm-yyyy',
             language: 'id'
+        });
+    });
+
+    $(document).ready(function() {
+        $("#report-mutasipoin-form").submit(function(event) {
+            $(".alert-box").slideUp();
+            $("#tabel-mutasipoin").addClass("grid-loading");
+            var formData = {
+                nomor: $("#ReportMutasiPoinForm_nomor").val(),
+                dari: $("#ReportMutasiPoinForm_dari").val(),
+                sampai: $("#ReportMutasiPoinForm_sampai").val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "<?= $this->createUrl('/membership/reportmutasi') ?>",
+                data: formData,
+            }).done(function(r) {
+                // console.log(data);
+                r = JSON.parse(r)
+                $(".alert-box").slideUp(500, function() {
+                    if (r.statusCode == 200) {
+                        $(".alert-box").removeClass("alert");
+                        $(".alert-box").addClass("warning");
+                        $(".alert-box>span").html("Ditemukan " + r.data.mutasi.length + " transaksi")
+                        isiTabel(r.data)
+                    } else {
+                        $(".alert-box").removeClass("warning");
+                        $(".alert-box").addClass("alert");
+                        $(".alert-box>span").html(r.statusCode + ":" + r.error.type +
+                            ". " + r.error.description)
+                    }
+                    $(".alert-box").slideDown(500)
+                    $("#tabel-mutasipoin").removeClass("grid-loading")
+                })
+
+            });
+
+            event.preventDefault();
         });
     });
 </script>
