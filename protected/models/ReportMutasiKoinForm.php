@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ReportMutasiPoinForm class.
- * ReportMutasiPoinForm is the data structure for keeping
+ * ReportMutasiKoinForm class.
+ * ReportMutasiKoinForm is the data structure for keeping
  * report Mutasi Koin form data. It is used by the 'mutasikoin' action of 'ReportController'.
  */
-class ReportMutasiPoinForm extends CFormModel
+class ReportMutasiKoinForm extends CFormModel
 {
     public $dari;
     public $sampai;
@@ -34,15 +34,16 @@ class ReportMutasiPoinForm extends CFormModel
         ];
     }
 
-    public function reportMutasiPoin()
+    public function reportMutasiKoin()
     {
         $clientAPI = new AhadMembershipClient();
         $dari      = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d') : '';
         $sampai    = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d') : '';
-        return $clientAPI->mutasiPoin([
+        return $clientAPI->mutasiKoin([
             'nomor'  => $this->nomor,
             'dari'   => $dari,
             'sampai' => $sampai,
         ]);
     }
+
 }

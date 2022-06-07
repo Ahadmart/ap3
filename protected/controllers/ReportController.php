@@ -1762,4 +1762,12 @@ class ReportController extends Controller
             'model'  => $model,
         ]);
     }
+    public function actionMutasiKoin()
+    {
+        $model = new ReportMutasiKoinForm();
+
+        $this->render('mutasikoin', [
+            'model'  => $model,
+        ]);
+    }
 }

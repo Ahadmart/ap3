@@ -257,4 +257,10 @@ class AhadMembershipClient
         $url = $this->baseUrl . '/report/mutasipoin';
         return $this->postRequest($url, $data);
     }
+
+    public function mutasiKoin($data)
+    {
+        $url = $this->baseUrl . '/report/mutasikoin';
+        return $this->postRequest($url, $data);
+    }
 }

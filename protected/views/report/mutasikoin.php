@@ -3,18 +3,18 @@
 
 $this->breadcrumbs = [
     'Laporan' => ['index'],
-    'Mutasi Poin Member',
+    'Mutasi Koin Member',
 ];
 
-$this->boxHeader['small']  = 'Mutasi Poin';
-$this->boxHeader['normal'] = '<i class="fa fa-star fa-lg"></i> Laporan Mutasi Poin';
+$this->boxHeader['small']  = 'Mutasi Koin';
+$this->boxHeader['normal'] = '<i class="fa fa-star fa-lg"></i> Laporan Mutasi Koin';
 
-$this->renderPartial('_form_mutasipoin', ['model' => $model]);
+$this->renderPartial('_form_mutasikoin', ['model' => $model]);
 
 ?>
 <div class="row">
     <div class="small-12 columns">
-        <table id="tabel-mutasipoin" class="tabel-index" style="width:100%">
+        <table id="tabel-mutasikoin" class="tabel-index" style="width:100%">
             <thead>
                 <tr>
                     <th>Tgl</th>
@@ -47,7 +47,7 @@ $this->renderPartial('_form_mutasipoin', ['model' => $model]);
     }
 
     function isiTabel(data) {
-        var tableBody = $("#tabel-mutasipoin>tbody");
+        var tableBody = $("#tabel-mutasikoin>tbody");
         tableBody.html("");
         var tr = document.createElement('tr');
         tr.innerHTML =

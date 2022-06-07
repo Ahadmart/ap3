@@ -1,6 +1,6 @@
 <?php
 /* @var $this ReportController */
-/* @var $model ReportMutasiPoinForm */
+/* @var $model ReportMutasiKoinForm */
 /* @var $form CActiveForm */
 ?>
 <div class="row">
@@ -13,7 +13,7 @@
 </div>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
-    'id' => 'report-mutasipoin-form',
+    'id' => 'report-mutasikoin-form',
     // Please note: When you enable ajax validation, make sure the corresponding
     // controller action is handling ajax validation correctly.
     // See class documentation of CActiveForm for details on this,
@@ -64,17 +64,17 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
     });
 
     $(document).ready(function() {
-        $("#report-mutasipoin-form").submit(function(event) {
+        $("#report-mutasikoin-form").submit(function(event) {
             $(".alert-box").slideUp();
-            $("#tabel-mutasipoin").addClass("grid-loading");
+            $("#tabel-mutasikoin").addClass("grid-loading");
             var formData = {
-                nomor: $("#ReportMutasiPoinForm_nomor").val(),
-                dari: $("#ReportMutasiPoinForm_dari").val(),
-                sampai: $("#ReportMutasiPoinForm_sampai").val()
+                nomor: $("#ReportMutasiKoinForm_nomor").val(),
+                dari: $("#ReportMutasiKoinForm_dari").val(),
+                sampai: $("#ReportMutasiKoinForm_sampai").val()
             };
             $.ajax({
                 type: "POST",
-                url: "<?= $this->createUrl('/membership/reportmutasipoin') ?>",
+                url: "<?= $this->createUrl('/membership/reportmutasikoin') ?>",
                 data: formData,
             }).done(function(r) {
                 // console.log(data);
@@ -92,7 +92,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
                             ". " + r.error.description)
                     }
                     $(".alert-box").slideDown(500)
-                    $("#tabel-mutasipoin").removeClass("grid-loading")
+                    $("#tabel-mutasikoin").removeClass("grid-loading")
                 })
 
             });
