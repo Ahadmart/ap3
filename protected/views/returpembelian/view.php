@@ -36,41 +36,48 @@ $this->boxHeader['normal'] = 'Retur Pembelian: ' . $model->nomor;
             <?php
             endif;
             ?>
-            <li>
-                <a href="#" accesskey="p" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
-                <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
-                    <?php
-                    foreach ($printerReturPembelian as $printer) {
-                    ?>
+            <?php
+            if ($model->status == ReturPembelian::STATUS_PIUTANG || $model->status == ReturPembelian::STATUS_LUNAS) {
+            ?>
+                <li>
+                    <a href="#" accesskey="p" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
+                    <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
                         <?php
-                        if ($printer['tipe_id'] == Device::TIPE_PDF_PRINTER) {
-                            /* Jika printer pdf, tambahkan pilihan ukuran kertas */
+                        foreach ($printerReturPembelian as $printer) {
                         ?>
-                            <span class="sub-dropdown"><?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></span>
-                            <ul>
-                                <?php
-                                foreach ($kertasUntukPdf as $key => $value) :
-                                ?>
-                                    <li><a href="<?php echo $this->createUrl('printreturpembelian', ['id' => $model->id, 'printId' => $printer['id'], 'kertas' => $key]) ?>"><?php echo $value; ?></a></li>
-                                <?php
-                                endforeach;
-                                ?>
-                            </ul>
-                        <?php
-                        } else {
-                        ?>
-                            <li>
-                                <a href="<?php echo $this->createUrl('printreturpembelian', ['id' => $model->id, 'printId' => $printer['id']]) ?>">
-                                    <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
-                            </li>
+                            <?php
+                            if ($printer['tipe_id'] == Device::TIPE_PDF_PRINTER) {
+                                /* Jika printer pdf, tambahkan pilihan ukuran kertas */
+                            ?>
+                                <span class="sub-dropdown"><?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></span>
+                                <ul>
+                                    <?php
+                                    foreach ($kertasUntukPdf as $key => $value) :
+                                    ?>
+                                        <li><a href="<?php echo $this->createUrl('printreturpembelian', ['id' => $model->id, 'printId' => $printer['id'], 'kertas' => $key]) ?>"><?php echo $value; ?></a></li>
+                                    <?php
+                                    endforeach;
+                                    ?>
+                                </ul>
+                            <?php
+                            } else {
+                            ?>
+                                <li>
+                                    <a href="<?php echo $this->createUrl('printreturpembelian', ['id' => $model->id, 'printId' => $printer['id']]) ?>">
+                                        <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
+                                </li>
+                            <?php
+                            }
+                            ?>
                         <?php
                         }
                         ?>
-                    <?php
-                    }
-                    ?>
-                </ul>
-            </li>
+                    </ul>
+                </li>
+            <?php
+            }
+            ?>
+
             <?php
             if ($model->status == ReturPembelian::STATUS_POSTED) :
             ?>

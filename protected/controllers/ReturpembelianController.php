@@ -506,23 +506,28 @@ class ReturpembelianController extends Controller
 
     public function actionPrintReturPembelian($id)
     {
-        if (isset($_GET['printId'])) {
-            $device = Device::model()->findByPk($_GET['printId']);
-            switch ($device->tipe_id) {
-                case Device::TIPE_LPR:
-                    $this->printLpr($id, $device);
-                    break;
-                case Device::TIPE_PDF_PRINTER:
-                    /* Ada tambahan parameter kertas untuk tipe pdf */
-                    $this->exportPdf($id, $_GET['kertas']);
-                    break;
-                case Device::TIPE_TEXT_PRINTER:
-                    $this->exportText($id, $device);
-                    break;
-                case Device::TIPE_CSV_PRINTER:
-                    $this->exportCsv($id, $device);
-                    break;
+        $model = $this->loadModel($id);
+        if ($model->status == ReturPembelian::STATUS_PIUTANG || $model->status == ReturPembelian::STATUS_LUNAS) {
+            if (isset($_GET['printId'])) {
+                $device = Device::model()->findByPk($_GET['printId']);
+                switch ($device->tipe_id) {
+                    case Device::TIPE_LPR:
+                        $this->printLpr($id, $device);
+                        break;
+                    case Device::TIPE_PDF_PRINTER:
+                        /* Ada tambahan parameter kertas untuk tipe pdf */
+                        $this->exportPdf($id, $_GET['kertas']);
+                        break;
+                    case Device::TIPE_TEXT_PRINTER:
+                        $this->exportText($id, $device);
+                        break;
+                    case Device::TIPE_CSV_PRINTER:
+                        $this->exportCsv($id, $device);
+                        break;
+                }
             }
+        } else {
+            throw new CHttpException(500, "Retur Pembelian tidak boleh diprint!");
         }
     }
 
