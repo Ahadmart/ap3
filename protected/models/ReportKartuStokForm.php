@@ -77,6 +77,9 @@ class ReportKartuStokForm extends CFormModel
 
         $tempTableName = $this->tempTableName();
 
+        // Untuk Retur Pembelian yang diambil created_at bukan tanggal, untuk mendapatkan tanggal berubah status dari Posted menjadi Piutang
+        // (field tanggal adalah tanggal ketika dapat nomor retur pembelian)
+
         $sqlSelect = "
             SELECT 
                 *
@@ -106,7 +109,7 @@ class ReportKartuStokForm extends CFormModel
             JOIN pembelian ON pd.pembelian_id = pembelian.id AND pembelian.status != :draftPembelian AND DATE_FORMAT(pembelian.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
             WHERE
                 pd.barang_id = :barangId UNION SELECT 
-                rd.id, :kodeReturPembelian kode, rd.qty, ib.harga_beli, retur.nomor, retur.tanggal
+                rd.id, :kodeReturPembelian kode, rd.qty, ib.harga_beli, retur.nomor, retur.updated_at
             FROM
                 retur_pembelian_detail rd
             JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
