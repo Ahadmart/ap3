@@ -77,7 +77,7 @@ class ReportKartuStokForm extends CFormModel
 
         $tempTableName = $this->tempTableName();
 
-        // Untuk Retur Pembelian yang diambil created_at bukan tanggal, untuk mendapatkan tanggal berubah status dari Posted menjadi Piutang
+        // Untuk Retur Pembelian Piutang dan Lunas yang diambil created_at bukan tanggal, untuk mendapatkan tanggal perubahan terakhir
         // (field tanggal adalah tanggal ketika dapat nomor retur pembelian)
 
         $sqlSelect = "
@@ -90,7 +90,8 @@ class ReportKartuStokForm extends CFormModel
                     (sd.qty_sebenarnya - sd.qty_tercatat) qty,
                     0 harga_beli,
                     so.nomor,
-                    so.tanggal
+                    so.tanggal,
+                    '' profil
             FROM
                 stock_opname_detail sd
             JOIN stock_opname so ON sd.stock_opname_id = so.id AND so.status != :draftSo AND DATE_FORMAT(so.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
@@ -103,47 +104,70 @@ class ReportKartuStokForm extends CFormModel
                     pd.qty,
                     pd.harga_beli,
                     pembelian.nomor,
-                    pembelian.tanggal
+                    pembelian.tanggal,
+                    profil.nama
             FROM
                 pembelian_detail pd
             JOIN pembelian ON pd.pembelian_id = pembelian.id AND pembelian.status != :draftPembelian AND DATE_FORMAT(pembelian.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+            JOIN profil ON profil.id = pembelian.profil_id
             WHERE
                 pd.barang_id = :barangId UNION SELECT 
-                rd.id, :kodeReturPembelian kode, rd.qty, ib.harga_beli, retur.nomor, retur.updated_at
+                rd.id, 
+                :kodeReturPembelian kode, 
+                rd.qty, 
+                ib.harga_beli, 
+                retur.nomor, 
+                CASE
+                    WHEN `retur`.status = :returBeliPiutang OR `retur`.status = :returBeliLunas THEN `retur`.updated_at
+                    ELSE `retur`.tanggal
+                END,
+                profil.nama
             FROM
                 retur_pembelian_detail rd
             JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
                 AND ib.barang_id = :barangId
             JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status != :draftReturPembelian
                 AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+            JOIN profil ON profil.id = `retur`.profil_id 
             UNION SELECT 
                     hpp.id,
                     :kodePenjualan tipe,
                     hpp.qty,
                     hpp.harga_beli,
                     penjualan.nomor,
-                    penjualan.tanggal
+                    penjualan.tanggal,
+                    profil.nama
             FROM
                 harga_pokok_penjualan hpp
             JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
             JOIN penjualan ON pd.penjualan_id = penjualan.id AND penjualan.status != :draftPenjualan 
                 AND DATE_FORMAT(penjualan.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+            JOIN profil ON profil.id = penjualan.profil_id 
             UNION SELECT 
-                rd.id, :kodeReturPenjualan tipe, rd.qty, 0 harga_beli, retur.nomor, retur.tanggal
+                rd.id, 
+                :kodeReturPenjualan tipe, 
+                rd.qty, 
+                0 harga_beli, 
+                retur.nomor, 
+                retur.tanggal,
+                profil.nama
             FROM
                 retur_penjualan_detail rd
             JOIN penjualan_detail pd ON rd.penjualan_detail_id = pd.id
                 AND pd.barang_id = :barangId
             JOIN retur_penjualan retur ON rd.retur_penjualan_id = retur.id AND retur.status != :draftReturPenjualan
-                AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai UNION SELECT 
-                rd.id, :kodeReturPembelianBatal kode, -(rd.qty), ib.harga_beli, retur.nomor, retur.updated_at
+                AND DATE_FORMAT(retur.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai 
+            JOIN profil ON profil.id = `retur`.profil_id    
+            UNION SELECT 
+                rd.id, :kodeReturPembelianBatal kode, -(rd.qty), ib.harga_beli, retur.nomor, retur.updated_at, profil.nama
             FROM
                 retur_pembelian_detail rd
             JOIN inventory_balance ib ON rd.inventory_balance_id = ib.id
                 AND ib.barang_id = :barangId
             JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status = :batalReturPembelian
-                AND DATE_FORMAT(retur.updated_at, '%Y-%m-%d') BETWEEN :dari AND :sampai) t1
+                AND DATE_FORMAT(retur.updated_at, '%Y-%m-%d') BETWEEN :dari AND :sampai
+            JOIN profil ON profil.id = `retur`.profil_id) t1
             ORDER BY tanggal            
                 ";
         $sql = " 
@@ -154,7 +178,8 @@ class ReportKartuStokForm extends CFormModel
               `qty` int(11) DEFAULT NULL,
               `harga_beli` decimal(18,2) DEFAULT NULL,
               `nomor` varchar(45) DEFAULT NULL,
-              `tanggal` datetime DEFAULT NULL)
+              `tanggal` datetime DEFAULT NULL,
+              `profil` varchar(512) DEFAULT NULL)
               ENGINE=MEMORY 
             AS (
             {$sqlSelect}
@@ -177,7 +202,9 @@ class ReportKartuStokForm extends CFormModel
             ':draftReturPembelian' => ReturPembelian::STATUS_DRAFT,
             ':batalReturPembelian' => ReturPembelian::STATUS_BATAL,
             ':draftPenjualan' => Penjualan::STATUS_DRAFT,
-            ':draftReturPenjualan' => ReturPenjualan::STATUS_DRAFT
+            ':draftReturPenjualan' => ReturPenjualan::STATUS_DRAFT,
+            ':returBeliPiutang' => ReturPembelian::STATUS_PIUTANG,
+            ':returBeliLunas' => ReturPembelian::STATUS_LUNAS,
         ]);
 
         $com = Yii::app()->db->createCommand()
