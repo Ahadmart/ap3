@@ -7,7 +7,7 @@ $this->breadcrumbs = [
 ];
 
 $this->boxHeader['small']  = 'Mutasi Koin';
-$this->boxHeader['normal'] = '<i class="fa fa-star fa-lg"></i> Laporan Mutasi Koin';
+$this->boxHeader['normal'] = '<i class="fa fa-dot-circle-o fa-lg"></i> Laporan Mutasi Koin';
 
 $this->renderPartial('_form_mutasikoin', ['model' => $model]);
 
