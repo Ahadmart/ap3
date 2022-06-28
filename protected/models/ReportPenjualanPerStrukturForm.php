@@ -138,7 +138,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
             FROM
                 inventory_balance
             GROUP BY barang_id
-            HAVING SUM(qty) > 0) t_stok ON t_stok.barang_id = barang.id
+            -- HAVING SUM(qty) > 0
+            ) t_stok ON t_stok.barang_id = barang.id
                 LEFT JOIN
             barang_struktur bs ON bs.id = barang.struktur_id
         ORDER BY bs.nama , barang.barcode
@@ -270,7 +271,7 @@ class ReportPenjualanPerStrukturForm extends CFormModel
             $whereSub .= " AND pj.updated_by = :userId";
         }
 
-        $userId = Yii::app()->user->id;
+        // $userId = Yii::app()->user->id;
         $sql    = "
         SELECT
             bs2.id lv2_id,
@@ -313,7 +314,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
             FROM
                 inventory_balance
             GROUP BY barang_id
-            HAVING SUM(qty) > 0) t_stok ON t_stok.barang_id = barang.id
+            -- HAVING SUM(qty) > 0
+            ) t_stok ON t_stok.barang_id = barang.id
                 LEFT JOIN
             barang_struktur bs ON bs.id = barang.struktur_id
                 LEFT JOIN
@@ -339,16 +341,98 @@ class ReportPenjualanPerStrukturForm extends CFormModel
     }
 
     /**
+     * Report Penjualan barang tanpa struktur mengikuti format report per struktur Lv 2
+     * @return array
+     */
+    public function reportTanpaStrukturLv2()
+    {
+        $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s');
+        $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s');
+
+        $whereSub = '';
+        if (!empty($this->profilId)) {
+            $whereSub .= " AND pj.profil_id = :profilId";
+        }
+
+        if (!empty($this->userId)) {
+            $whereSub .= " AND pj.updated_by = :userId";
+        }
+
+        $sql    = "
+        SELECT
+            0 lv2_id,
+            'Tanpa Struktur' lv2_nama,
+            SUM(t_penjualan.totalqty) qty,
+            SUM(t_penjualan.total) omzet,
+            SUM(t_modal.total) modal,
+            SUM(t_penjualan.total - t_modal.total) margin,
+            AVG((t_penjualan.total - t_modal.total) / t_penjualan.total * 100) profit_margin,
+            SUM(t_stok.stok) stok
+        FROM
+            (SELECT
+                pd.barang_id,
+                    SUM(pd.qty) totalqty,
+                    SUM(pd.harga_jual * pd.qty) total
+            FROM
+                penjualan_detail pd
+            JOIN penjualan pj ON pd.penjualan_id = pj.id
+                AND pj.status != :statusDraft
+                AND pj.tanggal BETWEEN :dari AND :sampai
+                {$whereSub}
+            GROUP BY pd.barang_id) t_penjualan
+                JOIN
+            (SELECT
+                pd.barang_id, SUM(hpp.qty * hpp.harga_beli) total
+            FROM
+                harga_pokok_penjualan hpp
+            JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
+            JOIN penjualan pj ON pd.penjualan_id = pj.id
+                AND pj.status != :statusDraft
+                AND pj.tanggal BETWEEN :dari AND :sampai
+                {$whereSub}
+            GROUP BY pd.barang_id) t_modal ON t_penjualan.barang_id = t_modal.barang_id
+                JOIN
+            barang ON barang.id = t_penjualan.barang_id
+                AND barang.struktur_id IS NULL
+                JOIN
+            (SELECT
+                barang_id, SUM(qty) stok
+            FROM
+                inventory_balance
+            GROUP BY barang_id
+            -- HAVING SUM(qty) > 0
+            ) t_stok ON t_stok.barang_id = barang.id
+                ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
+        $command->bindValue(":dari", $dari);
+        $command->bindValue(":sampai", $sampai);
+
+        if (!empty($this->profilId)) {
+            $command->bindValue(":profilId", $this->profilId);
+        }
+        if (!empty($this->userId)) {
+            $command->bindValue(":userId", $this->userId);
+        }
+
+        return $command->queryAll();
+    }
+
+    /**
      * Sales by Struktur Lv 2
      */
     public function reportPerLv2()
     {
+        $reportTanpaStruktur = [];
         /* List Struktur Lv 1 */
         $strukturList = [];
         if ($this->strukLv1 > 0) {
             $strukturList[] = $this->strukLv1;
         } else {
             $strukturList = $this->listChildStruk(null);
+            $reportTanpaStruktur = $this->reportTanpaStrukturLv2();
         }
         //        echo '<pre>';
         //        var_dump($strukturList);
@@ -370,6 +454,9 @@ class ReportPenjualanPerStrukturForm extends CFormModel
             if (!empty($strukLv3CS)) {
                 $r[$strukId] = $this->reportPerStrukturLv2($strukLv3CS);
             }
+        }
+        if (!empty($reportTanpaStruktur)) {
+            $r['Tanpa Struktur'] = $this->reportTanpaStrukturLv2();
         }
         //            echo '</pre>';
         return $r;
