@@ -8,6 +8,13 @@
  */
 class ReportRekapDiskonForm extends CFormModel
 {
+    const KERTAS_LETTER = 10;
+    const KERTAS_A4     = 20;
+    const KERTAS_FOLIO  = 30;
+    /* ===================== */
+    const KERTAS_LETTER_NAMA = 'Letter';
+    const KERTAS_A4_NAMA     = 'A4';
+    const KERTAS_FOLIO_NAMA  = 'Folio';
 
     public $tipeDiskonId;
     public $dari;
@@ -20,7 +27,7 @@ class ReportRekapDiskonForm extends CFormModel
     {
         return [
             ['dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'],
-            ['tipeDiskonId', 'safe']
+            ['tipeDiskonId', 'safe'],
         ];
     }
 
@@ -31,8 +38,8 @@ class ReportRekapDiskonForm extends CFormModel
     {
         return [
             'tipeDiskonId' => 'Tipe Diskon',
-            'dari' => 'Dari',
-            'sampai' => 'Sampai',
+            'dari'         => 'Dari',
+            'sampai'       => 'Sampai',
         ];
     }
 
@@ -43,7 +50,7 @@ class ReportRekapDiskonForm extends CFormModel
 
     public function reportRekapDiskon()
     {
-        $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
+        $dari   = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
         $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
 
         $tipeDiskonCond = '';
@@ -52,10 +59,10 @@ class ReportRekapDiskonForm extends CFormModel
         }
 
         $sql = "
-        SELECT 
+        SELECT
             barang.barcode, barang.nama, t_rekap.*
         FROM
-            (SELECT 
+            (SELECT
                 barang_id,
                     SUM(harga_normal) harga_normal,
                     SUM(total) harga_jual,
@@ -65,14 +72,14 @@ class ReportRekapDiskonForm extends CFormModel
                     MIN(tipe_diskon_id) tipe_diskon_id,
                     COUNT(DISTINCT tipe_diskon_id) banyak_tipe_diskon_id
             FROM
-                (SELECT 
+                (SELECT
                     det.barang_id,
                     det.qty,
                     det.harga_jual,
                     (det.qty * dis.harga_normal) harga_normal,
                     dis.tipe_diskon_id,
                     (det.qty * det.harga_jual) total,
-                    (SELECT 
+                    (SELECT
                             SUM(qty * harga_beli)
                         FROM
                             harga_pokok_penjualan
@@ -103,7 +110,7 @@ class ReportRekapDiskonForm extends CFormModel
         }
 
         return [
-            'detail' => $command->queryAll()
+            'detail' => $command->queryAll(),
         ];
     }
     public function array2csv(array &$array)
@@ -135,5 +142,14 @@ class ReportRekapDiskonForm extends CFormModel
         }
         // Yii::log(print_r($baris, true));
         return $this->array2csv($baris);
+    }
+
+    public static function listKertas()
+    {
+        return [
+            self::KERTAS_A4     => self::KERTAS_A4_NAMA,
+            self::KERTAS_FOLIO  => self::KERTAS_FOLIO_NAMA,
+            self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA,
+        ];
     }
 }

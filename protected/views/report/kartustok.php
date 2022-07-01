@@ -35,6 +35,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                         <th class="rata-kanan">No</th>
                         <th>Tanggal</th>
                         <th>Tipe</th>
+                        <th>Profil</th>
                         <th>Nomor</th>
                         <th class="rata-kanan">In</th>
                         <th class="rata-kanan">Out</th>
@@ -83,6 +84,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                             <td class="rata-kanan"><?= $i ?></td>
                             <td><?= date_format(date_create_from_format('Y-m-d H:i:s', $barisReport['tanggal']), 'd-m-Y H:i:s'); ?></td>
                             <td><?= KodeDokumen::model()->getNamaDokumen($barisReport['kode']); ?> </td>
+                            <td><?= $barisReport['profil']; ?></td>
                             <td><?= $barisReport['nomor']; ?></td>
                             <td class="rata-kanan">
                                 <?= $in > 0 ? number_format($in, 0, ',', '.') : ''; ?>

@@ -4,7 +4,7 @@
 <div class="small switch">
     <?= CHtml::checkBox("set_default", false) ?>
     <?= CHtml::label("Set default", 'set_default') ?>
-</div> 
+</div>
 <p>ATAU</p>
 <?= CHtml::label('Ganti supplier (Supplier yang sudah ada akan dihapus!)', 'sup-dropdown-g') ?>
 <?= CHtml::dropDownList('sup-dropdown-g', null, CHtml::listData(Profil::model()->tipeSupplier()->profilTrx()->findAll(array('order' => 'nama')), 'id', 'nama'), ["prompt" => "Pilih satu.."]); ?>
@@ -13,19 +13,23 @@
 <?= CHtml::link('&#215;', '', ['class' => 'close-reveal-modal', 'aria-label' => 'Close']) ?>
 
 <script>
-    $("#sup-dropdown-t").change(function () {
+    $(document).on('opened.fndtn.reveal', '#edit-sup-m[data-reveal]', function() {
+        var modal = $(this);
+        $("#sup-dropdown-t").focus();
+    });
+    $("#sup-dropdown-t").change(function() {
         var value = $(this).val();
         if (value.length > 0) {
             $("#sup-dropdown-g").val("");
         }
     });
-    $("#sup-dropdown-g").change(function () {
+    $("#sup-dropdown-g").change(function() {
         var value = $(this).val();
         if (value.length > 0) {
             $("#sup-dropdown-t").val("");
         }
     });
-    $("#tombol-submit-supplier").click(function () {
+    $("#tombol-submit-supplier").click(function() {
         var supT = $("#sup-dropdown-t").val();
         var supG = $("#sup-dropdown-g").val();
         var supDefault = $("#set_default").prop('checked') ? 1 : 0;
@@ -58,7 +62,7 @@
             type: 'POST',
             url: dataUrl,
             data: dataKirim,
-            success: function (data) {
+            success: function(data) {
                 if (data.sukses) {
                     $.gritter.add({
                         title: 'Sukses',

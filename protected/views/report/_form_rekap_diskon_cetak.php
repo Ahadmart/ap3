@@ -18,11 +18,12 @@
                         <?php
                         foreach ($kertasPdf as $key => $value) :
                         ?>
-                            <li><a target="blank" href="<?=
-                                                        $this->createUrl('printrekapdiskon', [
+                            <li><a target="blank" href="<?php
+                                                        echo $this->createUrl('printrekapdiskon', [
                                                             'printId' => $printer['id'],
                                                             'kertas'  => $key,
-                                                        ])
+                                                        ]);
+                                                        echo  '&' . http_build_query($model->attributes);
                                                         ?>"><?= $value; ?></a></li>
                         <?php
                         endforeach;

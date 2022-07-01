@@ -608,7 +608,7 @@ class ReturPembelian extends CActiveRecord
         try {
             // $this->status = self::STATUS_BATAL;
             // if (!($this->save())) {
-            //     throw new Exception("Gagal membatalkan retur beli: " . $returBeli->nomor);
+            //     throw new Exception("Gagal membatalkan retur beli: " . $this->nomor);
             // }
             ReturPembelian::model()->updateByPk($this->id, ['status' => self::STATUS_BATAL]);
             $details      = ReturPembelianDetail::model()->findAll("retur_pembelian_id=:id", [':id' => $this->id]);

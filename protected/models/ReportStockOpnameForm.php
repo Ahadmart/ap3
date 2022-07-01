@@ -162,8 +162,27 @@ class ReportStockOpnameForm extends CFormModel
             ";
         $command = Yii::app()->db->createCommand($sql);
         $r       = $command->queryRow();
-        
+
         return $r['nilai'] == '1';
     }
 
+    public function array2csv(array &$array)
+    {
+        if (count($array) == 0) {
+            return null;
+        }
+        ob_start();
+        $df = fopen('php://output', 'w');
+        fputcsv($df, array_keys(reset($array)));
+        foreach ($array as $row) {
+            fputcsv($df, $row);
+        }
+        fclose($df);
+        return ob_get_clean();
+    }
+
+    public function reportKeCsv($report)
+    {
+        return $this->array2csv($report);
+    }
 }

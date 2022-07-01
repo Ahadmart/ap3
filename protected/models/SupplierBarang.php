@@ -39,15 +39,15 @@ class SupplierBarang extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('supplier_id, barang_id', 'required'),
-            array('default', 'numerical', 'integerOnly' => true),
-            array('supplier_id, barang_id, updated_by', 'length', 'max' => 10),
-            array('created_at, updated_at, updated_by', 'safe'),
+        return [
+            ['supplier_id, barang_id', 'required'],
+            ['default', 'numerical', 'integerOnly' => true],
+            ['supplier_id, barang_id, updated_by', 'length', 'max' => 10],
+            ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, supplier_id, barang_id, default, updated_at, updated_by, created_at, namaSupplier', 'safe', 'on' => 'search'),
-        );
+            ['id, supplier_id, barang_id, default, updated_at, updated_by, created_at, namaSupplier', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -57,11 +57,11 @@ class SupplierBarang extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-            'barang' => array(self::BELONGS_TO, 'Barang', 'barang_id'),
-            'supplier' => array(self::BELONGS_TO, 'Profil', 'supplier_id'),
-            'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
-        );
+        return [
+            'barang'    => [self::BELONGS_TO, 'Barang', 'barang_id'],
+            'supplier'  => [self::BELONGS_TO, 'Profil', 'supplier_id'],
+            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
+        ];
     }
 
     /**
@@ -69,16 +69,16 @@ class SupplierBarang extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'supplier_id' => 'Supplier',
-            'barang_id' => 'Barang',
-            'default' => 'Default',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-            'created_at' => 'Created At',
-            'namaSupplier' => 'Supplier'
-        );
+        return [
+            'id'           => 'ID',
+            'supplier_id'  => 'Supplier',
+            'barang_id'    => 'Barang',
+            'default'      => 'Default',
+            'updated_at'   => 'Updated At',
+            'updated_by'   => 'Updated By',
+            'created_at'   => 'Created At',
+            'namaSupplier' => 'Supplier',
+        ];
     }
 
     /**
@@ -107,24 +107,24 @@ class SupplierBarang extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        $criteria->with = array('supplier');
+        $criteria->with = ['supplier'];
         $criteria->compare('supplier.nama', $this->namaSupplier, true);
 
-        $sort = array(
+        $sort = [
             'defaultOrder' => 'supplier.nama',
-            'attributes' => array(
-                'namaSupplier' => array(
-                    'asc' => 'supplier.nama',
-                    'desc' => 'supplier.nama desc'
-                ),
-                '*'
-            )
-        );
+            'attributes'   => [
+                'namaSupplier' => [
+                    'asc'  => 'supplier.nama',
+                    'desc' => 'supplier.nama desc',
+                ],
+                '*',
+            ],
+        ];
 
-        return new CActiveDataProvider($this, array(
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort' => $sort
-        ));
+            'sort'     => $sort,
+        ]);
     }
 
     /**
@@ -151,19 +151,18 @@ class SupplierBarang extends CActiveRecord
 
     public function assignDefaultSupplier($id, $barangId)
     {
-        $connection = Yii::app()->db;
+        $connection  = Yii::app()->db;
         $transaction = $connection->beginTransaction();
         try {
-
             // Update semua supplier jadi tidak default, default = 0
-            $connection->createCommand()->update($this->tableName(), array('default' => 0), 'barang_id=:barangId', array(
-                ':barangId' => $barangId
-            ));
+            $connection->createCommand()->update($this->tableName(), ['default' => 0], 'barang_id=:barangId', [
+                ':barangId' => $barangId,
+            ]);
 
             // Update 1 supplier jadi default = 1
-            $connection->createCommand()->update($this->tableName(), array('default' => 1), 'id=:id', array(
-                ':id' => $id
-            ));
+            $connection->createCommand()->update($this->tableName(), ['default' => 1], 'id=:id', [
+                ':id' => $id,
+            ]);
             $transaction->commit();
             return true;
         } catch (Exception $e) {
@@ -175,29 +174,29 @@ class SupplierBarang extends CActiveRecord
     public function ambilBarangBarcodePerSupplier($supplierId)
     {
         return Yii::app()->db->createCommand()
-                        ->select('b.id, b.barcode, b.nama')
-                        ->from($this->tableName() . ' sb')
-                        ->join(Barang::model()->tableName() . ' b', 'b.id=sb.barang_id')
-                        ->where('supplier_id=:supplierId and b.status=1', array(':supplierId' => $supplierId))
-                        ->order('b.barcode')
-                        ->queryAll();
+            ->select('b.id, b.barcode, b.nama')
+            ->from($this->tableName() . ' sb')
+            ->join(Barang::model()->tableName() . ' b', 'b.id=sb.barang_id')
+            ->where('supplier_id=:supplierId and b.status=1', [':supplierId' => $supplierId])
+            ->order('b.barcode')
+            ->queryAll();
     }
 
     public function ambilBarangNamaPerSupplier($supplierId)
     {
         return Yii::app()->db->createCommand()
-                        ->select('b.id, b.nama, b.barcode')
-                        ->from($this->tableName() . ' sb')
-                        ->join(Barang::model()->tableName() . ' b', 'b.id=sb.barang_id')
-                        ->where('supplier_id=:supplierId and b.status=1', array(':supplierId' => $supplierId))
-                        ->order('b.nama')
-                        ->queryAll();
+            ->select('b.id, b.nama, b.barcode')
+            ->from($this->tableName() . ' sb')
+            ->join(Barang::model()->tableName() . ' b', 'b.id=sb.barang_id')
+            ->where('supplier_id=:supplierId and b.status=1', [':supplierId' => $supplierId])
+            ->order('b.nama')
+            ->queryAll();
     }
-    
+
     public static function belumAdaSupDefault($barangId)
     {
         $sql = "
-        SELECT 
+        SELECT
             id
         FROM
             supplier_barang
@@ -209,11 +208,11 @@ class SupplierBarang extends CActiveRecord
         $command->bindValues([':barangId' => $barangId, ':nilaiDefault' => self::SUPPLIER_DEFAULT]);
         return $command->queryRow() == false ? true : false;
     }
-    
+
     public static function ambilSupplierTerakhir($barangId)
     {
         $sql = "
-        SELECT 
+        SELECT
             MAX(id) max_id
         FROM
             supplier_barang
@@ -224,10 +223,17 @@ class SupplierBarang extends CActiveRecord
         $command = Yii::app()->db->createCommand($sql);
         $command->bindValue(':barangId', $barangId);
         $r = $command->queryRow();
-        if ($r == FALSE) {
+        if ($r == false) {
             return false;
         }
         return $r['max_id'];
     }
 
+    public function setDefaultSupplier($supplierId, $barangId)
+    {
+        Yii::app()->db->createCommand()->update($this->tableName(), ['default' => 1], 'barang_id=:barangId AND supplier_id=:supplierId', [
+            ':barangId'   => $barangId,
+            ':supplierId' => $supplierId,
+        ]);
+    }
 }

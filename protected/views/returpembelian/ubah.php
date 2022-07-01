@@ -18,7 +18,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     <div class="medium-6 large-5 columns">
         <?php
         echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Retur Pembelian', $this->createUrl('simpan', ['id' => $model->id]), [
-            'data'    => "simpan=true",
+            'data'    => 'simpan=true',
             'type'    => 'POST',
             'success' => 'function(data) {
                             if (data.sukses) {
@@ -51,6 +51,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         //'barangNama' => $barangNama,
         'inventoryBalance' => $inventoryBalance,
         'model'            => $model,
+        'scanBarcode'      => $scanBarcode,
     ]);
     ?>
 </div>
@@ -66,7 +67,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 </div>
 <script>
     function updateTotal() {
-        $("#total-retur-pembelian").load("<?php echo $this->createUrl('total', ['id' => $model->id]) ?>");
+        $("#total-retur-pembelian").load(
+            "<?php echo $this->createUrl('total', ['id' => $model->id]) ?>"
+        );
     }
 </script>
 <?php

@@ -4,6 +4,18 @@
 <?= CHtml::link('&#215;', '', ['class' => 'close-reveal-modal', 'aria-label' => 'Close']) ?>
 
 <script>
+    $(document).on('opened.fndtn.reveal', '#ganti-minrestock-m[data-reveal]', function() {
+        var modal = $(this);
+        $("#input-min-restock").focus();
+        $("#input-min-restock").select();
+    });
+    $("#input-min-restock").on('keyup', function(e) {
+        var k = e.key;
+        if (k === "Enter") e.preventDefault();
+        if (k === "Enter") {
+            $("#tombol-submit-set-minimumrestock").click();
+        }
+    })
     $("#tombol-submit-set-minimumrestock").click(function() {
         var value = $("#input-min-restock").val();
         var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');

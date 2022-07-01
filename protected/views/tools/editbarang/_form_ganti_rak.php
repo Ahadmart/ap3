@@ -4,7 +4,12 @@
 <?= CHtml::link('&#215;', '', ['class' => 'close-reveal-modal', 'aria-label' => 'Close']) ?>
 
 <script>
-    $("#tombol-submit-rak").click(function () {
+    $(document).on('opened.fndtn.reveal', '#ganti-rak-m[data-reveal]', function() {
+        var modal = $(this);
+        // console.log("Ganti rak opened");
+        $("#rak-dropdown").focus();
+    });
+    $("#tombol-submit-rak").click(function() {
         var rak = $("#rak-dropdown").val();
         var data = $('#barang-grid').yiiGridView('getChecked', 'kolomcek');
         var dataKirim = {
@@ -18,7 +23,7 @@
             type: 'POST',
             url: dataUrl,
             data: dataKirim,
-            success: function (data) {
+            success: function(data) {
                 if (data.sukses) {
                     $.gritter.add({
                         title: 'Sukses',

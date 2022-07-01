@@ -4,9 +4,9 @@
 */
 
 $biru: #0b62a4;
-$biru-muda: #7A92A3;
+$biru-muda: #7a92a3;
 $hijau: #4da74d;
-$toska: #00BCD4;
+$toska: #00bcd4;
 $oranye: #edc240;
 $merah: #b71c1c;
 $violet: #9440ed;
@@ -37,7 +37,7 @@ body {
     color: $merah;
 }
 
-// Tambahin garis di bawah 
+// Tambahin garis di bawah
 nav.top-bar {
     box-shadow: 0 1px #4e4e4e;
     background: #37474f;
@@ -54,20 +54,20 @@ nav.top-bar {
         a:hover:not(.button) {
             background: #37474f;
         }
-        &>a {
+        & > a {
             background: #37474f;
         }
     }
-    &>ul>.divider {
+    & > ul > .divider {
         border-right: 1px solid #455a64;
     }
     & .divider {
         border-top: 1px solid #455a64;
     }
-    .dropdown li:not(.has-form):not(.active)>a:not(.button) {
+    .dropdown li:not(.has-form):not(.active) > a:not(.button) {
         background: #37474f;
     }
-    .dropdown li:hover:not(.has-form):not(.active)>a:not(.button) {
+    .dropdown li:hover:not(.has-form):not(.active) > a:not(.button) {
         background: #2d3a41;
     }
 
@@ -77,7 +77,7 @@ nav.top-bar {
 }
 
 // Font Override
-nav .top-bar-section ul li>a {
+nav .top-bar-section ul li > a {
     font-family: "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
 }
 
@@ -136,7 +136,7 @@ option {
         font-size: 0.825em;
     }
     tr.baru {
-        background-color: #F57C00;
+        background-color: #f57c00;
         font-weight: bold;
         td {
             color: #fff;
@@ -147,7 +147,7 @@ option {
         }
     }
     tr.hj-berubah {
-        background-color: #388E3C;
+        background-color: #388e3c;
         font-weight: bold;
         td {
             color: #fff;
@@ -201,7 +201,7 @@ span.required {
     color: $merah;
 }
 
-li.active>a {
+li.active > a {
     background-color: $biru;
     color: #fff;
 }
@@ -211,7 +211,7 @@ li.active>a {
 }
 
 .block {
-    margin-bottom: 10px; //background: url(../img/bg-av.png) top fixed; //rgba(#000, 0.5) 
+    margin-bottom: 10px; //background: url(../img/bg-av.png) top fixed; //rgba(#000, 0.5)
     background-color: #eceff1; //rgba(#000, 0.5);//rgba(34, 45, 45, 0.7);//rgba(14, 39, 40, 0.7);//rgba(0,0,0,0.7);
 }
 
@@ -228,12 +228,12 @@ li.active>a {
         }
     }
     li {
-        &.name>h1 {
+        &.name > h1 {
             color: #fff;
             margin-left: 15px;
             margin-right: 15px;
         }
-        &.name>h6 {
+        &.name > h6 {
             color: #fff;
             margin-left: 15px;
             margin-right: 15px;
@@ -265,7 +265,7 @@ a.button.micro.bigfont {
 .block-content {
     padding: 15px 0 1px; //background: #373b3e;
     border-top: 1px solid #515356;
-    &>table {
+    & > table {
         //margin: 0;
         tr td {
             font-size: 0.75rem;
@@ -308,7 +308,6 @@ a.button.micro.bigfont {
         margin-bottom: 20px;
     }
 }
-
 
 // tombol disebelah kanan input
 .postfix.button {
@@ -395,14 +394,13 @@ footer {
     span {
         padding: 0 15px;
         &.left {
-            border-right: 1px solid #3E4144;
+            border-right: 1px solid #3e4144;
         }
         &.right {
-            border-left: 1px solid #3E4144;
+            border-left: 1px solid #3e4144;
         }
     }
 }
-
 
 .jqstooltip-ovr {
     position: absolute;
@@ -479,7 +477,7 @@ label {
         }
         &.old,
         &.new {
-            color: #999
+            color: #999;
         }
         span.hour {
             color: #37474f;
@@ -565,7 +563,7 @@ tr {
 select {
     -moz-appearance: none;
     text-indent: 0.01px;
-    text-overflow: '';
+    text-overflow: "";
 }
 
 .grid-loading {
@@ -610,10 +608,10 @@ select {
         }
     }
     &.ui-state-focus {
-        box-shadow: 0px 0px 15px #AFD8F8;
-        border: 1px solid #AFD8F8;
+        box-shadow: 0px 0px 15px #afd8f8;
+        border: 1px solid #afd8f8;
         margin: 0;
-        background-color: #00B7F3;
+        background-color: #00b7f3;
     }
 }
 
@@ -658,11 +656,22 @@ select {
     font-weight: bold;
 }
 
-input[type="checkbox"] + label, input[type="radio"] + label{
+input[type="checkbox"] + label,
+input[type="radio"] + label {
     vertical-align: middle;
     margin-top: -0.5rem;
 }
 
-pre{
+pre {
     padding-bottom: 1rem;
+}
+
+.small-only {
+    display: none;
+}
+
+@media only screen and (max-width: 640px) {
+    .small-only {
+        display: table-cell;
+    }
 }
