@@ -774,16 +774,16 @@ class InventoryBalance extends CActiveRecord
         switch ($this->asal) {
 
             case InventoryBalance::ASAL_PEMBELIAN:
-                return Pembelian::model()->find("nomor={$this->nomor_dokumen}");
+                return Pembelian::model()->find('nomor=:nomor', [':nomor' => $this->nomor_dokumen]);
 
             case InventoryBalance::ASAL_RETURJUAL:
-                return ReturPenjualan::model()->find("nomor={$this->nomor_dokumen}");
+                return ReturPenjualan::model()->find('nomor=:nomor', [':nomor' => $this->nomor_dokumen]);
 
-            case InventoryBalance::ASAL_SO;
-                return StockOpname::model()->find("nomor={$this->nomor_dokumen}");
+            case InventoryBalance::ASAL_SO:
+                return StockOpname::model()->find('nomor=:nomor', [':nomor' => $this->nomor_dokumen]);
 
-            case InventoryBalance::ASAL_RETURBELI;
-                return ReturPembelian::model()->find("nomor={$this->nomor_dokumen}");
+            case InventoryBalance::ASAL_RETURBELI:
+                return ReturPembelian::model()->find('nomor=:nomor', [':nomor' => $this->nomor_dokumen]);
         }
     }
 
