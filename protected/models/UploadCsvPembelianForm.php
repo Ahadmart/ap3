@@ -8,7 +8,6 @@
  */
 class UploadCsvPembelianForm extends CFormModel
 {
-
     public $csvFile;
     public $profilId;
 
@@ -57,10 +56,9 @@ class UploadCsvPembelianForm extends CFormModel
 
         try {
             if ($pembelian->save()) {
-
                 $fp = fopen($this->csvFile->tempName, 'r');
                 if ($fp) {
-                    $line = fgetcsv($fp, 1000, ",");
+                    $line = fgetcsv($fp, 1000, ',');
                     //  print_r($line); exit;
                     do {
                         if ($line[0] == 'barcode') {
@@ -78,7 +76,7 @@ class UploadCsvPembelianForm extends CFormModel
 
                         // Jika ada struktur, maka (langsung) input struktur.
                         if (!empty($line[13])) {
-                            $sql = "
+                            $sql = '
                                 SELECT
                                     id, parent_id
                                 FROM
@@ -86,7 +84,7 @@ class UploadCsvPembelianForm extends CFormModel
 
                                 WHERE
                                     nama = :namaStruk AND `level` = :level
-                                ";
+                                ';
 
                             $strukLv1Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[11], ':level' => 1])->queryRow();
                             // $strukLv1Ada = StrukturBarang::model()->find('nama=:strukLv1 AND level=1', [':strukLv1' => $line[11]]);
@@ -95,7 +93,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 $strukLv1Baru->nama  = $line[11];
                                 $strukLv1Baru->level = 1;
                                 if (!$strukLv1Baru->save()) {
-                                    throw new Exception("Gagal simpan struktur (lv1) baru", 500);
+                                    throw new Exception('Gagal simpan struktur (lv1) baru', 500);
                                 }
                                 $strukLv1Id = $strukLv1Baru->id;
                             } else {
@@ -103,7 +101,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 $strukLv1Id = $strukLv1Ada['id'];
                             }
 
-                            $sql = "
+                            $sql = '
                                 SELECT
                                     lv2.id, lv2.parent_id
                                 FROM
@@ -113,7 +111,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 WHERE
                                     lv2.nama = :namaStruk AND lv2.`level` = :level
                                         AND lv1.nama = :namaLevel1
-                                ";
+                                ';
                             $strukLv2Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[12], ':level' => 2, ':namaLevel1' => $line[11]])->queryRow();
                             // $strukLv2Ada = StrukturBarang::model()->find('nama=:strukLv2 AND level=2', [':strukLv2' => $line[12]]);
                             if (empty($strukLv2Ada)) {
@@ -122,7 +120,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 $strukLv2Baru->level     = 2;
                                 $strukLv2Baru->parent_id = $strukLv1Id;
                                 if (!$strukLv2Baru->save()) {
-                                    throw new Exception("Gagal simpan struktur (lv2) baru", 500);
+                                    throw new Exception('Gagal simpan struktur (lv2) baru', 500);
                                 }
                                 $strukLv2Id = $strukLv2Baru->id;
                             } else {
@@ -134,7 +132,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 $strukLv2Id = $strukLv2Ada['id'];
                             }
 
-                            $sql = "
+                            $sql = '
                                 SELECT
                                     lv3.id, lv3.parent_id
                                 FROM
@@ -147,7 +145,7 @@ class UploadCsvPembelianForm extends CFormModel
                                     lv3.nama = :namaStruk AND lv3.`level` = :level
                                         AND lv2.nama = :namaLevel2
                                         AND lv1.nama = :namaLevel1
-                                ";
+                                ';
                             $strukLv3Ada = Yii::app()->db->createCommand($sql)->bindValues([':namaStruk' => $line[13], ':level' => 3, ':namaLevel2' => $line[12], ':namaLevel1' => $line[11]])->queryRow();
                             // $strukLv3Ada = StrukturBarang::model()->find('nama=:strukLv3 AND level=3', [':strukLv3' => $line[13]]);
                             if (empty($strukLv3Ada)) {
@@ -156,7 +154,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 $strukLv3Baru->level     = 3;
                                 $strukLv3Baru->parent_id = $strukLv2Id;
                                 if (!$strukLv3Baru->save()) {
-                                    throw new Exception("Gagal simpan struktur (lv3) baru", 500);
+                                    throw new Exception('Gagal simpan struktur (lv3) baru', 500);
                                 }
                                 $strukLv3Id = $strukLv3Baru->id;
                             } else {
@@ -176,7 +174,7 @@ class UploadCsvPembelianForm extends CFormModel
                                 $kategoriBaru       = new KategoriBarang;
                                 $kategoriBaru->nama = $line[8];
                                 if (!$kategoriBaru->save()) {
-                                    throw new Exception("Gagal simpan kategori baru", 500);
+                                    throw new Exception('Gagal simpan kategori baru', 500);
                                 }
                                 $kategoriId = $kategoriBaru->id;
                             } else {
@@ -188,7 +186,7 @@ class UploadCsvPembelianForm extends CFormModel
                             $satuanBaru       = new SatuanBarang;
                             $satuanBaru->nama = $line[7];
                             if (!$satuanBaru->save()) {
-                                throw new Exception("Gagal simpan satuan baru", 500);
+                                throw new Exception('Gagal simpan satuan baru', 500);
                             }
                             $satuanId = $satuanBaru->id;
                         } else {
@@ -198,7 +196,8 @@ class UploadCsvPembelianForm extends CFormModel
                         if (is_null($barangAda)) {
                             /* Jika belum ada barcode nya, maka buat barang baru */
 
-                            $barangBaru            = new Barang;
+                            $barangBaru            = new Barang();
+                            $barangBaru->scenario  = 'import';
                             $barangBaru->barcode   = $line[0];
                             $barangBaru->nama      = $line[2];
                             $barangBaru->satuan_id = $satuanId;
@@ -210,8 +209,11 @@ class UploadCsvPembelianForm extends CFormModel
                             if (!empty($line[13])) {
                                 $barangBaru->struktur_id = $strukLv3Id;
                             }
+                            // if (!$barangBaru->validate()) {
+                            //     throw new Exception('Gagal validasi barang baru: ' . serialize($barangBaru->getErrors()), 500);
+                            // }
                             if (!$barangBaru->save()) {
-                                throw new Exception("Gagal simpan barang baru", 500);
+                                throw new Exception('Gagal simpan barang baru: ' . serialize($barangBaru->getErrors()), 500);
                             }
                             $barangId = $barangBaru->id;
                             /* Jadikan supplier default ke profil ini */
@@ -220,7 +222,7 @@ class UploadCsvPembelianForm extends CFormModel
                             $supplierBarang->supplier_id = $profilId;
                             $supplierBarang->default     = SupplierBarang::SUPPLIER_DEFAULT;
                             if (!$supplierBarang->save()) {
-                                throw new Exception("Gagal simpan Supplier Barang", 500);
+                                throw new Exception('Gagal simpan Supplier Barang', 500);
                             }
                         } else {
                             $barangId = $barangAda->id;
@@ -245,11 +247,11 @@ class UploadCsvPembelianForm extends CFormModel
                             }
 
                             if (is_null(SupplierBarang::model()->find('supplier_id=:supplierId AND barang_id=:barangId', [':supplierId' => $profilId, ':barangId' => $barangId]))) {
-                                $supplierBarang = new SupplierBarang;
-                                $supplierBarang->barang_id = $barangId;
+                                $supplierBarang              = new SupplierBarang;
+                                $supplierBarang->barang_id   = $barangId;
                                 $supplierBarang->supplier_id = $profilId;
                                 if (!$supplierBarang->save()) {
-                                    throw new Exception("Gagal simpan ke SupplierBarang: supplier_id=" . $profilId . ", barang_id=" . $barangId, 500);
+                                    throw new Exception('Gagal simpan ke SupplierBarang: supplier_id=' . $profilId . ', barang_id=' . $barangId, 500);
                                 }
                             }
 
@@ -278,7 +280,7 @@ class UploadCsvPembelianForm extends CFormModel
                     'pembelianId' => $pembelian->id,
                 ];
             } else {
-                throw new Exception("Gagal Simpan Pembelian");
+                throw new Exception('Gagal Simpan Pembelian');
             }
         } catch (Exception $ex) {
             $transaction->rollback();
