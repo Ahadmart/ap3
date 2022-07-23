@@ -543,7 +543,7 @@ class ReturpembelianController extends Controller
             if ($result['sukses']) {
                 $this->redirect(['returpembelian/view', 'id' => $id]);
             } else {
-                throw new CHttpException(500, 'Gagal terbit piutang');
+                throw new CHttpException($result['error']['code'], $result['error']['msg']);
             }
         }
     }
