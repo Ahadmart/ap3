@@ -67,9 +67,19 @@ class BarangController extends Controller
                 $this->redirect(['view', 'id' => $model->id]);
             }
         }
+        $lv1 = new StrukturBarang('search');
+        $lv1->unsetAttributes();  // clear any default values
+        $lv1->setAttribute('level', 1); // default yang tampil
+        $lv1->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+
+        $strukturDummy = new StrukturBarang('search');
+        $strukturDummy->unsetAttributes();  // clear any default values
+        $strukturDummy->setAttribute('level', 0);
 
         $this->render('tambah', [
             'model' => $model,
+            'lv1' => $lv1,
+            'strukturDummy' => $strukturDummy
         ]);
     }
 
