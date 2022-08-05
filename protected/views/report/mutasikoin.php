@@ -20,6 +20,7 @@ $this->renderPartial('_form_mutasikoin', ['model' => $model]);
                     <th>Tgl</th>
                     <th>Penjualan</th>
                     <th>Jumlah</th>
+                    <th>Saldo</th>
                     <th>Keterangan</th>
                 </tr>
             </thead>
@@ -54,14 +55,18 @@ $this->renderPartial('_form_mutasikoin', ['model' => $model]);
             '<td></td>' +
             '<td>Saldo Awal</td>' +
             '<td>' + data.saldoAwal + '</td>' +
+            '<td></td>' +
             '<td></td>';
         tableBody.append(tr);
+        var subTotal = parseInt(data.saldoAwal);
         data.mutasi.forEach(function(object) {
+            subTotal += parseInt(object.jumlah);
             var tr = document.createElement('tr');
             tr.innerHTML =
                 '<td>' + formatDate(object.tanggal) + '</td>' +
                 '<td>' + object.penjualan + '</td>' +
                 '<td>' + object.jumlah + '</td>' +
+                '<td>' + subTotal + '</td>' +
                 '<td>' + object.keterangan + '</td>';
             tableBody.append(tr);
         });
