@@ -36,15 +36,15 @@
  */
 class Profil extends CActiveRecord
 {
-
-    const TIPE_SUPPLIER = 1;
-    const TIPE_CUSTOMER = 2;
-    const TIPE_KARYAWAN = 3;
-    const AWAL_ID = 100; // id lebih kecil & / sama dari ini, untuk keperluan khusus. Untuk trx, mulai dari 101
+    const TIPE_SUPPLIER           = 1;
+    const TIPE_CUSTOMER           = 2;
+    const TIPE_KARYAWAN           = 3;
+    const TIPE_MEMBER_ONLINE      = 4;
+    const AWAL_ID                 = 100; // id lebih kecil & / sama dari ini, untuk keperluan khusus. Untuk trx, mulai dari 101
     const JENIS_KELAMIN_LAKI_LAKI = 0;
-    const JENIS_KELAMIN_WANITA = 1;
-    const PROFIL_INIT = 1; // Profil untuk init pembelian
-    const PROFIL_UMUM = 2; // Default profil untuk penjualan
+    const JENIS_KELAMIN_WANITA    = 1;
+    const PROFIL_INIT             = 1; // Profil untuk init pembelian
+    const PROFIL_UMUM             = 2; // Default profil untuk penjualan
 
     public $profileTipeId;
 
@@ -63,46 +63,46 @@ class Profil extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('tipe_id, nama', 'required'),
-            array('tipe_id, jenis_kelamin', 'numerical', 'integerOnly' => true),
-            array('nomor', 'length', 'max' => 45),
-            array('identitas, hp, surel', 'length', 'max' => 255),
-            array('nama, alamat1, alamat2, alamat3', 'length', 'max' => 100),
-            array('telp', 'length', 'max' => 20),
-            array('keterangan', 'length', 'max' => 1000),
-            array('updated_by', 'length', 'max' => 10),
-            array('created_at, updated_at, updated_by, tanggal_lahir', 'safe'),
+        return [
+            ['tipe_id, nama', 'required'],
+            ['tipe_id, jenis_kelamin', 'numerical', 'integerOnly' => true],
+            ['nomor', 'length', 'max' => 45],
+            ['identitas, hp, surel', 'length', 'max' => 255],
+            ['nama, alamat1, alamat2, alamat3', 'length', 'max' => 100],
+            ['telp', 'length', 'max' => 20],
+            ['keterangan', 'length', 'max' => 1000],
+            ['updated_by', 'length', 'max' => 10],
+            ['created_at, updated_at, updated_by, tanggal_lahir', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, tipe_id, nomor, identitas, nama, alamat1, alamat2, alamat3, telp, hp, jenis_kelamin, tanggal_lahir, surel, keterangan, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
-        );
+            ['id, tipe_id, nomor, identitas, nama, alamat1, alamat2, alamat3, telp, hp, jenis_kelamin, tanggal_lahir, surel, keterangan, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+        ];
     }
 
     /*
-      public function defaultScope()
-      {
-      return array(
-      'order' => 'profil.nama',
-      );
-      }
+    public function defaultScope()
+    {
+    return array(
+    'order' => 'profil.nama',
+    );
+    }
      */
 
     public function scopes()
     {
         return [
-            'profilTrx' => [
-                'condition' => 'id>' . self::AWAL_ID
+            'profilTrx'    => [
+                'condition' => 'id>' . self::AWAL_ID,
             ],
             'tipeSupplier' => [
-                'condition' => 'tipe_id=' . self::TIPE_SUPPLIER
+                'condition' => 'tipe_id=' . self::TIPE_SUPPLIER,
             ],
             'tipeCustomer' => [
-                'condition' => 'tipe_id=' . self::TIPE_CUSTOMER
+                'condition' => 'tipe_id=' . self::TIPE_CUSTOMER,
             ],
-            'orderByNama' => [
-                'order' => 'nama'
-            ]
+            'orderByNama'  => [
+                'order' => 'nama',
+            ],
         ];
     }
 
@@ -113,10 +113,10 @@ class Profil extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-            'tipe' => array(self::BELONGS_TO, 'TipeProfil', 'tipe_id'),
-            'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
-        );
+        return [
+            'tipe'      => [self::BELONGS_TO, 'TipeProfil', 'tipe_id'],
+            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
+        ];
     }
 
     /**
@@ -124,25 +124,25 @@ class Profil extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'tipe_id' => 'Tipe',
-            'nomor' => 'Nomor (Member)',
-            'identitas' => 'Identitas (KTP/SIM/..)',
-            'nama' => 'Nama',
-            'alamat1' => 'Alamat1',
-            'alamat2' => 'Alamat2',
-            'alamat3' => 'Alamat3',
-            'telp' => 'Telp',
-            'hp' => 'Hp',
+        return [
+            'id'            => 'ID',
+            'tipe_id'       => 'Tipe',
+            'nomor'         => 'Nomor (Member)',
+            'identitas'     => 'Identitas (KTP/SIM/..)',
+            'nama'          => 'Nama',
+            'alamat1'       => 'Alamat1',
+            'alamat2'       => 'Alamat2',
+            'alamat3'       => 'Alamat3',
+            'telp'          => 'Telp',
+            'hp'            => 'Hp',
             'jenis_kelamin' => 'Jenis Kelamin',
             'tanggal_lahir' => 'Tanggal Lahir',
-            'surel' => 'Surel',
-            'keterangan' => 'Keterangan',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-            'created_at' => 'Created At',
-        );
+            'surel'         => 'Surel',
+            'keterangan'    => 'Keterangan',
+            'updated_at'    => 'Updated At',
+            'updated_by'    => 'Updated By',
+            'created_at'    => 'Created At',
+        ];
     }
 
     /**
@@ -185,14 +185,14 @@ class Profil extends CActiveRecord
             $criteria->addCondition('tipe_id=' . $this->profileTipeId);
         }
 
-        $sort = array(
-            'defaultOrder' => 't.nama'
-        );
+        $sort = [
+            'defaultOrder' => 't.nama',
+        ];
 
-        return new CActiveDataProvider($this, array(
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort' => $sort
-        ));
+            'sort'     => $sort,
+        ]);
     }
 
     /**
@@ -208,11 +208,10 @@ class Profil extends CActiveRecord
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
@@ -220,11 +219,11 @@ class Profil extends CActiveRecord
     public function listSupplierYangBukan($barangId)
     {
         return Yii::app()->db->createCommand()
-                        ->select('s.id, s.nama, s.alamat1, s.alamat2, s.alamat3')
-                        ->from($this->tableName() . ' s')
-                        ->where('s.tipe_id = 1 and s.id not in(select supplier_id from supplier_barang where barang_id = :barangId)', array(':barangId' => $barangId))
-                        ->order('s.nama, s.alamat1')
-                        ->queryAll();
+            ->select('s.id, s.nama, s.alamat1, s.alamat2, s.alamat3')
+            ->from($this->tableName() . ' s')
+            ->where('s.tipe_id = 1 and s.id not in(select supplier_id from supplier_barang where barang_id = :barangId)', [':barangId' => $barangId])
+            ->order('s.nama, s.alamat1')
+            ->queryAll();
     }
 
     public function getNamaTipe()
@@ -235,24 +234,24 @@ class Profil extends CActiveRecord
 
     public function listJenisKelamin()
     {
-        return array(
+        return [
             self::JENIS_KELAMIN_LAKI_LAKI => 'Laki-laki',
-            self::JENIS_KELAMIN_WANITA => 'Perempuan'
-        );
+            self::JENIS_KELAMIN_WANITA    => 'Perempuan',
+        ];
     }
 
     public function listTipe()
     {
-        return array(
+        return [
             self::TIPE_SUPPLIER => 'Supplier',
             self::TIPE_CUSTOMER => 'Customer',
-            self::TIPE_KARYAWAN => 'Karyawan'
-        );
+            self::TIPE_KARYAWAN => 'Karyawan',
+        ];
     }
 
     public function beforeValidate()
     {
-        $this->tanggal_lahir = !empty($this->tanggal_lahir) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_lahir), 'Y-m-d') : NULL;
+        $this->tanggal_lahir = !empty($this->tanggal_lahir) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_lahir), 'Y-m-d') : null;
         return parent::beforeValidate();
     }
 
@@ -272,4 +271,13 @@ class Profil extends CActiveRecord
         return is_null($this->nomor) || empty($this->nomor) || $this->nomor == 0 ? false : true;
     }
 
+    /**
+     * isMemberOL function
+     * Memeriksa apakah profil merupakan member online
+     * @return boolean true jika member, false jika bukan
+     */
+    public function isMemberOL()
+    {
+        return $this->tipe_id == self::TIPE_MEMBER_ONLINE ? true : false;
+    }
 }

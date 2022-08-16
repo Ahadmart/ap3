@@ -1533,9 +1533,9 @@ class ReportController extends Controller
 
     public function stockOpnameCsv($report)
     {
-        $timeStamp  = date("Y-m-d-H-i");
-        $namaFile   = "Stock Opname_{$report['namaToko']}_{$report['dari']}-{$report['sampai']}_{$timeStamp}";
-        $model = new ReportStockOpnameForm;
+        $timeStamp = date("Y-m-d-H-i");
+        $namaFile  = "Stock Opname_{$report['namaToko']}_{$report['dari']}-{$report['sampai']}_{$timeStamp}";
+        $model     = new ReportStockOpnameForm;
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
@@ -1751,6 +1751,23 @@ class ReportController extends Controller
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
             'csv'      => $csv,
+        ]);
+    }
+
+    public function actionMutasiPoin()
+    {
+        $model = new ReportMutasiPoinForm();
+
+        $this->render('mutasipoin', [
+            'model'  => $model,
+        ]);
+    }
+    public function actionMutasiKoin()
+    {
+        $model = new ReportMutasiKoinForm();
+
+        $this->render('mutasikoin', [
+            'model'  => $model,
         ]);
     }
 }

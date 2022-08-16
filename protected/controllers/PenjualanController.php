@@ -29,7 +29,8 @@ class PenjualanController extends Controller
     public function accessRules()
     {
         return [
-            ['deny', // deny guest
+            [
+                'deny', // deny guest
                 'users' => ['guest'],
             ],
         ];
@@ -82,13 +83,13 @@ class PenjualanController extends Controller
             if ($model->save()) {
                 $this->redirect(['ubah', 'id' => $model->id, 'uid' => Yii::app()->user->id]);
             }
-
         }
 
         $customerList = Profil::model()->findAll([
             'select'    => 'id, nama',
             'condition' => 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER,
-            'order'     => 'nama']);
+            'order'     => 'nama'
+        ]);
 
         $this->render('tambah', [
             'model'        => $model,
@@ -127,7 +128,6 @@ class PenjualanController extends Controller
             if ($model->save()) {
                 $this->redirect(['view', 'id' => $id]);
             }
-
         }
 
         $penjualanDetail = new PenjualanDetail('search');
@@ -165,6 +165,7 @@ class PenjualanController extends Controller
             PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
             PenjualanMultiHarga::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
             PenjualanDetail::model()->deleteAll('penjualan_id=:id', [':id' => $id]);
+            PenjualanMemberOnline::model()->deleteAll('penjualan_id=:id', [':id' => $id]);
             $model->delete();
         }
 
@@ -172,7 +173,6 @@ class PenjualanController extends Controller
         if (!isset($_GET['ajax'])) {
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
         }
-
     }
 
     /**
@@ -253,8 +253,8 @@ class PenjualanController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('view', ['id' => $data->id]) . '">' .
-            $data->nomor . '</a>';
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->nomor . '</a>';
         }
         return $return;
     }
@@ -268,8 +268,8 @@ class PenjualanController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
-            $data->tanggal . '</a>';
+                $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
+                $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -392,12 +392,15 @@ class PenjualanController extends Controller
         if ($draft) {
             $viewInvoice = '_invoice_draft';
         }
-        $mpdf->WriteHTML($this->renderPartial($viewInvoice, [
-            'modelHeader'     => $modelHeader,
-            'branchConfig'    => $branchConfig,
-            'customer'        => $customer,
-            'penjualanDetail' => $penjualanDetail,
-        ], true
+        $mpdf->WriteHTML($this->renderPartial(
+            $viewInvoice,
+            [
+                'modelHeader'     => $modelHeader,
+                'branchConfig'    => $branchConfig,
+                'customer'        => $customer,
+                'penjualanDetail' => $penjualanDetail,
+            ],
+            true
         ));
 
         $mpdf->SetDisplayMode('fullpage');
@@ -434,7 +437,8 @@ class PenjualanController extends Controller
         $profilList = Profil::model()->findAll([
             'select'    => 'id, nama',
             'condition' => $condition,
-            'order'     => 'nama']);
+            'order'     => 'nama'
+        ]);
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
         foreach ($profilList as $profil) {
@@ -600,7 +604,7 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
-                /*
+                    /*
                 case Device::TIPE_PDF_PRINTER:
                 $this->exportPdf($id);
                 break;
@@ -626,7 +630,7 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_NOTA);
                     break;
-                /*
+                    /*
                 case Device::TIPE_PDF_PRINTER:
                 $this->exportPdf($id);
                 break;
@@ -640,5 +644,4 @@ class PenjualanController extends Controller
             }
         }
     }
-
 }

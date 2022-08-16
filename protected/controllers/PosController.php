@@ -2,16 +2,21 @@
 
 class PosController extends Controller
 {
+    public $layout       = '//layouts/pos_column3';
+    public $namaProfil   = null;
+    public $profil       = null;
+    public $penjualanId  = null;
+    public $pesananId    = null;
+    public $memberOnline = null;
 
-    public $layout         = '//layouts/pos_column3';
-    public $namaProfil     = null;
-    public $profil         = null;
-    public $penjualanId    = null;
-    public $pesananId      = null;
     public $totalPenjualan = 0;
     public $showDiskonPerNota;
     public $showInfaq;
     public $showTarikTunai;
+    public $showKoinMOL;
+    public $showVoucherMOL;
+    public $showMember;
+    public $showMemberOL;
 
     /**
      * Security tambahan, user yang bisa POS, adalah user dengan role kasir,
@@ -41,7 +46,7 @@ class PosController extends Controller
         Maka ini dipakai terlebih dahulu
          */
         $suspendedSale = Penjualan::model()->find([
-            'condition' => "t.status=:sDraft and t.profil_id=:pUmum and t.updated_by=:userId and penjualan_detail.id IS NULL",
+            'condition' => 't.status=:sDraft and t.profil_id=:pUmum and t.updated_by=:userId and penjualan_detail.id IS NULL',
             'order'     => 't.id',
             'join'      => 'LEFT JOIN penjualan_detail ON t.id=penjualan_detail.penjualan_id',
             'params'    => [
@@ -116,15 +121,37 @@ class PosController extends Controller
         $configShowDiskonNota = Config::model()->find("nama='pos.showdiskonpernota'");
         $configShowInfaq      = Config::model()->find("nama='pos.showinfak'");
         $configShowTarikTunai = Config::model()->find("nama='pos.showtariktunai'");
+        $configShowMember     = Config::model()->find("nama='pos.showmember'");
+        $configShowMemberOL   = Config::model()->find("nama='pos.showmembership'");
 
         $showDiskonPerNota = is_null($configShowDiskonNota) ? 0 : $configShowDiskonNota->nilai;
         $showInfaq         = is_null($configShowInfaq) ? 0 : $configShowInfaq->nilai;
         $showTarikTunai    = is_null($configShowTarikTunai) ? 0 : $configShowTarikTunai->nilai;
+        $showMember        = is_null($configShowMember) ? 0 : $configShowMember->nilai;
+        $showMemberOL      = is_null($configShowMemberOL) ? 0 : $configShowMemberOL->nilai;
 
+        $memberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+        $poins    = null;
+        if (!is_null($memberOL)) {
+            $clientAPI          = new AhadMembershipClient();
+            $r                  = json_decode($clientAPI->view($memberOL->nomor_member));
+            $this->memberOnline = $r->data->profil;
+
+            $infoPoinMOL = json_decode($clientAPI->infoPoin());
+            $poins       = $model->getCurPoinMOL($infoPoinMOL->data->satuPoin, $infoPoinMOL->data->satuKoin);
+
+            if ($r->data->profil->koin > 0) {
+                $this->showKoinMOL = true;
+            }
+        }
         $this->totalPenjualan    = $model->getTotal();
         $this->showDiskonPerNota = $showDiskonPerNota;
         $this->showInfaq         = $showInfaq;
         $this->showTarikTunai    = $showTarikTunai;
+        $this->showMember        = $showMember;
+        $this->showMemberOL      = $showMemberOL;
+
+        $this->showVoucherMOL = true;
 
         $this->render(
             'ubah',
@@ -137,6 +164,7 @@ class PosController extends Controller
                 'showInfaq'            => $showInfaq,
                 'showTarikTunai'       => $showTarikTunai,
                 'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
+                'poins'                => $poins,
             ]
         );
     }
@@ -278,7 +306,7 @@ class PosController extends Controller
     public function actionCariBarang($term)
     {
         $q = new CDbCriteria();
-        $q->addCondition("(barcode like :term OR nama like :term) AND status = :status");
+        $q->addCondition('(barcode like :term OR nama like :term) AND status = :status');
         $q->order  = 'nama';
         $q->params = [':term' => "%{$term}%", ':status' => Barang::STATUS_AKTIF];
         $barangs   = Barang::model()->findAll($q);
@@ -330,7 +358,13 @@ class PosController extends Controller
         echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
         number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
          */
-        echo number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'] - $_POST['tarikTunai'], 0, ',', '.');
+        $bayar      = empty($_POST['bayar']) ? 0 : $_POST['bayar'];
+        $total      = empty($_POST['total']) || $_POST['total'] == 'NaN' ? 0 : $_POST['total'];
+        $diskonNota = empty($_POST['diskonNota']) ? 0 : $_POST['diskonNota'];
+        $koinMOL    = empty($_POST['koinMOL']) ? 0 : $_POST['koinMOL'];
+        $infaq      = empty($_POST['infaq']) ? 0 : $_POST['infaq'];
+        $tarikTunai = empty($_POST['tarikTunai']) ? 0 : $_POST['tarikTunai'];
+        echo number_format($bayar - $total + $diskonNota + $koinMOL - $infaq - $tarikTunai, 0, ',', '.');
     }
 
     public function renderQtyLinkEditable($data, $row)
@@ -354,7 +388,7 @@ class PosController extends Controller
             }
             return CHtml::link(
                 rtrim(rtrim(number_format($data->harga_jual, 2, ',', '.'), '0'), ','),
-                "",
+                '',
                 [
                     'class'     => 'editable-harga',
                     'data-type' => 'text',
@@ -522,11 +556,78 @@ class PosController extends Controller
                 $return = [
                     'sukses' => false,
                     'error'  => [
-                        'code' => '500',
+                        'code' => '404',
                         'msg'  => 'Data Customer tidak ditemukan',
                     ],
                 ];
             }
+        }
+        $this->renderJSON($return);
+    }
+
+    /**
+     * GantiMember function
+     * Ganti Member Online by nomor member
+     * @param int $id penjualan_id
+     * @uses $_POST['nomor] nomor member online
+     * @return string json profil member online atau error
+     */
+    public function actionGantiMember($id)
+    {
+        $return = [
+            'sukses' => false,
+            'error'  => [
+                'code' => '500',
+                'msg'  => 'Sempurnakan input!',
+            ],
+        ];
+
+        if (isset($_POST['nomor']) && !empty($_POST['nomor'])) {
+            $clientAPI = new AhadMembershipClient();
+            $profil    = json_decode($clientAPI->view($_POST['nomor']), true);
+            if ($profil['statusCode'] == 200) {
+                // Ganti customer offline ke profil member online
+                $customer  = Profil::model()->find('tipe_id=:tipeId', [':tipeId' => Profil::TIPE_MEMBER_ONLINE]);
+                $penjualan = $this->loadModel($id);
+                $penjualan->gantiCustomer($customer);
+                // Buat atau ganti penjualan_member_online
+                $penjualanMOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+                if (is_null($penjualanMOL)) {
+                    $penjualanMOL = new PenjualanMemberOnline;
+                }
+                $penjualanMOL->nomor_member = $profil['data']['profil']['nomor'];
+                $penjualanMOL->penjualan_id = $id;
+                $penjualanMOL->koin_dipakai = 0;
+                $penjualanMOL->poin         = 0;
+                $penjualanMOL->koin         = 0;
+                $penjualanMOL->level        = 0;
+                $penjualanMOL->level_nama   = $profil['data']['profil']['levelNama'];
+                $penjualanMOL->total_poin   = $profil['data']['profil']['poin'];
+                $penjualanMOL->total_koin   = $profil['data']['profil']['koin'];
+                if (!$penjualanMOL->save()) {
+                    throw new Exception('Gagal simpan penjualan_member_online: ' . var_export($penjualanMOL->getErrors(), true));
+                }
+            }
+            $this->renderJSON($profil);
+        } else {
+            // Ganti ke profil umum, hapus penjualan_member_online jika ada
+            $customer  = Profil::model()->findByPk(Profil::PROFIL_UMUM);
+            $penjualan = $this->loadModel($id);
+            $penjualan->gantiCustomer($customer);
+            $penjualanMOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+            if (!is_null($penjualanMOL)) {
+                $penjualanMOL->delete();
+            }
+            $return = [
+                'statusCode' => 200,
+                'data'       => [
+                    'profil' => [
+                        'nomor'       => '-',
+                        'namaLengkap' => '-',
+                        'alamat'      => '',
+                    ],
+                ],
+            ];
         }
         $this->renderJSON($return);
     }
@@ -589,7 +690,7 @@ class PosController extends Controller
                     'msg'  => 'Invalid User Name',
                 ],
             ];
-        } else if (!$user->validatePassword($pwd)) {
+        } elseif (!$user->validatePassword($pwd)) {
             return [
                 'sukses' => false,
                 'error'  => [
@@ -597,7 +698,7 @@ class PosController extends Controller
                     'msg'  => 'Invalid Password',
                 ],
             ];
-        } else if ($this->isAdmin($user)) {
+        } elseif ($this->isAdmin($user)) {
             Yii::app()->user->setState('kasirOtorisasiAdmin', $penjualanId);
             Yii::app()->user->setState('kasirOtorisasiUserId', $user->id);
             return [
@@ -713,7 +814,6 @@ class PosController extends Controller
 
     public function actionPesanan()
     {
-
         $model = new So('search');
         $model->unsetAttributes(); // clear any default values
         if (isset($_GET['So'])) {
@@ -911,7 +1011,7 @@ class PosController extends Controller
         if ($pesanan->save()) {
             $this->redirect(['pesananubah', 'id' => $pesanan->id]);
         } else {
-            throw new CHttpException("Gagal simpan pesanan!");
+            throw new CHttpException('Gagal simpan pesanan!');
         }
     }
 
@@ -967,7 +1067,7 @@ class PosController extends Controller
         $kasir   = $this->posAktif();
         $printId = $kasir->device->default_printer_id;
         if (is_null($printId)) {
-            throw new CHttpException("Tidak ada default Printer!");
+            throw new CHttpException('Tidak ada default Printer!');
         }
         $device  = Device::model()->findByPk($printId);
         $pesanan = So::model()->findByPk($id);
@@ -978,16 +1078,16 @@ class PosController extends Controller
             $device->cashdrawer_kick = 0;
             $device->printLpr($pesanan->strukTextLPR());
             $this->redirect(['pesananubah', 'id' => $id]);
-        } else if ($device->tipe_id == Device::TIPE_TEXT_PRINTER) {
+        } elseif ($device->tipe_id == Device::TIPE_TEXT_PRINTER) {
             $nomor    = $pesanan->nomor;
             $namaFile = "pesanan-{$nomor}";
-            header("Content-type: text/plain");
+            header('Content-type: text/plain');
             header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
-            header("Pragma: no-cache");
-            header("Expire: 0");
+            header('Pragma: no-cache');
+            header('Expire: 0');
             echo $device->revisiText($text);
             Yii::app()->end();
-        } else if ($device->tipe_id == Device::TIPE_BROWSER_PRINTER) {
+        } elseif ($device->tipe_id == Device::TIPE_BROWSER_PRINTER) {
             $this->renderPartial('//penjualan/_print_autoclose_browser', ['text' => $text]);
         }
     }

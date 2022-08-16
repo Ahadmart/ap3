@@ -59,15 +59,38 @@ class PosmController extends PosController
         $configShowDiskonNota = Config::model()->find("nama='pos.showdiskonpernota'");
         $configShowInfaq      = Config::model()->find("nama='pos.showinfak'");
         $configShowTarikTunai = Config::model()->find("nama='pos.showtariktunai'");
+        $configShowMember     = Config::model()->find("nama='pos.showmember'");
+        $configShowMemberOL   = Config::model()->find("nama='pos.showmembership'");
 
         $showDiskonPerNota = is_null($configShowDiskonNota) ? 0 : $configShowDiskonNota->nilai;
         $showInfaq         = is_null($configShowInfaq) ? 0 : $configShowInfaq->nilai;
         $showTarikTunai    = is_null($configShowTarikTunai) ? 0 : $configShowTarikTunai->nilai;
+        $showMember        = is_null($configShowMember) ? 0 : $configShowMember->nilai;
+        $showMemberOL      = is_null($configShowMemberOL) ? 0 : $configShowMemberOL->nilai;
+
+        $memberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+        $poins    = null;
+        if (!is_null($memberOL)) {
+            $clientAPI          = new AhadMembershipClient();
+            $r                  = json_decode($clientAPI->view($memberOL->nomor_member));
+            $this->memberOnline = $r->data->profil;
+
+            $infoPoinMOL = json_decode($clientAPI->infoPoin());
+            $poins       = $model->getCurPoinMOL($infoPoinMOL->data->satuPoin, $infoPoinMOL->data->satuKoin);
+
+            if ($r->data->profil->koin > 0) {
+                $this->showKoinMOL = true;
+            }
+        }
 
         $this->totalPenjualan    = $model->getTotal();
         $this->showDiskonPerNota = $showDiskonPerNota;
         $this->showInfaq         = $showInfaq;
         $this->showTarikTunai    = $showTarikTunai;
+        $this->showMember        = $showMember;
+        $this->showMemberOL      = $showMemberOL;
+
+        $this->showVoucherMOL = true;
 
         $scanBarcode = null;
         /* Ada scan dari aplikasi barcode scanner (android) */
@@ -84,6 +107,7 @@ class PosmController extends PosController
                 'tipeCari'             => $configCariBarang->nilai,
                 'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
                 'scanBarcode'          => $scanBarcode,
+                'poins'                => $poins,
             ]
         );
     }
@@ -203,7 +227,7 @@ class PosmController extends PosController
         if (isset($_GET['barcodescan'])) {
             $scanBarcode = (string) $_GET['barcodescan'];
         }
-        $this->render('cekharga',[
+        $this->render('cekharga', [
             'urlCallback' => $urlCallback,
             'scanBarcode' => $scanBarcode,
         ]);

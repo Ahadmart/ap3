@@ -248,11 +248,13 @@ table tr td {
     cursor: pointer;
 }
 
-#ganti-customer {
+#ganti-customer,
+#ganti-member {
     margin-top: 10px;
 }
 
-#data-customer {
+#data-customer,
+#data-member {
     color: #fff;
     margin-top: 10px;
     margin-bottom: 15px;
@@ -269,6 +271,10 @@ table tr td {
         font-weight: bold;
         display: block;
         margin: 10px 0;
+    }
+    info {
+        margin-top: 10px;
+        display: block;
     }
 }
 .ac-nama {
@@ -308,12 +314,15 @@ input[name="tarik-tunai"].tarik-tunai,
 #account,
 #jenisbayar,
 #nomor-customer,
+#nomor-member,
 #admin-user,
 #admin-password,
 #akm-no,
 #pesanan-no,
 #infaq,
-#diskon-nota {
+#diskon-nota,
+#koin-mol,
+#voucher-mol {
     background-color: rgba(0, 0, 0, 0.5);
     color: rgb(255, 255, 0);
     border-color: transparent;
@@ -324,12 +333,15 @@ input[name="tarik-tunai"].tarik-tunai,
 #account:focus,
 #jenisbayar:focus,
 #nomor-customer:focus,
+#nomor-member:focus,
 #admin-user:focus,
 #admin-password:focus,
 #akm-no:focus,
 #pesanan-no:focus,
 #infaq:focus,
-#diskon-nota:focus {
+#diskon-nota:focus,
+#koin-mol:focus,
+#voucher-mol:focus {
     border-color: #00bcd4;
     box-shadow: 0px 0px 15px #00bcd4;
 }
