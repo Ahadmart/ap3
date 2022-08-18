@@ -20,8 +20,11 @@ $form = $this->beginWidget('CActiveForm', array(
     <div class="large-8 columns">
         <div class="row collapse">
             <label>Profil</label>
-            <div class="small-9 columns">
+            <div class="small-8 columns">
                 <?php echo CHtml::textField('profil', empty($model->profilId) ? '' : $model->namaProfil, array('size' => 60, 'maxlength' => 500, 'disabled' => 'disabled')); ?>
+            </div>
+            <div class="small-1 columns">
+                <a class="tiny bigfont secondary button postfix" id="tombol-hapusprofil"><i class="fa fa-eraser"></i></a>
             </div>
             <div class="small-3 columns">
                 <a class="tiny bigfont button postfix" id="tombol-browse" accesskey="p"><span class="ak">P</span>ilih..</a>

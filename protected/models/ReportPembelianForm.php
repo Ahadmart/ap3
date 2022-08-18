@@ -4,12 +4,12 @@
  * ReportPembelianForm class.
  * ReportPembelianForm is the data structure for keeping
  * report pembelian form data. It is used by the 'pembelian' action of 'ReportController'.
- * 
+ *
  * The followings are the available model relations:
  * @property Profil $profil
  */
-class ReportPembelianForm extends CFormModel {
-
+class ReportPembelianForm extends CFormModel
+{
    public $profilId;
    public $dari;
    public $sampai;
@@ -17,49 +17,106 @@ class ReportPembelianForm extends CFormModel {
    /**
     * Declares the validation rules.
     */
-   public function rules() {
-      return array(
-          array('dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'),
-          array('profilId', 'safe')
-      );
+   public function rules()
+   {
+      return [
+         ['dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'],
+         ['profilId', 'safe'],
+      ];
    }
 
    /**
     * Declares attribute labels.
     */
-   public function attributeLabels() {
-      return array(
-          'profilId' => 'Profil',
-          'dari' => 'Dari',
-          'sampai' => 'Sampai'
-      );
+   public function attributeLabels()
+   {
+      return [
+         'profilId' => 'Profil',
+         'dari'     => 'Dari',
+         'sampai'   => 'Sampai',
+      ];
    }
 
    /**
     * @return array relational rules.
     */
-   public function relations() {
-      return array(
-          'profil' => array(self::BELONGS_TO, 'Profil', 'profilId'),
-      );
+   public function relations()
+   {
+      return [
+         'profil' => [self::BELONGS_TO, 'Profil', 'profilId'],
+      ];
    }
 
-   public function getNamaProfil() {
+   public function getNamaProfil()
+   {
       $profil = Profil::model()->findByPk($this->profilId);
       return $profil->nama;
    }
 
-   public function reportPembelian() {
-      $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d');
-      $sampai = date_format(date_create_from_format('d-m-Y', $this->sampai), 'Y-m-d');
-      // echo $dari.' sampai '.$sampai;
-      $criteria = new CDbCriteria();
-      $criteria->addBetweenCondition("date_format(tanggal,'%Y-%m-%d')", $dari, $sampai);
-//      if (!empty($this->profilId)) {
-//         $criteria->addCondition('profil_id=:profilId', array(':profilId' => $this->profilId));
-//      }
-      $pembelian = Pembelian::model()->findAll($criteria);
-      return $pembelian;
+   public function reportPembelian()
+   {
+      $dari   = DateTime::createFromFormat('d-m-Y', $this->dari);
+      $sampai = DateTime::createFromFormat('d-m-Y', $this->sampai);
+      $sampai->modify('+1 day');
+
+      $tanggalAwal  = $dari->format('Y-m-d') . ' 00:00:00';
+      $tanggalAkhir = $sampai->format('Y-m-d') . ' 00:00:00';
+
+      $profilCond = '';
+      if (!empty($this->profilId)) {
+         $profilCond .= " AND p.profil_id = :profilId";
+      }
+
+      $sql = "
+         SELECT
+            pembelian_id,
+            p.tanggal,
+            p.referensi,
+            p.nomor,
+            SUM(harga_beli * harga_jual) AS jumlah,
+            profil.nama AS profil
+         FROM
+            pembelian_detail AS d
+               JOIN
+            pembelian AS p ON p.id = d.pembelian_id
+               AND p.tanggal >= :tanggalAwal
+               AND p.tanggal < :tanggalAkhir
+               AND p.status != :statusDraft
+               JOIN
+            profil ON profil.id = p.profil_id {$profilCond}
+         GROUP BY p.id
+        ";
+      $command = Yii::app()->db->createCommand($sql);
+      $command->bindValue(":tanggalAwal", $tanggalAwal);
+      $command->bindValue(":tanggalAkhir", $tanggalAkhir);
+      $command->bindValue(":statusDraft", Pembelian::STATUS_DRAFT);
+
+      if (!empty($this->profilId)) {
+         $command->bindValue(":profilId", $this->profilId);
+      }
+
+      $r['detail'] = $command->queryAll();
+
+      return $r;
    }
 
+   public function toCsv()
+   {
+      return $this->array2csv($this->reportPembelian());
+   }
+
+   public function array2csv(array &$array)
+   {
+      if (count($array) == 0) {
+         return null;
+      }
+      ob_start();
+      $df = fopen('php://output', 'w');
+      fputcsv($df, array_keys(reset($array)));
+      foreach ($array as $row) {
+         fputcsv($df, $row);
+      }
+      fclose($df);
+      return ob_get_clean();
+   }
 }
