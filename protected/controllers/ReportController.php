@@ -1799,9 +1799,9 @@ class ReportController extends Controller
 
     public function actionPrintPembelian()
     {
-        Yii::log("Masuk action Print Pembelian");
+        // Yii::log("Masuk action Print Pembelian");
         if (isset($_POST['ReportPembelianForm'])) {
-            Yii::log("PrintId: " . $_POST['ReportPembelianForm']['printer']);
+            // Yii::log("PrintId: " . $_POST['ReportPembelianForm']['printer']);
             $device = Device::model()->findByPk($_POST['ReportPembelianForm']['printer']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
@@ -1809,7 +1809,7 @@ class ReportController extends Controller
                     // $this->hutangPiutangPdf($_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    Yii::log("Masuk action Print Pembelian CSV");
+                    // Yii::log("Masuk action Print Pembelian CSV");
                     $this->pembelianCsv($_POST['ReportPembelianForm']);
                     break;
             }
