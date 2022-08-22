@@ -11,6 +11,10 @@ $form = $this->beginWidget('CActiveForm', array(
     // See class documentation of CActiveForm for details on this,
     // you need to use the performAjaxValidation()-method described there.
     'enableAjaxValidation' => false,
+    'action'               => $this->createUrl($printHandle),
+    'htmlOptions'          => [
+        'target' => '_blank',
+    ],
         ));
 ?>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
@@ -42,10 +46,25 @@ $form = $this->beginWidget('CActiveForm', array(
         <?php echo $form->error($model, 'sampai', array('class' => 'error')); ?>
     </div>
 </div>
-
+<hr />
 <div class="row">
-    <div class="small-12 columns">
-        <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
+    <?php
+    /*
+<div class="small-12 medium-2 columns">
+<?php echo $form->labelEx($model, 'kertas'); ?>
+<?php echo $form->dropDownList($model, 'kertas', $kertasPdf); ?>
+<?php echo $form->error($model, 'kertas', ['class' => 'error']); ?>
+</div>
+ */
+    ?>
+    <div class="small-6 medium-2 large-1 columns">
+        <?php echo $form->labelEx($model, 'printer'); ?>
+        <?php echo $form->dropDownList($model, 'printer', $optionPrinters); ?>
+        <?php echo $form->error($model, 'printer', ['class' => 'error']); ?>
+    </div>
+    <div class="small-6 medium-2 large-1 columns end">
+        <label for="tombol-cetak">&nbsp;</label>
+        <?php echo CHtml::submitButton('Submit', ['name' => 'cetak', 'id' => 'tombol-cetak', 'class' => 'tiny bigfont success button']); ?>
     </div>
 </div>
 

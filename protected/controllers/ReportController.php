@@ -1,5 +1,7 @@
 <?php
 
+use Mpdf\Tag\Em;
+
 class ReportController extends Controller
 {
     public function actionIndex()
@@ -39,12 +41,30 @@ class ReportController extends Controller
         }
         $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
-
+        $optionPrinters       = [];
+        // Untuk render html select option
+        foreach ($printers as $printer) {
+            switch ($printer['tipe_id']) {
+                case Device::TIPE_PDF_PRINTER:
+                    // foreach ($kertasPdf as $key => $value) {
+                    //     $optionPrinters['PDF'][$printer['id'] . '|' . $key] = $value;
+                    // }
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    $optionPrinters[$printer['id']] = $printer['nama'];
+                    break;
+                default:
+                    // Nothing... yet
+                    break;
+            }
+        };
         $this->render('pembelian', [
-            'model'    => $model,
-            'profil'   => $profil,
-            'report'   => $report,
-            'printers' => $printers,
+            'model'          => $model,
+            'profil'         => $profil,
+            'report'         => $report,
+            'printers'       => $printers,
+            'optionPrinters' => $optionPrinters,
+            'printHandle'    => 'printpembelian',
         ]);
     }
 
@@ -1779,32 +1799,44 @@ class ReportController extends Controller
 
     public function actionPrintPembelian()
     {
-        if (isset($_GET['printId'])) {
-            $device = Device::model()->findByPk($_GET['printId']);
+        Yii::log("Masuk action Print Pembelian");
+        if (isset($_POST['ReportPembelianForm'])) {
+            Yii::log("PrintId: " . $_POST['ReportPembelianForm']['printer']);
+            $device = Device::model()->findByPk($_POST['ReportPembelianForm']['printer']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
                     /* Ada tambahan parameter kertas untuk tipe pdf */
                     // $this->hutangPiutangPdf($_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    $this->pembelianCsv();
+                    Yii::log("Masuk action Print Pembelian CSV");
+                    $this->pembelianCsv($_POST['ReportPembelianForm']);
                     break;
             }
         }
     }
 
-    public function pembelianCsv()
+    public function pembelianCsv($formData)
     {
         $reportPembelian = new ReportPembelianForm;
+        $reportPembelian->attributes = $formData;
+        if (!$reportPembelian->validate()) {
+            throw new CHttpException(500, 'Message: '.json_encode($reportPembelian->getErrors()));
+        }
         $csv             = $reportPembelian->toCsv();
+
+        Yii::log("Hasil CSV:" . $csv);
 
         if (is_null($csv)) {
             throw new Exception('Tidak ada data', 500);
         }
 
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp = date('Y-m-d-H-i');
-        $namaFile  = "Pembelian {$namaToko->nilai} {$timeStamp}";
+        $profil = '';
+        if (!empty($formData['profilId'])) {
+            $profil = ' ' . Profil::model()->findByPk($formData['profilId'])->nama;
+        }
+        $namaFile  = "Pembelian {$namaToko->nilai} {$formData['dari']} {$formData['sampai']}{$profil}";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,

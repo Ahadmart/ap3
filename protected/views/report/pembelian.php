@@ -11,9 +11,13 @@ $this->breadcrumbs = [
 ];
 
 $this->boxHeader['small']  = 'Pembelian';
-$this->boxHeader['normal'] = '<i class="fa fa-file fa-lg"></i> Laporan Pembelian';
+$this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Pembelian';
 
-$this->renderPartial('_form_pembelian', ['model' => $model]);
+$this->renderPartial('_form_pembelian', [
+    'model'          => $model,
+    'optionPrinters' => $optionPrinters,
+    'printHandle'    => $printHandle,
+]);
 ?>
 <div class="row">
     <div class="small-12 columns">
@@ -22,62 +26,7 @@ $this->renderPartial('_form_pembelian', ['model' => $model]);
         </div>
     </div>
 </div>
-<?php
-if (!empty($report['detail'])) :
-?>
-    <div class="row">
-        <div class="small-6 columns">
-            <?php
-            $this->renderPartial('_form_pembelian_cetak', [
-                'model'    => $model,
-                'printers' => $printers,
-                //'kertasPdf' => $kertasPdf
-            ]);
-            ?>
-        </div>
-    </div>
-    <div class="row">
-        <div class="small-12 columns">
-            <table class="tabel-index responsive">
-                <thead>
-                    <tr>
-                        <th class="rata-kanan">No</th>
-                        <th>Tanggal</th>
-                        <th>Referensi</th>
-                        <th>Nomor</th>
-                        <th class="rata-kanan">Total</th>
-                        <th>Profil</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $i = 1;
-                    foreach ($report['detail'] as $barisReport) :
-                    ?>
-                        <tr>
-                            <td class="rata-kanan"><?= $i ?>
-                            </td>
-                            <td><?php echo $barisReport['tanggal']; ?>
-                            </td>
-                            <td><?= $barisReport['referensi']; ?>
-                            </td>
-                            <td><a href="<?php echo Yii::app()->createUrl('pembelian/view', ['id' => $barisReport['pembelian_id']]); ?>"><?php echo $barisReport['nomor']; ?></a></td>
-                            <td class="rata-kanan"><?php echo number_format($barisReport['jumlah'], 0, ',', '.'); ?>
-                            </td>
-                            <td><?= $barisReport['profil']; ?>
-                            </td>
-                        </tr>
-                    <?php
-                        $i++;
-                    endforeach;
-                    ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-<?php
-endif;
-?>
+
 <script>
     $(function() {
         $('.tanggalan').fdatepicker({

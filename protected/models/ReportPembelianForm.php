@@ -13,6 +13,7 @@ class ReportPembelianForm extends CFormModel
    public $profilId;
    public $dari;
    public $sampai;
+   public $printer;
 
    /**
     * Declares the validation rules.
@@ -21,7 +22,7 @@ class ReportPembelianForm extends CFormModel
    {
       return [
          ['dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'],
-         ['profilId', 'safe'],
+         ['profilId, printer', 'safe'],
       ];
    }
 
@@ -102,7 +103,8 @@ class ReportPembelianForm extends CFormModel
 
    public function toCsv()
    {
-      return $this->array2csv($this->reportPembelian());
+      $result = $this->reportPembelian();
+      return $this->array2csv($result['detail']);
    }
 
    public function array2csv(array &$array)
