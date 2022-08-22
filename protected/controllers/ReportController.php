@@ -1821,14 +1821,14 @@ class ReportController extends Controller
         $reportPembelian = new ReportPembelianForm;
         $reportPembelian->attributes = $formData;
         if (!$reportPembelian->validate()) {
-            throw new CHttpException(500, 'Message: '.json_encode($reportPembelian->getErrors()));
+            throw new CHttpException(500, 'Message: ' . json_encode($reportPembelian->getErrors()));
         }
         $csv             = $reportPembelian->toCsv();
 
         Yii::log("Hasil CSV:" . $csv);
 
         if (is_null($csv)) {
-            throw new Exception('Tidak ada data', 500);
+            throw new CHttpException(500, 'Tidak ada data');
         }
 
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
