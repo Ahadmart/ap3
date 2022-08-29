@@ -57,12 +57,27 @@ class UploadCsvPembelianForm extends CFormModel
         try {
             if ($pembelian->save()) {
                 $fp = fopen($this->csvFile->tempName, 'r');
+                $fh = fopen($this->csvFile->tempName, 'r');
                 if ($fp) {
-                    $line = fgetcsv($fp, 1000, ',');
                     //  print_r($line); exit;
+                    $csvText = '';
+                    $checksum = '';
+                    while ($row = fgets($fh)) {
+                        if (substr($row, 0, 6) != 'csvcs,') {
+                            $csvText .= $row;
+                        }
+                    }
+
+                    $line = fgetcsv($fp, 1000, ',');
                     do {
                         if ($line[0] == 'barcode') {
                             continue;
+                        }
+                        // Jika ini baris checksum, simpan nilai checksum
+                        // dan keluar dari loop (loop selesai)
+                        if ($line[0] == 'csvcs') {
+                            $checksum = $line[1];
+                            break;
                         }
                         /* field csv
                          * "barcode","idBarang","namaBarang","jumBarang","hargaBeli","hargaJual","RRP","SatuanBarang","KategoriBarang","Supplier","kasir"
@@ -273,6 +288,20 @@ class UploadCsvPembelianForm extends CFormModel
                         }
                     } while (($line = fgetcsv($fp, 2000)) != false);
                 }
+
+                /* Bandingkan checksum --start-- */
+                // todo: Dibuat wajib, untuk supplier tertentu
+                $calculateChecksum = hash_hmac('sha256', $csvText, $csvFileName, false);
+                if (!empty($checksum) && $calculateChecksum != $checksum) {
+                    Yii::log('cs:' . $checksum . ' | calculate:' . $calculateChecksum);
+                    Yii::log('fileName:' . $csvFileName . ' | text:' . $csvText);
+                    throw new Exception("Data telah berubah, import ditolak!");
+                } else if (empty($checksum)) {
+                    Yii::log("Import pembelian: Checksum tidak ada");
+                } else if ($calculateChecksum == $checksum) {
+                    Yii::log("Import pembelian: Checksum OK, commit transaction");
+                }
+                /* Bandingkan checksum --finish-- */
 
                 $transaction->commit();
                 return [

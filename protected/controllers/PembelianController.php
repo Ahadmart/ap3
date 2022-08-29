@@ -596,7 +596,8 @@ class PembelianController extends Controller
                 if ($return['sukses']) {
                     $this->redirect($this->createUrl('ubah', ['id' => $return['pembelianId'], 'pilihb' => false]));
                 }
-                // Yii::log(serialize($return));
+                // Log akan ditulis jika simpan csv tidak sukses
+                Yii::log(serialize($return));
             }
         }
         $this->render('import', [
