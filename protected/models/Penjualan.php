@@ -1989,4 +1989,9 @@ class Penjualan extends CActiveRecord
             'koin' => $koin,
         ];
     }
+    
+    public function ambilDetailTanpaStruktur()
+    {
+        return PenjualanDetail::model()->with('barang')->findAll('penjualan_id=:penjualanId AND barang.struktur_id IS NULL', [':penjualanId' => $this->id]);
+    }
 }

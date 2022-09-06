@@ -417,6 +417,20 @@ class PenjualanController extends Controller
     public function actionExportCsv($id)
     {
         $model = $this->loadModel($id);
+
+        $strukturHarusAda = true; // fix me: tambahkan di config dan load dari config
+        // Throw exception jika ada barang tanpa struktur
+        if ($strukturHarusAda) {
+            $tanpaStruktur = $model->ambilDetailTanpaStruktur();
+            if (!empty($tanpaStruktur)) {
+                $t = '';
+                foreach ($tanpaStruktur as $detail) {
+                    $t .= ' | ' . $detail->barang->nama . '(' . $detail->barang->barcode . ') | ';
+                }
+                throw new CHttpException(500, 'Barang berikut ini belum ada strukturnya, lengkapi terlebih dahulu: ' . $t); //print_r($tanpaStruktur, true));
+            }
+        }
+        
         $csv   = $model->eksporCsv();
 
         $timeStamp = date("Y-m-d--H-i");
