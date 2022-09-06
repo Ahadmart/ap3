@@ -1132,28 +1132,52 @@ class Penjualan extends CActiveRecord
         /*
          * CSV Header, dari ahad POS 2
          */
-        $csv = '"barcode","idBarang","namaBarang","jumBarang","hargaBeli","hargaJual","RRP","SatuanBarang","KategoriBarang","Supplier","kasir"' . PHP_EOL;
+        // $csv = '"barcode","idBarang","namaBarang","jumBarang","hargaBeli","hargaJual","RRP","SatuanBarang","KategoriBarang","Supplier","kasir"';
+        // tambahan struktur barang: struktur_lv1, struktur_lv2, struktur_lv3
+
+        /* Cari nama toko ini */
+        $config = Config::model()->find("nama='toko.nama'");
 
         /*
          * Ambil data penjualan detail, untuk diexport ke csv
          */
-        $details = Yii::app()->db->createCommand("
-                    select
-                        pd.barang_id,
-                        barang.barcode,
-                        barang.nama nama_barang,
-                        pd.qty,
-                        pd.harga_jual,
-                        pd.harga_jual_rekomendasi,
-                        sb.nama satuan,
-                        kb.nama kategori
-                    from penjualan_detail pd
-                    join barang on barang.id = pd.barang_id
-                    join barang_satuan sb on sb.id = barang.satuan_id
-                    join barang_kategori kb on kb.id = barang.kategori_id
-                    where penjualan_id={$this->id}
-                    order by pd.id")
-            ->queryAll();
+        $sql = "
+        SELECT
+            barang.barcode,
+            pd.barang_id idBarang,
+            barang.nama namaBarang,
+            pd.qty jumBarang,
+            '' hargaBeli,
+            pd.harga_jual hargaJual,
+            pd.harga_jual_rekomendasi RRP,
+            sb.nama SatuanBarang,
+            kb.nama KategoriBarang,
+            '{$config->nilai}' Supplier,
+            user.nama kasir,
+            lv1.nama struktur_lv1,
+            lv2.nama struktur_lv2,
+            lv3.nama struktur_lv3
+        FROM
+            penjualan_detail pd
+                JOIN
+            barang ON barang.id = pd.barang_id
+                JOIN
+            barang_satuan sb ON sb.id = barang.satuan_id
+                LEFT JOIN
+            barang_kategori kb ON kb.id = barang.kategori_id
+                JOIN
+            user ON user.id = pd.updated_by
+                LEFT JOIN
+            barang_struktur lv3 ON lv3.id = barang.struktur_id
+                LEFT JOIN
+            barang_struktur lv2 ON lv2.id = lv3.parent_id
+                LEFT JOIN
+            barang_struktur lv1 ON lv1.id = lv2.parent_id
+        WHERE
+            penjualan_id = {$this->id}
+        ORDER BY pd.id";
+
+        $details = Yii::app()->db->createCommand($sql)->queryAll();
         /* Kalau perlu harga beli, tambahkan ini ke sql
          * (
         select case
@@ -1164,24 +1188,7 @@ class Penjualan extends CActiveRecord
         limit 1
         ) as harga_beli,
          */
-
-        // Cari nama toko ini
-        $config = Config::model()->find("nama='toko.nama'");
-        foreach ($details as $detail):
-            $csv .= "\"{$detail['barcode']}\","
-            . "\"{$detail['barang_id']}\","
-            . "\"{$detail['nama_barang']}\","
-            . "\"{$detail['qty']}\","
-            . '"",' // harga beli dikosongkan
-            . "\"{$detail['harga_jual']}\","
-            . "\"{$detail['harga_jual_rekomendasi']}\","
-            . "\"{$detail['satuan']}\","
-            . "\"{$detail['kategori']}\","
-            . "\"{$config->nilai}\","//nama toko/gudang
-            . "\"{$this->updatedBy->nama}\""
-                . PHP_EOL;
-        endforeach;
-        return $csv;
+        return $this->array2csv($details);
     }
 
     public function toIndoDate($timeStamp)
@@ -1257,16 +1264,16 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'INVOICE '; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-        . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat1'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strTgl, $kananMaxLength, ' ')
+            . str_pad($strTgl, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat2'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strTglDue, $kananMaxLength, ' ')
+            . str_pad($strTglDue, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strKasir, $kananMaxLength, ' ')
+            . str_pad($strKasir, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($strTotal, $jumlahKolom - $kananMaxLength + strlen($strTotal), ' ', STR_PAD_LEFT)
             . PHP_EOL;
@@ -1338,7 +1345,7 @@ class Penjualan extends CActiveRecord
             $signatureHead3 = 'Driver';
 
             $struk .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) .
-            str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
+                str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
             $struk .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
             $struk .= '     (                )         (                )         (                )' . PHP_EOL;
         }
@@ -1607,13 +1614,13 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'NOTA'; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-        . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
             . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header1'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strKasir, $kananMaxLength, ' ')
+            . str_pad($strKasir, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header2'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strWaktu, $kananMaxLength, ' ')
+            . str_pad($strWaktu, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= PHP_EOL;
 
@@ -1989,9 +1996,24 @@ class Penjualan extends CActiveRecord
             'koin' => $koin,
         ];
     }
-    
+
     public function ambilDetailTanpaStruktur()
     {
         return PenjualanDetail::model()->with('barang')->findAll('penjualan_id=:penjualanId AND barang.struktur_id IS NULL', [':penjualanId' => $this->id]);
+    }
+
+    public function array2csv(array &$array)
+    {
+        if (count($array) == 0) {
+            return null;
+        }
+        ob_start();
+        $df = fopen('php://output', 'w');
+        fputcsv($df, array_keys(reset($array)));
+        foreach ($array as $row) {
+            fputcsv($df, $row);
+        }
+        fclose($df);
+        return ob_get_clean();
     }
 }

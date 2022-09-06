@@ -430,14 +430,16 @@ class PenjualanController extends Controller
                 throw new CHttpException(500, 'Barang berikut ini belum ada strukturnya, lengkapi terlebih dahulu: ' . $t); //print_r($tanpaStruktur, true));
             }
         }
-        
+
         $csv   = $model->eksporCsv();
 
         $timeStamp = date("Y-m-d--H-i");
         $namaFile  = "{$model->nomor}-{$model->profil->nama}-{$timeStamp}";
 
+        $hash = hash_hmac('sha256', $csv, $namaFile, false);
+
         $this->renderPartial('_csv', [
-            'namaFile' => $namaFile,
+            'namaFile' => $namaFile . '-' . $hash,
             'csv'      => $csv,
         ]);
     }
