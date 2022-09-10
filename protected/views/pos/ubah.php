@@ -523,6 +523,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             });
             return false;
         }
+        <?php /* Jika kembalian >= 100.000 tampilkan error (Kemungkinan besar salah input), kemudian exit */ ?>
+        if (totalUangDibayar() - totalYangHarusDibayar() >= 100000) {
+            $.gritter.add({
+                title: 'Error! ',
+                text: "Uang dibayar terlalu besar! Harap periksa kembali",
+                time: 5000,
+            });
+            return false;
+        }
         if (!(totalYangHarusDibayar() > 0) && !($("#koin-mol").val() > 0)) {
             $.gritter.add({
                 title: 'Error! ',
