@@ -19,8 +19,8 @@ $this->renderPartial('_form_mutasikoin', ['model' => $model]);
                 <tr>
                     <th>Tgl</th>
                     <th>Penjualan</th>
-                    <th>Jumlah</th>
-                    <th>Saldo</th>
+                    <th class="rata-kanan">Jumlah</th>
+                    <th class="rata-kanan">Saldo</th>
                     <th>Keterangan</th>
                 </tr>
             </thead>
@@ -54,7 +54,7 @@ $this->renderPartial('_form_mutasikoin', ['model' => $model]);
         tr.innerHTML =
             '<td></td>' +
             '<td>Saldo Awal</td>' +
-            '<td>' + data.saldoAwal + '</td>' +
+            '<td class="rata-kanan">' + data.saldoAwal + '</td>' +
             '<td></td>' +
             '<td></td>';
         tableBody.append(tr);
@@ -65,8 +65,8 @@ $this->renderPartial('_form_mutasikoin', ['model' => $model]);
             tr.innerHTML =
                 '<td>' + formatDate(object.tanggal) + '</td>' +
                 '<td>' + object.penjualan + '</td>' +
-                '<td>' + object.jumlah + '</td>' +
-                '<td>' + subTotal + '</td>' +
+                '<td class="rata-kanan">' + object.jumlah + '</td>' +
+                '<td class="rata-kanan">' + subTotal + '</td>' +
                 '<td>' + object.keterangan + '</td>';
             tableBody.append(tr);
         });
@@ -74,7 +74,8 @@ $this->renderPartial('_form_mutasikoin', ['model' => $model]);
         tr.innerHTML =
             '<td></td>' +
             '<td>Saldo Akhir</td>' +
-            '<td>' + data.saldoAkhir + '</td>' +
+            '<td class="rata-kanan">' + data.saldoAkhir + '</td>' +
+            '<td></td>' +
             '<td></td>';
         tableBody.append(tr);
     }
