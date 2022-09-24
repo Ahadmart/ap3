@@ -74,7 +74,7 @@ class ReportPembelianForm extends CFormModel
             p.tanggal,
             p.referensi,
             p.nomor,
-            SUM(harga_beli * qty) AS jumlah,
+            ROUND(SUM(harga_beli * qty)) AS jumlah,
             profil.nama AS profil
          FROM
             pembelian_detail AS d
