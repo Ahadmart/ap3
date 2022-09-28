@@ -2,7 +2,6 @@
 
 class CekhargaController extends Controller
 {
-
     public function actionIndex()
     {
         $this->render('index');
@@ -11,33 +10,33 @@ class CekhargaController extends Controller
     public function actionCekBarcode()
     {
         if ($_POST['cekharga'] && isset($_POST['barcode'])) {
-            $barang = Barang::model()->find('barcode=:barcode', array(
-                ':barcode' => $_POST['barcode']
-            ));
+            $barang = Barang::model()->find('barcode=:barcode', [
+                ':barcode' => $_POST['barcode'],
+            ]);
             $return = [
                 'sukses' => false,
-                'error' => [
+                'error'  => [
                     'code' => 500,
-                    'msg' => 'Barang tidak ditemukan'
-                ]
+                    'msg'  => 'Barang tidak ditemukan',
+                ],
             ];
             if (!is_null($barang)) {
                 $return = [
-                    'sukses' => true,
-                    'barcode' => $barang->barcode,
-                    'nama' => $barang->nama,
-                    'harga' => $barang->getHargaJual(),
-                    'hj_multi' => HargaJualMulti::listAktif($barang->id)
+                    'sukses'   => true,
+                    'barcode'  => $barang->barcode,
+                    'nama'     => $barang->nama,
+                    'harga'    => $barang->getHargaJual(),
+                    'hj_multi' => HargaJualMulti::listAktif($barang->id),
                 ];
             }
             $this->renderJSON($return);
         }
     }
-    
+
     public function actionCariBarang($term)
     {
-        $q         = new CDbCriteria();
-        $q->addCondition("(barcode like :term OR nama like :term) AND status = :status");
+        $q = new CDbCriteria();
+        $q->addCondition('(barcode like :term OR nama like :term) AND status = :status');
         $q->order  = 'nama';
         $q->params = [':term' => "%{$term}%", ':status' => Barang::STATUS_AKTIF];
         $barangs   = Barang::model()->findAll($q);
@@ -49,7 +48,7 @@ class CekhargaController extends Controller
                 'value'  => $barang->barcode,
                 'stok'   => is_null($barang->stok) ? 'null' : $barang->stok,
                 'harga'  => $barang->hargaJual,
-                'status' => $barang->status
+                'status' => $barang->status,
             ];
         }
 
@@ -58,28 +57,28 @@ class CekhargaController extends Controller
 
     // Uncomment the following methods and override them if needed
     /*
-      public function filters()
-      {
-      // return the filter configuration for this controller, e.g.:
-      return array(
-      'inlineFilterName',
-      array(
-      'class'=>'path.to.FilterClass',
-      'propertyName'=>'propertyValue',
-      ),
-      );
-      }
+public function filters()
+{
+// return the filter configuration for this controller, e.g.:
+return array(
+'inlineFilterName',
+array(
+'class'=>'path.to.FilterClass',
+'propertyName'=>'propertyValue',
+),
+);
+}
 
-      public function actions()
-      {
-      // return external action classes, e.g.:
-      return array(
-      'action1'=>'path.to.ActionClass',
-      'action2'=>array(
-      'class'=>'path.to.AnotherActionClass',
-      'propertyName'=>'propertyValue',
-      ),
-      );
-      }
-     */
+public function actions()
+{
+// return external action classes, e.g.:
+return array(
+'action1'=>'path.to.ActionClass',
+'action2'=>array(
+'class'=>'path.to.AnotherActionClass',
+'propertyName'=>'propertyValue',
+),
+);
+}
+ */
 }
