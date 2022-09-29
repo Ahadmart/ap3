@@ -113,7 +113,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             len = data.hj_multi.length;
         while (i < len) {
             $("#view-harga").append('<br /><small>' +
-                new Intl.NumberFormat('id-ID').format(data.hj_multi[i].harga * data.hj_multi[i].qty) + ' / ' + data.hj_multi[i].nama_satuan + ' (' + data.hj_multi[i].qty + ' pcs), @' + new Intl.NumberFormat('de-DE').format(data.hj_multi[i].harga) +
+                new Intl.NumberFormat('id-ID').format(data.hj_multi[i].harga * data.hj_multi[i].qty) + ' / ' + data.hj_multi[i].nama_satuan + ' (' + data.hj_multi[i].qty + ' pcs), @' + new Intl.NumberFormat('id-ID').format(data.hj_multi[i].harga) +
                 '</small>')
             i++
         }
