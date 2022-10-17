@@ -941,7 +941,7 @@ class LaporanHarian extends CActiveRecord
 
     /**
      * Total Penjualan Tunai pada tanggal tsb
-     * @return text Total penjualan tunai
+     * @return int Total penjualan tunai
      */
     public function totalPenjualanTunai()
     {

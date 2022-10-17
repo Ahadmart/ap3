@@ -291,6 +291,28 @@ class ReportController extends Controller
         return $config->nilai;
     }
 
+    /**
+     * alamatToko function
+     *
+     * @return string toko.alamat1, toko.alamat2, toko.alamat3
+     */
+    public function alamatToko()
+    {
+        $alamats = Config::model()->findAll('nama like :nama', [':nama' => 'toko.alamat%']);
+        $alamatText = '';
+        $st = true;
+        foreach ($alamats as $alamat) {
+            if ($st) {
+                $st = false;
+                $alamatText .= $alamat->nilai;
+                continue;
+            }
+            $alamatText .= ', ' . $alamat->nilai;
+        }
+
+        return $alamatText;
+    }
+
     public function harianDetailPdf($report, $kertas)
     {
         /*
@@ -1818,21 +1840,21 @@ class ReportController extends Controller
 
     public function pembelianCsv($formData)
     {
-        $reportPembelian = new ReportPembelianForm;
+        $reportPembelian             = new ReportPembelianForm;
         $reportPembelian->attributes = $formData;
         if (!$reportPembelian->validate()) {
             throw new CHttpException(500, 'Message: ' . json_encode($reportPembelian->getErrors()));
         }
         $csv             = $reportPembelian->toCsv();
 
-        Yii::log("Hasil CSV:" . $csv);
+        Yii::log('Hasil CSV:' . $csv);
 
         if (is_null($csv)) {
             throw new CHttpException(500, 'Tidak ada data');
         }
 
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $profil = '';
+        $profil    = '';
         if (!empty($formData['profilId'])) {
             $profil = ' ' . Profil::model()->findByPk($formData['profilId'])->nama;
         }
@@ -1842,5 +1864,66 @@ class ReportController extends Controller
             'namaFile' => $namaFile,
             'csv'      => $csv,
         ]);
+    }
+
+    /**
+     * Report Harian Form
+     */
+    public function actionHarian01()
+    {
+        $this->layout = '//layouts/box_kecil';
+        $model        = new ReportHarian01Form;
+
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf            = ReportHarian01Form::listKertas();
+
+        $this->render('harian_01', [
+            'model'       => $model,
+            'judul'       => 'Harian',
+            'printers'    => $printers,
+            'kertasPdf'   => $kertasPdf,
+            'printHandle' => 'printharian01',
+        ]);
+    }
+
+    public function actionPrintHarian01($printId, $kertas, $tanggal)
+    {
+        $model                      = new ReportHarian01Form;
+        $model->tanggal             = $tanggal;
+        if ($model->validate()) {
+            $report               = $model->reportHarianDetail();
+            $report['tanggal']    = DateTime::createFromFormat('d-m-Y', $tanggal)->format('d/m/Y');
+            $report['namaToko']   = $this->namaToko();
+            $report['kodeToko']   = $this->kodeToko();
+            $report['alamatToko'] = $this->alamatToko();
+            $device               = Device::model()->findByPk($printId);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    /* Ada tambahan parameter kertas untuk tipe pdf */
+                    $this->harianPdf($report, $kertas);
+                    break;
+            }
+            Yii::app()->end();
+        }
+    }
+
+    public function harianPdf($report, $kertas)
+    {
+        /*
+         * Persiapan render PDF
+         */
+
+        require_once __DIR__ . '/../vendor/autoload.php';
+        $listNamaKertas = ReportHarian01Form::listKertas();
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('harian_01_detail_pdf', [
+            'report' => $report,
+        ], true));
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
+        // Render PDF
+        $mpdf->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
     }
 }
