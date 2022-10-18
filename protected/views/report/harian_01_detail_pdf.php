@@ -73,7 +73,7 @@ function namaBulan($i)
         <div><?php echo $report['namaToko']; ?>
         </div>
         <div><small><?php echo $report['alamatToko'] ?></small></div>
-        <div id="tanggal"><?php echo namaHari($report['tanggal']) . ', ' . $report['tanggal']; ?>
+        <div id="tanggal"><?php echo namaHari($report['tanggal']) . ', ' . DateTime::createFromFormat('d-m-Y', $report['tanggal'])->format('d/m/Y'); ?>
         </div>
     </div>
     <br />
@@ -124,6 +124,7 @@ function namaBulan($i)
         $totalPengeluaran = 0;
         /* Retur Jual tunai */
         if (!empty($report['returJualTunai'])) {
+            $totalPengeluaran += $report['totalReturJualTunai'];
             foreach ($report['returJualTunai'] as $returJual) {
         ?>
                 <tr>
@@ -133,17 +134,18 @@ function namaBulan($i)
                         echo " [{$returJual['nama']}]";
                         ?>
                     </td>
-                    <td class="kanan"><?php echo number_format($returJual['jumlah'], 0, ',', '.'); ?></td>
+                    <td class="kanan"><?php echo number_format($returJual['jumlah'], 0, ',', '.'); ?>
+                    </td>
                     <td></td>
                 </tr>
         <?php
-                $totalPengeluaran += $returJual['jumlah'];
             }
         }
         ?>
         <?php
         /* Pembayaran hutang retur jual */
         if (!empty($report['returJualBayar'])) :
+            $totalPengeluaran += $report['totalReturJualBayar'];
             foreach ($report['returJualBayar'] as $pembayaran) {
         ?>
                 <tr>
@@ -153,10 +155,10 @@ function namaBulan($i)
                         echo " [{$pembayaran['nama']}]";
                         ?>
                     </td>
-                    <td class="kanan"><?php echo number_format($pembayaran['jumlah_bayar'], 0, ',', '.'); ?></td>
+                    <td class="kanan"><?php echo number_format($pembayaran['jumlah_bayar'], 0, ',', '.'); ?>
+                    </td>
                 </tr>
             <?php
-                $totalPengeluaran += $pembayaran['jumlah_bayar'];
             }
             ?>
         <?php
@@ -165,28 +167,32 @@ function namaBulan($i)
         <?php
         foreach ($report['itemPengeluaran'] as $pengeluaran) {
             if (!empty($pengeluaran['items'])) {
+                $totalPengeluaran += $pengeluaran['total'];
         ?>
                 <!-- <tr> -->
-                <!-- <td class="tebal trx-header"><?php //echo strtoupper($pengeluaran['nama']); 
+                <!-- <td class="tebal trx-header"><?php //echo strtoupper($pengeluaran['nama']);
                                                     ?> (-)</td> -->
-                <!-- <td class="kanan tebal trx-header"><?php //echo number_format($pengeluaran['total'], 0, ',', '.'); 
-                                                        ?></td> -->
+                <!-- <td class="kanan tebal trx-header"><?php //echo number_format($pengeluaran['total'], 0, ',', '.');
+                                                        ?>
+        </td> -->
                 <!-- </tr> -->
                 <?php
                 foreach ($pengeluaran['items'] as $items) {
                 ?>
                     <tr>
                         <?php $itemKeterangan = isset($items['keterangan']) ? $items['keterangan'] : '' ?>
-                        <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$itemKeterangan}"; ?></td>
-                        <td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?></td>
+                        <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$itemKeterangan}"; ?>
+                        </td>
+                        <td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?>
+                        </td>
                         <td></td>
                     </tr>
                 <?php
-                    $totalPengeluaran += $items['jumlah'];
                 }
             }
         }
         if (!empty($report['pembelianBayar'])) {
+            $totalPengeluaran += $report['totalPembelianBayar'];
             foreach ($report['pembelianBayar'] as $pembayaran) {
                 ?>
                 <tr>
@@ -195,19 +201,19 @@ function namaBulan($i)
                         <?php echo " [{$pembayaran['nama']}] "; ?>
                         <?php echo isset($pembayaran['tanggal']) ? date('d-m-Y', strtotime($pembayaran['tanggal'])) : ''; ?>
                     </td>
-                    <td class="kanan"><?php echo number_format($pembayaran['total_bayar'], 0, ',', '.'); ?></td>
+                    <td class="kanan"><?php echo number_format($pembayaran['total_bayar'], 0, ',', '.'); ?>
+                    </td>
                     <td></td>
                 </tr>
         <?php
-                $totalPengeluaran += $pembayaran['total_bayar'];
             }
         }
         ?>
         <?php if (!empty($report['pembelianTunai'])) :
+            $totalPengeluaran += $report['totalPembelianTunai'];
         ?>
             <?php
             foreach ($report['pembelianTunai'] as $pembelianTunai) {
-                $totalPengeluaran += $pembelianTunai['jumlah'];
             ?>
                 <tr>
                     <td class="level-1">
@@ -216,7 +222,8 @@ function namaBulan($i)
                         echo " {$pembelianTunai['nama']}";
                         ?>
                     </td>
-                    <td class="kanan"><?php echo number_format($pembelianTunai['jumlah'], 0, ',', '.'); ?></td>
+                    <td class="kanan"><?php echo number_format($pembelianTunai['jumlah'], 0, ',', '.'); ?>
+                    </td>
                     <td></td>
                 </tr>
             <?php
@@ -228,7 +235,8 @@ function namaBulan($i)
         <tr>
             <td class="level-1 tebal">Total</td>
             <td></td>
-            <td class="kanan tebal"><?= number_format($totalPengeluaran, 0, ',', '.') ?></td>
+            <td class="kanan tebal"><?= number_format($totalPengeluaran, 0, ',', '.') ?>
+            </td>
         </tr>
         <tr>
             <td class="tebal trx-header">RINCIAN PEMASUKAN LAIN-LAIN</td>
@@ -236,17 +244,21 @@ function namaBulan($i)
             <td></td>
         </tr>
         <?php
+        $totalPemasukanLain = 0;
+
         if (!empty($report['penjualanBayar'])) :
             foreach ($report['penjualanBayar'] as $penerimaanPiutang) :
+                $totalPemasukanLain += $penerimaanPiutang['jumlah_bayar'];
         ?>
                 <tr>
                     <td class="level-1"> Penerimaan Piutang Penjualan
                         <?php
-                        echo isset($penerimaanPiutang['nomor']) ? $penerimaanPiutang['nomor'] : "";
+                        echo isset($penerimaanPiutang['nomor']) ? $penerimaanPiutang['nomor'] : '';
                         echo " [{$penerimaanPiutang['nama']}]";
                         ?>
                     </td>
-                    <td class="kanan"><?php echo number_format($penerimaanPiutang['jumlah_bayar'], 0, ',', '.'); ?></td>
+                    <td class="kanan"><?php echo number_format($penerimaanPiutang['jumlah_bayar'], 0, ',', '.'); ?>
+                    </td>
                     <td></td>
                 </tr>
             <?php
@@ -258,6 +270,7 @@ function namaBulan($i)
         <?php
         if (!empty($report['returBeliTunai'])) :
             foreach ($report['returBeliTunai'] as $returBeli) :
+                $totalPemasukanLain += $returBeli['jumlah'];
         ?>
                 <tr>
                     <td class="level-1">Retur beli
@@ -266,7 +279,8 @@ function namaBulan($i)
                         echo " [{$returBeli['nama']}]";
                         ?>
                     </td>
-                    <td class="kanan"><?php echo number_format($returBeli['jumlah'], 0, ',', '.'); ?></td>
+                    <td class="kanan"><?php echo number_format($returBeli['jumlah'], 0, ',', '.'); ?>
+                    </td>
                     <td></td>
                 </tr>
             <?php
@@ -278,6 +292,7 @@ function namaBulan($i)
         <?php
         if (!empty($report['returBeliBayar'])) :
             foreach ($report['returBeliBayar'] as $penerimaanPiutangReturBeli) :
+                $totalPemasukanLain += $penerimaanPiutangReturBeli['jumlah_bayar'];
         ?>
                 <tr>
                     <td class="level-1">Penerimaan piutang retur beli
@@ -286,7 +301,8 @@ function namaBulan($i)
                         echo " [{$penerimaanPiutangReturBeli['nama']}]";
                         ?>
                     </td>
-                    <td class="kanan"><?php echo number_format($penerimaanPiutangReturBeli['jumlah_bayar'], 0, ',', '.'); ?></td>
+                    <td class="kanan"><?php echo number_format($penerimaanPiutangReturBeli['jumlah_bayar'], 0, ',', '.'); ?>
+                    </td>
                     <td></td>
                 </tr>
             <?php
@@ -297,19 +313,23 @@ function namaBulan($i)
         ?>
         <?php
         foreach ($report['itemPenerimaan'] as $penerimaan) {
+            $totalPemasukanLain += $penerimaan['total'];
             if (!empty($penerimaan['items'])) {
                 /*
-                <tr>
-                    <td class="tebal trx-header"><?php echo strtoupper($penerimaan['nama']); ?> (+)</td>
-                    <td class="kanan tebal trx-header"><?php echo number_format($penerimaan['total'], 0, ',', '.'); ?></td>
-                </tr>
-                */
+        <tr>
+        <td class="tebal trx-header"><?php echo strtoupper($penerimaan['nama']); ?> (+)</td>
+        <td class="kanan tebal trx-header"><?php echo number_format($penerimaan['total'], 0, ',', '.'); ?></td>
+        </tr>
+         */
                 foreach ($penerimaan['items'] as $items) :
+
         ?>
                     <tr>
                         <?php $itemKeterangan = isset($items['keterangan']) ? $items['keterangan'] : '' ?>
-                        <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$itemKeterangan}"; ?></td>
-                        <td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?></td>
+                        <td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$itemKeterangan}"; ?>
+                        </td>
+                        <td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?>
+                        </td>
                         <td></td>
                     </tr>
         <?php
@@ -317,471 +337,217 @@ function namaBulan($i)
             }
         }
         ?>
+        <tr>
+            <td class="level-1 tebal">Total</td>
+            <td></td>
+            <td class="kanan tebal"><?= number_format($totalPemasukanLain, 0, ',', '.') ?>
+            </td>
+        </tr>
+        <tr>
+            <td class="tebal trx-header">CATATAN TAMBAHAN</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <?php
+        if ($report['totalPenjualanPiutang']) {
+        ?>
+            <tr>
+                <td class="trx-header tebal">PIUTANG PENJUALAN</td>
+                <td></td>
+                <td></td>
+            </tr>
+        <?php
+        }
+        ?>
+        <?php
+        if (!empty($report['penjualanPiutang'])) {
+            foreach ($report['penjualanPiutang'] as $piutangPenjualan) {
+        ?>
+                <tr>
+                    <td class="level-1">
+                        <?php
+                        echo isset($piutangPenjualan['nomor']) ? $piutangPenjualan['nomor'] : '';
+                        echo " {$piutangPenjualan['nama']}";
+                        ?>
+                    </td>
+                    <td class="kanan"><?php echo number_format(abs($piutangPenjualan['jml_bayar'] - $piutangPenjualan['jumlah']), 0, ',', '.'); ?>
+                    </td>
+                    <td></td>
+                </tr>
+            <?php
+            }
+            ?>
+            <tr>
+                <td class="level-1 tebal">Total</td>
+                <td></td>
+                <td class="kanan tebal"><?= number_format($report['totalPenjualanPiutang'], 0, ',', '.') ?>
+                </td>
+            </tr>
+        <?php
+        }
+        ?> <?php
+            if ($report['totalReturBeliPiutang']) {
+            ?>
+            <tr>
+                <td class="trx-header tebal">PIUTANG RETUR PEMBELIAN</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php
+            }
+
+            if (!empty($report['returBeliPiutang'])) {
+                foreach ($report['returBeliPiutang'] as $piutangReturBeli) {
+            ?>
+                <tr>
+                    <td class="level-1">
+                        <?php
+                        echo isset($piutangReturBeli['nomor']) ? $piutangReturBeli['nomor'] : '';
+                        echo " {$piutangReturBeli['nama']}";
+                        ?>
+                    </td>
+                    <td class="kanan"><?php echo number_format($piutangReturBeli['jumlah'], 0, ',', '.'); ?>
+                    <td></td>
+                    </td>
+                </tr>
+            <?php
+                }
+            ?>
+            <tr>
+                <td class="level-1 tebal">Total</td>
+                <td></td>
+                <td class="kanan tebal"><?= number_format($report['totalReturBeliPiutang'], 0, ',', '.') ?>
+                </td>
+            </tr>
+        <?php
+            }
+        ?>
+        <?php
+        if ($report['totalReturJualHutang']) {
+        ?>
+            <tr>
+                <td class="trx-header tebal">HUTANG RETUR PENJUALAN</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php
+        }
+
+        if (!empty($report['returJualHutang'])) {
+            foreach ($report['returJualHutang'] as $hutangReturJual) {
+            ?>
+                <tr>
+                    <td class="level-1">
+                        <?php
+                        echo isset($hutangReturJual['nomor']) ? $hutangReturJual['nomor'] : '';
+                        echo " {$hutangReturJual['nama']}";
+                        ?>
+                    </td>
+                    <td class="kanan"><?php echo number_format($hutangReturJual['jumlah'], 0, ',', '.'); ?></td>
+                    <td></td>
+                </tr>
+            <?php
+            }
+            ?>
+            <tr>
+                <td class="level-1 tebal">Total</td>
+                <td></td>
+                <td class="kanan tebal"><?= number_format($report['totalReturJualHutang'], 0, ',', '.') ?>
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
+        <?php
+        if ($report['totalPembelianHutang']) {
+        ?>
+            <tr>
+                <td class="trx-header tebal">HUTANG PEMBELIAN</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <?php
+        }
+
+        if (!empty($report['pembelianHutang'])) {
+            foreach ($report['pembelianHutang'] as $hutang) {
+            ?>
+                <tr>
+                    <td class="level-1">
+                        <?php
+                        echo isset($hutang['nomor']) ? $hutang['nomor'] : '';
+                        echo " {$hutang['nama']}";
+                        ?>
+                    </td>
+                    <td class="kanan"><?php echo number_format($hutang['jumlah'], 0, ',', '.'); ?></td>
+                    <td></td>
+                </tr>
+            <?php
+            }
+            ?>
+            <tr>
+                <td class="level-1 tebal">Total</td>
+                <td></td>
+                <td class="kanan tebal"><?= number_format($report['totalPembelianHutang'], 0, ',', '.') ?>
+                </td>
+            </tr>
+            <?php
+        }
+            ?><?php
+                if ($report['totalTarikTunai']) {
+                ?>
+            <tr>
+                <td class="trx-header tebal">TARIK TUNAI</td>
+                <td></td>
+                <td></td>
+                <!-- <td class="kanan tebal trx-header"><?php //echo number_format($report['totalTarikTunai'], 0, ',', '.'); ?></td> -->
+            </tr>
+        <?php
+                }
+        ?>
+        <?php
+        if (!empty($report['tarikTunai'])) {
+            $headerAkun   = '';
+            $totalPerAkun = [];
+            foreach ($report['totalTarikTunaiPerAkun'] as $perAkun) {
+                $totalPerAkun[$perAkun['nama_akun']] = $perAkun['jumlah'];
+            }
+            foreach ($report['tarikTunai'] as $tarikTunai) {
+        ?>
+                <?php
+                if ($headerAkun != $tarikTunai['nama_akun']) {
+                ?>
+                    <tr>
+                        <td class="level-1 tebal"><?= "{$tarikTunai['nama_akun']}"; ?></td>
+                        <td></td>
+                        <!-- <td class="kanan tebal"><?php // echo number_format($totalPerAkun[$tarikTunai['nama_akun']], 0, ',', '.') ?></td> -->
+                        <td></td>
+                    </tr>
+                <?php
+                    $headerAkun = $tarikTunai['nama_akun'];
+                }
+                ?>
+                <tr>
+                    <?php
+                    $penjualanNomor   = isset($tarikTunai['nomor']) ? $tarikTunai['nomor'] : '';
+                    ?>
+                    <td class="level-2"><?php echo "{$penjualanNomor} {$tarikTunai['nama']}  "; ?></td>
+                    <td class="kanan"><?php echo number_format($tarikTunai['jumlah'], 0, ',', '.'); ?></td>
+                    <td></td>
+                </tr>
+            <?php
+            }
+            ?>
+            <tr>
+                <td class="level-1 tebal">Total</td>
+                <td></td>
+                <td class="kanan tebal"><?= number_format($report['totalTarikTunai'], 0, ',', '.') ?>
+                </td>
+            </tr>
+        <?php
+        }
+        ?>
     </table>
-    <?php
-    /*
-if ($report['totalPembelianBayar']) {
-?>
-<tr>
-<td class="tebal trx-header">PEMBAYARAN PEMBELIAN (-)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalPembelianBayar'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-
-if (!empty($report['pembelianBayar'])) :
-foreach ($report['pembelianBayar'] as $pembayaran) :
-?>
-<tr>
-<td class="level-1">
-<?php
-$pembayaranNomor = isset($pembayaran['nomor']) ? $pembayaran['nomor'] : '';
-?>
-<?php echo "{$pembayaranNomor} {$pembayaran['nama']} "; ?>
-<?php echo isset($pembayaran['tanggal']) ? date('d-m-Y', strtotime($pembayaran['tanggal'])) : ''; ?>
-</td>
-<td class="kanan"><?php echo number_format($pembayaran['total_bayar'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php if ($report['totalPembelianTunai']) :
-?>
-<tr>
-<td class="tebal trx-header">PEMBELIAN TUNAI (-)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalPembelianTunai'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endif;
-?>
-<?php if (!empty($report['pembelianTunai'])) :
-?>
-<?php
-foreach ($report['pembelianTunai'] as $pembelianTunai) :
-?>
-<tr>
-<?php
-$pembelianTunaiNomor = isset($pembelianTunai['nomor']) ? $pembelianTunai['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$pembelianTunaiNomor} {$pembelianTunai['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($pembelianTunai['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-foreach ($report['itemPengeluaran'] as $pengeluaran) {
-if (!empty($pengeluaran['items'])) {
-?>
-<tr>
-<td class="tebal trx-header"><?php echo strtoupper($pengeluaran['nama']); ?> (-)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($pengeluaran['total'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-foreach ($pengeluaran['items'] as $items) :
-?>
-<tr>
-<?php $itemKeterangan = isset($items['keterangan']) ? $items['keterangan'] : '' ?>
-<td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$itemKeterangan}"; ?></td>
-<td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-}
-}
-?>
-<?php
-foreach ($report['itemPenerimaan'] as $penerimaan) {
-if (!empty($penerimaan['items'])) {
-?>
-<tr>
-<td class="tebal trx-header"><?php echo strtoupper($penerimaan['nama']); ?> (+)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($penerimaan['total'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-foreach ($penerimaan['items'] as $items) :
-?>
-<tr>
-<?php $itemKeterangan = isset($items['keterangan']) ? $items['keterangan'] : '' ?>
-<td class="level-1"><?php echo "[{$items['akun']}] [{$items['nama']}] {$itemKeterangan}"; ?></td>
-<td class="kanan"><?php echo number_format($items['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-}
-}
-?>
-<tr>
-<td class="trx-header tebal">SALDO AKHIR BUKU</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['saldoAkhir'], 0, ',', '.'); ?></td>
-</tr>
-<tr>
-<td class="tebal">SALDO AKHIR ASLI</td>
-<td class="kanan tebal"><?php echo number_format($report['saldoAkhirAsli'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-if ($report['totalPenjualanTunai']) {
-?>
-<tr>
-<td class="trx-header tebal">PENJUALAN TUNAI (+)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanTunai'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-?>
-<?php
-if (!empty($report['penjualanTunai'])) :
-$headerAkun   = '';
-$totalPerAkun = [];
-foreach ($report['totalPenjualanTunaiPerAkun'] as $perAkun) {
-$totalPerAkun[$perAkun['nama_akun']] = $perAkun['jumlah'];
-}
-foreach ($report['penjualanTunai'] as $penjualanTunai) :
-?>
-<?php
-if ($headerAkun != $penjualanTunai['nama_akun']) {
-?>
-<tr>
-<td class="level-1 tebal"><?= "{$penjualanTunai['nama_akun']}"; ?></td>
-<td class="kanan tebal"><?= number_format($totalPerAkun[$penjualanTunai['nama_akun']], 0, ',', '.') ?></td>
-</tr>
-<?php
-$headerAkun = $penjualanTunai['nama_akun'];
-}
-?>
-<tr>
-<?php
-$penjualanTunaiNomor   = isset($penjualanTunai['nomor']) ? $penjualanTunai['nomor'] : '';
-?>
-<td class="level-2"><?php echo "{$penjualanTunaiNomor} {$penjualanTunai['nama']}  "; ?></td>
-<td class="kanan"><?php echo number_format($penjualanTunai['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-endif;
-?>
-<?php
-if ($report['totalMargin']) {
-?>
-<tr>
-<td class="trx-header tebal">GROSS PROFIT (MARGIN)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalMargin'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-?>
-<?php
-if (!empty($report['margin'])) :
-foreach ($report['margin'] as $marginPenjualan) :
-?>
-<tr>
-<?php
-$marginPenjualanNomor = isset($marginPenjualan['nomor']) ? $marginPenjualan['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$marginPenjualanNomor} {$marginPenjualan['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($marginPenjualan['margin'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalPenjualanBayar']) {
-?>
-<tr>
-<td class="trx-header tebal">PENERIMAAN PIUTANG PENJUALAN (+)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanBayar'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-?>
-<?php
-if (!empty($report['penjualanBayar'])) :
-foreach ($report['penjualanBayar'] as $penerimaanPiutang) :
-?>
-<tr>
-<?php
-$penerimaanPiutangNomor = isset($penerimaanPiutang['nomor']) ? $penerimaanPiutang['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$penerimaanPiutangNomor} {$penerimaanPiutang['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($penerimaanPiutang['jumlah_bayar'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalPenjualanPiutang']) {
-?>
-<tr>
-<td class="trx-header tebal">PIUTANG PENJUALAN</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalPenjualanPiutang'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-?>
-<?php
-if (!empty($report['penjualanPiutang'])) :
-foreach ($report['penjualanPiutang'] as $piutangPenjualan) :
-?>
-<tr>
-<?php
-$piutangPenjualanNomor = isset($piutangPenjualan['nomor']) ? $piutangPenjualan['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$piutangPenjualanNomor} {$piutangPenjualan['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format(abs($piutangPenjualan['jml_bayar'] - $piutangPenjualan['jumlah']), 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalReturJualTunai']) {
-?>
-<tr>
-<td class="trx-header tebal">RETUR PENJUALAN (-)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalReturJualTunai'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-?>
-<?php
-if (!empty($report['returJualTunai'])) :
-foreach ($report['returJualTunai'] as $returJual) :
-?>
-<tr>
-<?php
-$returJualNomor = isset($returJual['nomor']) ? $returJual['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$returJualNomor} {$returJual['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($returJual['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalReturBeliTunai']) {
-?>
-<tr>
-<td class="trx-header tebal">RETUR PEMBELIAN (+)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalReturBeliTunai'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-?>
-<?php
-if (!empty($report['returBeliTunai'])) :
-foreach ($report['returBeliTunai'] as $returBeli) :
-?>
-<tr>
-<?php
-$returBeliNomor = isset($returBeli['nomor']) ? $returBeli['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$returBeliNomor} {$returBeli['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($returBeli['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalReturBeliBayar']) {
-?>
-<tr>
-<td class="trx-header tebal">PENERIMAAN PIUTANG RETUR PEMBELIAN (+)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalReturBeliBayar'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-
-if (!empty($report['returBeliBayar'])) :
-foreach ($report['returBeliBayar'] as $penerimaanPiutangReturBeli) :
-?>
-<tr>
-<?php
-$penerimaanPiutangReturBeliNomor = isset($penerimaanPiutangReturBeli['nomor']) ? $penerimaanPiutangReturBeli['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$penerimaanPiutangReturBeliNomor} {$penerimaanPiutangReturBeli['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($penerimaanPiutangReturBeli['jumlah_bayar'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalReturJualBayar']) {
-?>
-<tr>
-<td class="trx-header tebal">PEMBAYARAN HUTANG RETUR PENJUALAN (-)</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalReturJualBayar'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-
-if (!empty($report['returJualBayar'])) :
-foreach ($report['returJualBayar'] as $pembayaran) :
-?>
-<tr>
-<?php
-$pembayaranNomor = isset($pembayaran['nomor']) ? $pembayaran['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$pembayaranNomor} {$pembayaran['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($pembayaran['jumlah_bayar'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalReturBeliPiutang']) {
-?>
-<tr>
-<td class="trx-header tebal">PIUTANG RETUR PEMBELIAN</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalReturBeliPiutang'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-
-if (!empty($report['returBeliPiutang'])) :
-foreach ($report['returBeliPiutang'] as $piutangReturBeli) :
-?>
-<tr>
-<?php
-$piutangReturBeliNomor = isset($piutangReturBeli['nomor']) ? $piutangReturBeli['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$piutangReturBeliNomor} {$piutangReturBeli['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($piutangReturBeli['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalReturJualHutang']) {
-?>
-<tr>
-<td class="trx-header tebal">HUTANG RETUR PENJUALAN</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalReturJualHutang'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-
-if (!empty($report['returJualHutang'])) :
-foreach ($report['returJualHutang'] as $hutangReturJual) :
-?>
-<tr>
-<?php
-$hutangReturJualNomor = isset($hutangReturJual['nomor']) ? $hutangReturJual['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$hutangReturJualNomor} {$hutangReturJual['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($hutangReturJual['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalPembelianHutang']) {
-?>
-<tr>
-<td class="trx-header tebal">HUTANG PEMBELIAN</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalPembelianHutang'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-
-if (!empty($report['pembelianHutang'])) :
-foreach ($report['pembelianHutang'] as $hutang) :
-?>
-<tr>
-<?php
-$hutangNomor = isset($hutang['nomor']) ? $hutang['nomor'] : '';
-?>
-<td class="level-1"><?php echo "{$hutangNomor} {$hutang['nama']}"; ?></td>
-<td class="kanan"><?php echo number_format($hutang['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-?>
-<?php
-endif;
-?>
-<?php
-if ($report['totalTarikTunai']) {
-?>
-<tr>
-<td class="trx-header tebal">TARIK TUNAI</td>
-<td class="kanan tebal trx-header"><?php echo number_format($report['totalTarikTunai'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-}
-?>
-<?php
-if (!empty($report['tarikTunai'])) :
-$headerAkun   = '';
-$totalPerAkun = [];
-foreach ($report['totalTarikTunaiPerAkun'] as $perAkun) {
-$totalPerAkun[$perAkun['nama_akun']] = $perAkun['jumlah'];
-}
-foreach ($report['tarikTunai'] as $tarikTunai) :
-?>
-<?php
-if ($headerAkun != $tarikTunai['nama_akun']) {
-?>
-<tr>
-<td class="level-1 tebal"><?= "{$tarikTunai['nama_akun']}"; ?></td>
-<td class="kanan tebal"><?= number_format($totalPerAkun[$tarikTunai['nama_akun']], 0, ',', '.') ?></td>
-</tr>
-<?php
-$headerAkun = $tarikTunai['nama_akun'];
-}
-?>
-<tr>
-<?php
-$penjualanNomor   = isset($tarikTunai['nomor']) ? $tarikTunai['nomor'] : '';
-?>
-<td class="level-2"><?php echo "{$penjualanNomor} {$tarikTunai['nama']}  "; ?></td>
-<td class="kanan"><?php echo number_format($tarikTunai['jumlah'], 0, ',', '.'); ?></td>
-</tr>
-<?php
-endforeach;
-endif;
-?>
-</table>
-<?php
-if ($report['keterangan'] > '') :
-?>
-<div class="remarks-h">Remarks:</div>
-<div class="remarks-d"><?php echo nl2br($report['keterangan']); ?></div>
-<?php
-endif;
-?>
- */ ?>
 </body>
 
 </html>

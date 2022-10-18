@@ -1893,7 +1893,7 @@ class ReportController extends Controller
         $model->tanggal             = $tanggal;
         if ($model->validate()) {
             $report               = $model->reportHarianDetail();
-            $report['tanggal']    = DateTime::createFromFormat('d-m-Y', $tanggal)->format('d/m/Y');
+            $report['tanggal']    = $tanggal;
             $report['namaToko']   = $this->namaToko();
             $report['kodeToko']   = $this->kodeToko();
             $report['alamatToko'] = $this->alamatToko();
