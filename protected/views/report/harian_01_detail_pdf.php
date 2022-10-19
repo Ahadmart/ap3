@@ -85,6 +85,37 @@ function namaBulan($i)
             <td class="kanan tebal"><?php echo number_format($report['saldoAwal'], 0, ',', '.'); ?>
             </td>
         </tr>
+        <?php
+        $totalPengeluaran = 0;
+        $totalPengeluaran += $report['totalReturJualTunai']
+            + $report['totalReturJualBayar']
+            + $report['totalPembelianBayar']
+            + $report['totalPembelianTunai'];
+        foreach ($report['itemPengeluaran'] as $pengeluaran) {
+            $totalPengeluaran += $pengeluaran['total'];
+        }
+        ?>
+        <tr>
+            <td class="trx-header tebal">Total Pengeluaran</td>
+            <td></td>
+            <td class="trx-header kanan tebal"><?php echo number_format($totalPengeluaran, 0, ',', '.'); ?>
+            </td>
+        </tr>
+        <?php
+        $totalPemasukanLain = 0;
+        $totalPemasukanLain += $report['totalPenjualanBayar']
+            + $report['totalReturBeliTunai']
+            + $report['totalReturBeliBayar'];
+        foreach ($report['itemPenerimaan'] as $penerimaan) {
+            $totalPemasukanLain += $penerimaan['total'];
+        }
+        ?>
+        <tr>
+            <td class="tebal">Total Pemasukan</td>
+            <td></td>
+            <td class="kanan tebal"><?php echo number_format($totalPemasukanLain, 0, ',', '.'); ?>
+            </td>
+        </tr>
         <tr>
             <td class="trx-header tebal">Omzet</td>
             <td></td>
@@ -121,10 +152,8 @@ function namaBulan($i)
             <td></td>
         </tr>
         <?php
-        $totalPengeluaran = 0;
         /* Retur Jual tunai */
         if (!empty($report['returJualTunai'])) {
-            $totalPengeluaran += $report['totalReturJualTunai'];
             foreach ($report['returJualTunai'] as $returJual) {
         ?>
                 <tr>
@@ -145,7 +174,6 @@ function namaBulan($i)
         <?php
         /* Pembayaran hutang retur jual */
         if (!empty($report['returJualBayar'])) :
-            $totalPengeluaran += $report['totalReturJualBayar'];
             foreach ($report['returJualBayar'] as $pembayaran) {
         ?>
                 <tr>
@@ -167,7 +195,6 @@ function namaBulan($i)
         <?php
         foreach ($report['itemPengeluaran'] as $pengeluaran) {
             if (!empty($pengeluaran['items'])) {
-                $totalPengeluaran += $pengeluaran['total'];
         ?>
                 <!-- <tr> -->
                 <!-- <td class="tebal trx-header"><?php //echo strtoupper($pengeluaran['nama']);
@@ -192,7 +219,6 @@ function namaBulan($i)
             }
         }
         if (!empty($report['pembelianBayar'])) {
-            $totalPengeluaran += $report['totalPembelianBayar'];
             foreach ($report['pembelianBayar'] as $pembayaran) {
                 ?>
                 <tr>
@@ -210,7 +236,6 @@ function namaBulan($i)
         }
         ?>
         <?php if (!empty($report['pembelianTunai'])) :
-            $totalPengeluaran += $report['totalPembelianTunai'];
         ?>
             <?php
             foreach ($report['pembelianTunai'] as $pembelianTunai) {
@@ -244,11 +269,11 @@ function namaBulan($i)
             <td></td>
         </tr>
         <?php
-        $totalPemasukanLain = 0;
+        // $totalPemasukanLain = 0;
 
         if (!empty($report['penjualanBayar'])) :
             foreach ($report['penjualanBayar'] as $penerimaanPiutang) :
-                $totalPemasukanLain += $penerimaanPiutang['jumlah_bayar'];
+                // $totalPemasukanLain += $penerimaanPiutang['jumlah_bayar'];
         ?>
                 <tr>
                     <td class="level-1"> Penerimaan Piutang Penjualan
@@ -270,7 +295,7 @@ function namaBulan($i)
         <?php
         if (!empty($report['returBeliTunai'])) :
             foreach ($report['returBeliTunai'] as $returBeli) :
-                $totalPemasukanLain += $returBeli['jumlah'];
+                // $totalPemasukanLain += $returBeli['jumlah'];
         ?>
                 <tr>
                     <td class="level-1">Retur beli
@@ -292,7 +317,7 @@ function namaBulan($i)
         <?php
         if (!empty($report['returBeliBayar'])) :
             foreach ($report['returBeliBayar'] as $penerimaanPiutangReturBeli) :
-                $totalPemasukanLain += $penerimaanPiutangReturBeli['jumlah_bayar'];
+                // $totalPemasukanLain += $penerimaanPiutangReturBeli['jumlah_bayar'];
         ?>
                 <tr>
                     <td class="level-1">Penerimaan piutang retur beli
@@ -313,7 +338,7 @@ function namaBulan($i)
         ?>
         <?php
         foreach ($report['itemPenerimaan'] as $penerimaan) {
-            $totalPemasukanLain += $penerimaan['total'];
+            // $totalPemasukanLain += $penerimaan['total'];
             if (!empty($penerimaan['items'])) {
                 /*
         <tr>
@@ -500,7 +525,8 @@ function namaBulan($i)
                 <td class="trx-header tebal">TARIK TUNAI</td>
                 <td></td>
                 <td></td>
-                <!-- <td class="kanan tebal trx-header"><?php //echo number_format($report['totalTarikTunai'], 0, ',', '.'); ?></td> -->
+                <!-- <td class="kanan tebal trx-header"><?php //echo number_format($report['totalTarikTunai'], 0, ',', '.'); 
+                                                        ?></td> -->
             </tr>
         <?php
                 }
@@ -520,7 +546,8 @@ function namaBulan($i)
                     <tr>
                         <td class="level-1 tebal"><?= "{$tarikTunai['nama_akun']}"; ?></td>
                         <td></td>
-                        <!-- <td class="kanan tebal"><?php // echo number_format($totalPerAkun[$tarikTunai['nama_akun']], 0, ',', '.') ?></td> -->
+                        <!-- <td class="kanan tebal"><?php // echo number_format($totalPerAkun[$tarikTunai['nama_akun']], 0, ',', '.') 
+                                                        ?></td> -->
                         <td></td>
                     </tr>
                 <?php
@@ -547,6 +574,9 @@ function namaBulan($i)
         <?php
         }
         ?>
+        <tr>
+            <td colspan=3 class="tengah trx-header">Dicetak oleh <?= Yii::app()->user->namaLengkap ?> (<?= Yii::app()->user->name ?>) pada tanggal <?= date('d/m/Y') ?></td>
+        </tr>
     </table>
 </body>
 
