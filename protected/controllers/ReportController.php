@@ -1880,7 +1880,7 @@ class ReportController extends Controller
 
         $this->render('harian_01', [
             'model'       => $model,
-            'judul'       => 'Harian',
+            'judul'       => 'Harian 01',
             'printers'    => $printers,
             'kertasPdf'   => $kertasPdf,
             'printHandle' => 'printharian01',
