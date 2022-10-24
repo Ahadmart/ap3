@@ -1926,4 +1926,42 @@ class ReportController extends Controller
         // Render PDF
         $mpdf->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
     }
+
+    /**
+     * Report Retur Penjualan
+     */
+    public function actionReturPenjualan()
+    {
+        $model  = new ReportReturPenjualanForm;
+        $report = [];
+        if (isset($_POST['ReportReturPenjualanForm'])) {
+            $model->attributes = $_POST['ReportReturPenjualanForm'];
+            if ($model->validate()) {
+                $report = $model->reportReturPenjualan();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes(); // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes(); // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+
+        $this->render('returpenjualan', [
+            'model'    => $model,
+            'profil'   => $profil,
+            'user'     => $user,
+            'report'   => $report,
+            'printers' => $printers,
+        ]);
+    }
 }

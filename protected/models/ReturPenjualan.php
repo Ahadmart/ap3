@@ -231,7 +231,7 @@ class ReturPenjualan extends CActiveRecord
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
-    public function listStatus()
+    public static function listStatus()
     {
         return [
             ReturPenjualan::STATUS_DRAFT  => 'Draft',
