@@ -229,15 +229,20 @@ class ReturPembelian extends CActiveRecord
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
-    public function getNamaStatus()
+    public static function listStatus()
     {
-        $status = [
+        return [
             ReturPembelian::STATUS_DRAFT   => 'Draft',
             ReturPembelian::STATUS_POSTED  => 'Posted',
             ReturPembelian::STATUS_PIUTANG => 'Piutang',
             ReturPembelian::STATUS_LUNAS   => 'Lunas',
             ReturPembelian::STATUS_BATAL   => 'Batal',
         ];
+    }
+
+    public function getNamaStatus()
+    {
+        $status = $this->listStatus();
         return $status[$this->status];
     }
 
