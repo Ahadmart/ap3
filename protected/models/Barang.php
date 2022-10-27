@@ -78,19 +78,34 @@ class Barang extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return [
-            ['barcode, nama, satuan_id', 'required'],
+        $import = [
+            ['barcode, nama, satuan_id, struktur_id', 'required', 'message' => '{attribute} harus diisi!'],
             ['barcode', 'unique'],
             ['status', 'numerical', 'integerOnly' => true],
             ['barcode', 'length', 'max' => 30],
             ['nama', 'length', 'max' => 45],
-            ['struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, updated_by', 'length', 'max' => 10],
-            ['kategori_id, created_at, updated_at, updated_by', 'safe'],
+            ['kategori_id, satuan_id, restock_point, restock_level, restock_min, updated_by', 'length', 'max' => 10],
+            ['kategori_id, rak_id, created_at, updated_at, updated_by', 'safe'],
+        ];
+        $default = [
+            ['barcode, nama, satuan_id, struktur_id, rak_id', 'required', 'message' => '{attribute} harus diisi!'],
+            ['barcode', 'unique'],
+            ['status', 'numerical', 'integerOnly' => true],
+            ['barcode', 'length', 'max' => 30],
+            ['nama', 'length', 'max' => 45],
+            ['kategori_id, satuan_id, restock_point, restock_level, restock_min, updated_by', 'length', 'max' => 10],
+            ['kategori_id, rak_id, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
             ['id, barcode, nama, struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, variant_coefficient, status, daftarSupplier, strukturFullPath', 'safe', 'on' => 'search'],
         ];
+        if ($this->scenario == 'import') {
+            return $import;
+        } else {
+            return $default;
+        }
     }
+
 
     /**
      * @return array relational rules.

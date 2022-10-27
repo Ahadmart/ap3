@@ -2,8 +2,7 @@
 
 class Pos extends Penjualan
 {
-
-    const KATEGORI_TRX      = 3; //Kategori Penerimaan untuk POS
+    const KATEGORI_TRX = 3; //Kategori Penerimaan untuk POS
     /* Cari barang */
     const CARI_AUTOCOMPLETE = 0;
     const CARI_TABLE        = 1;
@@ -21,23 +20,54 @@ class Pos extends Penjualan
             if (isset($posData['tarik-tunai']) && $posData['tarik-tunai'] > 0) {
                 $tarikTunaiMinBelanja = Config::model()->find("nama='pos.tariktunaiminlimit'")->nilai;
                 if ($posData['tarik-tunai'] < $tarikTunaiMinBelanja) {
-                    throw new Exception("Tarik Tunai belum boleh dilakukan!");
+                    throw new Exception('Tarik Tunai belum boleh dilakukan!');
                 }
             }
             $this->simpanPenjualan();
+            if ($this->profil->tipe_id == Profil::TIPE_MEMBER_ONLINE) {
+                $penjualanMOL          = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
+                $postPenjualanMemberOL = [
+                    'userName'    => Yii::app()->user->namaLengkap,
+                    'nomorMember' => $penjualanMOL->nomor_member,
+                    'nomor'       => $this->nomor,
+                    'total'       => $this->ambilTotal(),
+                    'koinDipakai' => $posData['koin-mol'],
+                ];
+
+                $clientAPI = new AhadMembershipClient();
+                $r         = json_decode($clientAPI->penjualan($postPenjualanMemberOL));
+                if (isset($r->error)) {
+                    throw new Exception('Ahad Membership Error: ' . $r->error->type . ': ' . $r->error->description, 500);
+                }
+                $dataPenjualanMOL = $r->data->member;
+
+                // $penjualanMOL->koin_dipakai = 0; //update me!
+                $penjualanMOL->poin         = $dataPenjualanMOL->poin;
+                $penjualanMOL->koin_dipakai = empty($posData['koin-mol']) ? 0 : $posData['koin-mol'];
+                $penjualanMOL->koin         = $dataPenjualanMOL->koin;
+                $penjualanMOL->level        = $dataPenjualanMOL->level;
+                $penjualanMOL->level_nama   = $dataPenjualanMOL->levelNama;
+                $penjualanMOL->total_poin   = $dataPenjualanMOL->totalPoin;
+                $penjualanMOL->total_koin   = $dataPenjualanMOL->totalKoin;
+                if (!$penjualanMOL->save()) {
+                    throw new Exception('Gagal simpan penjualan_member_online: ' . print_r($penjualanMOL->getErrors(), true), 500);
+                }
+            }
 
             $uangDibayar = 0;
             $bayar       = [];
             foreach ($posData['bayar'] as $key => $value) {
-                $bayar[]     = [
+                $val = empty($value) ? 0 : $value;
+                $bayar[] = [
                     'akun'   => $key,
-                    'jumlah' => $value,
+                    'jumlah' => $val,
                 ];
-                $uangDibayar += $value;
+                // Yii::log("Bayar detail; akun: " . $key . ", value: " . $value, "info");
+                $uangDibayar += $val;
             }
 
-            $penerimaan                     = new Penerimaan;
-            $penerimaan->tanggal            = date('d-m-Y');
+            $penerimaan          = new Penerimaan;
+            $penerimaan->tanggal = date('d-m-Y');
             //$penerimaan->referensi = '[POS]';
             //$penerimaan->tanggal_referensi = date('d-m-Y');
             $penerimaan->profil_id          = $this->profil_id;
@@ -47,14 +77,14 @@ class Pos extends Penjualan
 
             $penerimaan->uang_dibayar = $uangDibayar;
             if (!$penerimaan->save()) {
-                throw new Exception("Gagal simpan penerimaan", 500);
+                throw new Exception('Gagal simpan penerimaan', 500);
             }
 
             $penjualan       = Penjualan::model()->findByPk($this->id);
             $hutangPiutangId = $penjualan->hutang_piutang_id;
             $dokumen         = HutangPiutang::model()->findByPk($hutangPiutangId);
             if (is_null($dokumen)) {
-                throw new Exception("Gagal! Hutang Piutang tidak ditemukan: " . serialize($penjualan->attributes));
+                throw new Exception('Gagal! Hutang Piutang tidak ditemukan: ' . serialize($penjualan->attributes));
             }
             $item = $dokumen->itemBayarHutang;
 
@@ -65,7 +95,7 @@ class Pos extends Penjualan
                     $penerimaanKasBank->kas_bank_id   = $b['akun'];
                     $penerimaanKasBank->jumlah        = $b['jumlah'];
                     if (!$penerimaanKasBank->save()) {
-                        throw new Exception("Gagal simpan penerimaan akun:" . $b['akun'] . ", jml:" . $b['jumlah'], 500);
+                        throw new Exception('Gagal simpan penerimaan akun:' . $b['akun'] . ', jml:' . $b['jumlah'], 500);
                     }
                 }
             }
@@ -99,6 +129,15 @@ class Pos extends Penjualan
                 $penerimaanDetail->save();
             }
 
+            if (isset($posData['koin-mol']) && $posData['koin-mol'] > 0) {
+                $penerimaanDetail                = new PenerimaanDetail;
+                $penerimaanDetail->penerimaan_id = $penerimaan->id;
+                $penerimaanDetail->item_id       = ItemKeuangan::POS_KOINCASHBACK_DIPAKAI;
+                $penerimaanDetail->keterangan    = '[POS] Koin Cashback dipakai (' . $dokumen->keterangan() . ')';
+                $penerimaanDetail->jumlah        = $posData['koin-mol'];
+
+                $penerimaanDetail->save();
+            }
             //$tarikTunai = $posData['tarik-tunai'];
 
             if (isset($posData['tarik-tunai']) && $posData['tarik-tunai'] > 0) {
@@ -124,7 +163,7 @@ class Pos extends Penjualan
 
                 $pengeluaran->uang_dibayar = $posData['tarik-tunai'];
                 if (!$pengeluaran->save()) {
-                    throw new Exception("Gagal simpan pengeluaran", 500);
+                    throw new Exception('Gagal simpan pengeluaran', 500);
                 }
 
                 $pengeluaranDetail                 = new PengeluaranDetail;
@@ -137,7 +176,7 @@ class Pos extends Penjualan
 
                 $pengeluaranLoad = Pengeluaran::model()->findByPk($pengeluaran->id);
                 if (!$pengeluaranLoad->prosesP()) {
-                    throw new Exception("Gagal proses pengeluaran", 500);
+                    throw new Exception('Gagal proses pengeluaran', 500);
                 }
 
                 $tarikTunaiModel               = new PenjualanTarikTunai;
@@ -146,27 +185,29 @@ class Pos extends Penjualan
                 $tarikTunaiModel->jumlah       = $posData['tarik-tunai'];
 
                 if (!$tarikTunaiModel->save()) {
-                    throw new Exception("Gagal simpan pencatatat Tarik Tunai", 500);
+                    throw new Exception('Gagal simpan pencatatat Tarik Tunai', 500);
                 }
             }
 
             $penerimaanLoad = Penerimaan::model()->findByPk($penerimaan->id);
             if (!$penerimaanLoad->prosesP()) {
-                throw new Exception("Gagal proses penerimaan", 500);
+                throw new Exception('Gagal proses penerimaan', 500);
             }
 
             $transaction->commit();
-            return array(
-                'sukses' => true
-            );
+
+            return [
+                'sukses' => true,
+            ];
         } catch (Exception $ex) {
             $transaction->rollback();
-            return array(
+            return [
                 'sukses' => false,
-                'error'  => array(
+                'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                ],
+            ];
         }
     }
 
@@ -174,13 +215,14 @@ class Pos extends Penjualan
     {
         $transaction = $this->dbConnection->beginTransaction();
         try {
-
             $tahun = date('y');
-            $akm   = Akm::model()->find('substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun',
-                    [
-                        ':nomor' => $nomor,
-                        ':tahun' => $tahun
-            ]);
+            $akm   = Akm::model()->find(
+                'substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun',
+                [
+                    ':nomor' => $nomor,
+                    ':tahun' => $tahun,
+                ]
+            );
             if (is_null($akm)) {
                 throw new Exception('AKM tidak ditemukan', 500);
             }
@@ -196,14 +238,15 @@ class Pos extends Penjualan
                 'sukses' => true,
             ];
         } catch (Exception $ex) {
-//            echo $exc->getTraceAsString();
+            //            echo $exc->getTraceAsString();
             $transaction->rollback();
             return [
                 'sukses' => false,
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ],
+            ];
         }
     }
 
@@ -211,25 +254,27 @@ class Pos extends Penjualan
     {
         $transaction = $this->dbConnection->beginTransaction();
         try {
-
             $tahun   = date('y');
             $pesanan = So::model()->findByPk($id);
             if (is_null($pesanan)) {
                 throw new Exception('Pesanan (Sales Order) tidak ditemukan', 500);
             }
 
-            $pesananDetails = SoDetail::model()->findAll('so_id=:pesananId',
-                    [':pesananId' => $pesanan->id]);
+            $pesananDetails = SoDetail::model()->findAll(
+                'so_id=:pesananId',
+                [':pesananId' => $pesanan->id]
+            );
             foreach ($pesananDetails as $detail) {
                 $barang = Barang::model()->findByPk($detail->barang_id);
                 $this->tambahBarangProc($barang, $detail->qty);
             }
 
-            So::model()->updateByPk($id,
-                    [
-                        'status'       => So::STATUS_JUAL,
-                        'penjualan_id' => $this->id
-                    ]
+            So::model()->updateByPk(
+                $id,
+                [
+                    'status'       => So::STATUS_JUAL,
+                    'penjualan_id' => $this->id,
+                ]
             );
 
             $transaction->commit();
@@ -243,22 +288,24 @@ class Pos extends Penjualan
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ],
+            ];
         }
     }
 
     public function inputPesananByNomor($nomor)
     {
         $tahun   = date('y');
-        $pesanan = So::model()->find('substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun',
-                [
-                    ':nomor' => $nomor,
-                    ':tahun' => $tahun
-        ]);
+        $pesanan = So::model()->find(
+            'substring(nomor,9)*1=:nomor and substring(nomor,5,2)=:tahun',
+            [
+                ':nomor' => $nomor,
+                ':tahun' => $tahun,
+            ]
+        );
         if (is_null($pesanan)) {
             throw new Exception('Pesanan tidak ditemukan', 500);
         }
         return $this->inputPesanan($pesanan->id);
     }
-
 }

@@ -12,81 +12,90 @@
             'attributes' => [
                 [
                     'name'  => 'user.nama',
-                    'label' => 'Login'
+                    'label' => 'Login',
                 ],
                 [
                     'name'  => 'user.nama_lengkap',
-                    'label' => 'Nama'
+                    'label' => 'Nama',
                 ],
                 /*
-                  array(
-                  'name' => 'device.nama',
-                  'label' => 'Device'
-                  ),
-                 */
+        array(
+        'name' => 'device.nama',
+        'label' => 'Device'
+        ),
+         */
                 [
                     'name'  => 'device.keterangan',
-                    'label' => 'POS Client (Workstation)'
+                    'label' => 'POS Client (Workstation)',
                 ],
                 //'waktu_buka',
                 [
                     'name'  => 'waktu_buka',
-                    'value' => date_format(date_create_from_format("Y-m-d H:i:s", $model->waktu_buka), 'd-m-Y H:i:s')
+                    'value' => date_format(date_create_from_format('Y-m-d H:i:s', $model->waktu_buka), 'd-m-Y H:i:s'),
                 ],
                 [
                     'name'  => 'saldo_awal',
-                    'value' => number_format($model->saldo_awal, 0, ',', '.')
+                    'value' => number_format($model->saldo_awal, 0, ',', '.'),
                 ],
                 [
-                    'name'  => 'total_penjualan',
-                    'value' => number_format($model->total_penjualan, 0, ',', '.')
+                    'name'    => 'total_penjualan',
+                    'value'   => number_format($model->total_penjualan, 0, ',', '.'),
+                    'visible' => false,
                 ],
                 [
-                    'name'  => 'total_margin',
-                    'value' => number_format($model->total_margin, 0, ',', '.')
+                    'name'    => 'total_margin',
+                    'value'   => number_format($model->total_margin, 0, ',', '.'),
+                    'visible' => false,
                 ],
                 [
                     'name'    => 'total_retur',
                     'value'   => number_format($model->total_retur, 0, ',', '.'),
                     'visible' => $model->total_retur != 0,
+                    'visible' => false,
                 ],
                 [
                     'name'    => 'total_diskon_pernota',
                     'value'   => number_format($model->total_diskon_pernota, 0, ',', '.'),
                     'visible' => $model->total_diskon_pernota != 0,
+                    'visible' => false,
                 ],
                 [
                     'name'    => 'total_infaq',
                     'value'   => number_format($model->total_infaq, 0, ',', '.'),
                     'visible' => $model->total_infaq != 0,
+                    'visible' => false,
                 ],
                 [
                     'name'    => 'total_tarik_tunai',
                     'value'   => number_format($model->total_tarik_tunai, 0, ',', '.'),
                     'visible' => $model->total_tarik_tunai != 0,
+                    'visible' => false,
                 ],
                 [
                     'label'   => 'Total Penerimaan',
                     'value'   => number_format($model->total_penerimaan, 0, ',', '.'),
                     'visible' => $model->total_penerimaan != $model->total_penjualan,
+                    'visible' => false,
                 ],
                 [
-                    'label'   => 'Total Penerimaan Kas',
-                    'value'   => number_format($penerimaanKas, 0, ',', '.'),
+                    'label' => 'Total Penerimaan Kas',
+                    'value' => number_format($penerimaanKas, 0, ',', '.'),
                     //'visible' => $model->total_penerimaan != $model->total_penjualan,
+                    'visible' => false,
                 ],
                 [
-                    'label' => 'Saldo Akhir (Kas) Seharusnya',
-                    'value' => number_format($model->saldo_akhir_seharusnya, 0, ',', '.')
+                    'label'   => 'Saldo Akhir (Kas) Seharusnya',
+                    'value'   => number_format($model->saldo_akhir_seharusnya, 0, ',', '.'),
+                    'visible' => false,
                 ],
-            /*
-              'saldo_akhir',
-              'total_penjualan',
-              'total_margin',
-              'total_retur',
-              'saldo_akhir_seharusnya',
-             * 
-             */
+                /*
+    'saldo_akhir',
+    'total_penjualan',
+    'total_margin',
+    'total_retur',
+    'saldo_akhir_seharusnya',
+     *
+     */
             ],
         ]);
         ?>

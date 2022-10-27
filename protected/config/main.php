@@ -4,88 +4,88 @@
 // Yii::setPathOfAlias('local','path/to/local-folder');
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
-return array(
-    'basePath' => dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-    'name' => 'AhadPOS ۳', //'Ahad POS ۳',
-    'theme' => 'default_dark', // 'materialize',
+return [
+    'basePath'          => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
+    'name'              => 'AhadPOS ۳', //'Ahad POS ۳',
+    'theme'             => 'default_dark', // 'materialize',
     'defaultController' => 'app',
     // preloading 'log' component
-    'preload' => array('log'),
+    'preload' => ['log'],
     // autoloading model and component classes
-    'import' => array(
+    'import' => [
         'application.models.*',
         'application.components.*',
-    ),
-    'modules' => array(
+    ],
+    'modules' => [
         // uncomment the following to enable the Gii tool
-        'gii' => array(
-            'class' => 'system.gii.GiiModule',
+        'gii' => [
+            'class'    => 'system.gii.GiiModule',
             'password' => 'abc',
             // If removed, Gii defaults to localhost only. Edit carefully to taste.
-            'ipFilters' => array('127.0.0.1', '::1'),
-        ),
-    ),
+            'ipFilters' => ['127.0.0.1', '192.168.1.98', '192.168.1.99', '::1'],
+        ],
+    ],
     // application components
-    'components' => array(
-        'user' => array(
+    'components' => [
+        'user' => [
             // enable cookie-based authentication
             'allowAutoLogin' => true,
-            'loginUrl' => array('app/login'),
-        ),
+            'loginUrl'       => ['app/login'],
+        ],
         // uncomment the following to enable URLs in path-format
-        'urlManager' => array(
-            'urlFormat' => 'path',
+        'urlManager' => [
+            'urlFormat'      => 'path',
             'showScriptName' => false,
-            'caseSensitive' => false,
-            'rules' => array(
-                'tools/<controller:\w+>/<action:\w+>' => 'tools/<controller>/<action>',
-                '<controller:\w+>/<id:\d+>' => '<controller>/view',
+            'caseSensitive'  => false,
+            'rules'          => [
+                'tools/<controller:\w+>/<action:\w+>'    => 'tools/<controller>/<action>',
+                '<controller:\w+>/<id:\d+>'              => '<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
-                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
-            ),
-        ),
+                '<controller:\w+>/<action:\w+>'          => '<controller>/<action>',
+            ],
+        ],
         // MySQL database
-        'db' => require(dirname(__FILE__).'/db.php'),
-        'errorHandler' => array(
+        'db'           => require(dirname(__FILE__) . '/db.php'),
+        'errorHandler' => [
             // action to display errors
             'errorAction' => 'app/error',
-        ),
-        'log' => array(
-            'class' => 'CLogRouter',
-            'routes' => array(
-                array(
-                    'class' => 'CFileLogRoute',
+        ],
+        'log' => [
+            'class'  => 'CLogRouter',
+            'routes' => [
+                [
+                    'class'  => 'CFileLogRoute',
                     'levels' => 'info, error, warning',
-                ),
-            // uncomment the following to show log messages on web pages
-            /*
+                ],
+                // uncomment the following to show log messages on web pages
+                /*
               array(
               'class' => 'CWebLogRoute',
               ),
              */
-            ),
-        ),
-        'authManager' => array(
-            'class' => 'CDbAuthManager',
+            ],
+        ],
+        'authManager' => [
+            'class'        => 'CDbAuthManager',
             'connectionID' => 'db',
-            'defaultRoles' => array('authenticated'),
-        ),
-        'ePdf' => array(
-            'class' => 'ext.yii-pdf.EYiiPdf',
-            'params' => array(
-                'mpdf' => array(
+            'defaultRoles' => ['authenticated'],
+        ],
+        'ePdf' => [
+            'class'  => 'ext.yii-pdf.EYiiPdf',
+            'params' => [
+                'mpdf' => [
                     'librarySourcePath' => 'application.vendors.mpdf.*',
-                    'constants' => array(
+                    'constants'         => [
                         '_MPDF_TEMP_PATH' => Yii::getPathOfAlias('application.runtime'),
-                    ),
+                    ],
                     'class' => 'mpdf',
-                ),
-            ),
-        ),
-    ),
+                ],
+            ],
+        ],
+    ],
     // application-level parameters that can be accessed
     // using Yii::app()->params['paramName']
-    'params' => array(
+    'params' => [
         // dipakai untuk authManager
         'superuser' => 'admin',
 
@@ -94,5 +94,5 @@ return array(
 
         // this is used in contact page
         'adminEmail' => 'webmaster@example.com',
-    ),
-);
+    ],
+];

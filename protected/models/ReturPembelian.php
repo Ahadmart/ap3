@@ -23,7 +23,6 @@
  */
 class ReturPembelian extends CActiveRecord
 {
-
     const STATUS_DRAFT   = 0;
     const STATUS_PIUTANG = 1;
     const STATUS_LUNAS   = 2;
@@ -175,7 +174,6 @@ class ReturPembelian extends CActiveRecord
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
             /*
@@ -184,7 +182,7 @@ class ReturPembelian extends CActiveRecord
              */
             $this->tanggal = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
 
         // Jika disimpan melalui proses simpan retur pembelian
@@ -231,15 +229,20 @@ class ReturPembelian extends CActiveRecord
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
-    public function getNamaStatus()
+    public static function listStatus()
     {
-        $status = [
+        return [
             ReturPembelian::STATUS_DRAFT   => 'Draft',
             ReturPembelian::STATUS_POSTED  => 'Posted',
             ReturPembelian::STATUS_PIUTANG => 'Piutang',
             ReturPembelian::STATUS_LUNAS   => 'Lunas',
             ReturPembelian::STATUS_BATAL   => 'Batal',
         ];
+    }
+
+    public function getNamaStatus()
+    {
+        $status = $this->listStatus();
         return $status[$this->status];
     }
 
@@ -249,10 +252,10 @@ class ReturPembelian extends CActiveRecord
 
     public function ambilTotal()
     {
-        $pembelian = Yii::app()->db->createCommand("select sum(rpd.qty * invbalance.harga_beli) total
+        $pembelian = Yii::app()->db->createCommand('select sum(rpd.qty * invbalance.harga_beli) total
 										from retur_pembelian_detail rpd
 										join inventory_balance invbalance on invbalance.id = rpd.inventory_balance_id
-										where retur_pembelian_id = :returPembelianId")
+										where retur_pembelian_id = :returPembelianId')
             ->bindValue(':returPembelianId', $this->id)
             ->queryRow();
         return $pembelian['total'];
@@ -286,9 +289,9 @@ class ReturPembelian extends CActiveRecord
              * Save sekaligus mengubah status dari draft jadi posted
              */
             if ($this->save()) {
-                $details = ReturPembelianDetail::model()->findAll("retur_pembelian_id=:id", [':id' => $this->id]);
+                $details = ReturPembelianDetail::model()->findAll('retur_pembelian_id=:id', [':id' => $this->id]);
                 if (is_null($details)) {
-                    throw new Exception("Tidak ada detail");
+                    throw new Exception('Tidak ada detail');
                 }
                 foreach ($details as $detail) :
                     $inventoryTerpakai = InventoryBalance::model()->returBeli($detail);
@@ -305,7 +308,7 @@ class ReturPembelian extends CActiveRecord
                         } else {
                             $detail->qty = $layer['qtyTerpakai'];
                             if (!$detail->save()) {
-                                throw new Exception("Gagal simpan detail", 500);
+                                throw new Exception('Gagal simpan detail', 500);
                             }
                         }
                         $count++;
@@ -349,7 +352,7 @@ class ReturPembelian extends CActiveRecord
 
                 return ['sukses' => true];
             } else {
-                throw new Exception("Gagal Simpan Retur Pembelian");
+                throw new Exception('Gagal Simpan Retur Pembelian');
             }
         } catch (Exception $ex) {
             $transaction->rollback();
@@ -382,18 +385,18 @@ class ReturPembelian extends CActiveRecord
     public function namaBulan($i)
     {
         static $bulan = [
-            "Januari",
-            "Februari",
-            "Maret",
-            "April",
-            "Mei",
-            "Juni",
-            "Juli",
-            "Agustus",
-            "September",
-            "Oktober",
-            "November",
-            "Desember",
+            'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember',
         ];
         return $bulan[$i - 1];
     }
@@ -412,13 +415,13 @@ class ReturPembelian extends CActiveRecord
             $branchConfig[$config->nama] = $config->nilai;
         }
 
-        $returPembelianDetail = Yii::app()->db->createCommand("
+        $returPembelianDetail = Yii::app()->db->createCommand('
          select barang.barcode, barang.nama, pd.qty, inv.harga_beli
          from retur_pembelian_detail pd
          join inventory_balance inv on pd.inventory_balance_id = inv.id
          join barang on inv.barang_id = barang.id
          where pd.retur_pembelian_id = :returPembelianId
-              ")
+              ')
             ->bindValue(':returPembelianId', $this->id)
             ->queryAll();
 
@@ -459,12 +462,12 @@ class ReturPembelian extends CActiveRecord
         }
         $nota .= PHP_EOL;
 
-        $nota .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
+        $nota .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
         $textHeader1 = ' Barang';
         $textHeader2 = 'Harga    Qty Sub Total ';
         $textHeader  = $textHeader1 . str_pad($textHeader2, $jumlahKolom - strlen($textHeader1), ' ', STR_PAD_LEFT) . PHP_EOL;
         $nota .= $textHeader;
-        $nota .= str_pad('', $jumlahKolom, "-") . PHP_EOL;
+        $nota .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
         $no = 1;
         foreach ($returPembelianDetail as $detail) {
@@ -481,7 +484,7 @@ class ReturPembelian extends CActiveRecord
             $no++;
         }
 
-        $nota .= str_pad('', $jumlahKolom, "-") . PHP_EOL . PHP_EOL;
+        $nota .= str_pad('', $jumlahKolom, '-') . PHP_EOL . PHP_EOL;
 
         $nota .= PHP_EOL;
         return $nota;
@@ -503,7 +506,7 @@ class ReturPembelian extends CActiveRecord
         /*
          * Ambil data retur pembelian detail, untuk diexport ke csv
          */
-        $details = Yii::app()->db->createCommand("
+        $details = Yii::app()->db->createCommand('
             SELECT
                 barang.barcode,
                 barang.nama,
@@ -523,7 +526,7 @@ class ReturPembelian extends CActiveRecord
                     JOIN
                 pembelian p ON p.id = d.pembelian_id
             WHERE
-                pd.retur_pembelian_id = :returPembelianId")
+                pd.retur_pembelian_id = :returPembelianId')
             ->bindValue(':returPembelianId', $this->id)
             ->queryAll();
 
@@ -554,42 +557,46 @@ class ReturPembelian extends CActiveRecord
     {
         $transaction = $this->dbConnection->beginTransaction();
         try {
+            if ($this->status != ReturPembelian::STATUS_PIUTANG) {
+                // Jika status sudah piutang, tidak usah masuk sini!
+                $jumlahReturBeli = $this->ambilTotal();
+                /*
+                 * Create (piutang)
+                 * Update per 3 Mar 2021, piutang created setelah ada aksi dari user
+                 */
+                $hutang                     = new HutangPiutang;
+                $hutang->profil_id          = $this->profil_id;
+                $hutang->jumlah             = $jumlahReturBeli;
+                $hutang->tipe               = HutangPiutang::TIPE_PIUTANG;
+                $hutang->asal               = HutangPiutang::DARI_RETUR_BELI;
+                $hutang->nomor_dokumen_asal = $this->nomor;
+                if (!$hutang->save()) {
+                    throw new Exception('Gagal simpan hutang', 500);
+                }
 
-            $jumlahReturBeli = $this->ambilTotal();
-            /*
-             * Create (piutang)
-             * Update per 3 Mar 2021, piutang created setelah ada aksi dari user
-             */
-            $hutang                     = new HutangPiutang;
-            $hutang->profil_id          = $this->profil_id;
-            $hutang->jumlah             = $jumlahReturBeli;
-            $hutang->tipe               = HutangPiutang::TIPE_PIUTANG;
-            $hutang->asal               = HutangPiutang::DARI_RETUR_BELI;
-            $hutang->nomor_dokumen_asal = $this->nomor;
-            if (!$hutang->save()) {
-                throw new Exception("Gagal simpan hutang");
+                /*
+                 * Hutang Detail
+                 */
+                $hutangDetail                    = new HutangPiutangDetail;
+                $hutangDetail->hutang_piutang_id = $hutang->id;
+                $hutangDetail->keterangan        = 'Retur Beli: ' . $this->nomor;
+                $hutangDetail->jumlah            = $jumlahReturBeli;
+                if (!$hutangDetail->save()) {
+                    throw new Exception('Gagal simpan hutang detail', 500);
+                }
+
+                /*
+                 * Update status menjadi piutang dan simpan hutang_id ke retur pembelian
+                 */
+                if (!ReturPembelian::model()->updateByPk($this->id, ['status' => self::STATUS_PIUTANG, 'hutang_piutang_id' => $hutang->id, 'updated_by' => Yii::app()->user->id]) > 1) {
+                    throw new Exception('Gagal update status dan simpan hutang_id', 500);
+                }
+
+                $transaction->commit();
+                return ['sukses' => true];
+            } else {
+                throw new Exception('Retur Pembelian ini sudah terbit piutang', 500);
             }
-
-            /*
-             * Hutang Detail
-             */
-            $hutangDetail                    = new HutangPiutangDetail;
-            $hutangDetail->hutang_piutang_id = $hutang->id;
-            $hutangDetail->keterangan        = 'Retur Beli: ' . $this->nomor;
-            $hutangDetail->jumlah            = $jumlahReturBeli;
-            if (!$hutangDetail->save()) {
-                throw new Exception("Gagal simpan hutang detail");
-            }
-
-            /*
-             * Update status menjadi piutang dan simpan hutang_id ke retur pembelian
-             */
-            if (!ReturPembelian::model()->updateByPk($this->id, ['status' => self::STATUS_PIUTANG, 'hutang_piutang_id' => $hutang->id, 'updated_by' => Yii::app()->user->id]) > 1) {
-                throw new Exception("Gagal update status dan simpan hutang_id");
-            }
-
-            $transaction->commit();
-            return ['sukses' => true];
         } catch (Exception $ex) {
             $transaction->rollback();
             return [
@@ -611,7 +618,7 @@ class ReturPembelian extends CActiveRecord
             //     throw new Exception("Gagal membatalkan retur beli: " . $this->nomor);
             // }
             ReturPembelian::model()->updateByPk($this->id, ['status' => self::STATUS_BATAL]);
-            $details      = ReturPembelianDetail::model()->findAll("retur_pembelian_id=:id", [':id' => $this->id]);
+            $details = ReturPembelianDetail::model()->findAll('retur_pembelian_id=:id', [':id' => $this->id]);
             foreach ($details as $detail) {
                 // Untuk setiap item, tambahkan qty ke inventory baru
                 InventoryBalance::returBeliBatal($detail);

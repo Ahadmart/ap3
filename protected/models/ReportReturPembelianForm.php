@@ -73,6 +73,7 @@ class ReportReturPembelianForm extends CFormModel
                 retur.id,
                 retur.nomor,
                 retur.tanggal,
+                retur.status,
                 profil.nama nama_profil,
                 `user`.nama nama_user
             FROM

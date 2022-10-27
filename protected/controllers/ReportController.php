@@ -1,5 +1,7 @@
 <?php
 
+use Mpdf\Tag\Em;
+
 class ReportController extends Controller
 {
     public function actionIndex()
@@ -23,7 +25,8 @@ class ReportController extends Controller
      */
     public function actionPembelian()
     {
-        $model = new ReportPembelianForm;
+        $model  = new ReportPembelianForm;
+        $report = null;
         if (isset($_POST['ReportPembelianForm'])) {
             $model->attributes = $_POST['ReportPembelianForm'];
             if ($model->validate()) {
@@ -36,10 +39,32 @@ class ReportController extends Controller
         if (isset($_GET['Profil'])) {
             $profil->attributes = $_GET['Profil'];
         }
-
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $optionPrinters       = [];
+        // Untuk render html select option
+        foreach ($printers as $printer) {
+            switch ($printer['tipe_id']) {
+                case Device::TIPE_PDF_PRINTER:
+                    // foreach ($kertasPdf as $key => $value) {
+                    //     $optionPrinters['PDF'][$printer['id'] . '|' . $key] = $value;
+                    // }
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    $optionPrinters[$printer['id']] = $printer['nama'];
+                    break;
+                default:
+                    // Nothing... yet
+                    break;
+            }
+        };
         $this->render('pembelian', [
-            'model'  => $model,
-            'profil' => $profil,
+            'model'          => $model,
+            'profil'         => $profil,
+            'report'         => $report,
+            'printers'       => $printers,
+            'optionPrinters' => $optionPrinters,
+            'printHandle'    => 'printpembelian',
         ]);
     }
 
@@ -103,11 +128,11 @@ class ReportController extends Controller
         $csv             = $reportPenjualan->toCsv();
 
         if (is_null($csv)) {
-            throw new Exception("Tidak ada data", 500);
+            throw new Exception('Tidak ada data', 500);
         }
 
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp = date("Y-m-d-H-i");
+        $timeStamp = date('Y-m-d-H-i');
         $namaFile  = "Penjualan {$namaToko->nilai} {$timeStamp}";
 
         $this->renderPartial('_csv', [
@@ -266,6 +291,28 @@ class ReportController extends Controller
         return $config->nilai;
     }
 
+    /**
+     * alamatToko function
+     *
+     * @return string toko.alamat1, toko.alamat2, toko.alamat3
+     */
+    public function alamatToko()
+    {
+        $alamats = Config::model()->findAll('nama like :nama', [':nama' => 'toko.alamat%']);
+        $alamatText = '';
+        $st = true;
+        foreach ($alamats as $alamat) {
+            if ($st) {
+                $st = false;
+                $alamatText .= $alamat->nilai;
+                continue;
+            }
+            $alamatText .= ', ' . $alamat->nilai;
+        }
+
+        return $alamatText;
+    }
+
     public function harianDetailPdf($report, $kertas)
     {
         /*
@@ -350,7 +397,7 @@ class ReportController extends Controller
             $model->attributes = $_POST['ReportPoinMemberForm'];
             $report            = $model->ambilDataPoinMember();
         } else {
-            throw new Exception("Tidak ada data, klik lagi dari tombol cetak", 500);
+            throw new Exception('Tidak ada data, klik lagi dari tombol cetak', 500);
         }
 
         $configs = Config::model()->findAll();
@@ -580,7 +627,7 @@ class ReportController extends Controller
             $model->pilihCetak = $pilihCetak;
             $report            = $model->reportHutangPiutang();
         } else {
-            throw new Exception("Tidak ada data", 500);
+            throw new Exception('Tidak ada data', 500);
         }
 
         $configs = Config::model()->findAll();
@@ -627,12 +674,12 @@ class ReportController extends Controller
             $model->pilihCetak = $pilihCetak;
             $csv               = $model->reportHutangPiutangCsv();
         } else {
-            throw new Exception("Tidak ada data", 500);
+            throw new Exception('Tidak ada data', 500);
         }
         $profil = Profil::model()->findByPk($profilId);
 
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp = date("Y-m-d-H-i");
+        $timeStamp = date('Y-m-d-H-i');
         $namaFile  = "HP {$namaToko->nilai} {$profil->nama} {$timeStamp}";
 
         $this->renderPartial('_csv', [
@@ -800,7 +847,7 @@ class ReportController extends Controller
     {
         ini_set('memory_limit', '-1');
         set_time_limit(0);
-        ini_set("pcre.backtrack_limit", "99999999");
+        ini_set('pcre.backtrack_limit', '99999999');
 
         $model = new ReportUmurBarangForm();
 
@@ -974,7 +1021,7 @@ class ReportController extends Controller
     public function actionCariBarang($term)
     {
         $q = new CDbCriteria();
-        $q->addCondition("barcode like :term OR nama like :term");
+        $q->addCondition('barcode like :term OR nama like :term');
         $q->order  = 'nama';
         $q->params = [':term' => "%{$term}%"];
         $barangs   = Barang::model()->findAll($q);
@@ -1086,7 +1133,7 @@ class ReportController extends Controller
         $profil     = Profil::model()->findByPk($profilId);
         $namaProfil = is_null($profil) ? 'Semua-Profil' : $profil->nama;
         $namaToko   = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp  = date("Y-m-d-H-i");
+        $timeStamp  = date('Y-m-d-H-i');
         $namaFile   = "Daftar Barang_{$namaProfil}_{$namaToko->nilai}_{$timeStamp}";
 
         $this->renderPartial('_csv', [
@@ -1292,11 +1339,11 @@ class ReportController extends Controller
         }
 
         if (is_null($csv)) {
-            throw new Exception("Tidak ada data", 500);
+            throw new Exception('Tidak ada data', 500);
         }
 
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp = date("Y-m-d-H-i");
+        $timeStamp = date('Y-m-d-H-i');
         $namaFile  = "Pengeluaran Penerimaan {$namaToko->nilai} {$dari} {$sampai} {$timeStamp}";
 
         $this->renderPartial('_csv', [
@@ -1375,11 +1422,11 @@ class ReportController extends Controller
         $csv    = $report->toCsv();
 
         if (is_null($csv)) {
-            throw new Exception("Tidak ada data", 500);
+            throw new Exception('Tidak ada data', 500);
         }
 
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp = date("Y-m-d-H-i");
+        $timeStamp = date('Y-m-d-H-i');
         $namaFile  = "Penjualan Sales Order {$namaToko->nilai} {$timeStamp}";
 
         $this->renderPartial('_csv', [
@@ -1440,7 +1487,7 @@ class ReportController extends Controller
         }
 
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp = date("Y-m-d-H-i");
+        $timeStamp = date('Y-m-d-H-i');
         $namaFile  = "Penjualan per Kategori {$namaToko->nilai} {$model->dari}_{$model->sampai} {$timeStamp}";
 
         $this->renderPartial('_csv', [
@@ -1511,7 +1558,7 @@ class ReportController extends Controller
     {
         ini_set('memory_limit', '-1');
         set_time_limit(0);
-        ini_set("pcre.backtrack_limit", "99999999");
+        ini_set('pcre.backtrack_limit', '99999999');
 
         /*
          * Persiapan render PDF
@@ -1533,9 +1580,9 @@ class ReportController extends Controller
 
     public function stockOpnameCsv($report)
     {
-        $timeStamp  = date("Y-m-d-H-i");
-        $namaFile   = "Stock Opname_{$report['namaToko']}_{$report['dari']}-{$report['sampai']}_{$timeStamp}";
-        $model = new ReportStockOpnameForm;
+        $timeStamp = date('Y-m-d-H-i');
+        $namaFile  = "Stock Opname_{$report['namaToko']}_{$report['dari']}-{$report['sampai']}_{$timeStamp}";
+        $model     = new ReportStockOpnameForm;
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
@@ -1625,7 +1672,7 @@ class ReportController extends Controller
             $printerInput      = explode('|', $model->printer); //0:printerId, 1:kertas (PDF)
             $device            = Device::model()->findByPk($printerInput[0]);
             if (is_null($device)) {
-                throw new CHttpException(500, "Printer tidak ditemukan!");
+                throw new CHttpException(500, 'Printer tidak ditemukan!');
             };
 
             switch ($device->tipe_id) {
@@ -1645,7 +1692,7 @@ class ReportController extends Controller
                                 $model->profilId,
                                 $model->userId
                             );
-                        } else if ($model->strukLv2 > 0) {
+                        } elseif ($model->strukLv2 > 0) {
                             $report = $model->reportDetail();
                             // print_r($report);
                             $this->penjualanStrukturPdf(
@@ -1741,16 +1788,180 @@ class ReportController extends Controller
         $csv = $model->reportCSV();
 
         if (is_null($csv)) {
-            throw new CHttpException(500, "Tidak ada data");
+            throw new CHttpException(500, 'Tidak ada data');
         }
 
         $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $timeStamp = date("Y-m-d-H-i");
+        $timeStamp = date('Y-m-d-H-i');
         $namaFile  = "Penjualan perStruktur {$namaToko->nilai} {$timeStamp}";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
             'csv'      => $csv,
+        ]);
+    }
+
+    public function actionMutasiPoin()
+    {
+        $model = new ReportMutasiPoinForm();
+
+        $this->render('mutasipoin', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionMutasiKoin()
+    {
+        $model = new ReportMutasiKoinForm();
+
+        $this->render('mutasikoin', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionPrintPembelian()
+    {
+        // Yii::log("Masuk action Print Pembelian");
+        if (isset($_POST['ReportPembelianForm'])) {
+            // Yii::log("PrintId: " . $_POST['ReportPembelianForm']['printer']);
+            $device = Device::model()->findByPk($_POST['ReportPembelianForm']['printer']);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    /* Ada tambahan parameter kertas untuk tipe pdf */
+                    // $this->hutangPiutangPdf($_GET['kertas']);
+                    break;
+                case Device::TIPE_CSV_PRINTER:
+                    // Yii::log("Masuk action Print Pembelian CSV");
+                    $this->pembelianCsv($_POST['ReportPembelianForm']);
+                    break;
+            }
+        }
+    }
+
+    public function pembelianCsv($formData)
+    {
+        $reportPembelian             = new ReportPembelianForm;
+        $reportPembelian->attributes = $formData;
+        if (!$reportPembelian->validate()) {
+            throw new CHttpException(500, 'Message: ' . json_encode($reportPembelian->getErrors()));
+        }
+        $csv             = $reportPembelian->toCsv();
+
+        Yii::log('Hasil CSV:' . $csv);
+
+        if (is_null($csv)) {
+            throw new CHttpException(500, 'Tidak ada data');
+        }
+
+        $namaToko  = Config::model()->find("nama = 'toko.nama'");
+        $profil    = '';
+        if (!empty($formData['profilId'])) {
+            $profil = ' ' . Profil::model()->findByPk($formData['profilId'])->nama;
+        }
+        $namaFile  = "Pembelian {$namaToko->nilai} {$formData['dari']} {$formData['sampai']}{$profil}";
+
+        $this->renderPartial('_csv', [
+            'namaFile' => $namaFile,
+            'csv'      => $csv,
+        ]);
+    }
+
+    /**
+     * Report Harian Form
+     */
+    public function actionHarian01()
+    {
+        $this->layout = '//layouts/box_kecil';
+        $model        = new ReportHarian01Form;
+
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf            = ReportHarian01Form::listKertas();
+
+        $this->render('harian_01', [
+            'model'       => $model,
+            'judul'       => 'Harian 01',
+            'printers'    => $printers,
+            'kertasPdf'   => $kertasPdf,
+            'printHandle' => 'printharian01',
+        ]);
+    }
+
+    public function actionPrintHarian01($printId, $kertas, $tanggal)
+    {
+        $model                      = new ReportHarian01Form;
+        $model->tanggal             = $tanggal;
+        if ($model->validate()) {
+            $report               = $model->reportHarianDetail();
+            $report['tanggal']    = $tanggal;
+            $report['namaToko']   = $this->namaToko();
+            $report['kodeToko']   = $this->kodeToko();
+            $report['alamatToko'] = $this->alamatToko();
+            $device               = Device::model()->findByPk($printId);
+            switch ($device->tipe_id) {
+                case Device::TIPE_PDF_PRINTER:
+                    /* Ada tambahan parameter kertas untuk tipe pdf */
+                    $this->harianPdf($report, $kertas);
+                    break;
+            }
+            Yii::app()->end();
+        }
+    }
+
+    public function harianPdf($report, $kertas)
+    {
+        /*
+         * Persiapan render PDF
+         */
+
+        require_once __DIR__ . '/../vendor/autoload.php';
+        $listNamaKertas = ReportHarian01Form::listKertas();
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('harian_01_detail_pdf', [
+            'report' => $report,
+        ], true));
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
+        // Render PDF
+        $mpdf->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
+    }
+
+    /**
+     * Report Retur Penjualan
+     */
+    public function actionReturPenjualan()
+    {
+        $model  = new ReportReturPenjualanForm;
+        $report = [];
+        if (isset($_POST['ReportReturPenjualanForm'])) {
+            $model->attributes = $_POST['ReportReturPenjualanForm'];
+            if ($model->validate()) {
+                $report = $model->reportReturPenjualan();
+            }
+        }
+
+        $profil = new Profil('search');
+        $profil->unsetAttributes(); // clear any default values
+        if (isset($_GET['Profil'])) {
+            $profil->attributes = $_GET['Profil'];
+        }
+
+        $user = new User('search');
+        $user->unsetAttributes(); // clear any default values
+        if (isset($_GET['User'])) {
+            $user->attributes = $_GET['User'];
+        }
+
+        $tipePrinterAvailable = [];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+
+        $this->render('returpenjualan', [
+            'model'    => $model,
+            'profil'   => $profil,
+            'user'     => $user,
+            'report'   => $report,
+            'printers' => $printers,
         ]);
     }
 }

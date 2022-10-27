@@ -510,7 +510,6 @@ class ReportPenjualanPerStrukturForm extends CFormModel
             $lv1Cond = " AND bs1.id = :lv1Id";
         }
 
-        $userId = Yii::app()->user->id;
         $sql    = "
         SELECT
             barang.barcode,
@@ -588,6 +587,82 @@ class ReportPenjualanPerStrukturForm extends CFormModel
         return $command->queryAll();
     }
 
+    public function reportDetailCsvTanpaStruktur()
+    {
+        $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s');
+        $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s');
+
+        $whereSub = '';
+        if (!empty($this->profilId)) {
+            $whereSub .= " AND pj.profil_id = :profilId";
+        }
+
+        if (!empty($this->userId)) {
+            $whereSub .= " AND pj.updated_by = :userId";
+        }
+
+        $sql    = "
+        SELECT
+            barang.barcode,
+            barang.nama,
+            'NULL' struktur_lv1,
+            'NULL' struktur_lv2,
+            'NULL' struktur_lv3,
+            t_penjualan.totalqty qty,
+            t_penjualan.total omzet,
+            t_modal.total modal,
+            (t_penjualan.total - t_modal.total) margin,
+            t_stok.stok
+        FROM
+            (SELECT
+                pd.barang_id,
+                    SUM(pd.qty) totalqty,
+                    SUM(pd.harga_jual * pd.qty) total
+            FROM
+                penjualan_detail pd
+            JOIN penjualan pj ON pd.penjualan_id = pj.id
+                AND pj.status != 0
+                AND pj.tanggal BETWEEN :dari AND :sampai
+                {$whereSub}
+            GROUP BY pd.barang_id) t_penjualan
+                JOIN
+            (SELECT
+                pd.barang_id, SUM(hpp.qty * hpp.harga_beli) total
+            FROM
+                harga_pokok_penjualan hpp
+            JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
+            JOIN penjualan pj ON pd.penjualan_id = pj.id
+                AND pj.status != 0
+                AND pj.tanggal BETWEEN :dari AND :sampai
+                {$whereSub}
+            GROUP BY pd.barang_id) t_modal ON t_penjualan.barang_id = t_modal.barang_id
+                JOIN
+            barang ON barang.id = t_penjualan.barang_id AND barang.struktur_id IS NULL
+                JOIN
+            (SELECT
+                barang_id, SUM(qty) stok
+            FROM
+                inventory_balance
+            GROUP BY barang_id) t_stok ON t_stok.barang_id = barang.id                
+        ORDER BY barang.barcode
+                ";
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
+        $command->bindValue(":dari", $dari);
+        $command->bindValue(":sampai", $sampai);
+
+        if (!empty($this->profilId)) {
+            $command->bindValue(":profilId", $this->profilId);
+        }
+        if (!empty($this->userId)) {
+            $command->bindValue(":userId", $this->userId);
+        }
+
+        return $command->queryAll();
+    }
+
     public function reportCSV()
     {
         $r = [];
@@ -600,8 +675,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
             /* Sales by Struktur Lv 1 */
             $r = $this->reportDetailCsv($this->strukLv1, null, null);
         } else {
-            /* Semua sales yang ada strukturnya */
-            $r = $this->reportDetailCsv(null, null, null);
+            /* Semua sales, yang ada strukturnya dan yang tidak */
+            $r = array_merge($this->reportDetailCsv(null, null, null), $this->reportDetailCsvTanpaStruktur());
         }
         return $this->array2csv($r);
     }

@@ -113,6 +113,7 @@ class ReportPenjualanForm extends CFormModel
             t_modal.total_modal,
             profil.nama,
             (t_penjualan.total - t_modal.total_modal) margin,
+            user.nama AS nama_user,
             {$userId} user_id
         FROM
             (SELECT
@@ -144,6 +145,8 @@ class ReportPenjualanForm extends CFormModel
             GROUP BY pj.id) t_modal ON t_penjualan.penjualan_id = t_modal.id
                 JOIN
             profil ON t_penjualan.profil_id = profil.id
+                JOIN
+            user ON t_penjualan.updated_by = user.id
         WHERE
             t_penjualan.profil_id IS NOT NULL
         ORDER BY t_penjualan.nomor
@@ -152,7 +155,7 @@ class ReportPenjualanForm extends CFormModel
         $sql = "
             INSERT INTO
             {$tableName}
-            (penjualan_id, nomor, tanggal, profil_id, updated_by, total, total_modal, nama, margin, user_id)
+            (penjualan_id, nomor, tanggal, profil_id, updated_by, total, total_modal, nama, margin, nama_user, user_id)
             {$sqlSelect}
                 ";
 
@@ -244,7 +247,7 @@ class ReportPenjualanForm extends CFormModel
 
     public function toCsv()
     {
-        $csv = '"tanggal","nomor","nama_profil","total","margin","profit_margin"' . PHP_EOL;
+        $csv = '"tanggal","nomor","nama_profil","total","margin","profit_margin","nama_user"' . PHP_EOL;
 
         $penjualan = Yii::app()->db->createCommand()
             ->from($this->tableName())->where('user_id=:userId', [
@@ -259,7 +262,8 @@ class ReportPenjualanForm extends CFormModel
                 . "\"{$baris['nama']}\","
                 . "\"{$baris['total']}\","
                 . "\"{$baris['margin']}\","
-                . "{$profitMargin}"
+                . "\"{$profitMargin}\","
+                . "\"{$baris['nama_user']}\""
                 . PHP_EOL;
         }
 

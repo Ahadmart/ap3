@@ -52,6 +52,7 @@ if (!empty($report['detail'])):
                         <th class="rata-kanan">No</th>
                         <th>Tanggal</th>
                         <th>Nomor</th>
+                        <th>Status</th>
                         <th>Profil</th>
                         <th class="rata-kanan">Total</th>
                         <th>User</th>
@@ -59,6 +60,7 @@ if (!empty($report['detail'])):
                 </thead>
                 <tbody>
                     <?php
+                    $statusRetur = ReturPembelian::listStatus();
                     $i = 1;
                     foreach ($report['detail'] as $barisReport):
                         ?>
@@ -66,6 +68,7 @@ if (!empty($report['detail'])):
                             <td class="rata-kanan"><?= $i ?></td>
                             <td><?php echo $barisReport['tanggal']; ?></td>
                             <td><a href="<?php echo Yii::app()->createUrl('returpembelian/view', array('id' => $barisReport['id'])); ?>"><?php echo $barisReport['nomor']; ?></a></td>
+                            <td><?= $statusRetur[$barisReport['status']] ?></td>
                             <td><?= $barisReport['nama_profil']; ?> </td>
                             <td class="rata-kanan"><?php echo number_format($barisReport['total'], 0, ',', '.'); ?></td>
                             <td><?= $barisReport['nama_user']; ?> </td>

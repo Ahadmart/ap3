@@ -52,7 +52,7 @@
         $i = 1;
         foreach ($data as $barang) :
         ?>
-            <tr class="<?php echo $i % 2 === 0 ? '' : 'alt'; ?>">
+            <tr class="<?php //echo $i % 2 === 0 ? '' : 'alt'; ?>">
                 <td class="rata-kanan"><?= $i; ?></td>
                 <td><?= $barang['barcode']; ?></td>
                 <td><?= $barang['nama']; ?></td>
