@@ -185,6 +185,7 @@ class PenjualanController extends Controller
         if (isset($_GET['Penjualan'])) {
             $model->attributes = $_GET['Penjualan'];
         }
+        $model->hideOpenTxn();
 
         $this->render('index', [
             'model' => $model,

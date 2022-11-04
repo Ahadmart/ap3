@@ -114,6 +114,30 @@ class Penjualan extends CActiveRecord
         ];
     }
 
+    public function scopes()
+    {
+        return [
+            'hideOpenTxn' => [
+                'join'      => 'LEFT JOIN kasir ON kasir.user_id=t.id AND kasir.waktu_tutup is null',
+                'condition' => '(kasir.id IS NULL OR (kasir.id IS NOT NULL AND t.tanggal < kasir.waktu_buka))',
+            ],
+        ];
+    }
+
+    /**
+     * hideOpenTxn function
+     * Menyembunyikan transaksi kasir (POS) yang masih buka (belum tutup kasir)
+     * @return CDbCriteria
+     */
+    // public function hideOpenTxn()
+    // {
+    //     $this->getDbCriteria()->mergeWith([
+    //         'join'      => 'LEFT JOIN kasir ON kasir.user_id=t.id AND kasir.waktu_tutup is null',
+    //         'condition' => '(kasir.id IS NULL OR (kasir.id IS NOT NULL AND t.tanggal < kasir.waktu_buka))',
+    //     ]);
+    //     return $this;
+    // }
+
     /**
      * Retrieves a list of models based on the current search/filter conditions.
      *
@@ -1264,16 +1288,16 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'INVOICE '; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+        . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat1'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strTgl, $kananMaxLength, ' ')
+        . str_pad($strTgl, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat2'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strTglDue, $kananMaxLength, ' ')
+        . str_pad($strTglDue, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strKasir, $kananMaxLength, ' ')
+        . str_pad($strKasir, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($strTotal, $jumlahKolom - $kananMaxLength + strlen($strTotal), ' ', STR_PAD_LEFT)
             . PHP_EOL;
@@ -1345,7 +1369,7 @@ class Penjualan extends CActiveRecord
             $signatureHead3 = 'Driver';
 
             $struk .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) .
-                str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
+            str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
             $struk .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
             $struk .= '     (                )         (                )         (                )' . PHP_EOL;
         }
@@ -1614,13 +1638,13 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'NOTA'; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+        . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
             . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header1'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strKasir, $kananMaxLength, ' ')
+        . str_pad($strKasir, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header2'], $jumlahKolom - $kananMaxLength, ' ')
-            . str_pad($strWaktu, $kananMaxLength, ' ')
+        . str_pad($strWaktu, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= PHP_EOL;
 
@@ -2002,7 +2026,7 @@ class Penjualan extends CActiveRecord
         return PenjualanDetail::model()->with('barang')->findAll('penjualan_id=:penjualanId AND barang.struktur_id IS NULL', [':penjualanId' => $this->id]);
     }
 
-    public function array2csv(array &$array)
+    public function array2csv(array&$array)
     {
         if (count($array) == 0) {
             return null;
