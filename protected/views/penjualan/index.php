@@ -15,7 +15,8 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
     <div class="small-12 columns">
         <?php
         $this->widget('BGridView', ['id' => 'penjualan-grid',
-            'dataProvider' => $model->search(),
+            // 'dataProvider' => $model->search(),
+            'dataProvider' => $model->search($merge),
             'filter' => $model,
             'itemsCssClass' => 'tabel-index',
             'columns' => array(
@@ -130,3 +131,34 @@ $this->menu = array(
         'submenuOptions' => array('class' => 'button-group')
     )
 );
+/*
+$dataProvider = $model->search($hideOpenTxnCr);
+echo $dataProvider->criteria->select.'<br>';
+// echo $dataProvider->criteria->from.'<br>';
+echo $dataProvider->criteria->join.'<br>';
+
+// We display the conditions
+
+echo $dataProvider->criteria->condition . "<br>";
+echo $dataProvider->criteria->order.'<br>';
+
+// We get all the keys from the dataProvider params
+
+$x = array();
+
+foreach($dataProvider->criteria->params as $key=>$value) {
+
+$x[count($x)] = $key;
+
+}
+
+// We display the keys and their values
+
+$count = 0;
+
+foreach ($dataProvider->criteria->params as $item) {
+
+echo $x[$count] . ' = ' .$item . '&lt;br&gt;';
+$count++;
+}
+*/
