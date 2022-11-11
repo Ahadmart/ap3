@@ -16,7 +16,7 @@ class PenjualanController extends Controller
     public function filters()
     {
         return [
-            'accessControl',     // perform access control for CRUD operations
+            'accessControl', // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
         ];
     }
@@ -88,7 +88,7 @@ class PenjualanController extends Controller
         $customerList = Profil::model()->findAll([
             'select'    => 'id, nama',
             'condition' => 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER,
-            'order'     => 'nama'
+            'order'     => 'nama',
         ]);
 
         $this->render('tambah', [
@@ -185,10 +185,19 @@ class PenjualanController extends Controller
         if (isset($_GET['Penjualan'])) {
             $model->attributes = $_GET['Penjualan'];
         }
-        $model->hideOpenTxn();
+
+
+        $hideOpenTxnCr            = new CDbCriteria;
+        $hideOpenTxnCr->join      = 'LEFT JOIN kasir ON kasir.user_id=t.updated_by AND kasir.waktu_tutup is null';
+        $hideOpenTxnCr->condition = 'kasir.id IS NULL OR (kasir.id IS NOT NULL AND t.tanggal < kasir.waktu_buka)';
+        $hideOpenTxnCr = null; // Jika diterapkan, querynya lamaa sekali
+
+        // Yii::log(print_r($model->getDbCriteria(), true));
+        // Yii::log(print_r($model->getAttributes(), true));
 
         $this->render('index', [
             'model' => $model,
+            'merge' => $hideOpenTxnCr,
         ]);
     }
 
@@ -432,9 +441,9 @@ class PenjualanController extends Controller
             }
         }
 
-        $csv   = $model->eksporCsv();
+        $csv = $model->eksporCsv();
 
-        $timeStamp = date("Y-m-d--H-i");
+        $timeStamp = date('Y-m-d--H-i');
         $namaFile  = "{$model->nomor}-{$model->profil->nama}-{$timeStamp}";
 
         $hash = hash_hmac('sha256', $csv, $namaFile, false);
@@ -454,7 +463,7 @@ class PenjualanController extends Controller
         $profilList = Profil::model()->findAll([
             'select'    => 'id, nama',
             'condition' => $condition,
-            'order'     => 'nama'
+            'order'     => 'nama',
         ]);
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
@@ -469,10 +478,10 @@ class PenjualanController extends Controller
     {
         $model    = $this->loadModel($id);
         $namaFile = $this->getNamaFile($model->nomor, $print);
-        header("Content-type: text/plain");
+        header('Content-type: text/plain');
         header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
-        header("Pragma: no-cache");
-        header("Expire: 0");
+        header('Pragma: no-cache');
+        header('Expire: 0');
         $text = $this->getText($model, $print);
 
         echo $device->revisiText($text);
@@ -490,7 +499,7 @@ class PenjualanController extends Controller
             case self::PRINT_NOTA:
                 return "nota-{$nomor}";
             case self::PRINT_INVOICE_DRAFT:
-                return "invoice-draft";
+                return 'invoice-draft';
         }
     }
 
@@ -622,13 +631,13 @@ class PenjualanController extends Controller
                     $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
                     /*
-                case Device::TIPE_PDF_PRINTER:
-                $this->exportPdf($id);
-                break;
-                case Device::TIPE_CSV_PRINTER:
-                $this->eksporCsv($id);
-                break;
-                 */
+                    case Device::TIPE_PDF_PRINTER:
+                    $this->exportPdf($id);
+                    break;
+                    case Device::TIPE_CSV_PRINTER:
+                    $this->eksporCsv($id);
+                    break;
+                     */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_STRUK);
                     break;
@@ -648,13 +657,13 @@ class PenjualanController extends Controller
                     $this->printLpr($id, $device, self::PRINT_NOTA);
                     break;
                     /*
-                case Device::TIPE_PDF_PRINTER:
-                $this->exportPdf($id);
-                break;
-                case Device::TIPE_CSV_PRINTER:
-                $this->eksporCsv($id);
-                break;
-                 */
+                    case Device::TIPE_PDF_PRINTER:
+                    $this->exportPdf($id);
+                    break;
+                    case Device::TIPE_CSV_PRINTER:
+                    $this->eksporCsv($id);
+                    break;
+                     */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_NOTA);
                     break;

@@ -114,30 +114,6 @@ class Penjualan extends CActiveRecord
         ];
     }
 
-    public function scopes()
-    {
-        return [
-            'hideOpenTxn' => [
-                'join'      => 'LEFT JOIN kasir ON kasir.user_id=t.id AND kasir.waktu_tutup is null',
-                'condition' => '(kasir.id IS NULL OR (kasir.id IS NOT NULL AND t.tanggal < kasir.waktu_buka))',
-            ],
-        ];
-    }
-
-    /**
-     * hideOpenTxn function
-     * Menyembunyikan transaksi kasir (POS) yang masih buka (belum tutup kasir)
-     * @return CDbCriteria
-     */
-    // public function hideOpenTxn()
-    // {
-    //     $this->getDbCriteria()->mergeWith([
-    //         'join'      => 'LEFT JOIN kasir ON kasir.user_id=t.id AND kasir.waktu_tutup is null',
-    //         'condition' => '(kasir.id IS NULL OR (kasir.id IS NOT NULL AND t.tanggal < kasir.waktu_buka))',
-    //     ]);
-    //     return $this;
-    // }
-
     /**
      * Retrieves a list of models based on the current search/filter conditions.
      *
@@ -150,7 +126,7 @@ class Penjualan extends CActiveRecord
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search()
+    public function search($merge = null)
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
@@ -190,6 +166,9 @@ class Penjualan extends CActiveRecord
                 ],
             ],
         ];
+        if ($merge !== null) {
+            $criteria->mergeWith($merge);
+        }
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
