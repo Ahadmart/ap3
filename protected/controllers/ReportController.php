@@ -73,12 +73,20 @@ class ReportController extends Controller
      */
     public function actionPenjualan()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        $superUser = Yii::app()->authManager->getAuthAssignment(Yii::app()->params['superuser'], Yii::app()->user->id) === null ? false : true;
+        if ($superUser) {
+            $hideOpenTxn = false;
+        }
+
         $model  = new ReportPenjualanForm;
         $report = [];
         if (isset($_POST['ReportPenjualanForm'])) {
             $model->attributes = $_POST['ReportPenjualanForm'];
             if ($model->validate()) {
-                $report = $model->reportPenjualan();
+                $report = $model->reportPenjualan($hideOpenTxn);
             }
         }
 
@@ -97,12 +105,20 @@ class ReportController extends Controller
         $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         //$kertasUntukPdf = ReportPenjualanForm::listKertas();
+
+        $kasirBuka = Kasir::model()->find('waktu_tutup is null');
+        $pesan1 = false;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1 = true;
+        }
+
         $this->render('penjualan', [
-            'model'    => $model,
-            'profil'   => $profil,
-            'user'     => $user,
-            'report'   => $report,
-            'printers' => $printers,
+            'model'       => $model,
+            'profil'      => $profil,
+            'user'        => $user,
+            'report'      => $report,
+            'printers'    => $printers,
+            'pesan1'      => $pesan1,
         ]);
     }
 
@@ -298,9 +314,9 @@ class ReportController extends Controller
      */
     public function alamatToko()
     {
-        $alamats = Config::model()->findAll('nama like :nama', [':nama' => 'toko.alamat%']);
+        $alamats    = Config::model()->findAll('nama like :nama', [':nama' => 'toko.alamat%']);
         $alamatText = '';
-        $st = true;
+        $st         = true;
         foreach ($alamats as $alamat) {
             if ($st) {
                 $st = false;
@@ -1845,7 +1861,7 @@ class ReportController extends Controller
         if (!$reportPembelian->validate()) {
             throw new CHttpException(500, 'Message: ' . json_encode($reportPembelian->getErrors()));
         }
-        $csv             = $reportPembelian->toCsv();
+        $csv = $reportPembelian->toCsv();
 
         Yii::log('Hasil CSV:' . $csv);
 
@@ -1853,12 +1869,12 @@ class ReportController extends Controller
             throw new CHttpException(500, 'Tidak ada data');
         }
 
-        $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $profil    = '';
+        $namaToko = Config::model()->find("nama = 'toko.nama'");
+        $profil   = '';
         if (!empty($formData['profilId'])) {
             $profil = ' ' . Profil::model()->findByPk($formData['profilId'])->nama;
         }
-        $namaFile  = "Pembelian {$namaToko->nilai} {$formData['dari']} {$formData['sampai']}{$profil}";
+        $namaFile = "Pembelian {$namaToko->nilai} {$formData['dari']} {$formData['sampai']}{$profil}";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
@@ -1889,8 +1905,8 @@ class ReportController extends Controller
 
     public function actionPrintHarian01($printId, $kertas, $tanggal)
     {
-        $model                      = new ReportHarian01Form;
-        $model->tanggal             = $tanggal;
+        $model          = new ReportHarian01Form;
+        $model->tanggal = $tanggal;
         if ($model->validate()) {
             $report               = $model->reportHarianDetail();
             $report['tanggal']    = $tanggal;
