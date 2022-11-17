@@ -40,7 +40,7 @@ class ReportPenjualanPerKategoriForm extends CFormModel
         ];
     }
 
-    public function report()
+    public function report($hideOpenTxn = false)
     {
         $dari   = DateTime::createFromFormat('d-m-Y', $this->dari);
         $sampai = DateTime::createFromFormat('d-m-Y', $this->sampai);
@@ -60,6 +60,19 @@ class ReportPenjualanPerKategoriForm extends CFormModel
         }
         if (!empty($this->userId)) {
             $whereSub.=" AND p.updated_by = :userId";
+        }
+
+        $hideOpenTxnJoin = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnJoin = ' LEFT JOIN
+            kasir ON kasir.user_id = p.updated_by
+            AND kasir.waktu_tutup IS NULL ';
+        }
+        $hideOpenTxnCond = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnCond = ' WHERE (kasir.id IS NULL
+        OR (kasir.id IS NOT NULL
+        AND p.tanggal < kasir.waktu_buka)) ';
         }
 
         $userId    = Yii::app()->user->id;
@@ -85,6 +98,8 @@ class ReportPenjualanPerKategoriForm extends CFormModel
                 AND p.tanggal < :tanggalAkhir
                 AND p.`status` != :penjualanDraft
                 {$whereSub}
+                ${hideOpenTxnJoin}
+                ${hideOpenTxnCond}
             GROUP BY barang_id) AS t_penjualan
                 LEFT JOIN
             (SELECT 
@@ -99,6 +114,8 @@ class ReportPenjualanPerKategoriForm extends CFormModel
                 AND p.tanggal < :tanggalAkhir
                 AND p.`status` != :penjualanDraft
                 {$whereSub}
+                ${hideOpenTxnJoin}
+                ${hideOpenTxnCond}
             GROUP BY barang_id) AS t_hpp ON t_hpp.barang_id = t_penjualan.barang_id
                 JOIN
             barang b ON b.id = t_penjualan.barang_id
@@ -139,9 +156,9 @@ class ReportPenjualanPerKategoriForm extends CFormModel
         return ['' => '[SEMUA]'] + CHtml::listData(KategoriBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
-    public function toCsv()
+    public function toCsv($hideOpenTxn = false)
     {
-        return $this->array2csv($this->report()['detail']);
+        return $this->array2csv($this->report($hideOpenTxn)['detail']);
     }
 
     public function array2csv(array &$array)

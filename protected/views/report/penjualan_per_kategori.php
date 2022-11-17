@@ -26,6 +26,20 @@ $this->renderPartial('_form_penjualan_per_kategori', ['model' => $model]);
     </div>
 </div>
 <?php
+if ($pesan1) {
+?>
+    <div class="row">
+        <div class="small-12 columns">
+            <div data-alert="" class="alert-box radius">
+                <span>Sebagian penjualan tidak ditampakkan. Tutup akun kasir yang masih aktif untuk menampakkan seluruh penjualan</span>
+                <a href="#" class="close button">×</a>
+            </div>
+        </div>
+    </div>
+<?php
+}
+?>
+<?php
 /*
 if (isset($report['rekap']) && $report['rekap']) {
     ?>
@@ -105,18 +119,17 @@ endif;
  */
 ?>
 <script>
-
-    $("#tombol-browse-profil").click(function () {
+    $("#tombol-browse-profil").click(function() {
         $("#tabel-profil").slideToggle(500);
         $("input[name='Profil[nama]']").focus();
     });
 
-    $("#tombol-browse-user").click(function () {
+    $("#tombol-browse-user").click(function() {
         $("#tabel-user").slideToggle(500);
         $("input[name='User[nama_lengkap]']").focus();
     });
 
-    $("body").on("click", "a.pilih.profil", function () {
+    $("body").on("click", "a.pilih.profil", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -125,7 +138,7 @@ endif;
         return false;
     });
 
-    $("body").on("click", "a.pilih.user", function () {
+    $("body").on("click", "a.pilih.user", function() {
         var dataurl = $(this).attr('href');
         $.ajax({
             url: dataurl,
@@ -148,11 +161,11 @@ endif;
         $("#ReportPenjualanPerKategoriForm_userId").val(data.id);
     }
 
-    $("body").on("focusin", "a.pilih", function () {
+    $("body").on("focusin", "a.pilih", function() {
         $(this).parent('td').parent('tr').addClass('pilih');
     });
 
-    $("body").on("focusout", "a.pilih", function () {
+    $("body").on("focusout", "a.pilih", function() {
         $(this).parent('td').parent('tr').removeClass('pilih');
     });
 </script>

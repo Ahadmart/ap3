@@ -76,8 +76,7 @@ class ReportController extends Controller
         $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
         $hideOpenTxn = $config->nilai;
 
-        $superUser = Yii::app()->authManager->getAuthAssignment(Yii::app()->params['superuser'], Yii::app()->user->id) === null ? false : true;
-        if ($superUser) {
+        if ($this->isSuperUser(Yii::app()->user->id)) {
             $hideOpenTxn = false;
         }
 
@@ -1456,6 +1455,12 @@ class ReportController extends Controller
      */
     public function actionPenjualanPerKategori()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model = new ReportPenjualanPerKategoriForm();
         /*
         $report = [];
@@ -1480,6 +1485,12 @@ class ReportController extends Controller
             $user->attributes = $_GET['User'];
         }
 
+        $kasirBuka = Kasir::model()->find('waktu_tutup is null');
+        $pesan1 = false;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1 = true;
+        }
+
         // $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
         // $printers             = Device::model()->listDevices($tipePrinterAvailable);
         // $kertasUntukPdf = ReportPenjualanForm::listKertas();
@@ -1487,18 +1498,25 @@ class ReportController extends Controller
             'model'  => $model,
             'profil' => $profil,
             'user'   => $user,
+            'pesan1' => $pesan1,
             //'report'   => $report,
         ]);
     }
 
     public function actionPenjualanPerKategoriCsv()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model  = new ReportPenjualanPerKategoriForm();
         $report = [];
         if (isset($_POST['ReportPenjualanPerKategoriForm'])) {
             $model->attributes = $_POST['ReportPenjualanPerKategoriForm'];
             if ($model->validate()) {
-                $report = $model->toCSV();
+                $report = $model->toCSV($hideOpenTxn);
             }
         }
 

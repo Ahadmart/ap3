@@ -6,7 +6,6 @@
  */
 class Controller extends BaseController
 {
-
     /**
      * @var string the default layout for the controller view. Defaults to '//layouts/column1',
      * meaning using a single column layout. See 'protected/views/layouts/column1.php'.
@@ -16,28 +15,28 @@ class Controller extends BaseController
     /**
      * @var array context menu items. This property will be assigned to {@link CMenu::items}.
      */
-    public $menu = array();
-    public $boxHeader = array(
+    public $menu      = [];
+    public $boxHeader = [
         'normal' => '',
-        'small' => ''
-    );
+        'small'  => '',
+    ];
 
     /**
      * @var array the breadcrumbs of the current page. The value of this property will
      * be assigned to {@link CBreadcrumbs::links}. Please refer to {@link CBreadcrumbs::links}
      * for more details on how to specify this property.
      */
-    public $breadcrumbs = array();
+    public $breadcrumbs = [];
 
     /**
      * @return array action filters
      */
     public function filters()
     {
-        return array(
+        return [
             'accessControl', // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
-        );
+        ];
     }
 
     /**
@@ -47,20 +46,21 @@ class Controller extends BaseController
      */
     public function accessRules()
     {
-        return array(
-            array('deny', // deny guest
-                'users' => array('guest'),
-            ),
-        );
+        return [
+            [
+                'deny', // deny guest
+                'users' => ['guest'],
+            ],
+        ];
     }
 
     protected function beforeAction($action)
     {
-        $theme = $this->getTheme();
+        $theme            = $this->getTheme();
         Yii::app()->theme = is_null($theme) ? 'default_dark' : $theme;
 
-        $superUser = Yii::app()->authManager->getAuthAssignment(Yii::app()->params['superuser'], Yii::app()->user->id) === null ? FALSE : TRUE;
-        if ($superUser) {
+        // $superUser = Yii::app()->authManager->getAuthAssignment(Yii::app()->params['superuser'], Yii::app()->user->id) === null ? FALSE : TRUE;
+        if ($this->isSuperUser(Yii::app()->user->id)) {
             return true;
         } else {
             if (Yii::app()->user->checkAccess(Yii::app()->controller->id . '.' . Yii::app()->controller->action->id)) {
@@ -71,4 +71,8 @@ class Controller extends BaseController
         }
     }
 
+    public function isSuperUser($userId)
+    {
+        return Yii::app()->authManager->getAuthAssignment(Yii::app()->params['superuser'], $userId) === null ? false : true;
+    }
 }
