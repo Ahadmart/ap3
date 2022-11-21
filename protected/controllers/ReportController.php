@@ -106,18 +106,18 @@ class ReportController extends Controller
         //$kertasUntukPdf = ReportPenjualanForm::listKertas();
 
         $kasirBuka = Kasir::model()->find('waktu_tutup is null');
-        $pesan1 = false;
+        $pesan1    = false;
         if ($kasirBuka && $hideOpenTxn) {
             $pesan1 = true;
         }
 
         $this->render('penjualan', [
-            'model'       => $model,
-            'profil'      => $profil,
-            'user'        => $user,
-            'report'      => $report,
-            'printers'    => $printers,
-            'pesan1'      => $pesan1,
+            'model'    => $model,
+            'profil'   => $profil,
+            'user'     => $user,
+            'report'   => $report,
+            'printers' => $printers,
+            'pesan1'   => $pesan1,
         ]);
     }
 
@@ -456,12 +456,19 @@ class ReportController extends Controller
 
     public function actionTopRank()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model  = new ReportTopRankForm();
         $report = null;
         if (isset($_POST['ReportTopRankForm'])) {
             $model->attributes = $_POST['ReportTopRankForm'];
             if ($model->validate()) {
-                $report = $model->reportTopRank();
+                $report = $model->reportTopRank($hideOpenTxn);
                 // var_dump($report);
                 // Yii::app()->end();
             }
@@ -477,12 +484,19 @@ class ReportController extends Controller
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $kertasUntukPdf       = ReportTopRankForm::listKertas();
 
+        $kasirBuka = Kasir::model()->find('waktu_tutup is null');
+        $pesan1    = false;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1 = true;
+        }
+
         $this->render('toprank', [
             'model'     => $model,
             'profil'    => $profil,
             'report'    => $report,
             'printers'  => $printers,
             'kertasPdf' => $kertasUntukPdf,
+            'pesan1'    => $pesan1,
         ]);
     }
 
@@ -1486,7 +1500,7 @@ class ReportController extends Controller
         }
 
         $kasirBuka = Kasir::model()->find('waktu_tutup is null');
-        $pesan1 = false;
+        $pesan1    = false;
         if ($kasirBuka && $hideOpenTxn) {
             $pesan1 = true;
         }
