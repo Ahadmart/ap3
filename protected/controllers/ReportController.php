@@ -1643,6 +1643,13 @@ class ReportController extends Controller
      */
     public function actionPenjualanPerStruktur()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model = new ReportPenjualanPerStrukturForm;
 
         $profil = new Profil('search');
@@ -1678,6 +1685,12 @@ class ReportController extends Controller
             }
         };
 
+        $kasirBuka = Kasir::model()->find('waktu_tutup is null');
+        $pesan1    = false;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1 = true;
+        }
+
         $this->render('penjualanperstruktur', [
             'model'          => $model,
             'profil'         => $profil,
@@ -1686,6 +1699,7 @@ class ReportController extends Controller
             'kertasPdf'      => $kertasPdf,
             'optionPrinters' => $optionPrinters,
             'printHandle'    => 'printpenjualanstruktur',
+            'pesan1'         => $pesan1,
         ]);
     }
 
@@ -1713,6 +1727,13 @@ class ReportController extends Controller
 
     public function actionPrintPenjualanStruktur()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model  = new ReportPenjualanPerStrukturForm;
         $report = [];
         if (isset($_POST['ReportPenjualanPerStrukturForm'])) {
@@ -1728,7 +1749,7 @@ class ReportController extends Controller
                     $model->kertas = $printerInput[1];
                     if ($model->validate()) {
                         if ($model->strukLv3 > 0) {
-                            $report = $model->reportDetail();
+                            $report = $model->reportDetail($hideOpenTxn);
                             //  print_r($report);
                             $this->penjualanStrukturPdf(
                                 $report,
@@ -1741,7 +1762,7 @@ class ReportController extends Controller
                                 $model->userId
                             );
                         } elseif ($model->strukLv2 > 0) {
-                            $report = $model->reportDetail();
+                            $report = $model->reportDetail($hideOpenTxn);
                             // print_r($report);
                             $this->penjualanStrukturPdf(
                                 $report,
@@ -1754,7 +1775,7 @@ class ReportController extends Controller
                                 $model->userId
                             );
                         } else {
-                            $report = $model->reportPerLv2();
+                            $report = $model->reportPerLv2($hideOpenTxn);
                             // echo '<pre>';
                             // print_r($report);
                             // echo '</pre>';

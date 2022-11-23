@@ -10,7 +10,6 @@
  */
 class ReportPenjualanPerStrukturForm extends CFormModel
 {
-
     const KERTAS_LETTER = 10;
     const KERTAS_A4     = 20;
     const KERTAS_FOLIO  = 30;
@@ -79,18 +78,31 @@ class ReportPenjualanPerStrukturForm extends CFormModel
         return $user->nama;
     }
 
-    public function reportDetailPerStrukturLv3($strukturId)
+    public function reportDetailPerStrukturLv3($strukturId, $hideOpenTxn)
     {
         $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s');
         $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s');
 
         $whereSub = '';
         if (!empty($this->profilId)) {
-            $whereSub .= " AND pj.profil_id = :profilId";
+            $whereSub .= ' AND pj.profil_id = :profilId';
         }
 
         if (!empty($this->userId)) {
-            $whereSub .= " AND pj.updated_by = :userId";
+            $whereSub .= ' AND pj.updated_by = :userId';
+        }
+
+        $hideOpenTxnJoin = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnJoin = ' LEFT JOIN
+            kasir ON kasir.user_id = pj.updated_by
+            AND kasir.waktu_tutup IS NULL ';
+        }
+        $hideOpenTxnCond = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnCond = ' WHERE (kasir.id IS NULL
+        OR (kasir.id IS NOT NULL
+        AND pj.tanggal < kasir.waktu_buka)) ';
         }
 
         $userId = Yii::app()->user->id;
@@ -117,6 +129,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
                 AND pj.status != :statusDraft
                 AND pj.tanggal BETWEEN :dari AND :sampai
                 {$whereSub}
+                ${hideOpenTxnJoin}
+                ${hideOpenTxnCond}
             GROUP BY pd.barang_id) t_penjualan
                 JOIN
             (SELECT
@@ -128,6 +142,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
                 AND pj.status != :statusDraft
                 AND pj.tanggal BETWEEN :dari AND :sampai
                 {$whereSub}
+                ${hideOpenTxnJoin}
+                ${hideOpenTxnCond}
             GROUP BY pd.barang_id) t_modal ON t_penjualan.barang_id = t_modal.barang_id
                 JOIN
             barang ON barang.id = t_penjualan.barang_id
@@ -147,36 +163,35 @@ class ReportPenjualanPerStrukturForm extends CFormModel
 
         $command = Yii::app()->db->createCommand($sql);
 
-        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
-        $command->bindValue(":dari", $dari);
-        $command->bindValue(":sampai", $sampai);
-        $command->bindValue(":strukturId", $strukturId);
+        $command->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $command->bindValue(':dari', $dari);
+        $command->bindValue(':sampai', $sampai);
+        $command->bindValue(':strukturId', $strukturId);
 
         if (!empty($this->profilId)) {
-            $command->bindValue(":profilId", $this->profilId);
+            $command->bindValue(':profilId', $this->profilId);
         }
         if (!empty($this->userId)) {
-            $command->bindValue(":userId", $this->userId);
+            $command->bindValue(':userId', $this->userId);
         }
 
         return $command->queryAll();
     }
 
-    public function reportDetail()
+    public function reportDetail($hideOpenTxn = false)
     {
-
         $strukturList = [];
         if ($this->strukLv3 > 0) {
             /* Sales by Struktur Lv 3 */
             $strukturList[] = $this->strukLv3;
-        } else if ($this->strukLv2 > 0) {
+        } elseif ($this->strukLv2 > 0) {
             /* Sales by Struktur Lv 2 */
             $strukturList = $this->listChildStruk($this->strukLv2);
         }
 
         $r = [];
         foreach ($strukturList as $strukId) {
-            $r[$strukId] = $this->reportDetailPerStrukturLv3($strukId);
+            $r[$strukId] = $this->reportDetailPerStrukturLv3($strukId, $hideOpenTxn);
         }
         return $r;
     }
@@ -257,22 +272,35 @@ class ReportPenjualanPerStrukturForm extends CFormModel
      * @param string $strukLv3CS (Comma separated dari Struk Lv 3)
      * @return array
      */
-    public function reportPerStrukturLv2($strukLv3CS)
+    public function reportPerStrukturLv2($strukLv3CS, $hideOpenTxn)
     {
         $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s');
         $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s');
 
         $whereSub = '';
         if (!empty($this->profilId)) {
-            $whereSub .= " AND pj.profil_id = :profilId";
+            $whereSub .= ' AND pj.profil_id = :profilId';
         }
 
         if (!empty($this->userId)) {
-            $whereSub .= " AND pj.updated_by = :userId";
+            $whereSub .= ' AND pj.updated_by = :userId';
+        }
+
+        $hideOpenTxnJoin = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnJoin = ' LEFT JOIN
+            kasir ON kasir.user_id = pj.updated_by
+            AND kasir.waktu_tutup IS NULL ';
+        }
+        $hideOpenTxnCond = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnCond = ' WHERE (kasir.id IS NULL
+        OR (kasir.id IS NOT NULL
+        AND pj.tanggal < kasir.waktu_buka)) ';
         }
 
         // $userId = Yii::app()->user->id;
-        $sql    = "
+        $sql = "
         SELECT
             bs2.id lv2_id,
             bs2.nama lv2_nama,
@@ -293,6 +321,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
                 AND pj.status != :statusDraft
                 AND pj.tanggal BETWEEN :dari AND :sampai
                 {$whereSub}
+                ${hideOpenTxnJoin}
+                ${hideOpenTxnCond}
             GROUP BY pd.barang_id) t_penjualan
                 JOIN
             (SELECT
@@ -304,6 +334,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
                 AND pj.status != :statusDraft
                 AND pj.tanggal BETWEEN :dari AND :sampai
                 {$whereSub}
+                ${hideOpenTxnJoin}
+                ${hideOpenTxnCond}
             GROUP BY pd.barang_id) t_modal ON t_penjualan.barang_id = t_modal.barang_id
                 JOIN
             barang ON barang.id = t_penjualan.barang_id
@@ -326,15 +358,15 @@ class ReportPenjualanPerStrukturForm extends CFormModel
 
         $command = Yii::app()->db->createCommand($sql);
 
-        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
-        $command->bindValue(":dari", $dari);
-        $command->bindValue(":sampai", $sampai);
+        $command->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $command->bindValue(':dari', $dari);
+        $command->bindValue(':sampai', $sampai);
 
         if (!empty($this->profilId)) {
-            $command->bindValue(":profilId", $this->profilId);
+            $command->bindValue(':profilId', $this->profilId);
         }
         if (!empty($this->userId)) {
-            $command->bindValue(":userId", $this->userId);
+            $command->bindValue(':userId', $this->userId);
         }
 
         return $command->queryAll();
@@ -344,21 +376,34 @@ class ReportPenjualanPerStrukturForm extends CFormModel
      * Report Penjualan barang tanpa struktur mengikuti format report per struktur Lv 2
      * @return array
      */
-    public function reportTanpaStrukturLv2()
+    public function reportTanpaStrukturLv2($hideOpenTxn)
     {
         $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s');
         $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s');
 
         $whereSub = '';
         if (!empty($this->profilId)) {
-            $whereSub .= " AND pj.profil_id = :profilId";
+            $whereSub .= ' AND pj.profil_id = :profilId';
         }
 
         if (!empty($this->userId)) {
-            $whereSub .= " AND pj.updated_by = :userId";
+            $whereSub .= ' AND pj.updated_by = :userId';
         }
 
-        $sql    = "
+        $hideOpenTxnJoin = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnJoin = ' LEFT JOIN
+            kasir ON kasir.user_id = pj.updated_by
+            AND kasir.waktu_tutup IS NULL ';
+        }
+        $hideOpenTxnCond = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnCond = ' WHERE (kasir.id IS NULL
+        OR (kasir.id IS NOT NULL
+        AND pj.tanggal < kasir.waktu_buka)) ';
+        }
+
+        $sql = "
         SELECT
             0 lv2_id,
             'Tanpa Struktur' lv2_nama,
@@ -379,6 +424,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
                 AND pj.status != :statusDraft
                 AND pj.tanggal BETWEEN :dari AND :sampai
                 {$whereSub}
+                ${hideOpenTxnJoin}
+                ${hideOpenTxnCond}
             GROUP BY pd.barang_id) t_penjualan
                 JOIN
             (SELECT
@@ -390,6 +437,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
                 AND pj.status != :statusDraft
                 AND pj.tanggal BETWEEN :dari AND :sampai
                 {$whereSub}
+                ${hideOpenTxnJoin}
+                ${hideOpenTxnCond}
             GROUP BY pd.barang_id) t_modal ON t_penjualan.barang_id = t_modal.barang_id
                 JOIN
             barang ON barang.id = t_penjualan.barang_id
@@ -406,15 +455,15 @@ class ReportPenjualanPerStrukturForm extends CFormModel
 
         $command = Yii::app()->db->createCommand($sql);
 
-        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
-        $command->bindValue(":dari", $dari);
-        $command->bindValue(":sampai", $sampai);
+        $command->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $command->bindValue(':dari', $dari);
+        $command->bindValue(':sampai', $sampai);
 
         if (!empty($this->profilId)) {
-            $command->bindValue(":profilId", $this->profilId);
+            $command->bindValue(':profilId', $this->profilId);
         }
         if (!empty($this->userId)) {
-            $command->bindValue(":userId", $this->userId);
+            $command->bindValue(':userId', $this->userId);
         }
 
         return $command->queryAll();
@@ -423,7 +472,7 @@ class ReportPenjualanPerStrukturForm extends CFormModel
     /**
      * Sales by Struktur Lv 2
      */
-    public function reportPerLv2()
+    public function reportPerLv2($hideOpenTxn = false)
     {
         $reportTanpaStruktur = [];
         /* List Struktur Lv 1 */
@@ -431,8 +480,8 @@ class ReportPenjualanPerStrukturForm extends CFormModel
         if ($this->strukLv1 > 0) {
             $strukturList[] = $this->strukLv1;
         } else {
-            $strukturList = $this->listChildStruk(null);
-            $reportTanpaStruktur = $this->reportTanpaStrukturLv2();
+            $strukturList        = $this->listChildStruk(null);
+            $reportTanpaStruktur = $this->reportTanpaStrukturLv2($hideOpenTxn);
         }
         //        echo '<pre>';
         //        var_dump($strukturList);
@@ -452,11 +501,11 @@ class ReportPenjualanPerStrukturForm extends CFormModel
             //            echo $strukLv3CS;
             //            echo '<hr />';
             if (!empty($strukLv3CS)) {
-                $r[$strukId] = $this->reportPerStrukturLv2($strukLv3CS);
+                $r[$strukId] = $this->reportPerStrukturLv2($strukLv3CS, $hideOpenTxn);
             }
         }
         if (!empty($reportTanpaStruktur)) {
-            $r['Tanpa Struktur'] = $this->reportTanpaStrukturLv2();
+            $r['Tanpa Struktur'] = $this->reportTanpaStrukturLv2($hideOpenTxn);
         }
         //            echo '</pre>';
         return $r;
@@ -488,29 +537,29 @@ class ReportPenjualanPerStrukturForm extends CFormModel
 
         $whereSub = '';
         if (!empty($this->profilId)) {
-            $whereSub .= " AND pj.profil_id = :profilId";
+            $whereSub .= ' AND pj.profil_id = :profilId';
         }
 
         if (!empty($this->userId)) {
-            $whereSub .= " AND pj.updated_by = :userId";
+            $whereSub .= ' AND pj.updated_by = :userId';
         }
 
         $lv3Cond = '';
         if (!is_null($lv3Id)) {
-            $lv3Cond = " AND bs3.id = :lv3Id";
+            $lv3Cond = ' AND bs3.id = :lv3Id';
         }
 
         $lv2Cond = '';
         if (!is_null($lv2Id)) {
-            $lv2Cond = " AND bs2.id = :lv2Id";
+            $lv2Cond = ' AND bs2.id = :lv2Id';
         }
 
         $lv1Cond = '';
         if (!is_null($lv1Id)) {
-            $lv1Cond = " AND bs1.id = :lv1Id";
+            $lv1Cond = ' AND bs1.id = :lv1Id';
         }
 
-        $sql    = "
+        $sql = "
         SELECT
             barang.barcode,
             barang.nama,
@@ -564,24 +613,24 @@ class ReportPenjualanPerStrukturForm extends CFormModel
 
         $command = Yii::app()->db->createCommand($sql);
 
-        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
-        $command->bindValue(":dari", $dari);
-        $command->bindValue(":sampai", $sampai);
+        $command->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $command->bindValue(':dari', $dari);
+        $command->bindValue(':sampai', $sampai);
 
         if (!empty($this->profilId)) {
-            $command->bindValue(":profilId", $this->profilId);
+            $command->bindValue(':profilId', $this->profilId);
         }
         if (!empty($this->userId)) {
-            $command->bindValue(":userId", $this->userId);
+            $command->bindValue(':userId', $this->userId);
         }
         if (!is_null($lv3Id)) {
-            $command->bindValue(":lv3Id", $lv3Id);
+            $command->bindValue(':lv3Id', $lv3Id);
         }
         if (!is_null($lv2Id)) {
-            $command->bindValue(":lv2Id", $lv2Id);
+            $command->bindValue(':lv2Id', $lv2Id);
         }
         if (!is_null($lv1Id)) {
-            $command->bindValue(":lv1Id", $lv1Id);
+            $command->bindValue(':lv1Id', $lv1Id);
         }
 
         return $command->queryAll();
@@ -594,14 +643,14 @@ class ReportPenjualanPerStrukturForm extends CFormModel
 
         $whereSub = '';
         if (!empty($this->profilId)) {
-            $whereSub .= " AND pj.profil_id = :profilId";
+            $whereSub .= ' AND pj.profil_id = :profilId';
         }
 
         if (!empty($this->userId)) {
-            $whereSub .= " AND pj.updated_by = :userId";
+            $whereSub .= ' AND pj.updated_by = :userId';
         }
 
-        $sql    = "
+        $sql = "
         SELECT
             barang.barcode,
             barang.nama,
@@ -643,21 +692,21 @@ class ReportPenjualanPerStrukturForm extends CFormModel
                 barang_id, SUM(qty) stok
             FROM
                 inventory_balance
-            GROUP BY barang_id) t_stok ON t_stok.barang_id = barang.id                
+            GROUP BY barang_id) t_stok ON t_stok.barang_id = barang.id
         ORDER BY barang.barcode
                 ";
 
         $command = Yii::app()->db->createCommand($sql);
 
-        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
-        $command->bindValue(":dari", $dari);
-        $command->bindValue(":sampai", $sampai);
+        $command->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $command->bindValue(':dari', $dari);
+        $command->bindValue(':sampai', $sampai);
 
         if (!empty($this->profilId)) {
-            $command->bindValue(":profilId", $this->profilId);
+            $command->bindValue(':profilId', $this->profilId);
         }
         if (!empty($this->userId)) {
-            $command->bindValue(":userId", $this->userId);
+            $command->bindValue(':userId', $this->userId);
         }
 
         return $command->queryAll();
@@ -668,10 +717,10 @@ class ReportPenjualanPerStrukturForm extends CFormModel
         $r = [];
         if ($this->strukLv3 > 0) {
             $r = $this->reportDetailCsv(null, null, $this->strukLv3);
-        } else if ($this->strukLv2 > 0) {
+        } elseif ($this->strukLv2 > 0) {
             /* Sales by Struktur Lv 2 */
             $r = $this->reportDetailCsv(null, $this->strukLv2, null);
-        } else if ($this->strukLv1 > 0) {
+        } elseif ($this->strukLv1 > 0) {
             /* Sales by Struktur Lv 1 */
             $r = $this->reportDetailCsv($this->strukLv1, null, null);
         } else {
