@@ -502,20 +502,26 @@ class ReportController extends Controller
 
     public function actionPrintTopRank()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
         if (isset($_GET['printId'])) {
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->topRankPdf($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $_GET['kertas']);
+                    $this->topRankPdf($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $_GET['kertas'], $hideOpenTxn);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    $this->topRankCsv($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3']);
+                    $this->topRankCsv($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $hideOpenTxn);
                     break;
             }
         }
     }
 
-    public function topRankPdf($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3, $kertas)
+    public function topRankPdf($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3, $kertas, $hideOpenTxn = false)
     {
         $model             = new ReportTopRankForm;
         $model->profilId   = $profilId;
@@ -529,7 +535,7 @@ class ReportController extends Controller
         $model->strukLv2   = $strukLv2;
         $model->strukLv3   = $strukLv3;
 
-        $report = $model->reportTopRank();
+        $report = $model->reportTopRank($hideOpenTxn);
 
         $configs = Config::model()->findAll();
         /*
@@ -560,7 +566,7 @@ class ReportController extends Controller
         $mpdf->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
-    public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3)
+    public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3, $hideOpenTxn = false)
     {
         $model             = new ReportTopRankForm;
         $model->profilId   = $profilId;
@@ -574,7 +580,7 @@ class ReportController extends Controller
         $model->strukLv2   = $strukLv2;
         $model->strukLv3   = $strukLv3;
 
-        $text      = $model->toCsv();
+        $text      = $model->toCsv($hideOpenTxn);
         $namaStruk = '';
         if (!empty($model->strukLv1)) :
             $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);

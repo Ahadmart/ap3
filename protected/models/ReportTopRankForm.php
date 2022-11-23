@@ -237,9 +237,9 @@ class ReportTopRankForm extends CFormModel
         return ob_get_clean();
     }
 
-    public function toCsv()
+    public function toCsv($hideOpenTxn = false)
     {
-        $report = $this->reportTopRank();
+        $report = $this->reportTopRank($hideOpenTxn);
         return $this->array2csv($report);
     }
 
