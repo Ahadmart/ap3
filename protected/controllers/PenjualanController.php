@@ -186,7 +186,7 @@ class PenjualanController extends Controller
             $model->attributes = $_GET['Penjualan'];
         }
 
-        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $config      = Config::model()->find("nama='penjualan.hideopentxn'");
         $hideOpenTxn = $config->nilai;
 
         if ($this->isSuperUser(Yii::app()->user->id)) {
