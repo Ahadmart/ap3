@@ -85,7 +85,7 @@ class ReportTopRankForm extends CFormModel
         return $model->nama;
     }
 
-    public function reportTopRank()
+    public function reportTopRank($hideOpenTxn = false)
     {
         $strukList = [];
         if ($this->strukLv3 > 0) {
@@ -99,22 +99,35 @@ class ReportTopRankForm extends CFormModel
             }
         } else {
             // Tidak ada struktur dipilih
-            return $this->reportTopRankLv3();
+            return $this->reportTopRankLv3('', $hideOpenTxn);
         }
         // var_dump($strukList);
         $strukComma = implode(',', $strukList);
         // var_dump($strukComma);
         // Yii::app()->end();
-        return $this->reportTopRankLv3($strukComma);
+        return $this->reportTopRankLv3($strukComma, $hideOpenTxn);
     }
 
-    public function reportTopRankLv3($strukComma = '')
+    public function reportTopRankLv3($strukComma = '', $hideOpenTxn)
     {
         $dari = date_format(date_create_from_format('d-m-Y', $this->dari), 'Y-m-d') . ' 00:00:00';
 
         $tglAkhir = DateTime::createFromFormat('d-m-Y', $this->sampai);
         $tglAkhir->modify('+1 day');
         $sampai = $tglAkhir->format('Y-m-d') . ' 00:00:00';
+
+        $hideOpenTxnJoin = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnJoin = ' LEFT JOIN
+            kasir ON kasir.user_id = pj.updated_by
+            AND kasir.waktu_tutup IS NULL ';
+        }
+        $hideOpenTxnCond = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnCond = ' WHERE (kasir.id IS NULL
+        OR (kasir.id IS NOT NULL
+        AND pj.tanggal < kasir.waktu_buka)) ';
+        }
 
         $command = Yii::app()->db->createCommand();
         $command->select('t_penjualan.barang_id, barang.barcode, barang.nama, t_penjualan.totalqty, t_penjualan.total, t_modal.totalmodal, (t_penjualan.total - t_modal.totalModal) margin, t_penjualan.totalqty/DATEDIFF(:sampai, :dari) avgday, t_stok.stok');
@@ -126,6 +139,8 @@ class ReportTopRankForm extends CFormModel
                             penjualan_detail pd
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND pj.tanggal >= :dari AND pj.tanggal < :sampai
+                        ${hideOpenTxnJoin}
+                        ${hideOpenTxnCond}
                         GROUP BY barang_id) t_penjualan");
         $command->join("(SELECT
                             barang_id, SUM(hpp.qty * hpp.harga_beli) totalmodal
@@ -134,6 +149,8 @@ class ReportTopRankForm extends CFormModel
                         JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND pj.tanggal >= :dari AND pj.tanggal < :sampai
+                        ${hideOpenTxnJoin}
+                        ${hideOpenTxnCond}
                         GROUP BY barang_id) t_modal", "t_penjualan.barang_id = t_modal.barang_id");
         $command->join('barang', 't_penjualan.barang_id=barang.id');
         $command->join('(SELECT
@@ -220,9 +237,9 @@ class ReportTopRankForm extends CFormModel
         return ob_get_clean();
     }
 
-    public function toCsv()
+    public function toCsv($hideOpenTxn = false)
     {
-        $report = $this->reportTopRank();
+        $report = $this->reportTopRank($hideOpenTxn);
         return $this->array2csv($report);
     }
 

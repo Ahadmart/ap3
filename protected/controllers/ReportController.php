@@ -73,12 +73,19 @@ class ReportController extends Controller
      */
     public function actionPenjualan()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model  = new ReportPenjualanForm;
         $report = [];
         if (isset($_POST['ReportPenjualanForm'])) {
             $model->attributes = $_POST['ReportPenjualanForm'];
             if ($model->validate()) {
-                $report = $model->reportPenjualan();
+                $report = $model->reportPenjualan($hideOpenTxn);
             }
         }
 
@@ -97,12 +104,20 @@ class ReportController extends Controller
         $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         //$kertasUntukPdf = ReportPenjualanForm::listKertas();
+
+        $kasirBuka = Kasir::model()->find('waktu_tutup is null');
+        $pesan1    = false;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1 = true;
+        }
+
         $this->render('penjualan', [
             'model'    => $model,
             'profil'   => $profil,
             'user'     => $user,
             'report'   => $report,
             'printers' => $printers,
+            'pesan1'   => $pesan1,
         ]);
     }
 
@@ -298,9 +313,9 @@ class ReportController extends Controller
      */
     public function alamatToko()
     {
-        $alamats = Config::model()->findAll('nama like :nama', [':nama' => 'toko.alamat%']);
+        $alamats    = Config::model()->findAll('nama like :nama', [':nama' => 'toko.alamat%']);
         $alamatText = '';
-        $st = true;
+        $st         = true;
         foreach ($alamats as $alamat) {
             if ($st) {
                 $st = false;
@@ -441,12 +456,19 @@ class ReportController extends Controller
 
     public function actionTopRank()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model  = new ReportTopRankForm();
         $report = null;
         if (isset($_POST['ReportTopRankForm'])) {
             $model->attributes = $_POST['ReportTopRankForm'];
             if ($model->validate()) {
-                $report = $model->reportTopRank();
+                $report = $model->reportTopRank($hideOpenTxn);
                 // var_dump($report);
                 // Yii::app()->end();
             }
@@ -462,31 +484,44 @@ class ReportController extends Controller
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $kertasUntukPdf       = ReportTopRankForm::listKertas();
 
+        $kasirBuka = Kasir::model()->find('waktu_tutup is null');
+        $pesan1    = false;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1 = true;
+        }
+
         $this->render('toprank', [
             'model'     => $model,
             'profil'    => $profil,
             'report'    => $report,
             'printers'  => $printers,
             'kertasPdf' => $kertasUntukPdf,
+            'pesan1'    => $pesan1,
         ]);
     }
 
     public function actionPrintTopRank()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
         if (isset($_GET['printId'])) {
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->topRankPdf($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $_GET['kertas']);
+                    $this->topRankPdf($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $_GET['kertas'], $hideOpenTxn);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    $this->topRankCsv($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3']);
+                    $this->topRankCsv($_GET['profilId'], $_GET['dari'], $_GET['sampai'], $_GET['kategoriId'], $_GET['rakId'], $_GET['limit'], $_GET['sortBy'], $_GET['strukLv1'], $_GET['strukLv2'], $_GET['strukLv3'], $hideOpenTxn);
                     break;
             }
         }
     }
 
-    public function topRankPdf($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3, $kertas)
+    public function topRankPdf($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3, $kertas, $hideOpenTxn = false)
     {
         $model             = new ReportTopRankForm;
         $model->profilId   = $profilId;
@@ -500,7 +535,7 @@ class ReportController extends Controller
         $model->strukLv2   = $strukLv2;
         $model->strukLv3   = $strukLv3;
 
-        $report = $model->reportTopRank();
+        $report = $model->reportTopRank($hideOpenTxn);
 
         $configs = Config::model()->findAll();
         /*
@@ -531,7 +566,7 @@ class ReportController extends Controller
         $mpdf->Output("Top Rank {$branchConfig['toko.nama']} {$waktuCetak}.pdf", 'I');
     }
 
-    public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3)
+    public function topRankCsv($profilId, $dari, $sampai, $kategoriId, $rakId, $limit, $sortBy, $strukLv1, $strukLv2, $strukLv3, $hideOpenTxn = false)
     {
         $model             = new ReportTopRankForm;
         $model->profilId   = $profilId;
@@ -545,7 +580,7 @@ class ReportController extends Controller
         $model->strukLv2   = $strukLv2;
         $model->strukLv3   = $strukLv3;
 
-        $text      = $model->toCsv();
+        $text      = $model->toCsv($hideOpenTxn);
         $namaStruk = '';
         if (!empty($model->strukLv1)) :
             $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
@@ -1440,6 +1475,12 @@ class ReportController extends Controller
      */
     public function actionPenjualanPerKategori()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model = new ReportPenjualanPerKategoriForm();
         /*
         $report = [];
@@ -1464,6 +1505,12 @@ class ReportController extends Controller
             $user->attributes = $_GET['User'];
         }
 
+        $kasirBuka = Kasir::model()->find('waktu_tutup is null');
+        $pesan1    = false;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1 = true;
+        }
+
         // $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER];
         // $printers             = Device::model()->listDevices($tipePrinterAvailable);
         // $kertasUntukPdf = ReportPenjualanForm::listKertas();
@@ -1471,18 +1518,25 @@ class ReportController extends Controller
             'model'  => $model,
             'profil' => $profil,
             'user'   => $user,
+            'pesan1' => $pesan1,
             //'report'   => $report,
         ]);
     }
 
     public function actionPenjualanPerKategoriCsv()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model  = new ReportPenjualanPerKategoriForm();
         $report = [];
         if (isset($_POST['ReportPenjualanPerKategoriForm'])) {
             $model->attributes = $_POST['ReportPenjualanPerKategoriForm'];
             if ($model->validate()) {
-                $report = $model->toCSV();
+                $report = $model->toCSV($hideOpenTxn);
             }
         }
 
@@ -1595,6 +1649,13 @@ class ReportController extends Controller
      */
     public function actionPenjualanPerStruktur()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model = new ReportPenjualanPerStrukturForm;
 
         $profil = new Profil('search');
@@ -1630,6 +1691,12 @@ class ReportController extends Controller
             }
         };
 
+        $kasirBuka = Kasir::model()->find('waktu_tutup is null');
+        $pesan1    = false;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1 = true;
+        }
+
         $this->render('penjualanperstruktur', [
             'model'          => $model,
             'profil'         => $profil,
@@ -1638,6 +1705,7 @@ class ReportController extends Controller
             'kertasPdf'      => $kertasPdf,
             'optionPrinters' => $optionPrinters,
             'printHandle'    => 'printpenjualanstruktur',
+            'pesan1'         => $pesan1,
         ]);
     }
 
@@ -1665,6 +1733,13 @@ class ReportController extends Controller
 
     public function actionPrintPenjualanStruktur()
     {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
         $model  = new ReportPenjualanPerStrukturForm;
         $report = [];
         if (isset($_POST['ReportPenjualanPerStrukturForm'])) {
@@ -1680,7 +1755,7 @@ class ReportController extends Controller
                     $model->kertas = $printerInput[1];
                     if ($model->validate()) {
                         if ($model->strukLv3 > 0) {
-                            $report = $model->reportDetail();
+                            $report = $model->reportDetail($hideOpenTxn);
                             //  print_r($report);
                             $this->penjualanStrukturPdf(
                                 $report,
@@ -1693,7 +1768,7 @@ class ReportController extends Controller
                                 $model->userId
                             );
                         } elseif ($model->strukLv2 > 0) {
-                            $report = $model->reportDetail();
+                            $report = $model->reportDetail($hideOpenTxn);
                             // print_r($report);
                             $this->penjualanStrukturPdf(
                                 $report,
@@ -1706,7 +1781,7 @@ class ReportController extends Controller
                                 $model->userId
                             );
                         } else {
-                            $report = $model->reportPerLv2();
+                            $report = $model->reportPerLv2($hideOpenTxn);
                             // echo '<pre>';
                             // print_r($report);
                             // echo '</pre>';
@@ -1845,7 +1920,7 @@ class ReportController extends Controller
         if (!$reportPembelian->validate()) {
             throw new CHttpException(500, 'Message: ' . json_encode($reportPembelian->getErrors()));
         }
-        $csv             = $reportPembelian->toCsv();
+        $csv = $reportPembelian->toCsv();
 
         Yii::log('Hasil CSV:' . $csv);
 
@@ -1853,12 +1928,12 @@ class ReportController extends Controller
             throw new CHttpException(500, 'Tidak ada data');
         }
 
-        $namaToko  = Config::model()->find("nama = 'toko.nama'");
-        $profil    = '';
+        $namaToko = Config::model()->find("nama = 'toko.nama'");
+        $profil   = '';
         if (!empty($formData['profilId'])) {
             $profil = ' ' . Profil::model()->findByPk($formData['profilId'])->nama;
         }
-        $namaFile  = "Pembelian {$namaToko->nilai} {$formData['dari']} {$formData['sampai']}{$profil}";
+        $namaFile = "Pembelian {$namaToko->nilai} {$formData['dari']} {$formData['sampai']}{$profil}";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
@@ -1889,8 +1964,8 @@ class ReportController extends Controller
 
     public function actionPrintHarian01($printId, $kertas, $tanggal)
     {
-        $model                      = new ReportHarian01Form;
-        $model->tanggal             = $tanggal;
+        $model          = new ReportHarian01Form;
+        $model->tanggal = $tanggal;
         if ($model->validate()) {
             $report               = $model->reportHarianDetail();
             $report['tanggal']    = $tanggal;

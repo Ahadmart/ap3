@@ -16,7 +16,7 @@ class PenjualanController extends Controller
     public function filters()
     {
         return [
-            'accessControl',     // perform access control for CRUD operations
+            'accessControl', // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
         ];
     }
@@ -88,7 +88,7 @@ class PenjualanController extends Controller
         $customerList = Profil::model()->findAll([
             'select'    => 'id, nama',
             'condition' => 'id>' . Profil::AWAL_ID . ' and tipe_id=' . Profil::TIPE_CUSTOMER,
-            'order'     => 'nama'
+            'order'     => 'nama',
         ]);
 
         $this->render('tambah', [
@@ -186,8 +186,30 @@ class PenjualanController extends Controller
             $model->attributes = $_GET['Penjualan'];
         }
 
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
+        $kasirBuka     = Kasir::model()->find('waktu_tutup is null');
+        $pesan1        = false;
+        $hideOpenTxnCr = null;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1                   = true;
+            $hideOpenTxnCr            = new CDbCriteria;
+            $hideOpenTxnCr->join      = 'LEFT JOIN kasir ON kasir.user_id=t.updated_by AND kasir.waktu_tutup is null';
+            $hideOpenTxnCr->condition = 'kasir.id IS NULL OR (kasir.id IS NOT NULL AND t.tanggal < kasir.waktu_buka)';
+        }
+
+        // Yii::log(print_r($model->getDbCriteria(), true));
+        // Yii::log(print_r($model->getAttributes(), true));
+
         $this->render('index', [
-            'model' => $model,
+            'model'  => $model,
+            'merge'  => $hideOpenTxnCr,
+            'pesan1' => $pesan1,
         ]);
     }
 
@@ -253,8 +275,8 @@ class PenjualanController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-                $this->createUrl('view', ['id' => $data->id]) . '">' .
-                $data->nomor . '</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">' .
+            $data->nomor . '</a>';
         }
         return $return;
     }
@@ -268,8 +290,8 @@ class PenjualanController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
-                $data->tanggal . '</a>';
+            $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
+            $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -431,9 +453,9 @@ class PenjualanController extends Controller
             }
         }
 
-        $csv   = $model->eksporCsv();
+        $csv = $model->eksporCsv();
 
-        $timeStamp = date("Y-m-d--H-i");
+        $timeStamp = date('Y-m-d--H-i');
         $namaFile  = "{$model->nomor}-{$model->profil->nama}-{$timeStamp}";
 
         $hash = hash_hmac('sha256', $csv, $namaFile, false);
@@ -453,7 +475,7 @@ class PenjualanController extends Controller
         $profilList = Profil::model()->findAll([
             'select'    => 'id, nama',
             'condition' => $condition,
-            'order'     => 'nama'
+            'order'     => 'nama',
         ]);
         /* FIX ME: Pindahkan ke view */
         $string = '<option>Pilih satu..</option>';
@@ -468,10 +490,10 @@ class PenjualanController extends Controller
     {
         $model    = $this->loadModel($id);
         $namaFile = $this->getNamaFile($model->nomor, $print);
-        header("Content-type: text/plain");
+        header('Content-type: text/plain');
         header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
-        header("Pragma: no-cache");
-        header("Expire: 0");
+        header('Pragma: no-cache');
+        header('Expire: 0');
         $text = $this->getText($model, $print);
 
         echo $device->revisiText($text);
@@ -489,7 +511,7 @@ class PenjualanController extends Controller
             case self::PRINT_NOTA:
                 return "nota-{$nomor}";
             case self::PRINT_INVOICE_DRAFT:
-                return "invoice-draft";
+                return 'invoice-draft';
         }
     }
 
@@ -620,7 +642,7 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
-                    /*
+                /*
                 case Device::TIPE_PDF_PRINTER:
                 $this->exportPdf($id);
                 break;
@@ -646,7 +668,7 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_NOTA);
                     break;
-                    /*
+                /*
                 case Device::TIPE_PDF_PRINTER:
                 $this->exportPdf($id);
                 break;
