@@ -186,18 +186,30 @@ class PenjualanController extends Controller
             $model->attributes = $_GET['Penjualan'];
         }
 
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
 
-        $hideOpenTxnCr            = new CDbCriteria;
-        $hideOpenTxnCr->join      = 'LEFT JOIN kasir ON kasir.user_id=t.updated_by AND kasir.waktu_tutup is null';
-        $hideOpenTxnCr->condition = 'kasir.id IS NULL OR (kasir.id IS NOT NULL AND t.tanggal < kasir.waktu_buka)';
-        $hideOpenTxnCr = null; // Jika diterapkan, querynya lamaa sekali
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+
+        $kasirBuka     = Kasir::model()->find('waktu_tutup is null');
+        $pesan1        = false;
+        $hideOpenTxnCr = null;
+        if ($kasirBuka && $hideOpenTxn) {
+            $pesan1                   = true;
+            $hideOpenTxnCr            = new CDbCriteria;
+            $hideOpenTxnCr->join      = 'LEFT JOIN kasir ON kasir.user_id=t.updated_by AND kasir.waktu_tutup is null';
+            $hideOpenTxnCr->condition = 'kasir.id IS NULL OR (kasir.id IS NOT NULL AND t.tanggal < kasir.waktu_buka)';
+        }
 
         // Yii::log(print_r($model->getDbCriteria(), true));
         // Yii::log(print_r($model->getAttributes(), true));
 
         $this->render('index', [
-            'model' => $model,
-            'merge' => $hideOpenTxnCr,
+            'model'  => $model,
+            'merge'  => $hideOpenTxnCr,
+            'pesan1' => $pesan1,
         ]);
     }
 
@@ -263,8 +275,8 @@ class PenjualanController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-                $this->createUrl('view', ['id' => $data->id]) . '">' .
-                $data->nomor . '</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">' .
+            $data->nomor . '</a>';
         }
         return $return;
     }
@@ -278,8 +290,8 @@ class PenjualanController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
-                $data->tanggal . '</a>';
+            $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
+            $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -630,14 +642,14 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
-                    /*
-                    case Device::TIPE_PDF_PRINTER:
-                    $this->exportPdf($id);
-                    break;
-                    case Device::TIPE_CSV_PRINTER:
-                    $this->eksporCsv($id);
-                    break;
-                     */
+                /*
+                case Device::TIPE_PDF_PRINTER:
+                $this->exportPdf($id);
+                break;
+                case Device::TIPE_CSV_PRINTER:
+                $this->eksporCsv($id);
+                break;
+                 */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_STRUK);
                     break;
@@ -656,14 +668,14 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_NOTA);
                     break;
-                    /*
-                    case Device::TIPE_PDF_PRINTER:
-                    $this->exportPdf($id);
-                    break;
-                    case Device::TIPE_CSV_PRINTER:
-                    $this->eksporCsv($id);
-                    break;
-                     */
+                /*
+                case Device::TIPE_PDF_PRINTER:
+                $this->exportPdf($id);
+                break;
+                case Device::TIPE_CSV_PRINTER:
+                $this->eksporCsv($id);
+                break;
+                 */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_NOTA);
                     break;
