@@ -25,7 +25,8 @@
             <?php
             echo $form->dropDownList($model, 'tipe_diskon_id', $model->listTipe(), [
                 'prompt'    => 'Pilih Satu..',
-                'autofocus' => 'autofocus']);
+                'autofocus' => 'autofocus'
+            ]);
             ?>
             <?php echo $form->error($model, 'tipe_diskon_id', ['class' => 'error']); ?>
         </div>
@@ -40,9 +41,9 @@
                 $barangBonusHargaJualRaw = is_null($model->barangBonus) ? 0 : $model->barangBonus->getHargaJualRaw();
             }
             ?>
-            <input type="hidden" id="harga-jual-raw" <?php echo $model->isNewRecord ? '' : 'value="' . $hargaJualRaw . '"' ?>/>
+            <input type="hidden" id="harga-jual-raw" <?php echo $model->isNewRecord ? '' : 'value="' . $hargaJualRaw . '"' ?> />
             <?php echo $form->hiddenField($model, 'barang_bonus_id'); ?>
-            <input type="hidden" id="barang-bonus-harga-jual-raw" <?php echo $model->isNewRecord ? '' : 'value="' . $barangBonusHargaJualRaw . '"' ?>/>
+            <input type="hidden" id="barang-bonus-harga-jual-raw" <?php echo $model->isNewRecord ? '' : 'value="' . $barangBonusHargaJualRaw . '"' ?> />
         </div>
     </div>
 
@@ -61,9 +62,9 @@
                 </div>
                 <div class="small-6 large-8 columns">
                     <?php
-                    $barcode      = !is_null($model->barang) ? $model->barang->barcode : ''
+                    $barcode = !is_null($model->barang) ? $model->barang->barcode : ''
                     ?>
-                    <input id="scan" type="text"  placeholder="Scan [B]arcode / Input nama" accesskey="b"<?php echo $model->isNewRecord ? '' : 'value="' . $barcode . '"' ?>/>
+                    <input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b" <?php echo $model->isNewRecord ? '' : 'value="' . $barcode . '"' ?> />
                 </div>
                 <div class="small-3 large-2 columns">
                     <a href="#" class="button postfix" id="tombol-scan-ok"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
@@ -75,11 +76,18 @@
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'barang_kategori_id'); ?>
             <?php
-            echo $form->dropDownList($model, 'barang_kategori_id',
-                    CHtml::listData(KategoriBarang::model()->orderByNama()->FindAll(['select' => 'id, nama']),
-                            'id', 'nama'), [
-                'prompt'    => 'Pilih Satu..',
-                'autofocus' => 'autofocus']
+            echo $form->dropDownList(
+                $model,
+                'barang_kategori_id',
+                CHtml::listData(
+                    KategoriBarang::model()->orderByNama()->FindAll(['select' => 'id, nama']),
+                    'id',
+                    'nama'
+                ),
+                [
+                    'prompt'    => 'Pilih Satu..',
+                    'autofocus' => 'autofocus'
+                ]
             );
             ?>
             <?php echo $form->error($model, 'barang_kategori_id', ['class' => 'error']); ?>
@@ -116,24 +124,24 @@
             </div>
         </div>
         <div class="small-6 columns">
-            <div  id="row-qty" style="display: none">
+            <div id="row-qty" style="display: none">
                 <?php echo $form->labelEx($model, 'qty'); ?>
                 <?php echo $form->textField($model, 'qty', ['size' => 10, 'maxlength' => 10, 'autocomplete' => 'off']); ?>
                 <?php echo $form->error($model, 'qty', ['class' => 'error']); ?>
             </div>
-            <div  id="row-qty-min" style="display: none">
+            <div id="row-qty-min" style="display: none">
                 <?php echo $form->labelEx($model, 'qty_min'); ?>
                 <?php echo $form->textField($model, 'qty_min', ['size' => 10, 'maxlength' => 10, 'autocomplete' => 'off']); ?>
                 <?php echo $form->error($model, 'qty_min', ['class' => 'error']); ?>
             </div>
-            <div  id="row-qty-max" style="display: none">
+            <div id="row-qty-max" style="display: none">
                 <?php echo $form->labelEx($model, 'qty_max'); ?>
                 <?php echo $form->textField($model, 'qty_max', ['size' => 10, 'maxlength' => 10, 'autocomplete' => 'off']); ?>
                 <?php echo $form->error($model, 'qty_max', ['class' => 'error']); ?>
             </div>
         </div>
     </div>
-    <div  id="input-barang-bonus" style="display: none">
+    <div id="input-barang-bonus" style="display: none">
 
         <div class="row" id="row-barang-bonus">
             <div class="small-12 columns">
@@ -146,7 +154,7 @@
                         <?php
                         $barcodeBonus = !is_null($model->barang_bonus_id) ? $model->barangBonus->barcode : ''
                         ?>
-                        <input id="scan-barang-bonus" type="text"  placeholder="S[c]an Barcode / Input nama" accesskey="c"<?php echo $model->isNewRecord ? '' : 'value="' . $barcodeBonus . '"' ?>/>
+                        <input id="scan-barang-bonus" type="text" placeholder="S[c]an Barcode / Input nama" accesskey="c" <?php echo $model->isNewRecord ? '' : 'value="' . $barcodeBonus . '"' ?> />
                     </div>
                     <div class="small-3 large-2 columns">
                         <a href="#" class="button postfix" id="tombol-scan-bonus"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
@@ -184,7 +192,7 @@
                 </div>
             </div>
             <div class="small-6 columns">
-                <div  id="row-qty-bonus">
+                <div id="row-qty-bonus">
                     <?php echo $form->labelEx($model, 'barang_bonus_qty'); ?>
                     <?php echo $form->textField($model, 'barang_bonus_qty', ['size' => 10, 'maxlength' => 10, 'autocomplete' => 'off']); ?>
                     <?php echo $form->error($model, 'barang_bonus_qty', ['class' => 'error']); ?>
@@ -236,14 +244,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 ?>
 
 <script>
-    $("#DiskonBarang_tipe_diskon_id").change(function () {
+    $("#DiskonBarang_tipe_diskon_id").change(function() {
         console.log($(this).val());
         var tipeId = $(this).val();
         shField(tipeId);
         $("#scan").focus();
     });
 
-    $("#DiskonBarang_semua_barang").change(function () {
+    $("#DiskonBarang_semua_barang").change(function() {
         enDisScan(this.checked);
     });
 
@@ -279,6 +287,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
             case '<?= DiskonBarang::TIPE_PROMO_PERKATEGORI; ?>':
                 promoPerKategoriFields();
                 break;
+            case '<?= DiskonBarang::TIPE_PROMO_PERSTRUKTUR ?>':
+                promoPerStrukturFields();
+                break;
         }
     }
 
@@ -300,6 +311,17 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty-max").show(500);
         $(".row-nilai-diskon").show(500);
         $("#list-kategori").show(500);
+        $("#input-barang-bonus").hide(500);
+        enDisScan(true);
+    }
+
+    function promoPerStrukturFields() {
+        $("#row-qty").hide(500);
+        $("#row-qty-min").hide(500);
+        $("#cb_semua_barang").hide(500);
+        $("#row-qty-max").show(500);
+        $(".row-nilai-diskon").show(500);
+        $("#list-kategori").hide(500);
         $("#input-barang-bonus").hide(500);
         enDisScan(true);
     }
@@ -356,7 +378,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty-max").hide(500);
         $("#row-qty").hide(500);
         $(".row-nilai-diskon").hide(100);
-        $("#nominal-diskon").show(400, function () {
+        $("#nominal-diskon").show(400, function() {
             $("#DiskonBarang_nominal").focus();
         });
         $("#cb_semua_barang").show(500);
@@ -370,47 +392,47 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     $("#scan").autocomplete({
         source: "<?php echo $this->createUrl('caribarang'); ?>",
         minLength: 3,
-        search: function (event, ui) {
+        search: function(event, ui) {
             $("#scan-icon").html('<img src="<?php echo Yii::app()->theme->baseUrl; ?>/css/3.gif" />');
         },
-        response: function (event, ui) {
+        response: function(event, ui) {
             $("#scan-icon").html('<i class="fa fa-barcode fa-2x"></i>');
         },
-        select: function (event, ui) {
+        select: function(event, ui) {
             console.log(ui.item ?
-                    "Nama: " + ui.item.label + "; Barcode " + ui.item.value :
-                    "Nothing selected, input was " + this.value);
+                "Nama: " + ui.item.label + "; Barcode " + ui.item.value :
+                "Nothing selected, input was " + this.value);
             if (ui.item) {
                 $("#scan").val(ui.item.value);
             }
         }
-    }).autocomplete("instance")._renderItem = function (ul, item) {
+    }).autocomplete("instance")._renderItem = function(ul, item) {
         return $("<li>")
-                .append("<a>" + item.label + "<br /><small>" + item.value + " [" + item.stok + "][" + item.harga + "]</small></a>")
-                .appendTo(ul);
+            .append("<a>" + item.label + "<br /><small>" + item.value + " [" + item.stok + "][" + item.harga + "]</small></a>")
+            .appendTo(ul);
     };
 
     $("#scan-barang-bonus").autocomplete({
         source: "<?php echo $this->createUrl('caribarang'); ?>",
         minLength: 3,
-        search: function (event, ui) {
+        search: function(event, ui) {
             $("#scan-icon-bonus").html('<img src="<?php echo Yii::app()->theme->baseUrl; ?>/css/3.gif" />');
         },
-        response: function (event, ui) {
+        response: function(event, ui) {
             $("#scan-icon-bonus").html('<i class="fa fa-barcode fa-2x"></i>');
         },
-        select: function (event, ui) {
+        select: function(event, ui) {
             console.log(ui.item ?
-                    "Nama: " + ui.item.label + "; Barcode " + ui.item.value :
-                    "Nothing selected, input was " + this.value);
+                "Nama: " + ui.item.label + "; Barcode " + ui.item.value :
+                "Nothing selected, input was " + this.value);
             if (ui.item) {
                 $("#scan-barang-bonus").val(ui.item.value);
             }
         }
-    }).autocomplete("instance")._renderItem = function (ul, item) {
+    }).autocomplete("instance")._renderItem = function(ul, item) {
         return $("<li>")
-                .append("<a>" + item.label + "<br /><small>" + item.value + " [" + item.stok + "][" + item.harga + "]</small></a>")
-                .appendTo(ul);
+            .append("<a>" + item.label + "<br /><small>" + item.value + " [" + item.stok + "][" + item.harga + "]</small></a>")
+            .appendTo(ul);
     };
 
     function tampilkanHargaBanded() {
@@ -422,10 +444,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         }
     }
 
-    $(function () {
-        $(document).on('click', "#tombol-scan-ok", function () {
+    $(function() {
+        $(document).on('click', "#tombol-scan-ok", function() {
             dataUrl = '<?php echo $this->createUrl('getdatabarang'); ?>';
-            dataKirim = {barcode: $("#scan").val()};
+            dataKirim = {
+                barcode: $("#scan").val()
+            };
             console.log(dataUrl);
             /* Jika tidak ada barang, keluar! */
             if ($("#scan").val() === '') {
@@ -436,13 +460,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                 type: 'POST',
                 url: dataUrl,
                 data: dataKirim,
-                success: function (data) {
+                success: function(data) {
                     if (data.sukses) {
                         var hasil = "<h5>" + data.barcode +
-                                " " + data.nama + "</h5>" +
-                                "<h6><small>Stok</small> " + data.stok + " " + data.satuan +
-                                " <small>Harga</small> " + data.hargaJual + " / " + data.satuan +
-                                " <small>Harga Beli</small> " + data.hargaBeli + "</h6>";
+                            " " + data.nama + "</h5>" +
+                            "<h6><small>Stok</small> " + data.stok + " " + data.satuan +
+                            " <small>Harga</small> " + data.hargaJual + " / " + data.satuan +
+                            " <small>Harga Beli</small> " + data.hargaBeli + "</h6>";
                         $("#info-barang").html(hasil);
                         $("#info-barang").show();
                         $("#harga-jual-raw").val(data.hargaJualRaw);
@@ -463,13 +487,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                 }
             });
         });
-        $(document).on('change', '#DiskonBarang_qty', function () {
+        $(document).on('change', '#DiskonBarang_qty', function() {
             kalkulasiDiskonDariNominal();
             tampilkanHargaBanded();
         });
-        $(document).on('click', "#tombol-scan-bonus", function () {
+        $(document).on('click', "#tombol-scan-bonus", function() {
             dataUrl = '<?php echo $this->createUrl('getdatabarang'); ?>';
-            dataKirim = {barcode: $("#scan-barang-bonus").val()};
+            dataKirim = {
+                barcode: $("#scan-barang-bonus").val()
+            };
             console.log(dataUrl);
             /* Jika tidak ada barang, keluar! */
             if ($("#scan-barang-bonus").val() === '') {
@@ -480,13 +506,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
                 type: 'POST',
                 url: dataUrl,
                 data: dataKirim,
-                success: function (data) {
+                success: function(data) {
                     if (data.sukses) {
                         var hasil = "<h5>" + data.barcode +
-                                " " + data.nama + "</h5>" +
-                                "<h6><small>Stok</small> " + data.stok + " " + data.satuan +
-                                " <small>Harga</small> " + data.hargaJual + " / " + data.satuan +
-                                " <small>Harga Beli</small> " + data.hargaBeli + "</h6>";
+                            " " + data.nama + "</h5>" +
+                            "<h6><small>Stok</small> " + data.stok + " " + data.satuan +
+                            " <small>Harga</small> " + data.hargaJual + " / " + data.satuan +
+                            " <small>Harga Beli</small> " + data.hargaBeli + "</h6>";
                         $("#info-barang-bonus").html(hasil);
                         $("#info-barang-bonus").show();
                         $("#barang-bonus-harga-jual-raw").val(data.hargaJualRaw);
@@ -507,14 +533,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         });
     });
 
-    $("#scan").on("keydown", function (e) {
+    $("#scan").on("keydown", function(e) {
         if (e.keyCode === 13) {
             e.preventDefault();
             $("#tombol-scan-ok").click();
         }
     });
 
-    $("#scan-barang-bonus").on("keydown", function (e) {
+    $("#scan-barang-bonus").on("keydown", function(e) {
         if (e.keyCode === 13) {
             e.preventDefault();
             $("#tombol-scan-bonus").click();
@@ -535,14 +561,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#DiskonBarang_nominal").val(nominal);
     }
 
-    $("#DiskonBarang_nominal").change(function () {
+    $("#DiskonBarang_nominal").change(function() {
         kalkulasiDiskonDariNominal();
-        tampilkanHargaBanded();// Jalan jika qty > 0
+        tampilkanHargaBanded(); // Jalan jika qty > 0
     });
 
-    $("#DiskonBarang_persen").change(function () {
+    $("#DiskonBarang_persen").change(function() {
         kalkulasiDiskonDariPersen();
-        tampilkanHargaBanded();// Jalan jika qty > 0
+        tampilkanHargaBanded(); // Jalan jika qty > 0
     });
 
     function bonusKalkulasiDiskonDariNominal() {
@@ -559,36 +585,36 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#DiskonBarang_barang_bonus_diskon_nominal").val(nominal);
     }
 
-    $("#DiskonBarang_barang_bonus_diskon_nominal").change(function () {
+    $("#DiskonBarang_barang_bonus_diskon_nominal").change(function() {
         bonusKalkulasiDiskonDariNominal();
     });
 
-    $("#DiskonBarang_barang_bonus_diskon_persen").change(function () {
+    $("#DiskonBarang_barang_bonus_diskon_persen").change(function() {
         bonusKalkulasiDiskonDariPersen();
     });
 
-    $(function () {
+    $(function() {
         shField($("#DiskonBarang_tipe_diskon_id").val());
-<?php
-if (!$model->isNewRecord) {
-    ?>
+        <?php
+        if (!$model->isNewRecord) {
+        ?>
             enDisScan(<?php echo $model->semua_barang; ?>);
-    <?php
-    if ($model->nominal > 0) {
-        ?>
+            <?php
+            if ($model->nominal > 0) {
+            ?>
                 kalkulasiDiskonDariNominal();
-        <?php
-    } else {
-        ?>
+            <?php
+            } else {
+            ?>
                 kalkulasiDiskonDariPersen();
-        <?php
-    }
-    ?>
-            tampilkanHargaBanded();// Jalan jika qty > 0
+            <?php
+            }
+            ?>
+            tampilkanHargaBanded(); // Jalan jika qty > 0
             $("#tombol-scan-ok").click();
-    <?php
-}
-?>
+        <?php
+        }
+        ?>
         $('.tanggal-waktu').fdatepicker({
             format: 'dd-mm-yyyy  hh:ii',
             disableDblClickSelection: true,
@@ -649,30 +675,29 @@ if (!$model->isNewRecord) {
         //  returns 14: '0.00000001'
 
         number = (number + '')
-                .replace(/[^0-9+\-Ee.]/g, '');
+            .replace(/[^0-9+\-Ee.]/g, '');
         var n = !isFinite(+number) ? 0 : +number,
-                prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
-                sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
-                dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
-                s = '',
-                toFixedFix = function (n, prec) {
-                    var k = Math.pow(10, prec);
-                    return '' + (Math.round(n * k) / k)
-                            .toFixed(prec);
-                };
+            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+            s = '',
+            toFixedFix = function(n, prec) {
+                var k = Math.pow(10, prec);
+                return '' + (Math.round(n * k) / k)
+                    .toFixed(prec);
+            };
         // Fix for IE parseFloat(0.55).toFixed(0) = 0;
         s = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
-                .split('.');
+            .split('.');
         if (s[0].length > 3) {
             s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
         }
         if ((s[1] || '')
-                .length < prec) {
+            .length < prec) {
             s[1] = s[1] || '';
             s[1] += new Array(prec - s[1].length + 1)
-                    .join('0');
+                .join('0');
         }
         return s.join(dec);
     }
-
 </script>

@@ -9,6 +9,7 @@
  * @property string $barang_id
  * @property integer $tipe_diskon_id
  * @property string $barang_kategori_id
+ * @property string $barang_struktur_id
  * @property string $nominal
  * @property double $persen
  * @property string $dari
@@ -29,11 +30,11 @@
  * @property Barang $barang
  * @property Barang $barangBonus
  * @property BarangKategori $barangKategori
+ * @property BarangStruktur $barangStruktur
  * @property User $updatedBy
  */
 class DiskonBarang extends CActiveRecord
 {
-
     const TIPE_PROMO              = 0;
     const TIPE_GROSIR             = 1;
     const TIPE_BANDED             = 2;
@@ -42,11 +43,12 @@ class DiskonBarang extends CActiveRecord
     const TIPE_QTY_GET_BARANG     = 5;
     const TIPE_NOMINAL_GET_BARANG = 6;
     const TIPE_PROMO_PERKATEGORI  = 7;
+    const TIPE_PROMO_PERSTRUKTUR  = 8;
     /* ========= */
-    const SEMUA_BARANG            = 1;
+    const SEMUA_BARANG = 1;
     /* ========= */
-    const STATUS_TIDAK_AKTIF      = 0;
-    const STATUS_AKTIF            = 1;
+    const STATUS_TIDAK_AKTIF = 0;
+    const STATUS_AKTIF       = 1;
 
     public $barcode;
     public $namaBarang;
@@ -70,12 +72,12 @@ class DiskonBarang extends CActiveRecord
             ['tipe_diskon_id, nominal, dari', 'required', 'message' => '{attribute} harus diisi'],
             ['semua_barang, tipe_diskon_id, status', 'numerical', 'integerOnly' => true],
             ['persen, barang_bonus_diskon_persen', 'numerical'],
-            ['barang_id, barang_kategori_id, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_qty, updated_by', 'length', 'max' => 10],
+            ['barang_id, barang_kategori_id, barang_struktur_id, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_qty, updated_by', 'length', 'max' => 10],
             ['nominal, barang_bonus_diskon_nominal', 'length', 'max' => 18],
             ['sampai, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, semua_barang, barang_id, barang_kategori_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_diskon_nominal, barang_bonus_diskon_persen, barang_bonus_qty, status, barcode, namaBarang', 'safe', 'on' => 'search'],
+            ['id, semua_barang, barang_id, barang_kategori_id, barang_struktur_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_diskon_nominal, barang_bonus_diskon_persen, barang_bonus_qty, status, barcode, namaBarang', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -90,6 +92,7 @@ class DiskonBarang extends CActiveRecord
             'barang'         => [self::BELONGS_TO, 'Barang', 'barang_id'],
             'barangBonus'    => [self::BELONGS_TO, 'Barang', 'barang_bonus_id'],
             'barangKategori' => [self::BELONGS_TO, 'KategoriBarang', 'barang_kategori_id'],
+            'barangStruktur' => [self::BELONGS_TO, 'BarangStruktur', 'barang_struktur_id'],
             'updatedBy'      => [self::BELONGS_TO, 'User', 'updated_by'],
         ];
     }
@@ -105,6 +108,7 @@ class DiskonBarang extends CActiveRecord
             'barang_id'                   => 'Barang',
             'tipe_diskon_id'              => 'Tipe Diskon',
             'barang_kategori_id'          => 'Kategori Barang',
+            'barang_struktur_id'          => 'Struktur Barang',
             'nominal'                     => 'Diskon (Nominal)',
             'persen'                      => 'Diskon (%)',
             'dari'                        => 'Dari',
@@ -146,6 +150,7 @@ class DiskonBarang extends CActiveRecord
         $criteria->compare('barang_id', $this->barang_id, true);
         $criteria->compare('tipe_diskon_id', $this->tipe_diskon_id);
         $criteria->compare('barang_kategori_id', $this->barang_kategori_id, true);
+        $criteria->compare('barang_struktur_id', $this->barang_struktur_id, true);
         $criteria->compare('nominal', $this->nominal, true);
         $criteria->compare('persen', $this->persen);
         $criteria->compare('dari', $this->dari, true);
@@ -172,18 +177,18 @@ class DiskonBarang extends CActiveRecord
                 '*',
                 'namaBarang' => [
                     'asc'  => 'barang.nama',
-                    'desc' => 'barang.nama desc'
+                    'desc' => 'barang.nama desc',
                 ],
                 'barcode'    => [
                     'asc'  => 'barang.barcode',
-                    'desc' => 'barang.barcode desc'
-                ]
-            ]
+                    'desc' => 'barang.barcode desc',
+                ],
+            ],
         ];
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort'     => $sort
+            'sort'     => $sort,
         ]);
     }
 
@@ -200,11 +205,10 @@ class DiskonBarang extends CActiveRecord
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
@@ -214,11 +218,12 @@ class DiskonBarang extends CActiveRecord
         return [
             self::TIPE_PROMO              => 'Promo (diskon per waktu tertentu)',
             self::TIPE_PROMO_PERKATEGORI  => 'Promo per Kategori Barang',
+            self::TIPE_PROMO_PERSTRUKTUR  => 'Promo per Struktur Barang',
             self::TIPE_PROMO_MEMBER       => 'Promo Member',
             self::TIPE_GROSIR             => 'Grosir (beli banyak harga turun)',
             self::TIPE_BANDED             => 'Banded (beli qty tertentu harga turun)',
             self::TIPE_QTY_GET_BARANG     => 'Beli x dapat y (Quantity tertentu dapat barang)',
-            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y (Nominal tertentu dapat barang)'
+            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y (Nominal tertentu dapat barang)',
         ];
     }
 
@@ -227,11 +232,12 @@ class DiskonBarang extends CActiveRecord
         return [
             self::TIPE_PROMO              => 'Promo',
             self::TIPE_PROMO_PERKATEGORI  => 'Promo per Kategori',
+            self::TIPE_PROMO_PERSTRUKTUR  => 'Promo per Struktur',
             self::TIPE_PROMO_MEMBER       => 'Promo Member',
             self::TIPE_GROSIR             => 'Grosir',
             self::TIPE_BANDED             => 'Banded',
             self::TIPE_QTY_GET_BARANG     => 'Beli x dapat y',
-            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y'
+            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y',
         ];
     }
 
@@ -260,19 +266,20 @@ class DiskonBarang extends CActiveRecord
 
     public function beforeValidate()
     {
-        $this->barang_id                   = $this->semua_barang ? NULL : $this->barang_id;
-        $this->barang_id                   = $this->tipe_diskon_id == self::TIPE_PROMO_PERKATEGORI ? NULL : $this->barang_id;
-        $this->barang_kategori_id          = empty($this->barang_kategori_id) ? NULL : $this->barang_kategori_id;
-        $this->dari                        = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s') : NULL;
-        $this->sampai                      = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s') : NULL;
-        $this->qty                         = empty($this->qty) ? NULL : $this->qty;
-        $this->qty_max                     = empty($this->qty_max) ? NULL : $this->qty_max;
-        $this->qty_min                     = empty($this->qty_min) ? NULL : $this->qty_min;
+        $this->barang_id                   = $this->semua_barang ? null : $this->barang_id;
+        $this->barang_id                   = $this->tipe_diskon_id == self::TIPE_PROMO_PERKATEGORI ? null : $this->barang_id;
+        $this->barang_kategori_id          = empty($this->barang_kategori_id) ? null : $this->barang_kategori_id;
+        $this->barang_struktur_id          = empty($this->barang_struktur_id) ? null : $this->barang_struktur_id;
+        $this->dari                        = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s') : null;
+        $this->sampai                      = !empty($this->sampai) ? date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i:s') : null;
+        $this->qty                         = empty($this->qty) ? null : $this->qty;
+        $this->qty_max                     = empty($this->qty_max) ? null : $this->qty_max;
+        $this->qty_min                     = empty($this->qty_min) ? null : $this->qty_min;
         $this->persen                      = $this->persen == 'Infinity' ? 0 : $this->persen;
-        $this->barang_bonus_id             = empty($this->barang_bonus_id) ? NULL : $this->barang_bonus_id;
-        $this->barang_bonus_diskon_nominal = empty($this->barang_bonus_diskon_nominal) ? NULL : $this->barang_bonus_diskon_nominal;
-        $this->barang_bonus_diskon_persen  = empty($this->barang_bonus_diskon_persen) ? NULL : $this->barang_bonus_diskon_persen;
-        $this->barang_bonus_qty            = empty($this->barang_bonus_qty) ? NULL : $this->barang_bonus_qty;
+        $this->barang_bonus_id             = empty($this->barang_bonus_id) ? null : $this->barang_bonus_id;
+        $this->barang_bonus_diskon_nominal = empty($this->barang_bonus_diskon_nominal) ? null : $this->barang_bonus_diskon_nominal;
+        $this->barang_bonus_diskon_persen  = empty($this->barang_bonus_diskon_persen) ? null : $this->barang_bonus_diskon_persen;
+        $this->barang_bonus_qty            = empty($this->barang_bonus_qty) ? null : $this->barang_bonus_qty;
 
         /* Fixme: Pindahkan cek validasi di bawah ini ke tempat yang seharusnya */
         switch ($this->tipe_diskon_id) {
@@ -316,6 +323,11 @@ class DiskonBarang extends CActiveRecord
                     return false;
                 }
                 break;
+            case self::TIPE_PROMO_PERSTRUKTUR:
+                $this->semua_barang = 1;
+                if (empty($this->qty_max)) {
+                    return false;
+                }
         }
         return parent::beforeValidate();
     }
@@ -330,10 +342,10 @@ class DiskonBarang extends CActiveRecord
     public function autoExpire()
     {
         try {
-            $rowAffected = Yii::app()->db->createCommand("UPDATE barang_diskon SET status = 0 WHERE sampai <= NOW()")->execute();
+            $rowAffected = Yii::app()->db->createCommand('UPDATE barang_diskon SET status = 0 WHERE sampai <= NOW()')->execute();
             return [
                 'sukses'      => true,
-                'rowAffected' => $rowAffected
+                'rowAffected' => $rowAffected,
             ];
         } catch (Exception $ex) {
             return [
@@ -341,7 +353,7 @@ class DiskonBarang extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
@@ -355,12 +367,13 @@ class DiskonBarang extends CActiveRecord
         return [
             self::TIPE_PROMO              => 'Promo',
             self::TIPE_PROMO_PERKATEGORI  => 'Promo perKategori',
+            self::TIPE_PROMO_PERSTRUKTUR  => 'Promo perStruktur',
             self::TIPE_PROMO_MEMBER       => 'Promo Member',
             self::TIPE_MANUAL             => 'Manual/Admin',
             self::TIPE_GROSIR             => 'Grosir',
             self::TIPE_BANDED             => 'Banded',
             self::TIPE_QTY_GET_BARANG     => 'Beli x dapat y',
-            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y'
+            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y',
         ];
     }
 
