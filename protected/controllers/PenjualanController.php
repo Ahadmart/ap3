@@ -189,8 +189,12 @@ class PenjualanController extends Controller
         $config      = Config::model()->find("nama='penjualan.hideopentxn'");
         $hideOpenTxn = $config->nilai;
 
+        $config                 = Config::model()->find("nama='penjualan.hideTotalMarginOpenTxn'");
+        $hideTotalMarginOpenTxn = $config->nilai;
+
         if ($this->isSuperUser(Yii::app()->user->id)) {
-            $hideOpenTxn = false;
+            $hideOpenTxn            = false;
+            $hideTotalMarginOpenTxn = false;
         }
 
         $kasirBuka     = Kasir::model()->find('waktu_tutup is null');
@@ -203,13 +207,20 @@ class PenjualanController extends Controller
             $hideOpenTxnCr->condition = 'kasir.id IS NULL OR (kasir.id IS NOT NULL AND t.tanggal < kasir.waktu_buka)';
         }
 
+        $pesan2 = false;
+        if ($kasirBuka && $hideTotalMarginOpenTxn) {
+            $pesan2 = true;
+        }
+
         // Yii::log(print_r($model->getDbCriteria(), true));
         // Yii::log(print_r($model->getAttributes(), true));
 
         $this->render('index', [
-            'model'  => $model,
-            'merge'  => $hideOpenTxnCr,
-            'pesan1' => $pesan1,
+            'model'             => $model,
+            'merge'             => $hideOpenTxnCr,
+            'hideDetailOpenTxn' => $hideTotalMarginOpenTxn,
+            'pesan1'            => $pesan1,
+            'pesan2'            => $pesan2,
         ]);
     }
 
@@ -642,14 +653,14 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
-                /*
-                case Device::TIPE_PDF_PRINTER:
-                $this->exportPdf($id);
-                break;
-                case Device::TIPE_CSV_PRINTER:
-                $this->eksporCsv($id);
-                break;
-                 */
+                    /*
+                    case Device::TIPE_PDF_PRINTER:
+                    $this->exportPdf($id);
+                    break;
+                    case Device::TIPE_CSV_PRINTER:
+                    $this->eksporCsv($id);
+                    break;
+                     */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_STRUK);
                     break;
@@ -668,14 +679,14 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_NOTA);
                     break;
-                /*
-                case Device::TIPE_PDF_PRINTER:
-                $this->exportPdf($id);
-                break;
-                case Device::TIPE_CSV_PRINTER:
-                $this->eksporCsv($id);
-                break;
-                 */
+                    /*
+                    case Device::TIPE_PDF_PRINTER:
+                    $this->exportPdf($id);
+                    break;
+                    case Device::TIPE_CSV_PRINTER:
+                    $this->eksporCsv($id);
+                    break;
+                     */
                 case Device::TIPE_TEXT_PRINTER:
                     $this->exportText($id, $device, self::PRINT_NOTA);
                     break;
