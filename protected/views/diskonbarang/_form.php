@@ -93,6 +93,38 @@
             <?php echo $form->error($model, 'barang_kategori_id', ['class' => 'error']); ?>
         </div>
     </div>
+
+    <div id="list-struktur" style="display: none">
+        <div class="row">
+            <div class="small-12 columns">
+                <label>Struktur</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="medium-4 columns" id="grid1-container">
+                <?php
+                $this->renderPartial('_grid1', [
+                    'lv1' => $lv1
+                ]);
+                ?>
+            </div>
+            <div class="medium-4 columns" id="grid2-container">
+                <?php
+                $this->renderPartial('_grid2', [
+                    'lv2' => $strukturDummy
+                ]);
+                ?>
+            </div>
+            <div class="medium-4 columns" id="grid3-container"">
+                <?php
+                $this->renderPartial('_grid3', [
+                    'lv3' => $strukturDummy
+                ]);
+                ?>  
+            </div>
+            <input type=" hidden" id="input-struktur" />
+        </div>
+    </div>
     <div class="row">
         <div class="panel" id="info-barang" style="display: none; padding-bottom: 15px; margin-left: none; margin-right: none">
 
@@ -295,6 +327,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     function promoFields() {
         $("#list-kategori").hide(500);
+        $("#list-struktur").hide(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -311,6 +344,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty-max").show(500);
         $(".row-nilai-diskon").show(500);
         $("#list-kategori").show(500);
+        $("#list-struktur").hide(500);
         $("#input-barang-bonus").hide(500);
         enDisScan(true);
     }
@@ -322,12 +356,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#row-qty-max").show(500);
         $(".row-nilai-diskon").show(500);
         $("#list-kategori").hide(500);
+        $("#list-struktur").show(500);
         $("#input-barang-bonus").hide(500);
         enDisScan(true);
     }
 
     function promoMemberFields() {
         $("#list-kategori").hide(500);
+        $("#list-struktur").hide(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").show(500);
@@ -340,6 +376,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     function grosirFields() {
         $("#list-kategori").hide(500);
+        $("#list-struktur").hide(500);
         $("#row-qty").hide(500);
         $("#cb_semua_barang").hide(500);
         $("#row-qty-max").hide(500);
@@ -351,6 +388,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     function bandedFields() {
         $("#list-kategori").hide(500);
+        $("#list-struktur").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -362,6 +400,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     function qtyGetBarangFields() {
         $("#list-kategori").hide(500);
+        $("#list-struktur").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").show(500);
         $("#cb_semua_barang").hide(500);
@@ -374,6 +413,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     function nominalGetBarangFields() {
         $("#list-kategori").hide(500);
+        $("#list-struktur").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").hide(500);
         $("#row-qty").hide(500);

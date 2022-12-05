@@ -11,7 +11,11 @@ $this->breadcrumbs = array(
 $this->boxHeader['small'] = 'Tambah';
 $this->boxHeader['normal'] = 'Tambah Diskon Barang';
 
-$this->renderPartial('_form', array('model' => $model));
+$this->renderPartial('_form', array(
+    'model' => $model,
+    'lv1' => $lv1,
+    'strukturDummy' => $strukturDummy,
+));
 
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
