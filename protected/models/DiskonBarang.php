@@ -92,7 +92,7 @@ class DiskonBarang extends CActiveRecord
             'barang'         => [self::BELONGS_TO, 'Barang', 'barang_id'],
             'barangBonus'    => [self::BELONGS_TO, 'Barang', 'barang_bonus_id'],
             'barangKategori' => [self::BELONGS_TO, 'KategoriBarang', 'barang_kategori_id'],
-            'barangStruktur' => [self::BELONGS_TO, 'BarangStruktur', 'barang_struktur_id'],
+            'barangStruktur' => [self::BELONGS_TO, 'StrukturBarang', 'barang_struktur_id'],
             'updatedBy'      => [self::BELONGS_TO, 'User', 'updated_by'],
         ];
     }
@@ -218,7 +218,7 @@ class DiskonBarang extends CActiveRecord
         return [
             self::TIPE_PROMO              => 'Promo (diskon per waktu tertentu)',
             self::TIPE_PROMO_PERKATEGORI  => 'Promo per Kategori Barang',
-            // self::TIPE_PROMO_PERSTRUKTUR  => 'Promo per Struktur Barang',
+            self::TIPE_PROMO_PERSTRUKTUR  => 'Promo per Struktur Barang',
             self::TIPE_PROMO_MEMBER       => 'Promo Member',
             self::TIPE_GROSIR             => 'Grosir (beli banyak harga turun)',
             self::TIPE_BANDED             => 'Banded (beli qty tertentu harga turun)',
@@ -232,7 +232,7 @@ class DiskonBarang extends CActiveRecord
         return [
             self::TIPE_PROMO              => 'Promo',
             self::TIPE_PROMO_PERKATEGORI  => 'Promo per Kategori',
-            // self::TIPE_PROMO_PERSTRUKTUR  => 'Promo per Struktur',
+            self::TIPE_PROMO_PERSTRUKTUR  => 'Promo per Struktur',
             self::TIPE_PROMO_MEMBER       => 'Promo Member',
             self::TIPE_GROSIR             => 'Grosir',
             self::TIPE_BANDED             => 'Banded',
@@ -267,7 +267,7 @@ class DiskonBarang extends CActiveRecord
     public function beforeValidate()
     {
         $this->barang_id                   = $this->semua_barang ? null : $this->barang_id;
-        $this->barang_id                   = $this->tipe_diskon_id == self::TIPE_PROMO_PERKATEGORI ? null : $this->barang_id;
+        $this->barang_id                   = $this->tipe_diskon_id == self::TIPE_PROMO_PERKATEGORI || $this->tipe_diskon_id == self::TIPE_PROMO_PERSTRUKTUR ? null : $this->barang_id;
         $this->barang_kategori_id          = empty($this->barang_kategori_id) ? null : $this->barang_kategori_id;
         $this->barang_struktur_id          = empty($this->barang_struktur_id) ? null : $this->barang_struktur_id;
         $this->dari                        = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s') : null;
@@ -367,7 +367,7 @@ class DiskonBarang extends CActiveRecord
         return [
             self::TIPE_PROMO              => 'Promo',
             self::TIPE_PROMO_PERKATEGORI  => 'Promo perKategori',
-            // self::TIPE_PROMO_PERSTRUKTUR  => 'Promo perStruktur',
+            self::TIPE_PROMO_PERSTRUKTUR  => 'Promo perStruktur',
             self::TIPE_PROMO_MEMBER       => 'Promo Member',
             self::TIPE_MANUAL             => 'Manual/Admin',
             self::TIPE_GROSIR             => 'Grosir',
@@ -380,5 +380,14 @@ class DiskonBarang extends CActiveRecord
     public static function namaTipeDiskon($tipeId)
     {
         return self::listNamaTipe()[$tipeId];
+    }
+
+    public function getStrukturFullPath()
+    {
+        $struktur = StrukturBarang::model()->findByPk($this->barang_struktur_id);
+        if (!is_null($struktur) && $this->tipe_diskon_id == self::TIPE_PROMO_PERSTRUKTUR) {
+            return $struktur->getFullPath();
+        }
+        return null;
     }
 }

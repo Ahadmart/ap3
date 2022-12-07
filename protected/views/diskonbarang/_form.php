@@ -94,6 +94,7 @@
         </div>
     </div>
 
+    <?php echo $form->hiddenField($model, 'barang_struktur_id') ?>
     <div id="list-struktur" style="display: none">
         <div class="row">
             <div class="small-12 columns">
@@ -122,8 +123,62 @@
                 ]);
                 ?>  
             </div>
-            <input type=" hidden" id="input-struktur" />
+            <!-- <input type=" hidden" id="input-struktur" /> -->
         </div>
+        <script>
+            function lv1Dipilih(id) {
+                var lv1Id = $('#' + id).yiiGridView('getSelection');
+                if (!Array.isArray(lv1Id) || !lv1Id.length) {
+                    console.log("1 tidak dipilih");
+                    <?php /* render nothing */ ?>
+                    $("#grid2-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                        level: 2,
+                        parent: 0
+                    });
+                    // $('#input-struktur').val("");
+                } else {
+                    console.log(lv1Id[0] + ":1 dipilih");
+                    $("#grid2-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                        level: 2,
+                        parent: lv1Id[0]
+                    });
+                }
+                $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    level: 3,
+                    parent: 0
+                });
+            }
+
+            function lv2Dipilih(id) {
+                var lv2Id = $('#' + id).yiiGridView('getSelection');
+                if (!Array.isArray(lv2Id) || !lv2Id.length) {
+                    console.log("2 tidak dipilih");
+                    <?php /* render nothing */ ?>
+                    $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                        level: 3,
+                        parent: 0
+                    });
+                    // $('#input-struktur').val("");
+                } else {
+                    console.log(lv2Id[0] + ":2 dipilih");
+                    $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                        level: 3,
+                        parent: lv2Id[0]
+                    });
+                }
+            }
+
+            function lv3Dipilih(id) {
+                var lv3Id = $('#' + id).yiiGridView('getSelection');
+                if (!Array.isArray(lv3Id) || !lv3Id.length) {
+                    console.log("3 tidak dipilih");
+                    $('#DiskonBarang_barang_struktur_id').val("");
+                } else {
+                    console.log(lv3Id[0] + ":3 dipilih");
+                    $('#DiskonBarang_barang_struktur_id').val(lv3Id[0]);
+                }
+            }
+        </script>
     </div>
     <div class="row">
         <div class="panel" id="info-barang" style="display: none; padding-bottom: 15px; margin-left: none; margin-right: none">
