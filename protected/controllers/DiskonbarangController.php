@@ -29,8 +29,11 @@ class DiskonbarangController extends Controller
 
         if (isset($_POST['DiskonBarang'])) {
             $model->attributes = $_POST['DiskonBarang'];
-            if ($model->save())
+            if ($model->save()) {
                 $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                Yii::log('Error simpan Diskon Barang: ' . var_export($model->getErrors(), true), 'info');
+            }
         }
 
         $lv1 = new StrukturBarang('search');

@@ -446,7 +446,7 @@ class Penjualan extends CActiveRecord
         // Yii::log("Tambah barang detail; barangID: ".$barang->id, "info");
         /*
          * Cek Multi Harga Jual, jika ada: Diskon diabaikan!
-         * Cek Diskon, dengan prioritas PROMO MEMBER, PROMO, GROSIR, BANDED, QTY DAPAT BARANG
+         * Cek Diskon, dengan prioritas seperti di bawah ini
          * Hanya bisa salah satu
          */
         if (!empty(HargaJualMulti::listAktif($barang->id))) {
@@ -469,6 +469,10 @@ class Penjualan extends CActiveRecord
             //terapkan diskon promo
             //ambil sisanya (yang tidak didiskon)
             $sisa = $this->aksiDiskonPromoPerKategori($barang->id, $qty, $hargaJualNormal);
+        } elseif (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO_PERSTRUKTUR))) {
+            //terapkan diskon promo per struktur
+            //ambil sisanya (yang tidak didiskon)
+            $sisa = $this->aksiDiskonPromoPerStruktur($barang->id, $qty, $hargaJualNormal);
         } elseif (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_GROSIR))) {
             //terapkan diskon grosir
             //ambil sisanya (yang tidak didiskon)
@@ -546,11 +550,45 @@ class Penjualan extends CActiveRecord
 
         $diskonNominal = $diskonPromoKategori->nominal;
         if ($diskonPromoKategori->persen > 0) {
-            $diskonNominal = ((float) $diskonPromoKategori->persen / 100) * $hargaJualNormal;
+            $diskonNominal = round(((float) $diskonPromoKategori->persen / 100) * $hargaJualNormal);
         }
         $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
 
         $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonNominal, DiskonBarang::TIPE_PROMO_PERKATEGORI);
+        return $sisa;
+    }
+
+    public function aksiDiskonPromoPerStruktur($barangId, $qty, $hargaJualNormal)
+    {
+        $barang              = Barang::model()->findByPk($barangId);
+        $waktu               = date('Y-m-d H:i:s');
+        $diskonPromoStruktur = DiskonBarang::model()->find([
+            'condition' => 'barang_struktur_id=:strukturBarangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= :waktu and (sampai >= :waktu or sampai is null)',
+            'order'     => 'id desc',
+            'params'    => [
+                'strukturBarangId' => $barang->struktur_id,
+                'status'           => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERSTRUKTUR,
+                'waktu'            => $waktu,
+            ],
+        ]);
+
+        $sisa = $qty;
+        if ($qty > $diskonPromoStruktur->qty_max) {
+            $qtyPromo = $diskonPromoStruktur->qty_max;
+            $sisa -= $diskonPromoStruktur->qty_max;
+        } else {
+            $qtyPromo = $qty;
+            $sisa     = 0;
+        }
+
+        $diskonNominal = $diskonPromoStruktur->nominal;
+        if ($diskonPromoStruktur->persen > 0) {
+            $diskonNominal = round(((float) $diskonPromoStruktur->persen / 100) * $hargaJualNormal);
+        }
+        $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
+
+        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonNominal, DiskonBarang::TIPE_PROMO_PERSTRUKTUR);
         return $sisa;
     }
 
@@ -1267,16 +1305,16 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'INVOICE '; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-        . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat1'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strTgl, $kananMaxLength, ' ')
+            . str_pad($strTgl, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat2'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strTglDue, $kananMaxLength, ' ')
+            . str_pad($strTglDue, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strKasir, $kananMaxLength, ' ')
+            . str_pad($strKasir, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($strTotal, $jumlahKolom - $kananMaxLength + strlen($strTotal), ' ', STR_PAD_LEFT)
             . PHP_EOL;
@@ -1348,7 +1386,7 @@ class Penjualan extends CActiveRecord
             $signatureHead3 = 'Driver';
 
             $struk .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) .
-            str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
+                str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
             $struk .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
             $struk .= '     (                )         (                )         (                )' . PHP_EOL;
         }
@@ -1617,13 +1655,13 @@ class Penjualan extends CActiveRecord
         $strInvoice = 'NOTA'; //Jumlah karakter harus genap!
 
         $struk = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-        . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
             . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header1'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strKasir, $kananMaxLength, ' ')
+            . str_pad($strKasir, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= str_pad($branchConfig['struk.header2'], $jumlahKolom - $kananMaxLength, ' ')
-        . str_pad($strWaktu, $kananMaxLength, ' ')
+            . str_pad($strWaktu, $kananMaxLength, ' ')
             . PHP_EOL;
         $struk .= PHP_EOL;
 
@@ -2005,7 +2043,7 @@ class Penjualan extends CActiveRecord
         return PenjualanDetail::model()->with('barang')->findAll('penjualan_id=:penjualanId AND barang.struktur_id IS NULL', [':penjualanId' => $this->id]);
     }
 
-    public function array2csv(array&$array)
+    public function array2csv(array &$array)
     {
         if (count($array) == 0) {
             return null;
