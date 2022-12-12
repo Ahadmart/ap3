@@ -1749,6 +1749,9 @@ class ReportController extends Controller
             if (is_null($device)) {
                 throw new CHttpException(500, 'Printer tidak ditemukan!');
             };
+            if (!$model->validate()) {
+                throw new CHttpException(500, CHtml::errorSummary($model));
+            }
 
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:

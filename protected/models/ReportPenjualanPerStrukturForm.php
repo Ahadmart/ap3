@@ -35,6 +35,7 @@ class ReportPenjualanPerStrukturForm extends CFormModel
     {
         return [
             ['dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'],
+            ['dari', 'compare', 'compareAttribute' => 'sampai', 'operator' => '<=','message' => '[Tanggal dari] tidak boleh lebih besar dari [tanggal sampai]'],
             ['profilId, userId, strukLv1, strukLv2, strukLv3, kertas, printer', 'safe'],
         ];
     }
