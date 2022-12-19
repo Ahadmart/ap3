@@ -22,16 +22,16 @@ class ReportController extends Controller
 
     public function blokAksesJikaKasirBuka()
     {
-        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
-        $hideOpenTxn = $config->nilai;
+        $config      = Config::model()->find("nama='report.harian.blockopentxn'");
+        $hideOpenTxn = $config->nilai == 1;
         if ($this->isSuperUser(Yii::app()->user->id)) {
             $hideOpenTxn = false;
         }
         $kasirBuka = Kasir::model()->find('waktu_tutup is null');
         if ($kasirBuka && $hideOpenTxn) {
             return true;
-        }      
-        return false;  
+        }
+        return false;
     }
 
     /**
