@@ -20,6 +20,20 @@ class ReportController extends Controller
         $this->renderJSON($return);
     }
 
+    public function blokAksesJikaKasirBuka()
+    {
+        $config      = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
+        $kasirBuka = Kasir::model()->find('waktu_tutup is null');
+        if ($kasirBuka && $hideOpenTxn) {
+            return true;
+        }      
+        return false;  
+    }
+
     /**
      * Report Pembelian Form
      */
@@ -188,6 +202,10 @@ class ReportController extends Controller
      */
     public function actionHarianDetail()
     {
+        if ($this->blokAksesJikaKasirBuka()) {
+            throw new CHttpException(403, 'Halaman ini tidak bisa diakses jika kasir masih ada yang buka');
+        }
+
         $this->layout = '//layouts/box_kecil';
         $model        = new ReportHarianForm;
 
@@ -209,6 +227,10 @@ class ReportController extends Controller
      */
     public function actionHarianDetail2()
     {
+        if ($this->blokAksesJikaKasirBuka()) {
+            throw new CHttpException(403, 'Halaman ini tidak bisa diakses jika kasir masih ada yang buka');
+        }
+
         $this->layout = '//layouts/box_kecil';
         $model        = new ReportHarianForm;
 
@@ -1949,6 +1971,10 @@ class ReportController extends Controller
      */
     public function actionHarian01()
     {
+        if ($this->blokAksesJikaKasirBuka()) {
+            throw new CHttpException(403, 'Halaman ini tidak bisa diakses jika kasir masih ada yang buka');
+        }
+
         $this->layout = '//layouts/box_kecil';
         $model        = new ReportHarian01Form;
 
