@@ -112,7 +112,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
                 noTelp: $("#MembershipRegistrationForm_noTelp").val(),
                 namaLengkap: $("#MembershipRegistrationForm_namaLengkap").val(),
                 jenisKelamin: $("#MembershipRegistrationForm_jenisKelamin").val(),
-                tanggalLahir: $("#MembershipRegistrationForm_tanggalLahir").val(),
+                // tanggalLahir: $("#MembershipRegistrationForm_tanggalLahir").val(),
                 umur: $("#MembershipRegistrationForm_umur").val(),
                 pekerjaanId: $("#MembershipRegistrationForm_pekerjaanId").val(),
                 alamat: $("#MembershipRegistrationForm_alamat").val(),

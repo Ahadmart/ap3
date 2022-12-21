@@ -41,8 +41,8 @@ class MembershipController extends Controller
             } else {
                 $error = [
                     'statusCode' => 400,
-                    'error' => [
-                        'type' => 'BAD_REQUEST',
+                    'error'      => [
+                        'type'        => 'BAD_REQUEST',
                         'description' => 'MembershipRegistrationForm: Nomor Telp/Nama/Umur tidak boleh kosong'
                     ]
                 ];
@@ -66,8 +66,17 @@ class MembershipController extends Controller
         }
 
         $profil               = $data->data->profil;
-        $tglLahir             = !empty($profil->tanggalLahir) ? date_format(date_create_from_format('Y-m-d', $profil->tanggalLahir), 'd-m-Y') : '';
-        $profil->tanggalLahir = $tglLahir;
+        $profil->umur         = null;
+        if (!empty($profil->tanggalLahir)) {
+            $tglLahir             = date_format(date_create_from_format('Y-m-d', $profil->tanggalLahir), 'd-m-Y');
+            $tgl1                 = new DateTime($tglLahir);
+            $now                  = new DateTime();
+            $interval             = $tgl1->diff($now);
+            $profil->tanggalLahir = $tglLahir;
+            $profil->umur         = $interval->y;
+        } else {
+            $profil->tanggalLahir = '';
+        }
         $jenisKelamin         = empty($profil->jenisKelamin) || $profil->jenisKelamin == MembershipRegistrationForm::JENIS_KELAMIN_PRIA ? 'Pria' : 'Wanita';
         $profil->jenisKelamin = $jenisKelamin;
 
