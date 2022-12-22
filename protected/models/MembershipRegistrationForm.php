@@ -15,6 +15,7 @@ class MembershipRegistrationForm extends CFormModel
     public $namaLengkap;
     public $tanggalLahir;
     public $umur;
+    public $umurOld;
     public $jenisKelamin;
     public $pekerjaanId;
     public $alamat;
@@ -29,7 +30,7 @@ class MembershipRegistrationForm extends CFormModel
     {
         return [
             ['noTelp, namaLengkap, umur', 'required', 'message' => '{attribute} tidak boleh kosong'],
-            ['kodeNegara, tanggalLahir, jenisKelamin, pekerjaanId, alamat, keterangan, userName', 'safe'],
+            ['kodeNegara, tanggalLahir, umurOld, jenisKelamin, pekerjaanId, alamat, keterangan, userName', 'safe'],
         ];
     }
 
@@ -64,7 +65,14 @@ class MembershipRegistrationForm extends CFormModel
 
     public function beforeValidate()
     {
-        if (!empty($this->umur)) {
+        if (!empty($this->umur) && empty($this->umurOld)) {
+            // Ini kondisi data baru (registrasi)
+            $time = new DateTime(date('Y-m-d', strtotime('first day of january this year')));
+            $this->tanggalLahir = $time->modify("-{$this->umur} year")->format('Y-m-d');
+        }
+
+        if (!empty($this->umur) && !empty($this->umurOld) && $this->umurOld != $this->umur) {
+            // Ini untuk kondisi update
             $time = new DateTime(date('Y-m-d', strtotime('first day of january this year')));
             $this->tanggalLahir = $time->modify("-{$this->umur} year")->format('Y-m-d');
         }

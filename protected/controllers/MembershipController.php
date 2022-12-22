@@ -114,14 +114,29 @@ class MembershipController extends Controller
                 'namaLengkap'  => $_POST['namaLengkap'],
                 'jenisKelamin' => $_POST['jenisKelamin'],
                 'tanggalLahir' => $tglLahir,
+                'umur'         => $_POST['umur'],
+                'umurOld'      => $_POST['umurOld'],
                 'pekerjaanId'  => $_POST['pekerjaanId'],
                 'alamat'       => $_POST['alamat'],
                 'keterangan'   => $_POST['keterangan'],
                 'userName'     => Yii::app()->user->namaLengkap,
             ];
             // $this->renderJSON($data);
-            $clientAPI = new AhadMembershipClient();
-            echo $clientAPI->update($id, $data);
+            $model = new MembershipRegistrationForm();
+            $model->setAttributes($data);
+            if ($model->validate()) {
+                $clientAPI = new AhadMembershipClient();
+                echo $clientAPI->update($id, $model->getAttributes());
+            } else {
+                $error = [
+                    'statusCode' => 400,
+                    'error'      => [
+                        'type'        => 'BAD_REQUEST',
+                        'description' => 'MembershipRegistrationForm: Nomor Telp/Nama/Umur tidak boleh kosong'
+                    ]
+                ];
+                echo json_encode($error);
+            }
         }
     }
 
