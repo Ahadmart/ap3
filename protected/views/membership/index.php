@@ -21,7 +21,8 @@ $this->renderPartial('_form_search');
                     <th onclick="sortTable(0)">Nomor</th>
                     <th onclick="sortTable(1)">No Telp</th>
                     <th onclick="sortTable(2)">Nama Lengkap</th>
-                    <th onclick="sortTable(3)">Tanggal Lahir</th>
+                    <!-- <th onclick="sortTable(3)">Tanggal Lahir</th> -->
+                    <th onclick="sortTable(3)">Umur</th>
                     <th onclick="sortTable(4)">Pekerjaan</th>
                     <th onclick="sortTable(5)">Alamat</th>
                     <th onclick="sortTable(6)">Keterangan</th>
@@ -42,7 +43,7 @@ $this->renderPartial('_form_search');
             tr.innerHTML = '<td><a href="<?= $this->createUrl('/membership') ?>/' + object.nomor + '">' + object.nomor + '</a></td>' +
                 '<td>' + object.kode_negara + object.nomor_telp + '</td>' +
                 '<td>' + object.nama_lengkap + '</td>' +
-                '<td>' + object.tanggal_lahir + '</td>' +
+                '<td>' + object.umur + '</td>' +
                 '<td>' + object.pekerjaan + '</td>' +
                 '<td>' + object.alamat + '</td>' +
                 '<td>' + object.keterangan + '</td>';

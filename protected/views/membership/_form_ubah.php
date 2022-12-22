@@ -52,8 +52,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             <?php echo CHtml::dropDownList('jenisKelamin', $model->jenisKelamin, MembershipRegistrationForm::listJenisKelamin()); ?>
         </div>
         <div class="small-12 large-6 columns">
-            <?php echo CHtml::label('Tanggal Lahir', 'tanggalLahir'); ?>
-            <?php echo CHtml::textField('tanggalLahir', $model->tanggalLahir, ['class' => 'tanggalan']); ?>
+            <?php echo CHtml::label('Umur', 'umur'); ?>
+            <?php echo CHtml::numberField('umur', $model->umur, ['min' => 1, 'max' => 150]); ?>
+            <?php echo CHtml::hiddenField('umurOld', $model->umur); ?>
+            <?php echo CHtml::hiddenField('tanggalLahir', $model->tanggalLahir); ?>
         </div>
     </div>
     <div class="row">
@@ -81,6 +83,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             <?php echo CHtml::submitButton('Update', ['class' => 'tiny bigfont success button right']); ?>
         </div>
     </div>
+    
 
     <?php $this->endWidget(); ?>
 </div>
@@ -99,6 +102,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
                 namaLengkap: $("#namaLengkap").val(),
                 jenisKelamin: $("#jenisKelamin").val(),
                 tanggalLahir: $("#tanggalLahir").val(),
+                umurOld: $("#umurOld").val(),
+                umur: $("#umur").val(),
                 pekerjaanId: $("#pekerjaanId").val(),
                 alamat: $("#alamat").val(),
                 keterangan: $("#keterangan").val(),

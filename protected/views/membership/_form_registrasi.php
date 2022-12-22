@@ -53,10 +53,19 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             <?php echo $form->dropDownList($model, 'jenisKelamin', $model->listJenisKelamin()); ?>
             <?php echo $form->error($model, 'jenisKelamin', ['class' => 'error']); ?>
         </div>
+        <?php
+        /*
+<div class="small-12 large-6 columns">
+<?php echo $form->labelEx($model, 'tanggalLahir'); ?>
+<?php echo $form->textField($model, 'tanggalLahir', ['class' => 'tanggalan']); ?>
+<?php echo $form->error($model, 'tanggalLahir', ['class' => 'error']); ?>
+</div>
+ */
+        ?>
         <div class="small-12 large-6 columns">
-            <?php echo $form->labelEx($model, 'tanggalLahir'); ?>
-            <?php echo $form->textField($model, 'tanggalLahir', ['class' => 'tanggalan']); ?>
-            <?php echo $form->error($model, 'tanggalLahir', ['class' => 'error']); ?>
+            <?php echo $form->labelEx($model, 'umur'); ?>
+            <?php echo $form->numberField($model, 'umur', ['min' => 1, 'max' => 150]); ?>
+            <?php echo $form->error($model, 'umur', ['class' => 'error']); ?>
         </div>
     </div>
     <div class="row">
@@ -103,7 +112,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
                 noTelp: $("#MembershipRegistrationForm_noTelp").val(),
                 namaLengkap: $("#MembershipRegistrationForm_namaLengkap").val(),
                 jenisKelamin: $("#MembershipRegistrationForm_jenisKelamin").val(),
-                tanggalLahir: $("#MembershipRegistrationForm_tanggalLahir").val(),
+                // tanggalLahir: $("#MembershipRegistrationForm_tanggalLahir").val(),
+                umur: $("#MembershipRegistrationForm_umur").val(),
                 pekerjaanId: $("#MembershipRegistrationForm_pekerjaanId").val(),
                 alamat: $("#MembershipRegistrationForm_alamat").val(),
                 keterangan: $("#MembershipRegistrationForm_keterangan").val(),
