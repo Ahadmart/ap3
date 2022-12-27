@@ -2,7 +2,6 @@
 
 class KasirController extends Controller
 {
-
     /**
      * @return array action filters
      */
@@ -22,7 +21,8 @@ class KasirController extends Controller
     public function accessRules()
     {
         return [
-            ['deny', // deny guest
+            [
+                'deny', // deny guest
                 'users' => ['guest'],
             ],
         ];
@@ -53,8 +53,9 @@ class KasirController extends Controller
 
         if (isset($_POST['Kasir'])) {
             $model->attributes = $_POST['Kasir'];
-            if ($model->save())
+            if ($model->save()) {
                 $this->redirect('index');
+            }
         }
 
         $listKasir     = CHtml::listData(User::model()->findAll(['order' => 'nama_lengkap']), 'id', 'nama_lengkap');
@@ -63,7 +64,7 @@ class KasirController extends Controller
         $this->render('buka', [
             'model'         => $model,
             'listKasir'     => $listKasir,
-            'listPosClient' => $listPosClient
+            'listPosClient' => $listPosClient,
         ]);
     }
 
@@ -75,21 +76,22 @@ class KasirController extends Controller
     {
         $this->layout = '//layouts/box_kecil';
         $model        = $this->loadModel($id);
-        
-        if (!is_null($model->waktu_tutup)){
+
+        if (!is_null($model->waktu_tutup)) {
             $this->redirect(['rekap', 'id' => $id]);
         }
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
-        $model->total_penjualan      = $model->totalPenjualan()['jumlah'];
-        $model->total_margin         = $model->totalMargin()['jumlah'];
-        $model->total_retur          = $model->totalReturJual()['jumlah'];
-        $model->total_infaq          = $model->totalInfaq()['total'];
-        $model->total_diskon_pernota = $model->totalDiskonPerNota()['total'];
-        $model->total_penerimaan     = $model->penerimaanNet()['total'];
-        $model->total_tarik_tunai    = $model->totalTarikTunai()['total'];
-        
+        $model->total_penjualan            = $model->totalPenjualan()['jumlah'];
+        $model->total_margin               = $model->totalMargin()['jumlah'];
+        $model->total_retur                = $model->totalReturJual()['jumlah'];
+        $model->total_infaq                = $model->totalInfaq()['total'];
+        $model->total_diskon_pernota       = $model->totalDiskonPerNota()['total'];
+        $model->total_penerimaan           = $model->penerimaanNet()['total'];
+        $model->total_tarik_tunai          = $model->totalTarikTunai()['total'];
+        $model->total_koincashback_dipakai = $model->totalKoinCashbackDipakai()['total'];
+
         $penerimaanKas = $model->totalPenerimaanKas();
 
         $model->saldo_akhir_seharusnya = $model->saldo_awal + $penerimaanKas - $model->total_tarik_tunai;
@@ -110,8 +112,8 @@ class KasirController extends Controller
         }
 
         $this->render('tutup', [
-            'model'                   => $model,
-            'penerimaanKas'           => $penerimaanKas
+            'model'         => $model,
+            'penerimaanKas' => $penerimaanKas,
         ]);
     }
 
@@ -125,8 +127,9 @@ class KasirController extends Controller
         $this->loadModel($id)->delete();
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax']))
+        if (!isset($_GET['ajax'])) {
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
+        }
     }
 
     /**
@@ -134,10 +137,12 @@ class KasirController extends Controller
      */
     public function actionIndex()
     {
-        $model             = new Kasir('search');
-        $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['Kasir']))
+        $model = new Kasir('search');
+        $model->unsetAttributes(); // clear any default values
+        if (isset($_GET['Kasir'])) {
             $model->attributes = $_GET['Kasir'];
+        }
+
         //$model->waktu_tutup = 'isnull';
 
         $config      = Config::model()->find('nama=:nama', [':nama' => 'kasir.showhistory']);
@@ -162,8 +167,10 @@ class KasirController extends Controller
     public function loadModel($id)
     {
         $model = Kasir::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+
         return $model;
     }
 
@@ -189,15 +196,15 @@ class KasirController extends Controller
         if (!is_null($printerLpr)) {
             $printerLpr->bukaLaciKas();
             $return = [
-                'sukses' => true
+                'sukses' => true,
             ];
         } else {
             $return = [
                 'sukses' => false,
                 'error'  => [
                     'code' => 500,
-                    'msg'  => 'Device tidak ditemukan!'
-                ]
+                    'msg'  => 'Device tidak ditemukan!',
+                ],
             ];
         }
         $this->renderJSON($return);
@@ -241,5 +248,4 @@ class KasirController extends Controller
         $device->printLpr($text);
         $this->renderPartial('_print_autoclose', ['text' => $text]);
     }
-
 }

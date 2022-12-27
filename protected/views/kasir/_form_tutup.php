@@ -72,6 +72,12 @@
                     'visible' => false,
                 ],
                 [
+                    'name'    => 'total_koincashback_dipakai',
+                    'value'   => number_format($model->total_koincashback_dipakai, 0, ',', '.'),
+                    'visible' => $model->total_koincashback_dipakai != 0,
+                    'visible' => false,
+                ],
+                [
                     'label'   => 'Total Penerimaan',
                     'value'   => number_format($model->total_penerimaan, 0, ',', '.'),
                     'visible' => $model->total_penerimaan != $model->total_penjualan,
