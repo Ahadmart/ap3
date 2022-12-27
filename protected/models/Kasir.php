@@ -362,6 +362,7 @@ class Kasir extends CActiveRecord
 
         if ($totalKoinCB > 0) {
             $text .= str_pad('Koin Cashback', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalKoinCB, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
+            $text .= str_pad('', 40, '-', STR_PAD_LEFT) . PHP_EOL;
         }
         if ($totalRetur > 0) {
             $text .= str_pad('Total Retur Jual', 19, ' ', STR_PAD_LEFT) . ': ' . str_pad($totalRetur, $terPanjang, ' ', STR_PAD_LEFT) . PHP_EOL;
