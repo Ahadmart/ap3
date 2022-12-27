@@ -8,6 +8,7 @@
  * @property integer $semua_barang
  * @property string $barang_id
  * @property integer $tipe_diskon_id
+ * @property integer $member_online_flag
  * @property string $barang_kategori_id
  * @property string $barang_struktur_id
  * @property string $nominal
@@ -44,6 +45,7 @@ class DiskonBarang extends CActiveRecord
     const TIPE_NOMINAL_GET_BARANG = 6;
     const TIPE_PROMO_PERKATEGORI  = 7;
     const TIPE_PROMO_PERSTRUKTUR  = 8;
+    const TIPE_PROMO_MEMBER_OL    = 9;
     /* ========= */
     const SEMUA_BARANG = 1;
     /* ========= */
@@ -72,12 +74,12 @@ class DiskonBarang extends CActiveRecord
             ['tipe_diskon_id, nominal, dari', 'required', 'message' => '{attribute} harus diisi'],
             ['semua_barang, tipe_diskon_id, status', 'numerical', 'integerOnly' => true],
             ['persen, barang_bonus_diskon_persen', 'numerical'],
-            ['barang_id, barang_kategori_id, barang_struktur_id, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_qty, updated_by', 'length', 'max' => 10],
+            ['barang_id, member_online_flag, barang_kategori_id, barang_struktur_id, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_qty, updated_by', 'length', 'max' => 10],
             ['nominal, barang_bonus_diskon_nominal', 'length', 'max' => 18],
             ['sampai, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, semua_barang, barang_id, barang_kategori_id, barang_struktur_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_diskon_nominal, barang_bonus_diskon_persen, barang_bonus_qty, status, barcode, namaBarang', 'safe', 'on' => 'search'],
+            ['id, semua_barang, barang_id, member_online_flag, barang_kategori_id, barang_struktur_id, tipe_diskon_id, nominal, persen, dari, sampai, qty, qty_min, qty_max, barang_bonus_id, barang_bonus_diskon_nominal, barang_bonus_diskon_persen, barang_bonus_qty, status, barcode, namaBarang', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -107,6 +109,7 @@ class DiskonBarang extends CActiveRecord
             'semua_barang'                => 'Semua Barang',
             'barang_id'                   => 'Barang',
             'tipe_diskon_id'              => 'Tipe Diskon',
+            'member_online_flag'          => 'Member Online',
             'barang_kategori_id'          => 'Kategori Barang',
             'barang_struktur_id'          => 'Struktur Barang',
             'nominal'                     => 'Diskon (Nominal)',
@@ -149,6 +152,7 @@ class DiskonBarang extends CActiveRecord
         $criteria->compare('semua_barang', $this->semua_barang);
         $criteria->compare('barang_id', $this->barang_id, true);
         $criteria->compare('tipe_diskon_id', $this->tipe_diskon_id);
+        $criteria->compare('member_online_flag, ', $this->member_online_flag);
         $criteria->compare('barang_kategori_id', $this->barang_kategori_id, true);
         $criteria->compare('barang_struktur_id', $this->barang_struktur_id, true);
         $criteria->compare('nominal', $this->nominal, true);

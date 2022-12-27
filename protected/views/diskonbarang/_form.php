@@ -31,6 +31,12 @@
             <?php echo $form->error($model, 'tipe_diskon_id', ['class' => 'error']); ?>
         </div>
     </div>
+    <div class="row">
+        <div class="small-12 columns">
+            <?php echo $form->checkBox($model, 'member_online_flag'); ?>
+            <?php echo $form->labelEx($model, 'member_online_flag'); ?>
+        </div>
+    </div>
 
     <div class="row">
         <div class="small-12 columns">
