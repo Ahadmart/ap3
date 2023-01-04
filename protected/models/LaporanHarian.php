@@ -785,7 +785,7 @@ class LaporanHarian extends CActiveRecord
                 kas_bank ON kas_bank.id = t_penjualan.kas_bank_id
                     JOIN
                 profil ON profil.id = t_penjualan.profil_id
-            ORDER BY nama_akun , nomor            
+            ORDER BY nama_akun, nomor            
                 ";
 
         if ($this->groupByProfil['inv']) {
@@ -1019,6 +1019,112 @@ class LaporanHarian extends CActiveRecord
                 JOIN
             kas_bank ON kas_bank.id = tabel_detail.kb
         ORDER BY kas_bank.nama , tabel_detail.nomor
+            ";
+
+        $sqlPembayaranPenjualan = "
+        SELECT 
+            kas_bank_id,
+            profil_id,
+            penjualan_nomor nomor,
+            kas_bank.nama nama_akun,
+            profil.nama,
+            jumlah
+        FROM
+            (SELECT DISTINCT
+                penjualan_id,
+                    penjualan_nomor,
+                    profil_id,
+                    IFNULL(kas_bank_id, 1) kas_bank_id,
+                    CASE
+                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_penerimaan)
+                        ELSE SUM(jumlah_pembayaran)
+                    END jumlah
+            FROM
+                (SELECT 
+                penerimaan_detail.penerimaan_id penerimaan_id1,
+                    penerimaan_detail.jumlah jumlah_penerimaan,
+                    penjualan.id penjualan_id,
+                    penjualan.nomor penjualan_nomor,
+                    penjualan.profil_id
+            FROM
+                penjualan
+            JOIN hutang_piutang ON hutang_piutang.id = penjualan.hutang_piutang_id
+            JOIN penerimaan_detail ON penerimaan_detail.hutang_piutang_id = hutang_piutang.id
+            WHERE
+                penerimaan_id IN ({$listPenerimaan})) AS t_penerimaan_j
+            LEFT JOIN (SELECT 
+                penerimaan_id penerimaan_id2,
+                    kas_bank_id,
+                    jumlah jumlah_pembayaran
+            FROM
+                penerimaan_kas_bank
+            WHERE
+                penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})) t_penerimaan_kb ON t_penerimaan_kb.penerimaan_id2 = t_penerimaan_j.penerimaan_id1
+            LEFT JOIN (SELECT 
+                penerimaan_kas_bank.penerimaan_id penerimaan_id3,
+                    COUNT(*) count
+            FROM
+                penerimaan_kas_bank
+            WHERE
+                penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})
+            GROUP BY penerimaan_id) t_count ON t_count.penerimaan_id3 = t_penerimaan_j.penerimaan_id1
+            GROUP BY t_penerimaan_j.penjualan_nomor , t_penerimaan_kb.kas_bank_id) t_penjualan
+                JOIN
+            kas_bank ON kas_bank.id = t_penjualan.kas_bank_id
+                JOIN
+            profil ON profil.id = t_penjualan.profil_id 
+        UNION SELECT 
+            kas_bank_id,
+            profil_id,
+            penjualan_nomor nomor,
+            kas_bank.nama nama_akun,
+            profil.nama,
+            jumlah
+        FROM
+            (SELECT DISTINCT
+                penjualan_id,
+                    penjualan_nomor,
+                    profil_id,
+                    IFNULL(kas_bank_id, 1) kas_bank_id,
+                    CASE
+                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_pengeluaran)
+                        ELSE SUM(jumlah_pembayaran)
+                    END jumlah
+            FROM
+                (SELECT 
+                pengeluaran_detail.pengeluaran_id pengeluaran_id1,
+                    pengeluaran_detail.jumlah jumlah_pengeluaran,
+                    penjualan.id penjualan_id,
+                    penjualan.nomor penjualan_nomor,
+                    penjualan.profil_id
+            FROM
+                penjualan
+            JOIN hutang_piutang ON hutang_piutang.id = penjualan.hutang_piutang_id
+            JOIN pengeluaran_detail ON pengeluaran_detail.hutang_piutang_id = hutang_piutang.id
+            WHERE
+                pengeluaran_id IN ({$listPengeluaran})) AS t_pengeluaran_j
+            LEFT JOIN (SELECT 
+                pengeluaran_id pengeluaran_id2,
+                    kas_bank_id,
+                    jumlah jumlah_pembayaran
+            FROM
+                pengeluaran_kas_bank
+            WHERE
+                pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})) t_pengeluaran_kb ON t_pengeluaran_kb.pengeluaran_id2 = t_pengeluaran_j.pengeluaran_id1
+            LEFT JOIN (SELECT 
+                pengeluaran_kas_bank.pengeluaran_id pengeluaran_id3,
+                    COUNT(*) count
+            FROM
+                pengeluaran_kas_bank
+            WHERE
+                pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})
+            GROUP BY pengeluaran_id) t_count ON t_count.pengeluaran_id3 = t_pengeluaran_j.pengeluaran_id1
+            GROUP BY t_pengeluaran_j.penjualan_nomor , t_pengeluaran_kb.kas_bank_id) t_penjualan
+                JOIN
+            kas_bank ON kas_bank.id = t_penjualan.kas_bank_id
+                JOIN
+            profil ON profil.id = t_penjualan.profil_id
+        ORDER BY nama_akun, nomor            
             ";
 
         $sql = "
