@@ -17,7 +17,6 @@
  */
 class LaporanHarian extends CActiveRecord
 {
-
     public $tanggalAwal;
     public $tanggalAkhir;
     public $groupByProfil = ['inv' => false, 'keu' => false];
@@ -122,36 +121,37 @@ class LaporanHarian extends CActiveRecord
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
 
     public function beforeValidate()
     {
-        $this->tanggal = !empty($this->tanggal) ? date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d') : NULL;
+        $this->tanggal = !empty($this->tanggal) ? date_format(date_create_from_format('d-m-Y', $this->tanggal), 'Y-m-d') : null;
         return parent::beforeValidate();
     }
 
     public function afterFind()
     {
-        $this->tanggal     = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d', $this->tanggal),
-                        'd-m-Y') : '0';
+        $this->tanggal     = !is_null($this->tanggal) ? date_format(
+            date_create_from_format('Y-m-d', $this->tanggal),
+            'd-m-Y'
+        ) : '0';
         $this->saldo_akhir = number_format($this->saldo_akhir, 0, false, false);
         return parent::afterFind();
     }
 
     public function saldoAwal()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select harian.saldo_akhir
          from laporan_harian harian
          where tanggal=(select tanggal from laporan_harian where tanggal < :tanggal and saldo_akhir is not null order by tanggal desc limit 1)
-              ");
+              ');
         $command->bindValue(':tanggal', $this->tanggal);
         $harian  = $command->queryRow();
         return $harian ? $harian['saldo_akhir'] : Config::model()->find("nama='keuangan.saldo_awal'")->nilai;
@@ -171,16 +171,16 @@ class LaporanHarian extends CActiveRecord
             $totalPenerimaan += $kategoriPenerimaan['total'];
         }
         return $this->saldoAwal() //
-                - $this->totalPembelianBayar() //
-                - $this->totalPembelianTunai() //
-                - $this->totalReturJualBayar() //
-                - $this->totalReturJualTunai() //
-                + $this->totalPenjualanBayar() //
-                + $this->totalPenjualanTunai() //
-                + $this->totalReturBeliBayar() //
-                + $this->totalReturBeliTunai() //
-                - $totalPengeluaran //
-                + $totalPenerimaan;
+            - $this->totalPembelianBayar() //
+            - $this->totalPembelianTunai() //
+            - $this->totalReturJualBayar() //
+            - $this->totalReturJualTunai() //
+            + $this->totalPenjualanBayar() //
+            + $this->totalPenjualanTunai() //
+            + $this->totalReturBeliBayar() //
+            + $this->totalReturBeliTunai() //
+            - $totalPengeluaran //
+            + $totalPenerimaan;
         /*
           return $this->saldoAwal() //
           .'-'. $this->totalPembelianBayar() //
@@ -202,7 +202,7 @@ class LaporanHarian extends CActiveRecord
      */
     public function pembelianTunai()
     {
-        $sql = "
+        $sql = '
          select pembelian.nomor, sum(jumlah) jumlah, profil.nama
          FROM
          (
@@ -221,7 +221,7 @@ class LaporanHarian extends CActiveRecord
          join pembelian on t.id = pembelian.id
          join profil on pembelian.profil_id = profil.id
          group by t.id
-         order by pembelian.nomor";
+         order by pembelian.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -233,7 +233,6 @@ class LaporanHarian extends CActiveRecord
         }
 
         $command = Yii::app()->db->createCommand($sql);
-
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -248,7 +247,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalPembelianTunai()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
         select sum(jumlah) total
          FROM
          (
@@ -263,7 +262,7 @@ class LaporanHarian extends CActiveRecord
             join pengeluaran p on d.pengeluaran_id = p.id and p.status=:statusPengeluaran and p.tanggal=:tanggal
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
             join pembelian on hp.id = pembelian.hutang_piutang_id and pembelian.tanggal >= :tanggalAwal and pembelian.tanggal < :tanggalAkhir
-         ) t");
+         ) t');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -284,7 +283,7 @@ class LaporanHarian extends CActiveRecord
      */
     public function pembelianHutang()
     {
-        $sql = "
+        $sql = '
          select pembelian.nomor, profil.nama, t3.jumlah-t3.jml_bayar jumlah
          from
          (
@@ -307,7 +306,7 @@ class LaporanHarian extends CActiveRecord
          ) t3
          join pembelian on t3.id=pembelian.id
          join profil on pembelian.profil_id=profil.id
-         order by pembelian.nomor";
+         order by pembelian.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -319,7 +318,6 @@ class LaporanHarian extends CActiveRecord
         }
 
         $command = Yii::app()->db->createCommand($sql);
-
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -334,7 +332,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalPembelianHutang()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(t3.jumlah-t3.jml_bayar) total
          from
          (
@@ -354,7 +352,7 @@ class LaporanHarian extends CActiveRecord
             where pb.tanggal >= :tanggalAwal and pb.tanggal < :tanggalAkhir
             group by pb.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
-         ) t3");
+         ) t3');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -375,7 +373,7 @@ class LaporanHarian extends CActiveRecord
      */
     public function pembelianBayar()
     {
-        $sql = "
+        $sql = '
          select pembelian.nomor, profil.nama, pembelian.tanggal, t2.total_bayar
          from
          (
@@ -400,7 +398,7 @@ class LaporanHarian extends CActiveRecord
          ) t2
          join pembelian on t2.id=pembelian.id
          join profil on pembelian.profil_id = profil.id
-         order by pembelian.nomor";
+         order by pembelian.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -426,7 +424,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalPembelianBayar()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(jumlah_bayar) total
          from
          (
@@ -443,7 +441,7 @@ class LaporanHarian extends CActiveRecord
             join hutang_piutang hp on pd.hutang_piutang_id=hp.id and hp.asal=1
             join pembelian on hp.id=pembelian.hutang_piutang_id and pembelian.tanggal < :tanggalAwal
             group by pembelian.id
-         ) t1");
+         ) t1');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -484,7 +482,7 @@ class LaporanHarian extends CActiveRecord
          join profil on penjualan.profil_id = profil.id
          group by t.id
          order by penjualan.nomor";
-         * 
+         *
         $sql = "
          SELECT penjualan.nomor, jumlah, profil.nama, kb.nama nama_akun
          FROM
@@ -506,7 +504,7 @@ class LaporanHarian extends CActiveRecord
          JOIN kas_bank kb ON kb.id = t.kas_bank_id
          ORDER BY kb.nama, penjualan.nomor";
          */
-        $listPenerimaan = "
+        $listPenerimaan = '
                     SELECT DISTINCT
                         p.id
                     FROM
@@ -518,8 +516,8 @@ class LaporanHarian extends CActiveRecord
                     JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
                         AND penjualan.tanggal >= :tanggalAwal
                         AND penjualan.tanggal < :tanggalAkhir            
-                ";
-        $listPengeluaran = "
+                ';
+        $listPengeluaran = '
                     SELECT DISTINCT
                         p.id
                     FROM
@@ -531,9 +529,10 @@ class LaporanHarian extends CActiveRecord
                     JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
                         AND penjualan.tanggal >= :tanggalAwal
                         AND penjualan.tanggal < :tanggalAkhir
-            ";
+            ';
+        /*
         $sql = "
-        SELECT 
+        SELECT
             tabel_detail.*,
             profil.nama nama,
             kas_bank.nama nama_akun,
@@ -543,7 +542,7 @@ class LaporanHarian extends CActiveRecord
                 ELSE uang_dibayar_perakun
             END jumlah
         FROM
-            (SELECT 
+            (SELECT
                 t.*,
                     CASE
                         WHEN
@@ -557,7 +556,7 @@ class LaporanHarian extends CActiveRecord
                     END uang_dibayar,
                     t_penjualan.nomor
             FROM
-                (SELECT 
+                (SELECT
                 tr.id,
                     tr.nomor nomor_bayar,
                     tr.profil_id,
@@ -571,7 +570,7 @@ class LaporanHarian extends CActiveRecord
                     END uang_dibayar_perakun,
                     tr.count
             FROM
-                (SELECT 
+                (SELECT
                 p.id,
                     p.nomor,
                     p.profil_id,
@@ -583,7 +582,7 @@ class LaporanHarian extends CActiveRecord
             FROM
                 penerimaan p
             LEFT JOIN penerimaan_kas_bank pkb ON p.id = pkb.penerimaan_id
-            LEFT JOIN (SELECT 
+            LEFT JOIN (SELECT
                 penerimaan_kas_bank.penerimaan_id, COUNT(*) count
             FROM
                 penerimaan_kas_bank
@@ -593,23 +592,23 @@ class LaporanHarian extends CActiveRecord
             WHERE
                 p.id IN ({$listPenerimaan})
             ORDER BY p.nomor) tr) t
-            JOIN (SELECT 
+            JOIN (SELECT
                 penerimaan_id, SUM(jumlah) jumlah
             FROM
                 penerimaan_detail
             WHERE
-                penerimaan_detail.item_id = :itemPenjualan 
+                penerimaan_detail.item_id = :itemPenjualan
                 AND penerimaan_id IN ({$listPenerimaan})
             GROUP BY penerimaan_id) tp ON tp.penerimaan_id = t.id
             JOIN penerimaan ON t.id = penerimaan.id
-            JOIN (SELECT 
+            JOIN (SELECT
                 penerimaan_detail.penerimaan_id, penjualan.nomor
             FROM
                 penjualan
             JOIN hutang_piutang ON hutang_piutang.id = penjualan.hutang_piutang_id
             JOIN penerimaan_detail ON penerimaan_detail.hutang_piutang_id = hutang_piutang.id
             WHERE
-                penerimaan_id IN ({$listPenerimaan})) t_penjualan ON t_penjualan.penerimaan_id = t.id UNION SELECT 
+                penerimaan_id IN ({$listPenerimaan})) t_penjualan ON t_penjualan.penerimaan_id = t.id UNION SELECT
                 t.*,
                     CASE
                         WHEN
@@ -623,7 +622,7 @@ class LaporanHarian extends CActiveRecord
                     END uang_dibayar,
                     t_penjualan.nomor
             FROM
-                (SELECT 
+                (SELECT
                 tr.id,
                     tr.nomor nomor_bayar,
                     tr.profil_id,
@@ -637,7 +636,7 @@ class LaporanHarian extends CActiveRecord
                     END uang_dibayar_perakun,
                     tr.count
             FROM
-                (SELECT 
+                (SELECT
                 p.id,
                     p.nomor,
                     p.profil_id,
@@ -649,7 +648,7 @@ class LaporanHarian extends CActiveRecord
             FROM
                 pengeluaran p
             LEFT JOIN pengeluaran_kas_bank pkb ON p.id = pkb.pengeluaran_id
-            LEFT JOIN (SELECT 
+            LEFT JOIN (SELECT
                 pengeluaran_kas_bank.pengeluaran_id, COUNT(*) count
             FROM
                 pengeluaran_kas_bank
@@ -659,16 +658,16 @@ class LaporanHarian extends CActiveRecord
             WHERE
                 p.id IN ({$listPengeluaran})
             ORDER BY p.nomor) tr) t
-            JOIN (SELECT 
+            JOIN (SELECT
                 pengeluaran_id, SUM(jumlah) jumlah
             FROM
                 pengeluaran_detail
             WHERE
-                pengeluaran_detail.item_id = :itemPenjualan 
+                pengeluaran_detail.item_id = :itemPenjualan
                 AND pengeluaran_id IN ({$listPengeluaran})
             GROUP BY pengeluaran_id) tp ON tp.pengeluaran_id = t.id
             JOIN pengeluaran ON t.id = pengeluaran.id
-            JOIN (SELECT 
+            JOIN (SELECT
                 pengeluaran_detail.pengeluaran_id, penjualan.nomor
             FROM
                 penjualan
@@ -682,6 +681,112 @@ class LaporanHarian extends CActiveRecord
             kas_bank ON kas_bank.id = tabel_detail.kb
         ORDER BY kas_bank.nama , tabel_detail.nomor
             ";
+*/
+        $sql = "
+            SELECT 
+                kas_bank_id,
+                profil_id,
+                penjualan_nomor nomor,
+                kas_bank.nama nama_akun,
+                profil.nama,
+                jumlah
+            FROM
+                (SELECT DISTINCT
+                    penjualan_id,
+                        penjualan_nomor,
+                        profil_id,
+                        IFNULL(kas_bank_id, 1) kas_bank_id,
+                        CASE
+                            WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_penerimaan)
+                            ELSE SUM(jumlah_pembayaran)
+                        END jumlah
+                FROM
+                    (SELECT 
+                    penerimaan_detail.penerimaan_id penerimaan_id1,
+                        penerimaan_detail.jumlah jumlah_penerimaan,
+                        penjualan.id penjualan_id,
+                        penjualan.nomor penjualan_nomor,
+                        penjualan.profil_id
+                FROM
+                    penjualan
+                JOIN hutang_piutang ON hutang_piutang.id = penjualan.hutang_piutang_id
+                JOIN penerimaan_detail ON penerimaan_detail.hutang_piutang_id = hutang_piutang.id
+                WHERE
+                    penerimaan_id IN ({$listPenerimaan})) AS t_penerimaan_j
+                LEFT JOIN (SELECT 
+                    penerimaan_id penerimaan_id2,
+                        kas_bank_id,
+                        jumlah jumlah_pembayaran
+                FROM
+                    penerimaan_kas_bank
+                WHERE
+                    penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})) t_penerimaan_kb ON t_penerimaan_kb.penerimaan_id2 = t_penerimaan_j.penerimaan_id1
+                LEFT JOIN (SELECT 
+                    penerimaan_kas_bank.penerimaan_id penerimaan_id3,
+                        COUNT(*) count
+                FROM
+                    penerimaan_kas_bank
+                WHERE
+                    penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})
+                GROUP BY penerimaan_id) t_count ON t_count.penerimaan_id3 = t_penerimaan_j.penerimaan_id1
+                GROUP BY t_penerimaan_j.penjualan_nomor , t_penerimaan_kb.kas_bank_id) t_penjualan
+                    JOIN
+                kas_bank ON kas_bank.id = t_penjualan.kas_bank_id
+                    JOIN
+                profil ON profil.id = t_penjualan.profil_id 
+            UNION SELECT 
+                kas_bank_id,
+                profil_id,
+                penjualan_nomor nomor,
+                kas_bank.nama nama_akun,
+                profil.nama,
+                jumlah
+            FROM
+                (SELECT DISTINCT
+                    penjualan_id,
+                        penjualan_nomor,
+                        profil_id,
+                        IFNULL(kas_bank_id, 1) kas_bank_id,
+                        CASE
+                            WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_pengeluaran)
+                            ELSE SUM(jumlah_pembayaran)
+                        END jumlah
+                FROM
+                    (SELECT 
+                    pengeluaran_detail.pengeluaran_id pengeluaran_id1,
+                        pengeluaran_detail.jumlah jumlah_pengeluaran,
+                        penjualan.id penjualan_id,
+                        penjualan.nomor penjualan_nomor,
+                        penjualan.profil_id
+                FROM
+                    penjualan
+                JOIN hutang_piutang ON hutang_piutang.id = penjualan.hutang_piutang_id
+                JOIN pengeluaran_detail ON pengeluaran_detail.hutang_piutang_id = hutang_piutang.id
+                WHERE
+                    pengeluaran_id IN ({$listPengeluaran})) AS t_pengeluaran_j
+                LEFT JOIN (SELECT 
+                    pengeluaran_id pengeluaran_id2,
+                        kas_bank_id,
+                        jumlah jumlah_pembayaran
+                FROM
+                    pengeluaran_kas_bank
+                WHERE
+                    pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})) t_pengeluaran_kb ON t_pengeluaran_kb.pengeluaran_id2 = t_pengeluaran_j.pengeluaran_id1
+                LEFT JOIN (SELECT 
+                    pengeluaran_kas_bank.pengeluaran_id pengeluaran_id3,
+                        COUNT(*) count
+                FROM
+                    pengeluaran_kas_bank
+                WHERE
+                    pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})
+                GROUP BY pengeluaran_id) t_count ON t_count.pengeluaran_id3 = t_pengeluaran_j.pengeluaran_id1
+                GROUP BY t_pengeluaran_j.penjualan_nomor , t_pengeluaran_kb.kas_bank_id) t_penjualan
+                    JOIN
+                kas_bank ON kas_bank.id = t_penjualan.kas_bank_id
+                    JOIN
+                profil ON profil.id = t_penjualan.profil_id
+            ORDER BY nama_akun , nomor            
+                ";
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -706,7 +811,7 @@ class LaporanHarian extends CActiveRecord
 
         return $command->queryAll();
     }
-    
+
     /**
      * Sub Total per Akun dari Penjualan tunai yang terjadi pada tanggal tsb
      * @return array nama akun, jumlah dari penjualan tunai
@@ -735,10 +840,10 @@ class LaporanHarian extends CActiveRecord
          JOIN kas_bank kb ON kb.id = t.kas_bank_id
          GROUP BY kb.nama
          ORDER BY kb.nama";
-         * 
+         *
          */
-        
-        $listPenerimaan = "
+
+        $listPenerimaan = '
                     SELECT DISTINCT
                         p.id
                     FROM
@@ -750,8 +855,8 @@ class LaporanHarian extends CActiveRecord
                     JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
                         AND penjualan.tanggal >= :tanggalAwal
                         AND penjualan.tanggal < :tanggalAkhir            
-                ";
-        $listPengeluaran = "
+                ';
+        $listPengeluaran = '
                     SELECT DISTINCT
                         p.id
                     FROM
@@ -763,8 +868,8 @@ class LaporanHarian extends CActiveRecord
                     JOIN penjualan ON hp.id = penjualan.hutang_piutang_id
                         AND penjualan.tanggal >= :tanggalAwal
                         AND penjualan.tanggal < :tanggalAkhir
-            ";
-        
+            ';
+
         $sqlPembayaranPenjualan = "
         SELECT 
             tabel_detail.*,
@@ -923,7 +1028,7 @@ class LaporanHarian extends CActiveRecord
             ({$sqlPembayaranPenjualan}) t_detail_bayar
         GROUP BY nama_akun
             ";
-        
+
         $command = Yii::app()->db->createCommand($sql);
 
         $command->bindValues([
@@ -936,7 +1041,7 @@ class LaporanHarian extends CActiveRecord
             ':itemPenjualan'     => ItemKeuangan::ITEM_PENJUALAN
         ]);
 
-        return $command->queryAll();        
+        return $command->queryAll();
     }
 
     /**
@@ -945,7 +1050,7 @@ class LaporanHarian extends CActiveRecord
      */
     public function totalPenjualanTunai()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(jumlah) total
          FROM
          (
@@ -961,7 +1066,7 @@ class LaporanHarian extends CActiveRecord
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
             join penjualan on hp.id = penjualan.hutang_piutang_id and penjualan.tanggal >= :tanggalAwal and penjualan.tanggal < :tanggalAkhir
          ) t
-         ");
+         ');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -982,7 +1087,7 @@ class LaporanHarian extends CActiveRecord
      */
     public function penjualanPiutang()
     {
-        $sql = "
+        $sql = '
          select penjualan.nomor, profil.nama, t3.jumlah, t3.jml_bayar
          from
          (
@@ -1005,7 +1110,7 @@ class LaporanHarian extends CActiveRecord
          ) t3
          join penjualan on t3.id=penjualan.id
          join profil on penjualan.profil_id=profil.id
-         order by penjualan.nomor";
+         order by penjualan.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -1030,7 +1135,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalPenjualanPiutang()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(t3.jumlah-t3.jml_bayar) total
          from
          (
@@ -1050,7 +1155,7 @@ class LaporanHarian extends CActiveRecord
             where pj.tanggal >= :tanggalAwal and pj.tanggal < :tanggalAkhir
             group by pj.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
-         ) t3");
+         ) t3');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -1070,7 +1175,7 @@ class LaporanHarian extends CActiveRecord
      */
     public function penjualanBayar()
     {
-        $sql = "
+        $sql = '
          select profil.nama, penjualan.nomor, t1.*
          from
          (
@@ -1095,7 +1200,7 @@ class LaporanHarian extends CActiveRecord
              group by penjualan.id
         ) t1
         join penjualan on t1.id = penjualan.id
-        join profil on penjualan.profil_id = profil.id";
+        join profil on penjualan.profil_id = profil.id';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -1120,7 +1225,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalPenjualanBayar()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(jumlah_bayar) total
          from
          (
@@ -1139,7 +1244,7 @@ class LaporanHarian extends CActiveRecord
             group by penjualan.id
          ) t
          join penjualan on t.id=penjualan.id
-         join profil on penjualan.profil_id=profil.id");
+         join profil on penjualan.profil_id=profil.id');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -1154,7 +1259,7 @@ class LaporanHarian extends CActiveRecord
 
     public function marginPenjualanTunai()
     {
-        $sql = "
+        $sql = '
          select penjualan.nomor, profil.nama, jumlah_bayar, harga_beli, harga_jual, ((harga_jual - harga_beli)/harga_jual) * jumlah_bayar margin
          from
          (
@@ -1201,7 +1306,7 @@ class LaporanHarian extends CActiveRecord
             ) t2 group by id
          ) t_harga on t_bayar.id=t_harga.id
          join penjualan on t_bayar.id=penjualan.id
-         join profil on penjualan.profil_id=profil.id";
+         join profil on penjualan.profil_id=profil.id';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -1227,7 +1332,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalMarginPenjualanTunai()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(((harga_jual - harga_beli)/harga_jual) * jumlah_bayar) total
          from
          (
@@ -1272,7 +1377,7 @@ class LaporanHarian extends CActiveRecord
                join harga_pokok_penjualan hpp on jual_detail.id=hpp.penjualan_detail_id
                group by penjualan.id
             ) t2 group by id
-         ) t_harga on t_bayar.id=t_harga.id");
+         ) t_harga on t_bayar.id=t_harga.id');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -1290,7 +1395,7 @@ class LaporanHarian extends CActiveRecord
     {
         $commandRekap = Yii::app()->db->createCommand();
         $commandRekap->select('*, (t_penjualan.total - t_modal.totalModal) margin');
-        $commandRekap->from("(SELECT SUM(pd.harga_jual * pd.qty) total
+        $commandRekap->from('(SELECT SUM(pd.harga_jual * pd.qty) total
                         FROM
                             penjualan_detail pd
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
@@ -1302,12 +1407,12 @@ class LaporanHarian extends CActiveRecord
                         JOIN penjualan_detail pd ON hpp.penjualan_detail_id = pd.id
                         JOIN penjualan pj ON pd.penjualan_id = pj.id AND pj.status!=:statusDraft
                             AND pj.tanggal >= :tanggalAwal and pj.tanggal < :tanggalAkhir
-                        ) t_modal");
+                        ) t_modal');
 
-        $commandRekap->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
-        $commandRekap->bindValue(":tanggal", $this->tanggal);
-        $commandRekap->bindValue(":tanggalAwal", $this->tanggalAwal);
-        $commandRekap->bindValue(":tanggalAkhir", $this->tanggalAkhir);
+        $commandRekap->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $commandRekap->bindValue(':tanggal', $this->tanggal);
+        $commandRekap->bindValue(':tanggalAwal', $this->tanggalAwal);
+        $commandRekap->bindValue(':tanggalAkhir', $this->tanggalAkhir);
 
         $rekap = $commandRekap->queryRow();
         return $rekap['margin'];
@@ -1352,7 +1457,7 @@ class LaporanHarian extends CActiveRecord
                     group by nama, akun
                     order by nama, akun
             ";
-        } 
+        }
 
         $command = Yii::app()->db->createCommand($sql);
 
@@ -1376,7 +1481,6 @@ class LaporanHarian extends CActiveRecord
          ) t");
 
         foreach ($parents as $parent) {
-
             $command->bindValues([
                 ':tanggal'           => $this->tanggal,
                 ':itemTrx'           => ItemKeuangan::ITEM_TRX_SAJA,
@@ -1446,8 +1550,7 @@ class LaporanHarian extends CActiveRecord
                     group by nama, akun
                     order by nama, akun
             ";
-        } 
-         
+        }
 
         $command = Yii::app()->db->createCommand($sql);
 
@@ -1471,7 +1574,6 @@ class LaporanHarian extends CActiveRecord
          ) t");
 
         foreach ($parents as $parent) {
-
             $command->bindValues([
                 ':tanggal'           => $this->tanggal,
                 ':itemTrx'           => ItemKeuangan::ITEM_TRX_SAJA,
@@ -1503,7 +1605,7 @@ class LaporanHarian extends CActiveRecord
 
     public function returBeliTunai()
     {
-        $sql = "
+        $sql = '
          select retur_pembelian.nomor, sum(jumlah) jumlah, profil.nama
          FROM
          (
@@ -1522,7 +1624,7 @@ class LaporanHarian extends CActiveRecord
          join retur_pembelian on t.id = retur_pembelian.id
          join profil on retur_pembelian.profil_id = profil.id
          group by t.id
-         order by retur_pembelian.nomor";
+         order by retur_pembelian.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -1548,7 +1650,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalReturBeliTunai()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(jumlah) total
          FROM
          (
@@ -1564,7 +1666,7 @@ class LaporanHarian extends CActiveRecord
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
             join retur_pembelian on hp.id = retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal >= :tanggalAwal and retur_pembelian.tanggal < :tanggalAkhir
          ) t
-         ");
+         ');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -1581,7 +1683,7 @@ class LaporanHarian extends CActiveRecord
 
     public function returBeliPiutang()
     {
-        $sql = "
+        $sql = '
          select rb.nomor, profil.nama, t3.jumlah-t3.jml_bayar jumlah
          from
          (
@@ -1604,7 +1706,7 @@ class LaporanHarian extends CActiveRecord
          ) t3
          join retur_pembelian rb on t3.id=rb.id
          join profil on rb.profil_id=profil.id
-         order by rb.nomor";
+         order by rb.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -1630,7 +1732,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalReturBeliPiutang()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(t3.jumlah-t3.jml_bayar) total
          from
          (
@@ -1651,7 +1753,7 @@ class LaporanHarian extends CActiveRecord
             group by rp.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
          ) t3
-         ");
+         ');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -1668,7 +1770,7 @@ class LaporanHarian extends CActiveRecord
 
     public function returBeliBayar()
     {
-        $sql = "
+        $sql = '
          select retur_pembelian.nomor, profil.nama, t.jumlah_bayar
          from
          (
@@ -1688,7 +1790,7 @@ class LaporanHarian extends CActiveRecord
          ) t
          join retur_pembelian on t.id=retur_pembelian.id
          join profil on retur_pembelian.profil_id=profil.id
-         order by retur_pembelian.nomor";
+         order by retur_pembelian.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -1714,7 +1816,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalReturBeliBayar()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(t.jumlah_bayar) total
          from
          (
@@ -1732,7 +1834,7 @@ class LaporanHarian extends CActiveRecord
             join retur_pembelian on hp.id=retur_pembelian.hutang_piutang_id and retur_pembelian.tanggal < :tanggalAwal
             group by retur_pembelian.id
          ) t
-         ");
+         ');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -1748,7 +1850,7 @@ class LaporanHarian extends CActiveRecord
 
     public function returJualTunai()
     {
-        $sql = "
+        $sql = '
          select retur_penjualan.nomor, sum(jumlah) jumlah, profil.nama
          FROM
          (
@@ -1767,7 +1869,7 @@ class LaporanHarian extends CActiveRecord
          join retur_penjualan on t.id = retur_penjualan.id
          join profil on retur_penjualan.profil_id = profil.id
          group by t.id
-         order by retur_penjualan.nomor";
+         order by retur_penjualan.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -1793,7 +1895,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalReturJualTunai()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(jumlah) total
          FROM
          (
@@ -1809,7 +1911,7 @@ class LaporanHarian extends CActiveRecord
             join hutang_piutang hp on d.hutang_piutang_id = hp.id and hp.asal=:asalHutangPiutang
             join retur_penjualan on hp.id = retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal >= :tanggalAwal and retur_penjualan.tanggal < :tanggalAkhir
          ) t
-         ");
+         ');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -1826,7 +1928,7 @@ class LaporanHarian extends CActiveRecord
 
     public function returJualHutang()
     {
-        $sql = "
+        $sql = '
          select rb.nomor, profil.nama, t3.jumlah-t3.jml_bayar jumlah
          from
          (
@@ -1849,7 +1951,7 @@ class LaporanHarian extends CActiveRecord
          ) t3
          join retur_penjualan rb on t3.id=rb.id
          join profil on rb.profil_id=profil.id
-         order by rb.nomor";
+         order by rb.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -1875,7 +1977,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalReturJualHutang()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(t3.jumlah-t3.jml_bayar) total
          from
          (
@@ -1895,7 +1997,7 @@ class LaporanHarian extends CActiveRecord
             where rp.tanggal >= :tanggalAwal and rp.tanggal < :tanggalAkhir
             group by rp.id
             having sum(ifnull(t1.jumlah,0)) + sum(ifnull(t2.jumlah,0)) < hp.jumlah
-         ) t3");
+         ) t3');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -1911,7 +2013,7 @@ class LaporanHarian extends CActiveRecord
 
     public function returJualBayar()
     {
-        $sql = "
+        $sql = '
          select retur_penjualan.nomor, profil.nama, t.jumlah_bayar
          from
          (
@@ -1931,7 +2033,7 @@ class LaporanHarian extends CActiveRecord
          ) t
          join retur_penjualan on t.id=retur_penjualan.id
          join profil on retur_penjualan.profil_id=profil.id
-         order by retur_penjualan.nomor";
+         order by retur_penjualan.nomor';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -1957,7 +2059,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalReturJualBayar()
     {
-        $command = Yii::app()->db->createCommand("
+        $command = Yii::app()->db->createCommand('
          select sum(t.jumlah_bayar) total
          from
          (
@@ -1975,7 +2077,7 @@ class LaporanHarian extends CActiveRecord
             join retur_penjualan on hp.id=retur_penjualan.hutang_piutang_id and retur_penjualan.tanggal < :tanggalAwal
             group by retur_penjualan.id
          ) t
-         ");
+         ');
 
         $command->bindValues([
             ':tanggal'           => $this->tanggal,
@@ -1988,14 +2090,14 @@ class LaporanHarian extends CActiveRecord
         $bayarReturJual = $command->queryRow();
         return $bayarReturJual['total'];
     }
-    
+
     /**
      * Tarik tunai yang terjadi pada tanggal tsb
      * @return array nama akun, nomor penjualan, nama, jumlah dari tarik tunai
      */
     public function tarikTunai()
     {
-        $sql = "
+        $sql = '
         SELECT 
             kas_bank.nama nama_akun,
             penjualan.nomor,
@@ -2013,7 +2115,7 @@ class LaporanHarian extends CActiveRecord
             t.updated_at >= :tanggalAwal
                 AND t.updated_at < :tanggalAkhir
         ORDER BY kas_bank.nama , penjualan.nomor            
-            ";
+            ';
 
         if ($this->groupByProfil['inv']) {
             $sql = "
@@ -2030,14 +2132,13 @@ class LaporanHarian extends CActiveRecord
             ':tanggalAwal'  => $this->tanggalAwal,
             ':tanggalAkhir' => $this->tanggalAkhir
         ]);
-        
+
         return $command->queryAll();
     }
-    
+
     public function totalTarikTunaiPerAkun()
     {
-
-        $sql = "
+        $sql = '
         SELECT 
             kas_bank.nama nama_akun,
             penjualan.nomor,
@@ -2055,7 +2156,7 @@ class LaporanHarian extends CActiveRecord
             t.updated_at >= :tanggalAwal
                 AND t.updated_at < :tanggalAkhir
         ORDER BY kas_bank.nama , penjualan.nomor            
-            ";
+            ';
 
         $sql = "
         SELECT 
@@ -2078,7 +2179,7 @@ class LaporanHarian extends CActiveRecord
 
     public function totalTarikTunai()
     {
-        $sql = "
+        $sql = '
         SELECT 
             sum(t.jumlah) total
         FROM
@@ -2086,7 +2187,7 @@ class LaporanHarian extends CActiveRecord
         WHERE
             t.updated_at >= :tanggalAwal
                 AND t.updated_at < :tanggalAkhir           
-            ";
+            ';
 
         $command = Yii::app()->db->createCommand($sql);
 
@@ -2094,9 +2195,7 @@ class LaporanHarian extends CActiveRecord
             ':tanggalAwal'  => $this->tanggalAwal,
             ':tanggalAkhir' => $this->tanggalAkhir
         ]);
-        
-        return $command->queryRow()['total'];
-        
-    }
 
+        return $command->queryRow()['total'];
+    }
 }
