@@ -697,7 +697,7 @@ class LaporanHarian extends CActiveRecord
                         profil_id,
                         IFNULL(kas_bank_id, 1) kas_bank_id,
                         CASE
-                            WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_penerimaan)
+                            WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_penerimaan - IFNULL(t_selain_kas.jumlah, 0))
                             ELSE SUM(jumlah_pembayaran)
                         END jumlah
                 FROM
@@ -729,6 +729,14 @@ class LaporanHarian extends CActiveRecord
                 WHERE
                     penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})
                 GROUP BY penerimaan_id) t_count ON t_count.penerimaan_id3 = t_penerimaan_j.penerimaan_id1
+                LEFT JOIN (SELECT 
+                    penerimaan_id penerimaan_id4, SUM(jumlah) jumlah
+                FROM
+                    penerimaan_kas_bank
+                WHERE
+                    penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})
+                        AND kas_bank_id != 1
+                GROUP BY penerimaan_id) t_selain_kas ON t_selain_kas.penerimaan_id4 = t_penerimaan_j.penerimaan_id1
                 GROUP BY t_penerimaan_j.penjualan_nomor , t_penerimaan_kb.kas_bank_id) t_penjualan
                     JOIN
                 kas_bank ON kas_bank.id = t_penjualan.kas_bank_id
@@ -748,7 +756,7 @@ class LaporanHarian extends CActiveRecord
                         profil_id,
                         IFNULL(kas_bank_id, 1) kas_bank_id,
                         CASE
-                            WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_pengeluaran)
+                            WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_pengeluaran - IFNULL(t_selain_kas.jumlah, 0))
                             ELSE SUM(jumlah_pembayaran)
                         END jumlah
                 FROM
@@ -780,6 +788,14 @@ class LaporanHarian extends CActiveRecord
                 WHERE
                     pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})
                 GROUP BY pengeluaran_id) t_count ON t_count.pengeluaran_id3 = t_pengeluaran_j.pengeluaran_id1
+                LEFT JOIN (SELECT 
+                    pengeluaran_id pengeluaran_id4, SUM(jumlah) jumlah
+                FROM
+                    pengeluaran_kas_bank
+                WHERE
+                    pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})
+                        AND kas_bank_id != 1
+                GROUP BY pengeluaran_id) t_selain_kas ON t_selain_kas.pengeluaran_id4 = t_pengeluaran_j.pengeluaran_id1
                 GROUP BY t_pengeluaran_j.penjualan_nomor , t_pengeluaran_kb.kas_bank_id) t_penjualan
                     JOIN
                 kas_bank ON kas_bank.id = t_penjualan.kas_bank_id
@@ -1036,7 +1052,7 @@ class LaporanHarian extends CActiveRecord
                     profil_id,
                     IFNULL(kas_bank_id, 1) kas_bank_id,
                     CASE
-                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_penerimaan)
+                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_penerimaan - IFNULL(t_selain_kas.jumlah, 0))
                         ELSE SUM(jumlah_pembayaran)
                     END jumlah
             FROM
@@ -1068,6 +1084,14 @@ class LaporanHarian extends CActiveRecord
             WHERE
                 penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})
             GROUP BY penerimaan_id) t_count ON t_count.penerimaan_id3 = t_penerimaan_j.penerimaan_id1
+            LEFT JOIN (SELECT 
+                penerimaan_id penerimaan_id4, SUM(jumlah) jumlah
+            FROM
+                penerimaan_kas_bank
+            WHERE
+                penerimaan_kas_bank.penerimaan_id IN ({$listPenerimaan})
+                    AND kas_bank_id != 1
+            GROUP BY penerimaan_id) t_selain_kas ON t_selain_kas.penerimaan_id4 = t_penerimaan_j.penerimaan_id1
             GROUP BY t_penerimaan_j.penjualan_nomor , t_penerimaan_kb.kas_bank_id) t_penjualan
                 JOIN
             kas_bank ON kas_bank.id = t_penjualan.kas_bank_id
@@ -1087,7 +1111,7 @@ class LaporanHarian extends CActiveRecord
                     profil_id,
                     IFNULL(kas_bank_id, 1) kas_bank_id,
                     CASE
-                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_pengeluaran)
+                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_pengeluaran - IFNULL(t_selain_kas.jumlah, 0))
                         ELSE SUM(jumlah_pembayaran)
                     END jumlah
             FROM
@@ -1119,12 +1143,20 @@ class LaporanHarian extends CActiveRecord
             WHERE
                 pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})
             GROUP BY pengeluaran_id) t_count ON t_count.pengeluaran_id3 = t_pengeluaran_j.pengeluaran_id1
+            LEFT JOIN (SELECT 
+                pengeluaran_id pengeluaran_id4, SUM(jumlah) jumlah
+            FROM
+                pengeluaran_kas_bank
+            WHERE
+                pengeluaran_kas_bank.pengeluaran_id IN ({$listPengeluaran})
+                    AND kas_bank_id != 1
+            GROUP BY pengeluaran_id) t_selain_kas ON t_selain_kas.pengeluaran_id4 = t_pengeluaran_j.pengeluaran_id1
             GROUP BY t_pengeluaran_j.penjualan_nomor , t_pengeluaran_kb.kas_bank_id) t_penjualan
                 JOIN
             kas_bank ON kas_bank.id = t_penjualan.kas_bank_id
                 JOIN
             profil ON profil.id = t_penjualan.profil_id
-        ORDER BY nama_akun, nomor            
+        ORDER BY nama_akun, nomor       
             ";
 
         $sql = "
