@@ -131,7 +131,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             </div>
             <div class="small-4 large-5 columns">
                 <?php
-                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
+                echo CHtml::dropDownList('account-tariktunai', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
                     'accesskey' => 'a',
                     'class'     => 'account',
                 ]); ?>
