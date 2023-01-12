@@ -37,6 +37,28 @@
             <?php echo $form->labelEx($model, 'member_online_flag'); ?>
         </div>
     </div>
+    <div class="row" id="list-mol-level" style="display:visible">
+        <div class="small-12 columns">
+            <?php echo $form->labelEx($model, 'member_online_level'); ?>
+            <?php
+            /*
+            echo $form->dropDownList(
+                $model,
+                'member_online_level',
+                CHtml::listData(
+                    KategoriBarang::model()->orderByNama()->FindAll(['select' => 'id, nama']),
+                    'id',
+                    'nama'
+                ),
+                [
+                    'prompt'    => 'Pilih Satu..',
+                    'autofocus' => 'autofocus'
+                ]
+            );*/
+            ?>
+            <?php echo $form->error($model, 'member_online_level', ['class' => 'error']); ?>
+        </div>
+    </div>
 
     <div class="row">
         <div class="small-12 columns">
