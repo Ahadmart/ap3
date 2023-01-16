@@ -25,6 +25,7 @@ class CekhargaController extends Controller
                     'sukses'   => true,
                     'barcode'  => $barang->barcode,
                     'nama'     => $barang->nama,
+                    'stok'     => $barang->stok,
                     'harga'    => $barang->getHargaJual(),
                     'hj_multi' => HargaJualMulti::listAktif($barang->id),
                 ];

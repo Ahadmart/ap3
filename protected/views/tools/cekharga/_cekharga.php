@@ -109,6 +109,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         $("#view-barcode").html(data.barcode);
         $("#view-nama").html(data.nama);
         $("#view-harga").html(data.harga);
+        $("#view-harga").append('<span style="float: right"><small>' + data.stok + '</small></span>');
         var i = 0,
             len = data.hj_multi.length;
         while (i < len) {
