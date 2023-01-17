@@ -75,6 +75,13 @@ if (isset($report['rekap']) && $report['rekap']) {
             <?php
             endif;
             ?>
+            <?php
+            if (!empty($report['qty'])) :
+            ?>
+                <h6><?= $report['qty']['qty'] ?> Sales Qty</h6>
+            <?php
+            endif;
+            ?>
         </div>
     </div>
 <?php
