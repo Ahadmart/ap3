@@ -2,7 +2,6 @@
 
 class DiskonbarangController extends Controller
 {
-
     /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
@@ -45,10 +44,19 @@ class DiskonbarangController extends Controller
         $strukturDummy->unsetAttributes(); // clear any default values
         $strukturDummy->setAttribute('level', 0);
 
+        $clientAPI    = new AhadMembershipClient();
+        $listLevel = json_decode($clientAPI->infoListLevel(), true);
+        $listLevelMOL = [];
+        if ($listLevel['statusCode'] == 200) {
+            foreach ($listLevel['data'] as $level) {
+                $listLevelMOL[$level['level']] = $level['nama'];
+            }
+        }
         $this->render('tambah', [
-            'model' => $model,
-            'lv1' => $lv1,
+            'model'         => $model,
+            'lv1'           => $lv1,
             'strukturDummy' => $strukturDummy,
+            'listLevelMOL'  => $listLevelMOL,
         ]);
     }
 
@@ -68,8 +76,9 @@ class DiskonbarangController extends Controller
 
         if (isset($_POST['DiskonBarang'])) {
             $model->attributes = $_POST['DiskonBarang'];
-            if ($model->save())
+            if ($model->save()) {
                 $this->redirect(['view', 'id' => $id]);
+            }
         }
 
         $this->render('ubah', [
@@ -122,8 +131,9 @@ class DiskonbarangController extends Controller
     public function loadModel($id)
     {
         $model = DiskonBarang::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
         return $model;
     }
 
@@ -150,7 +160,6 @@ class DiskonbarangController extends Controller
         ]);
 
         if (is_null($barang)) {
-
             $this->renderJSON(array_merge($return, ['error' => [
                 'code' => '500',
                 'msg'  => 'Barang tidak ditemukan'
@@ -183,16 +192,16 @@ class DiskonbarangController extends Controller
         foreach ($arrTerm as $bTerm) {
             if (!$firstRow) {
                 $wBarcode .= ' AND ';
-                $wNama    .= ' AND ';
+                $wNama .= ' AND ';
             }
-            $wBarcode           .= "barcode like :term{$i}";
-            $wNama              .= "nama like :term{$i}";
+            $wBarcode .= "barcode like :term{$i}";
+            $wNama .= "nama like :term{$i}";
             $param[":term{$i}"] = "%{$bTerm}%";
-            $firstRow           = FALSE;
+            $firstRow           = false;
             $i++;
         }
         $wBarcode .= ')';
-        $wNama    .= ')';
+        $wNama .= ')';
         //      echo $wBarcode.' AND '.$wNama;
         //      print_r($param);
 
@@ -221,13 +230,13 @@ class DiskonbarangController extends Controller
             $return = '<a href="' .
                 $this->createUrl('view', ['id' => $data->id]) . '">' .
                 $data->barang->nama . '</a>';
-        } else if ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERKATEGORI) {
+        } elseif ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERKATEGORI) {
             $return = '<a href="' .
                 $this->createUrl('view', ['id' => $data->id]) . '">' .
                 $data->barangKategori->nama . '</a>';
-        } else if ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERSTRUKTUR) {
+        } elseif ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERSTRUKTUR) {
             $strukturBarang = StrukturBarang::model()->findByPk($data->barang_struktur_id);
-            $return = '<a href="' .
+            $return         = '<a href="' .
                 $this->createUrl('view', ['id' => $data->id]) . '">' .
                 $strukturBarang->getFullPath() . '</a>';
         } else {
@@ -246,7 +255,7 @@ class DiskonbarangController extends Controller
                 $hargaJual     = number_format($data->barangBonus->hargaJualRaw, 0, ',', '.');
                 $diskonNominal = number_format($data->barang_bonus_diskon_nominal, 0, ',', '.');
                 $net           = number_format($data->barangBonus->hargaJualRaw - $data->barang_bonus_diskon_nominal, 0, ',', '.');
-                $text          .= "<br />" . $hargaJual . ' - ' . $diskonNominal . ' = ' . $net;
+                $text .= '<br />' . $hargaJual . ' - ' . $diskonNominal . ' = ' . $net;
             }
         }
         return $text;

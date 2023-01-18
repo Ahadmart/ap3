@@ -263,4 +263,15 @@ class AhadMembershipClient
         $url = $this->baseUrl . '/report/mutasikoin';
         return $this->postRequest($url, $data);
     }
+
+    /**
+     * Info Daftar Level Member
+     *
+     * @return string json 
+     */
+    public function infoListLevel()
+    {
+        $url = $this->baseUrl . '/info/listlevel';
+        return $this->getRequest($url);
+    }
 }
