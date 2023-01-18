@@ -25,7 +25,7 @@
             <?php
             echo $form->dropDownList($model, 'tipe_diskon_id', $model->listTipe(), [
                 'prompt'    => 'Pilih Satu..',
-                'autofocus' => 'autofocus'
+                'autofocus' => 'autofocus',
             ]);
             ?>
             <?php echo $form->error($model, 'tipe_diskon_id', ['class' => 'error']); ?>
@@ -41,20 +41,16 @@
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'member_online_level'); ?>
             <?php
-            /*
+
             echo $form->dropDownList(
                 $model,
                 'member_online_level',
-                CHtml::listData(
-                    KategoriBarang::model()->orderByNama()->FindAll(['select' => 'id, nama']),
-                    'id',
-                    'nama'
-                ),
+                $listLevelMOL,
                 [
                     'prompt'    => 'Pilih Satu..',
-                    'autofocus' => 'autofocus'
+                    'autofocus' => 'autofocus',
                 ]
-            );*/
+            );
             ?>
             <?php echo $form->error($model, 'member_online_level', ['class' => 'error']); ?>
         </div>
@@ -114,7 +110,7 @@
                 ),
                 [
                     'prompt'    => 'Pilih Satu..',
-                    'autofocus' => 'autofocus'
+                    'autofocus' => 'autofocus',
                 ]
             );
             ?>
@@ -133,23 +129,23 @@
             <div class="medium-4 columns" id="grid1-container">
                 <?php
                 $this->renderPartial('_grid1', [
-                    'lv1' => $lv1
+                    'lv1' => $lv1,
                 ]);
                 ?>
             </div>
             <div class="medium-4 columns" id="grid2-container">
                 <?php
                 $this->renderPartial('_grid2', [
-                    'lv2' => $strukturDummy
+                    'lv2' => $strukturDummy,
                 ]);
                 ?>
             </div>
             <div class="medium-4 columns" id="grid3-container"">
                 <?php
                 $this->renderPartial('_grid3', [
-                    'lv3' => $strukturDummy
+                    'lv3' => $strukturDummy,
                 ]);
-                ?>  
+                ?>
             </div>
             <!-- <input type=" hidden" id="input-struktur" /> -->
         </div>
@@ -159,19 +155,19 @@
                 if (!Array.isArray(lv1Id) || !lv1Id.length) {
                     console.log("1 tidak dipilih");
                     <?php /* render nothing */ ?>
-                    $("#grid2-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid2-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 2,
                         parent: 0
                     });
                     // $('#input-struktur').val("");
                 } else {
                     console.log(lv1Id[0] + ":1 dipilih");
-                    $("#grid2-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid2-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 2,
                         parent: lv1Id[0]
                     });
                 }
-                $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                $("#grid3-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                     level: 3,
                     parent: 0
                 });
@@ -182,14 +178,14 @@
                 if (!Array.isArray(lv2Id) || !lv2Id.length) {
                     console.log("2 tidak dipilih");
                     <?php /* render nothing */ ?>
-                    $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid3-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 3,
                         parent: 0
                     });
                     // $('#input-struktur').val("");
                 } else {
                     console.log(lv2Id[0] + ":2 dipilih");
-                    $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid3-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 3,
                         parent: lv2Id[0]
                     });

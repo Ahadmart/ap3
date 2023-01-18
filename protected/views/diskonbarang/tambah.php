@@ -3,37 +3,38 @@
 /* @var $this DiskonbarangController */
 /* @var $model DiskonBarang */
 
-$this->breadcrumbs = array(
-    'Diskon Barang' => array('index'),
+$this->breadcrumbs = [
+    'Diskon Barang' => ['index'],
     'Tambah',
-);
+];
 
-$this->boxHeader['small'] = 'Tambah';
+$this->boxHeader['small']  = 'Tambah';
 $this->boxHeader['normal'] = 'Tambah Diskon Barang';
 
-$this->renderPartial('_form', array(
-    'model' => $model,
-    'lv1' => $lv1,
+$this->renderPartial('_form', [
+    'model'         => $model,
+    'lv1'           => $lv1,
     'strukturDummy' => $strukturDummy,
-));
+    'listLevelMOL'  => $listLevelMOL,
+]);
 
-$this->menu = array(
-    array('itemOptions' => array('class' => 'divider'), 'label' => false),
-    array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                    'accesskey' => 'i'
-                ))
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    ),
-    array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                )),
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    )
-);
+$this->menu = [
+    ['itemOptions' => ['class' => 'divider'], 'label' => false],
+    ['itemOptions'       => ['class' => 'has-form hide-for-small-only'], 'label' => false,
+        'items'          => [
+            ['label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => [
+                'class'     => 'success button',
+                'accesskey' => 'i'
+            ]]
+        ],
+        'submenuOptions' => ['class' => 'button-group']
+    ],
+    ['itemOptions'       => ['class' => 'has-form show-for-small-only'], 'label' => false,
+        'items'          => [
+            ['label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => [
+                'class' => 'success button',
+            ]],
+        ],
+        'submenuOptions' => ['class' => 'button-group']
+    ]
+];

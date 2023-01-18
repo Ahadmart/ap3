@@ -9,7 +9,7 @@
  * @property string $barang_id
  * @property integer $tipe_diskon_id
  * @property integer $member_online_flag
- * @property string $member_online_level
+ * @property string $member_online_level
  * @property string $barang_kategori_id
  * @property string $barang_struktur_id
  * @property string $nominal
@@ -154,7 +154,7 @@ class DiskonBarang extends CActiveRecord
         $criteria->compare('barang_id', $this->barang_id, true);
         $criteria->compare('tipe_diskon_id', $this->tipe_diskon_id);
         $criteria->compare('member_online_flag, ', $this->member_online_flag);
-        $criteria->compare('member_online_level',$this->member_online_level,true);
+        $criteria->compare('member_online_level', $this->member_online_level, true);
         $criteria->compare('barang_kategori_id', $this->barang_kategori_id, true);
         $criteria->compare('barang_struktur_id', $this->barang_struktur_id, true);
         $criteria->compare('nominal', $this->nominal, true);
@@ -274,6 +274,7 @@ class DiskonBarang extends CActiveRecord
     {
         $this->barang_id                   = $this->semua_barang ? null : $this->barang_id;
         $this->barang_id                   = $this->tipe_diskon_id == self::TIPE_PROMO_PERKATEGORI || $this->tipe_diskon_id == self::TIPE_PROMO_PERSTRUKTUR ? null : $this->barang_id;
+        $this->member_online_level         = empty($this->member_online_level) ? null : $this->member_online_level;
         $this->barang_kategori_id          = empty($this->barang_kategori_id) ? null : $this->barang_kategori_id;
         $this->barang_struktur_id          = empty($this->barang_struktur_id) ? null : $this->barang_struktur_id;
         $this->dari                        = !empty($this->dari) ? date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i:s') : null;

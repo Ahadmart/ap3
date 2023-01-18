@@ -35,6 +35,13 @@ $this->boxHeader['normal'] = $headerBoxSmall;
                     'label' => 'Barcode',
                 ],
                 [
+                    'name' => 'member_online_flag',
+                    'value' => $model->member_online_flag ? 'Yes': 'No',
+                ],
+                [
+                    'name' => 'member_online_level',
+                ],
+                [
                     'name'  => 'barangKategori.nama',
                     'label' => 'Kategori Barang',
                 ],
