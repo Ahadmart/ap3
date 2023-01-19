@@ -31,26 +31,27 @@
             <?php echo $form->error($model, 'tipe_diskon_id', ['class' => 'error']); ?>
         </div>
     </div>
-    <div class="row">
+    <div class="row" id="cb-mol-flag" style="display: none">
         <div class="small-12 columns">
             <?php echo $form->checkBox($model, 'member_online_flag'); ?>
             <?php echo $form->labelEx($model, 'member_online_flag'); ?>
         </div>
     </div>
-    <div class="row" id="list-mol-level" style="display:visible">
+    <div class="row" id="list-mol-level" style="display: none">
         <div class="small-12 columns">
             <?php echo $form->labelEx($model, 'member_online_level'); ?>
             <?php
 
-            echo $form->dropDownList(
-                $model,
-                'member_online_level',
-                $listLevelMOL,
-                [
-                    'prompt'    => 'Pilih Satu..',
-                    'autofocus' => 'autofocus',
-                ]
-            );
+            // echo $form->dropDownList(
+            //     $model,
+            //     'member_online_level',
+            //     $listLevelMOL,
+            //     [
+            //         'prompt'    => 'Pilih Satu..',
+            //         'autofocus' => 'autofocus',
+            //     ]
+            // );
+            echo CHtml::checkBoxList('level[]','',$listLevelMOL);
             ?>
             <?php echo $form->error($model, 'member_online_level', ['class' => 'error']); ?>
         </div>
@@ -375,6 +376,18 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         }
     }
 
+    $("#DiskonBarang_member_online_flag").change(function() {
+        enDisMolFlag(this.checked);
+    });
+
+    function enDisMolFlag(enable) {
+        if (enable) {
+            $("#list-mol-level").show(500);
+        } else {
+            $("#list-mol-level").hide(500);
+        }
+    }
+
     function shField(tipeId) {
         switch (tipeId) {
             case '<?php echo DiskonBarang::TIPE_PROMO; ?>':
@@ -405,6 +418,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function promoFields() {
+        $("#cb-mol-flag").show(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty").hide(500);
@@ -417,6 +431,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function promoPerKategoriFields() {
+        $("#cb-mol-flag").show(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -429,6 +444,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function promoPerStrukturFields() {
+        $("#cb-mol-flag").show(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -441,6 +457,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function promoMemberFields() {
+        $("#cb-mol-flag").hide(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty").hide(500);
@@ -454,6 +471,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function grosirFields() {
+        $("#cb-mol-flag").hide(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty").hide(500);
@@ -466,6 +484,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function bandedFields() {
+        $("#cb-mol-flag").hide(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty-min").hide(500);
@@ -478,6 +497,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function qtyGetBarangFields() {
+        $("#cb-mol-flag").hide(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty-min").hide(500);
@@ -491,6 +511,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function nominalGetBarangFields() {
+        $("#cb-mol-flag").hide(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty-min").hide(500);
