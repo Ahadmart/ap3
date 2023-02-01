@@ -31,14 +31,12 @@
             <?php echo $form->error($model, 'tipe_diskon_id', ['class' => 'error']); ?>
         </div>
     </div>
-    <div class="row" id="cb-mol-flag" style="display: none">
-        <div class="small-12 columns">
+    <div class="row">
+        <div id="cb-mol-flag" style="display: none" class="small-6 columns">
             <?php echo $form->checkBox($model, 'member_online_flag'); ?>
             <?php echo $form->labelEx($model, 'member_online_flag'); ?>
         </div>
-    </div>
-    <div class="row" id="list-mol-level" style="display: none">
-        <div class="small-12 columns">
+        <div id="list-mol-level" style="display: none" class="small-6 columns">
             <?php echo $form->labelEx($model, 'member_online_level'); ?>
             <?php
 
@@ -51,7 +49,7 @@
             //         'autofocus' => 'autofocus',
             //     ]
             // );
-            echo CHtml::checkBoxList('level[]','',$listLevelMOL);
+            echo CHtml::checkBoxList('level[]', '', $listLevelMOL);
             ?>
             <?php echo $form->error($model, 'member_online_level', ['class' => 'error']); ?>
         </div>

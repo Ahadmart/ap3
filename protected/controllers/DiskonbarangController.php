@@ -28,10 +28,14 @@ class DiskonbarangController extends Controller
 
         if (isset($_POST['DiskonBarang'])) {
             $model->attributes = $_POST['DiskonBarang'];
-            if ($model->save()) {
+            $r = $model->simpan();
+            if ($r['sukses']) {
                 $this->redirect(['view', 'id' => $model->id]);
             } else {
-                Yii::log('Error simpan Diskon Barang: ' . var_export($model->getErrors(), true), 'info');
+                Yii::log('DiskonBarang: ' . print_r($_POST['DiskonBarang'], true), 'info');
+                Yii::log('Error simpan Diskon Barang: ' . print_r($r['error']), 'info');
+                throw new CHttpException($r['error']['code'], $r['error']['msg']);
+                // Yii::log('Level: ' . print_r($_POST['level'], true), 'info');
             }
         }
 
