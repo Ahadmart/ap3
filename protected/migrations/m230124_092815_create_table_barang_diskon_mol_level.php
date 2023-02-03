@@ -12,6 +12,7 @@ class m230124_092815_create_table_barang_diskon_mol_level extends CDbMigration
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				`barang_diskon_id` int(11) unsigned NOT NULL,
 				`level` int(10) unsigned NOT NULL,
+                `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
 				`updated_by` int(10) unsigned NOT NULL,
 				`created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
 				PRIMARY KEY (`id`),
