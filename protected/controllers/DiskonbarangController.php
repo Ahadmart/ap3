@@ -28,6 +28,8 @@ class DiskonbarangController extends Controller
 
         if (isset($_POST['DiskonBarang'])) {
             $model->attributes = $_POST['DiskonBarang'];
+            $model->levelMOL   = $_POST['level'];
+
             $r = $model->simpan();
             if ($r['sukses']) {
                 $this->redirect(['view', 'id' => $model->id]);
@@ -49,7 +51,7 @@ class DiskonbarangController extends Controller
         $strukturDummy->setAttribute('level', 0);
 
         $clientAPI    = new AhadMembershipClient();
-        $listLevel = json_decode($clientAPI->infoListLevel(), true);
+        $listLevel    = json_decode($clientAPI->infoListLevel(), true);
         $listLevelMOL = [];
         if ($listLevel['statusCode'] == 200) {
             foreach ($listLevel['data'] as $level) {
@@ -96,14 +98,14 @@ class DiskonbarangController extends Controller
      * @param integer $id the ID of the model to be deleted
      */
     /*
-      public function actionHapus($id)
-      {
-      $this->loadModel($id)->delete();
+    public function actionHapus($id)
+    {
+    $this->loadModel($id)->delete();
 
-      // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-      if (!isset($_GET['ajax']))
-      $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-      }
+    // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+    if (!isset($_GET['ajax']))
+    $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+    }
      * Update: Diskon tidak bisa dihapus, hanya bisa dinonaktifkan
      *
      */
@@ -113,8 +115,8 @@ class DiskonbarangController extends Controller
      */
     public function actionIndex()
     {
-        $model         = new DiskonBarang('search');
-        $model->unsetAttributes();  // clear any default values
+        $model = new DiskonBarang('search');
+        $model->unsetAttributes(); // clear any default values
         $model->status = 1;
         if (isset($_GET['DiskonBarang'])) {
             $model->attributes = $_GET['DiskonBarang'];
@@ -155,18 +157,18 @@ class DiskonbarangController extends Controller
 
     public function actionGetDataBarang()
     {
-        $return  = [
-            'sukses' => false
+        $return = [
+            'sukses' => false,
         ];
         $barcode = $_POST['barcode'];
         $barang  = Barang::model()->find('barcode=:barcode', [
-            ':barcode' => $barcode
+            ':barcode' => $barcode,
         ]);
 
         if (is_null($barang)) {
             $this->renderJSON(array_merge($return, ['error' => [
                 'code' => '500',
-                'msg'  => 'Barang tidak ditemukan'
+                'msg'  => 'Barang tidak ditemukan',
             ]]));
         }
         $return = [
@@ -178,7 +180,7 @@ class DiskonbarangController extends Controller
             'hargaJual'    => $barang->getHargaJual(),
             'hargaJualRaw' => $barang->getHargaJualRaw(),
             'hargaBeli'    => $barang->getHargaBeli(),
-            'stok'         => $barang->getStok()
+            'stok'         => $barang->getStok(),
         ];
 
         $this->renderJSON($return);
@@ -209,7 +211,7 @@ class DiskonbarangController extends Controller
         //      echo $wBarcode.' AND '.$wNama;
         //      print_r($param);
 
-        $q         = new CDbCriteria();
+        $q = new CDbCriteria();
         $q->addCondition("{$wBarcode} OR {$wNama}");
         $q->params = $param;
         $barangs   = Barang::model()->aktif()->findAll($q);
@@ -220,7 +222,7 @@ class DiskonbarangController extends Controller
                 'label' => $barang->nama,
                 'value' => $barang->barcode,
                 'stok'  => is_null($barang->stok) ? 'null' : $barang->stok,
-                'harga' => $barang->hargaJual
+                'harga' => $barang->hargaJual,
             ];
         }
 
@@ -232,20 +234,20 @@ class DiskonbarangController extends Controller
         $return = '';
         if (!is_null($data->barang)) {
             $return = '<a href="' .
-                $this->createUrl('view', ['id' => $data->id]) . '">' .
-                $data->barang->nama . '</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">' .
+            $data->barang->nama . '</a>';
         } elseif ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERKATEGORI) {
             $return = '<a href="' .
-                $this->createUrl('view', ['id' => $data->id]) . '">' .
-                $data->barangKategori->nama . '</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">' .
+            $data->barangKategori->nama . '</a>';
         } elseif ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERSTRUKTUR) {
             $strukturBarang = StrukturBarang::model()->findByPk($data->barang_struktur_id);
             $return         = '<a href="' .
-                $this->createUrl('view', ['id' => $data->id]) . '">' .
-                $strukturBarang->getFullPath() . '</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">' .
+            $strukturBarang->getFullPath() . '</a>';
         } else {
             $return = '<a href="' .
-                $this->createUrl('view', ['id' => $data->id]) . '">[SEMUA BARANG]</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">[SEMUA BARANG]</a>';
         }
         return $return;
     }

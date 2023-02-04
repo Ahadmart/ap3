@@ -405,7 +405,17 @@ class DiskonBarang extends CActiveRecord
         $transaction    = $this->dbConnection->beginTransaction();
         try {
             if (!$this->save()) {
-                throw new Exception('Gagal simpan diskon', 500);
+                throw new Exception('Gagal simpan diskon: ' . serialize($this->getErrors()), 500);
+            }
+            if ($this->member_online_flag == 1) {
+                foreach ($this->levelMOL as $level) {
+                    $molLevel = new DiskonBarangMolLevel();
+                    $molLevel->barang_diskon_id = $this->id;
+                    $molLevel->level = $level;
+                    if (!$molLevel->save()) {
+                        throw new Exception('Gagal simpan diskon member level', 500);
+                    }
+                }
             }
             $transaction->commit();
             return [
