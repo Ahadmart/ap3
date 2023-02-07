@@ -87,6 +87,7 @@ class ReportDiskonForm extends CFormModel
                 WHEN 5 THEN 'Beli x dapat y'
                 WHEN 6 THEN 'Beli Rp.x dapat y'
                 WHEN 7 THEN 'Promo perKategori'
+                WHEN 8 THEN 'Promo perStruktur'
             END tipe_diskon_nama
         FROM (
             SELECT

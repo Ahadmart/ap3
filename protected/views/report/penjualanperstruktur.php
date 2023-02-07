@@ -32,6 +32,20 @@ $this->renderPartial('_form_penjualan_perstruktur', [
     </div>
 </div>
 <?php
+if ($pesan1) {
+?>
+    <div class="row">
+        <div class="small-12 columns">
+            <div data-alert="" class="alert-box radius">
+                <span>Sebagian penjualan tidak ditampakkan. Tutup akun kasir yang masih aktif untuk menampakkan seluruh penjualan</span>
+                <a href="#" class="close button">×</a>
+            </div>
+        </div>
+    </div>
+<?php
+}
+?>
+<?php
 if (isset($report['rekap']) && $report['rekap']) {
 ?>
     <div class="row">

@@ -75,7 +75,7 @@ class ReportPenjualanForm extends CFormModel
         return 'report_penjualan';
     }
 
-    public function reportPenjualan()
+    public function reportPenjualan($hideOpenTxn = false)
     {
         $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i') . ":00";
         $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i') . ":00";
@@ -99,6 +99,19 @@ class ReportPenjualanForm extends CFormModel
 
         if ($this->transferMode > 0) {
             $whereSub .= " AND pj.transfer_mode = :transferMode";
+        }
+
+        $hideOpenTxnJoin = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnJoin = ' LEFT JOIN
+            kasir ON kasir.user_id = pj.updated_by
+            AND kasir.waktu_tutup IS NULL ';
+        }
+        $hideOpenTxnCond = '';
+        if ($hideOpenTxn) {
+            $hideOpenTxnCond = ' WHERE (kasir.id IS NULL
+        OR (kasir.id IS NOT NULL
+        AND pj.tanggal < kasir.waktu_buka)) ';
         }
 
         $userId    = Yii::app()->user->id;
@@ -130,6 +143,8 @@ class ReportPenjualanForm extends CFormModel
                 AND pj.tanggal >= :dari AND pj.tanggal <= :sampai
                 {$whereSub}
             {$kategoriQuery}
+            ${hideOpenTxnJoin}
+            ${hideOpenTxnCond}
             GROUP BY pd.penjualan_id) t_penjualan
                 JOIN
             (SELECT
@@ -142,6 +157,8 @@ class ReportPenjualanForm extends CFormModel
                 AND pj.status != :statusDraft
                 AND pj.tanggal >= :dari AND pj.tanggal <= :sampai
                 {$whereSub}
+                ${hideOpenTxnJoin}
+                ${hideOpenTxnCond}
             GROUP BY pj.id) t_modal ON t_penjualan.penjualan_id = t_modal.id
                 JOIN
             profil ON t_penjualan.profil_id = profil.id

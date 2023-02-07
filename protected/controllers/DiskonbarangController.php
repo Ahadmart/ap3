@@ -29,12 +29,26 @@ class DiskonbarangController extends Controller
 
         if (isset($_POST['DiskonBarang'])) {
             $model->attributes = $_POST['DiskonBarang'];
-            if ($model->save())
+            if ($model->save()) {
                 $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                Yii::log('Error simpan Diskon Barang: ' . var_export($model->getErrors(), true), 'info');
+            }
         }
+
+        $lv1 = new StrukturBarang('search');
+        $lv1->unsetAttributes(); // clear any default values
+        $lv1->setAttribute('level', 1); // default yang tampil
+        $lv1->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+
+        $strukturDummy = new StrukturBarang('search');
+        $strukturDummy->unsetAttributes(); // clear any default values
+        $strukturDummy->setAttribute('level', 0);
 
         $this->render('tambah', [
             'model' => $model,
+            'lv1' => $lv1,
+            'strukturDummy' => $strukturDummy,
         ]);
     }
 
@@ -138,8 +152,9 @@ class DiskonbarangController extends Controller
         if (is_null($barang)) {
 
             $this->renderJSON(array_merge($return, ['error' => [
-                    'code' => '500',
-                    'msg'  => 'Barang tidak ditemukan']]));
+                'code' => '500',
+                'msg'  => 'Barang tidak ditemukan'
+            ]]));
         }
         $return = [
             'sukses'       => true,
@@ -204,16 +219,20 @@ class DiskonbarangController extends Controller
         $return = '';
         if (!is_null($data->barang)) {
             $return = '<a href="' .
-                    $this->createUrl('view', ['id' => $data->id]) . '">' .
-                    $data->barang->nama . '</a>';
-        } else if ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERKATEGORI ) {
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->barang->nama . '</a>';
+        } else if ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERKATEGORI) {
             $return = '<a href="' .
-                    $this->createUrl('view', ['id' => $data->id]) . '">' .
-                    $data->barangKategori->nama . '</a>';            
-        }        
-        else {
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->barangKategori->nama . '</a>';
+        } else if ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERSTRUKTUR) {
+            $strukturBarang = StrukturBarang::model()->findByPk($data->barang_struktur_id);
             $return = '<a href="' .
-                    $this->createUrl('view', ['id' => $data->id]) . '">[SEMUA BARANG]</a>';
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $strukturBarang->getFullPath() . '</a>';
+        } else {
+            $return = '<a href="' .
+                $this->createUrl('view', ['id' => $data->id]) . '">[SEMUA BARANG]</a>';
         }
         return $return;
     }
@@ -258,4 +277,32 @@ class DiskonbarangController extends Controller
         }
     }
 
+    public function actionRenderStrukturGrid()
+    {
+        $level  = Yii::app()->request->getPost('level');
+        $parent = Yii::app()->request->getPost('parent');
+        switch ($level) {
+            case 1:
+                $model = new StrukturBarang('search');
+                $model->unsetAttributes();
+                $model->setAttribute('level', 1);
+                $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+                $this->renderPartial('_grid1', ['lv1' => $model]);
+                break;
+            case 2:
+                $model = new StrukturBarang('search');
+                $model->unsetAttributes(); // clear any default values
+                $model->setAttribute('parent_id', $parent);
+                $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+                $this->renderPartial('_grid2', ['lv2' => $model]);
+                break;
+            case 3:
+                $model = new StrukturBarang('search');
+                $model->unsetAttributes(); // clear any default values
+                $model->setAttribute('parent_id', $parent);
+                $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
+                $this->renderPartial('_grid3', ['lv3' => $model]);
+                break;
+        }
+    }
 }

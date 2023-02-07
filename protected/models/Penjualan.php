@@ -126,7 +126,7 @@ class Penjualan extends CActiveRecord
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search()
+    public function search($merge = null)
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
@@ -166,6 +166,9 @@ class Penjualan extends CActiveRecord
                 ],
             ],
         ];
+        if ($merge !== null) {
+            $criteria->mergeWith($merge);
+        }
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
@@ -443,7 +446,7 @@ class Penjualan extends CActiveRecord
         // Yii::log("Tambah barang detail; barangID: ".$barang->id, "info");
         /*
          * Cek Multi Harga Jual, jika ada: Diskon diabaikan!
-         * Cek Diskon, dengan prioritas PROMO MEMBER, PROMO, GROSIR, BANDED, QTY DAPAT BARANG
+         * Cek Diskon, dengan prioritas seperti di bawah ini
          * Hanya bisa salah satu
          */
         if (!empty(HargaJualMulti::listAktif($barang->id))) {
@@ -466,6 +469,10 @@ class Penjualan extends CActiveRecord
             //terapkan diskon promo
             //ambil sisanya (yang tidak didiskon)
             $sisa = $this->aksiDiskonPromoPerKategori($barang->id, $qty, $hargaJualNormal);
+        } elseif (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_PROMO_PERSTRUKTUR))) {
+            //terapkan diskon promo per struktur
+            //ambil sisanya (yang tidak didiskon)
+            $sisa = $this->aksiDiskonPromoPerStruktur($barang->id, $qty, $hargaJualNormal);
         } elseif (!is_null($this->cekDiskon($barang->id, DiskonBarang::TIPE_GROSIR))) {
             //terapkan diskon grosir
             //ambil sisanya (yang tidak didiskon)
@@ -543,11 +550,45 @@ class Penjualan extends CActiveRecord
 
         $diskonNominal = $diskonPromoKategori->nominal;
         if ($diskonPromoKategori->persen > 0) {
-            $diskonNominal = ((float) $diskonPromoKategori->persen / 100) * $hargaJualNormal;
+            $diskonNominal = round(((float) $diskonPromoKategori->persen / 100) * $hargaJualNormal);
         }
         $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
 
         $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonNominal, DiskonBarang::TIPE_PROMO_PERKATEGORI);
+        return $sisa;
+    }
+
+    public function aksiDiskonPromoPerStruktur($barangId, $qty, $hargaJualNormal)
+    {
+        $barang              = Barang::model()->findByPk($barangId);
+        $waktu               = date('Y-m-d H:i:s');
+        $diskonPromoStruktur = DiskonBarang::model()->find([
+            'condition' => 'barang_struktur_id=:strukturBarangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= :waktu and (sampai >= :waktu or sampai is null)',
+            'order'     => 'id desc',
+            'params'    => [
+                'strukturBarangId' => $barang->struktur_id,
+                'status'           => DiskonBarang::STATUS_AKTIF,
+                'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERSTRUKTUR,
+                'waktu'            => $waktu,
+            ],
+        ]);
+
+        $sisa = $qty;
+        if ($qty > $diskonPromoStruktur->qty_max) {
+            $qtyPromo = $diskonPromoStruktur->qty_max;
+            $sisa -= $diskonPromoStruktur->qty_max;
+        } else {
+            $qtyPromo = $qty;
+            $sisa     = 0;
+        }
+
+        $diskonNominal = $diskonPromoStruktur->nominal;
+        if ($diskonPromoStruktur->persen > 0) {
+            $diskonNominal = round(((float) $diskonPromoStruktur->persen / 100) * $hargaJualNormal);
+        }
+        $hargaJualSatuan = $hargaJualNormal - $diskonNominal;
+
+        $this->insertBarang($barangId, $qtyPromo, $hargaJualSatuan, $diskonNominal, DiskonBarang::TIPE_PROMO_PERSTRUKTUR);
         return $sisa;
     }
 
