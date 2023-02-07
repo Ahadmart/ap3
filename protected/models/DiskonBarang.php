@@ -408,10 +408,21 @@ class DiskonBarang extends CActiveRecord
                 throw new Exception('Gagal simpan diskon: ' . serialize($this->getErrors()), 500);
             }
             if ($this->member_online_flag == 1) {
+                $clientAPI    = new AhadMembershipClient();
+                $listLevel    = json_decode($clientAPI->infoListLevel(), true);
+                $listLevelMOL = [];
+                if ($listLevel['statusCode'] == 200) {
+                    foreach ($listLevel['data'] as $level) {
+                        $listLevelMOL[$level['level']] = $level['nama'];
+                    }
+                } else {
+                    throw new Exception('Gagal ambil data level, apakah sedang offline?', 500);
+                }
                 foreach ($this->levelMOL as $level) {
                     $molLevel = new DiskonBarangMolLevel();
                     $molLevel->barang_diskon_id = $this->id;
                     $molLevel->level = $level;
+                    $molLevel->level_nama = $listLevelMOL[$level];
                     if (!$molLevel->save()) {
                         throw new Exception('Gagal simpan diskon member level', 500);
                     }
