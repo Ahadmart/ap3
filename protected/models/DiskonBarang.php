@@ -443,4 +443,14 @@ class DiskonBarang extends CActiveRecord
             ];
         }
     }
+
+    public function getLevelsText()
+    {
+        $levels = DiskonBarangMolLevel::model()->findAll('barang_diskon_id=:diskonId', [':diskonId' => $this->id]);
+        $text = '';
+        foreach ($levels as $level) {
+            $text .= '['.$level->level . '|' . $level->level_nama . '] ' . PHP_EOL;
+        }
+        return $text;
+    }
 }

@@ -36,7 +36,11 @@ $this->boxHeader['normal'] = $headerBoxSmall;
                 ],
                 [
                     'name' => 'member_online_flag',
-                    'value' => $model->member_online_flag ? 'Yes': 'No',
+                    'value' => $model->member_online_flag ? 'Yes' : 'No',
+                ],
+                [
+                    'value' => $model->getLevelsText(),
+                    'label' => 'Level',
                 ],
                 [
                     'name'  => 'barangKategori.nama',
