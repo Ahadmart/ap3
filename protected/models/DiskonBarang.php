@@ -260,7 +260,12 @@ class DiskonBarang extends CActiveRecord
 
     public function getNamaTipeSort()
     {
-        return $this->listTipeSort()[$this->tipe_diskon_id];
+        // return $this->listTipeSort()[$this->tipe_diskon_id];
+        $tipe =  $this->listTipeSort()[$this->tipe_diskon_id];
+        if ($this->member_online_flag) {
+            $tipe .= '<br />Member Online: ' . $this->levelsText;
+        }
+        return $tipe;
     }
 
     public function getNamaStatus()
@@ -449,7 +454,7 @@ class DiskonBarang extends CActiveRecord
         $levels = DiskonBarangMolLevel::model()->findAll('barang_diskon_id=:diskonId', [':diskonId' => $this->id]);
         $text = '';
         foreach ($levels as $level) {
-            $text .= '['.$level->level . '|' . $level->level_nama . '] ' . PHP_EOL;
+            $text .= '[' . $level->level . '|' . $level->level_nama . '] ' . PHP_EOL;
         }
         return $text;
     }

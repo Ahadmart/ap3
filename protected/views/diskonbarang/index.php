@@ -52,7 +52,8 @@ $this->boxHeader['normal'] = 'Diskon Barang';
                 array(
                     'name' => 'tipe_diskon_id',
                     'filter' => $model->listTipeSort(),
-                    'value' => '$data->namaTipeSort'
+                    'value' => '$data->namaTipeSort',
+                    'type' => 'raw',
                 ),
                 array(
                     'header' => 'Harga Asli',
