@@ -38,19 +38,7 @@
         </div>
         <div id="list-mol-level" style="display: none" class="small-6 columns">
             <?php echo $form->labelEx($model, 'member_online_level'); ?>
-            <?php
-
-            // echo $form->dropDownList(
-            //     $model,
-            //     'member_online_level',
-            //     $listLevelMOL,
-            //     [
-            //         'prompt'    => 'Pilih Satu..',
-            //         'autofocus' => 'autofocus',
-            //     ]
-            // );
-            echo CHtml::checkBoxList('level[]', '', $listLevelMOL);
-            ?>
+            <?php echo CHtml::checkBoxList('level[]', '', $listLevelMOL); ?>
             <?php echo $form->error($model, 'member_online_level', ['class' => 'error']); ?>
         </div>
     </div>
@@ -456,6 +444,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     function promoMemberFields() {
         $("#cb-mol-flag").hide(500);
+        $("#list-mol-level").hide(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty").hide(500);
@@ -470,6 +459,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     function grosirFields() {
         $("#cb-mol-flag").hide(500);
+        $("#list-mol-level").hide(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty").hide(500);
@@ -483,6 +473,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     function bandedFields() {
         $("#cb-mol-flag").hide(500);
+        $("#list-mol-level").hide(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty-min").hide(500);
@@ -496,6 +487,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
 
     function qtyGetBarangFields() {
         $("#cb-mol-flag").hide(500);
+        $("$list-mol-level").hide(500);
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
         $("#row-qty-min").hide(500);

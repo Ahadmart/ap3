@@ -299,22 +299,26 @@ class DiskonBarang extends CActiveRecord
                 }
                 break;
             case self::TIPE_GROSIR:
+                $this->member_online_flag = 0;
                 if (empty($this->qty_min)) {
                     return false;
                 }
                 break;
             case self::TIPE_BANDED:
+                $this->member_online_flag = 0;
                 if (empty($this->qty)) {
                     return false;
                 }
                 break;
             case self::TIPE_PROMO_MEMBER:
+                $this->member_online_flag = 0;
                 if (empty($this->qty_max)) {
                     return false;
                 }
                 break;
             case self::TIPE_QTY_GET_BARANG:
                 $this->nominal = 0;
+                $this->member_online_flag = 0;
 
                 if (is_null($this->barang_bonus_id)) {
                     $this->barang_bonus_id = $this->barang_id;
@@ -325,6 +329,7 @@ class DiskonBarang extends CActiveRecord
                 break;
             case self::TIPE_NOMINAL_GET_BARANG:
                 $this->semua_barang = 1;
+                $this->member_online_flag = 0;
                 break;
             case self::TIPE_PROMO_PERKATEGORI:
                 $this->semua_barang = 1;

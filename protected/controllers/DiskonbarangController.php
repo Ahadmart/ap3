@@ -28,7 +28,7 @@ class DiskonbarangController extends Controller
 
         if (isset($_POST['DiskonBarang'])) {
             $model->attributes = $_POST['DiskonBarang'];
-            $model->levelMOL   = $_POST['level'];
+            $model->levelMOL   = $_POST['level'] ?? [];
 
             $r = $model->simpan();
             if ($r['sukses']) {
