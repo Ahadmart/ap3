@@ -511,6 +511,26 @@ class Penjualan extends CActiveRecord
                 'tipeDiskon' => DiskonBarang::TIPE_PROMO,
             ],
         ]);
+        // Cek apakah ada flag member online
+        if ($diskonPromo->member_online_flag) {
+            // Jika ada cari level yang didiskon
+            // Yii::log('Diskon Promo: Ada diskon member');
+            $levelIni    = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
+            if (empty($levelIni)) {
+                // Berarti belum ada
+                // Yii::log('Gak dapat diskon, bukan member');
+                return $qty;
+            }
+            $levelDiskon = DiskonBarangMolLevel::model()->find('barang_diskon_id=:diskonId AND level=:level', [
+                ':diskonId' => $diskonPromo->id,
+                ':level'    => $levelIni->level
+            ]);
+            if (empty($levelDiskon)) {
+                // Yii::log('Gak dapat diskon, level tidak sesuai');
+                // Jika ini diskon member online tapi levelnya tidak ada, maka keluar
+                return $qty;
+            }
+        }
         $sisa = $qty;
         if ($qty > $diskonPromo->qty_max) {
             $qtyPromo = $diskonPromo->qty_max;

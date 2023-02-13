@@ -589,7 +589,6 @@ class PosController extends Controller
                 // Ganti customer offline ke profil member online
                 $customer  = Profil::model()->find('tipe_id=:tipeId', [':tipeId' => Profil::TIPE_MEMBER_ONLINE]);
                 $penjualan = $this->loadModel($id);
-                $penjualan->gantiCustomer($customer);
                 // Buat atau ganti penjualan_member_online
                 $penjualanMOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
                 if (is_null($penjualanMOL)) {
@@ -600,24 +599,25 @@ class PosController extends Controller
                 $penjualanMOL->koin_dipakai = 0;
                 $penjualanMOL->poin         = 0;
                 $penjualanMOL->koin         = 0;
-                $penjualanMOL->level        = 0;
+                $penjualanMOL->level        = $profil['data']['profil']['level'];
                 $penjualanMOL->level_nama   = $profil['data']['profil']['levelNama'];
                 $penjualanMOL->total_poin   = $profil['data']['profil']['poin'];
                 $penjualanMOL->total_koin   = $profil['data']['profil']['koin'];
                 if (!$penjualanMOL->save()) {
                     throw new Exception('Gagal simpan penjualan_member_online: ' . var_export($penjualanMOL->getErrors(), true));
                 }
+                $penjualan->gantiCustomer($customer);
             }
             $this->renderJSON($profil);
         } else {
             // Ganti ke profil umum, hapus penjualan_member_online jika ada
             $customer  = Profil::model()->findByPk(Profil::PROFIL_UMUM);
             $penjualan = $this->loadModel($id);
-            $penjualan->gantiCustomer($customer);
             $penjualanMOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
             if (!is_null($penjualanMOL)) {
                 $penjualanMOL->delete();
             }
+            $penjualan->gantiCustomer($customer);
             $return = [
                 'statusCode' => 200,
                 'data'       => [
