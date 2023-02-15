@@ -511,26 +511,11 @@ class Penjualan extends CActiveRecord
                 'tipeDiskon' => DiskonBarang::TIPE_PROMO,
             ],
         ]);
-        // Cek apakah ada flag member online
-        if ($diskonPromo->member_online_flag) {
-            // Jika ada cari level yang didiskon
-            // Yii::log('Diskon Promo: Ada diskon member');
-            $levelIni    = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
-            if (empty($levelIni)) {
-                // Berarti belum ada
-                // Yii::log('Gak dapat diskon, bukan member');
-                return $qty;
-            }
-            $levelDiskon = DiskonBarangMolLevel::model()->find('barang_diskon_id=:diskonId AND level=:level', [
-                ':diskonId' => $diskonPromo->id,
-                ':level'    => $levelIni->level
-            ]);
-            if (empty($levelDiskon)) {
-                // Yii::log('Gak dapat diskon, level tidak sesuai');
-                // Jika ini diskon member online tapi levelnya tidak ada, maka keluar
-                return $qty;
-            }
+
+        if ($this->cekDiskonMOL($diskonPromo) == false) {
+            return $qty;
         }
+
         $sisa = $qty;
         if ($qty > $diskonPromo->qty_max) {
             $qtyPromo = $diskonPromo->qty_max;
@@ -558,6 +543,10 @@ class Penjualan extends CActiveRecord
                 'waktu'            => $waktu,
             ],
         ]);
+
+        if ($this->cekDiskonMOL($diskonPromoKategori) == false) {
+            return $qty;
+        }
 
         $sisa = $qty;
         if ($qty > $diskonPromoKategori->qty_max) {
@@ -592,6 +581,10 @@ class Penjualan extends CActiveRecord
                 'waktu'            => $waktu,
             ],
         ]);
+
+        if ($this->cekDiskonMOL($diskonPromoStruktur) == false) {
+            return $qty;
+        }
 
         $sisa = $qty;
         if ($qty > $diskonPromoStruktur->qty_max) {
@@ -886,6 +879,21 @@ class Penjualan extends CActiveRecord
                     'kategoriBarangId' => $barang->kategori_id,
                     'status'           => DiskonBarang::STATUS_AKTIF,
                     'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERKATEGORI,
+                    'waktu'            => $waktu,
+                ],
+            ]);
+        }
+
+        if ($tipeDiskonId == DiskonBarang::TIPE_PROMO_PERSTRUKTUR) {
+            $barang = Barang::model()->findByPk($barangId);
+            $waktu  = date('Y-m-d H:i:s');
+            return DiskonBarang::model()->find([
+                'condition' => 'barang_struktur_id=:strukturBarangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= :waktu and (sampai >= :waktu or sampai is null)',
+                'order'     => 'id desc',
+                'params'    => [
+                    'strukturBarangId' => $barang->struktur_id,
+                    'status'           => DiskonBarang::STATUS_AKTIF,
+                    'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERSTRUKTUR,
                     'waktu'            => $waktu,
                 ],
             ]);
@@ -2056,6 +2064,37 @@ class Penjualan extends CActiveRecord
             'poin' => $poin,
             'koin' => $koin,
         ];
+    }
+
+    /**
+     * Cek diskon untuk flag member online, dan validasi
+     *
+     * @param static $diskon
+     * @return boolean false jika ada diskon member tapi tidak dapat diskon, lainnya true (dapat diskon)
+     */
+    public function cekDiskonMOL($diskon)
+    {
+        // Cek apakah ada flag member online
+        if ($diskon->member_online_flag == 1) {
+            // Jika ada cari level yang didiskon
+            Yii::log('Diskon: Ada diskon member');
+            $penjualanMol = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
+            if (empty($penjualanMol)) {
+                // Berarti belum ada
+                Yii::log('Gak dapat diskon, bukan member');
+                return false;
+            }
+            $levelDiskon = DiskonBarangMolLevel::model()->find('barang_diskon_id=:diskonId AND level=:level', [
+                ':diskonId' => $diskon->id,
+                ':level'    => $penjualanMol->level,
+            ]);
+            if (empty($levelDiskon)) {
+                Yii::log('Gak dapat diskon, level tidak sesuai');
+                // Jika ini diskon member online tapi levelnya tidak ada, maka keluar
+                return false;
+            }
+        }
+        return true;
     }
 
     public function ambilDetailTanpaStruktur()
