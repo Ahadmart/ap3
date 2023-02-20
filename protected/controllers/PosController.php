@@ -591,9 +591,16 @@ class PosController extends Controller
                 $penjualan = $this->loadModel($id);
                 // Buat atau ganti penjualan_member_online
                 $penjualanMOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+                /*
                 if (is_null($penjualanMOL)) {
                     $penjualanMOL = new PenjualanMemberOnline;
                 }
+                */
+                if (!is_null($penjualanMOL)) {
+                    $penjualanMOL->delete();
+                }
+                $penjualanMOL = new PenjualanMemberOnline;
+                
                 $penjualanMOL->nomor_member = $profil['data']['profil']['nomor'];
                 $penjualanMOL->penjualan_id = $id;
                 $penjualanMOL->koin_dipakai = 0;

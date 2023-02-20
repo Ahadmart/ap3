@@ -2089,7 +2089,7 @@ class Penjualan extends CActiveRecord
                 ':level'    => $penjualanMol->level,
             ]);
             if (empty($levelDiskon)) {
-                Yii::log('Gak dapat diskon, level tidak sesuai');
+                Yii::log('Gak dapat diskon, level tidak sesuai: ' . $penjualanMol->level);
                 // Jika ini diskon member online tapi levelnya tidak ada, maka keluar
                 return false;
             }
