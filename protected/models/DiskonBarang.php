@@ -53,7 +53,7 @@ class DiskonBarang extends CActiveRecord
 
     public $barcode;
     public $namaBarang;
-    public array $levelMOL; // Level(s) member online yang dipilih 
+    public $levelMOL; // array Level(s) member online yang dipilih 
 
     /**
      * @return string the associated database table name
