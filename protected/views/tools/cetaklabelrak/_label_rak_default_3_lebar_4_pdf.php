@@ -51,11 +51,15 @@
             }
         }
     ?>
-        <div class="label-container" style="width:40mm; height:30mm; overflow: hidden;">
+        <div class="label-container" style="width: 40mm">
             <div class="label">
-                <div class="nama-barang"><?php echo $namaBarang1; ?><br /><?php echo substr(trim($namaBarang2), 0, 24); ?></div>
+                <div class="nama-barang"><?php echo $namaBarang1; ?><br /><?php echo $namaBarang2; ?></div>
                 <div class="harga-jual"><?php echo $labelBarang->barang->hargaJual; ?></div>
-                <div class="tgl-cetak" style='width:100%'><?php echo $tanggalCetak; ?></div>
+                <div class="barcode" style='width: 50%'>
+                    <!-- <barcode style="margin-left: -9px;" code="<?php echo trim($labelBarang->barang->barcode); ?>" type="C128A" size="0.65" height="0.5" /> -->
+                    <?php echo $labelBarang->barang->barcode; ?>
+                </div>
+                <div class="tgl-cetak" style='width:40%; margin-top: -24px'><?php echo date('dmY') ?></div>
             </div>
         </div>
     <?php
