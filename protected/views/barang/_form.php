@@ -82,6 +82,10 @@
             <?php echo $form->dropDownList($model, 'status', ['1' => 'Aktif', '0' => 'Non Aktif']); ?>
             <?php echo $form->error($model, 'status', ['class' => 'error']); ?>
 
+            <?php echo $form->labelEx($model, 'kena_ppn'); ?>
+            <?php echo $form->dropDownList($model, 'kena_ppn', [Barang::PPN_YES => 'Ya', Barang::PPN_NO => 'Tidak']); ?>
+            <?php echo $form->error($model, 'kena_ppn', ['class' => 'error']); ?>
+
         </div>
     </div>
     <?php

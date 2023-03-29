@@ -30,6 +30,10 @@ $this->widget('BDetailView', array(
          *
          */
         array(
+            'label' => 'Kena PPN',
+            'value' => $model->namaKenaPPN,
+        ),
+        array(
             'label' => 'Status',
             'value' => $model->namaStatus,
         ),

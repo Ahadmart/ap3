@@ -15,30 +15,41 @@
  * @property string $restock_level
  * @property string $restock_min
  * @property string $variant_coefficient
+ * @property integer $kena_ppn
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
  *
  * The followings are the available model relations:
- * @property StrukturBarang $struktur
+ * @property AkmDetail[] $akmDetails
  * @property BarangKategori $kategori
- * @property BarangSatuan $satuan
  * @property BarangRak $rak
+ * @property BarangSatuan $satuan
+ * @property BarangStruktur $struktur
  * @property User $updatedBy
+ * @property BarangDiskon[] $barangDiskons
+ * @property BarangDiskon[] $barangDiskons1
  * @property BarangHargaJual[] $barangHargaJuals
+ * @property BarangHargaJualMulti[] $barangHargaJualMultis
  * @property BarangHargaJualRekomendasi[] $barangHargaJualRekomendasis
  * @property InventoryBalance[] $inventoryBalances
+ * @property LabelRakCetak $labelRakCetak
  * @property PembelianDetail[] $pembelianDetails
  * @property PenjualanDetail[] $penjualanDetails
+ * @property PoDetail[] $poDetails
+ * @property SoDetail[] $soDetails
  * @property StockOpnameDetail[] $stockOpnameDetails
  * @property SupplierBarang[] $supplierBarangs
+ * @property TagBarang[] $tagBarangs
  */
 class Barang extends CActiveRecord
 {
-
     const STATUS_TIDAK_AKTIF = 0;
     const STATUS_AKTIF       = 1;
+
+    const PPN_NO  = 0;
+    const PPN_YES = 1;
 
     public $soId;
     public $daftarSupplier;
@@ -81,7 +92,7 @@ class Barang extends CActiveRecord
         $import = [
             ['barcode, nama, satuan_id, struktur_id', 'required', 'message' => '{attribute} harus diisi!'],
             ['barcode', 'unique'],
-            ['status', 'numerical', 'integerOnly' => true],
+            ['kena_ppn, status', 'numerical', 'integerOnly' => true],
             ['barcode', 'length', 'max' => 30],
             ['nama', 'length', 'max' => 45],
             ['kategori_id, satuan_id, restock_point, restock_level, restock_min, updated_by', 'length', 'max' => 10],
@@ -90,14 +101,14 @@ class Barang extends CActiveRecord
         $default = [
             ['barcode, nama, satuan_id, struktur_id, rak_id', 'required', 'message' => '{attribute} harus diisi!'],
             ['barcode', 'unique'],
-            ['status', 'numerical', 'integerOnly' => true],
+            ['kena_ppn, status', 'numerical', 'integerOnly' => true],
             ['barcode', 'length', 'max' => 30],
             ['nama', 'length', 'max' => 45],
             ['kategori_id, satuan_id, restock_point, restock_level, restock_min, updated_by', 'length', 'max' => 10],
             ['kategori_id, rak_id, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, barcode, nama, struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, variant_coefficient, status, daftarSupplier, strukturFullPath', 'safe', 'on' => 'search'],
+            ['id, barcode, nama, struktur_id, kategori_id, satuan_id, rak_id, restock_point, restock_level, restock_min, variant_coefficient, kena_ppn, status, daftarSupplier, strukturFullPath', 'safe', 'on' => 'search'],
         ];
         if ($this->scenario == 'import') {
             return $import;
@@ -105,7 +116,6 @@ class Barang extends CActiveRecord
             return $default;
         }
     }
-
 
     /**
      * @return array relational rules.
@@ -146,6 +156,7 @@ class Barang extends CActiveRecord
             'restock_point'       => 'Restock Point',
             'restock_level'       => 'Restock Level',
             'restock_min'         => 'Minimum Restock',
+            'kena_ppn'            => 'Kena PPN',
             'variant_coefficient' => 'VC',
             'status'              => 'Status',
             'updated_at'          => 'Updated At',
@@ -184,11 +195,12 @@ class Barang extends CActiveRecord
         $criteria->compare('restock_level', $this->restock_level, true);
         $criteria->compare('restock_min', $this->restock_min, true);
         $criteria->compare('variant_coefficient', $this->variant_coefficient, true);
+        $criteria->compare('kena_ppn', $this->kena_ppn);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('t.created_at', $this->created_at, true);
-        $criteria->compare("(SELECT
+        $criteria->compare('(SELECT
                                 group_concat(p.nama)
                             FROM
                                 supplier_barang sb
@@ -196,7 +208,7 @@ class Barang extends CActiveRecord
                                 profil p ON p.id = sb.supplier_id
                             WHERE
                                 barang_id = t.id
-                                GROUP BY barang_id)", $this->daftarSupplier, true);
+                                GROUP BY barang_id)', $this->daftarSupplier, true);
         $criteria->compare("(
             SELECT
                 CONCAT(lv1.nama, ' > ', lv2.nama, ' > ', lv3.nama)
@@ -245,11 +257,10 @@ class Barang extends CActiveRecord
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
@@ -289,9 +300,9 @@ class Barang extends CActiveRecord
 
     public function getHargaJualRaw()
     {
-        $hasil = Yii::app()->db->createCommand("
+        $hasil = Yii::app()->db->createCommand('
 					select harga
-					from " . HargaJual::model()->tableName() . "
+					from ' . HargaJual::model()->tableName() . "
 					where barang_id = {$this->id}
 					order by id desc
 					limit 1
@@ -306,9 +317,9 @@ class Barang extends CActiveRecord
 
     public function getHargaBeliRaw()
     {
-        $hasil = Yii::app()->db->createCommand("
+        $hasil = Yii::app()->db->createCommand('
 					select harga_beli
-					from " . InventoryBalance::model()->tableName() . "
+					from ' . InventoryBalance::model()->tableName() . "
 					where barang_id = {$this->id}
 					order by id desc
 					limit 1
@@ -371,7 +382,7 @@ class Barang extends CActiveRecord
             ORDER BY pembelian_detail.id DESC
             LIMIT 1
 	")->queryRow();
-        return empty($hasil) ? NULL : $hasil['tanggal_terakhir'];
+        return empty($hasil) ? null : $hasil['tanggal_terakhir'];
     }
 
     /**
@@ -380,7 +391,7 @@ class Barang extends CActiveRecord
      */
     public function getListSupplier()
     {
-        $sql = "
+        $sql = '
             SELECT
                 p.id, p.nama, sb.`default`
             FROM
@@ -390,21 +401,21 @@ class Barang extends CActiveRecord
             WHERE
                 barang_id = :barangId
             ORDER BY sb.`default` DESC , p.nama
-               ";
+               ';
         $command = Yii::app()->db->createCommand($sql);
-        $command->bindValue(":barangId", $this->id);
+        $command->bindValue(':barangId', $this->id);
         return $command->queryAll();
     }
 
     public function getNamaStruktur()
     {
         $struktur = StrukturBarang::model()->findByPk($this->struktur_id);
-        return is_null($struktur) ? "" : $struktur->getFullPath();
+        return is_null($struktur) ? '' : $struktur->getFullPath();
     }
 
     public function getQtyReturBeliPosted()
     {
-        $sql = "
+        $sql = '
         SELECT DISTINCT
             ib.barang_id, SUM(d.qty) qty_retur
         FROM
@@ -416,13 +427,22 @@ class Barang extends CActiveRecord
             inventory_balance ib ON ib.id = d.inventory_balance_id
                 AND ib.barang_id = :barangId
         GROUP BY ib.barang_id
-        ";
+        ';
         $command = Yii::app()->db->createCommand($sql);
         $command->bindValues([
-            ':barangId' => $this->id,
-            ':statusRBPosted' => ReturPembelian::STATUS_POSTED
+            ':barangId'       => $this->id,
+            ':statusRBPosted' => ReturPembelian::STATUS_POSTED,
         ]);
         $r = $command->queryRow();
         return !empty($r) ? $r['qty_retur'] : '';
+    }
+
+    public function getNamaKenaPPN()
+    {
+        $kenaPPN = [
+            Barang::PPN_NO => 'Tidak',
+            Barang::PPN_YES => 'Ya'
+        ];
+        return $kenaPPN[$this->kena_ppn];
     }
 }
