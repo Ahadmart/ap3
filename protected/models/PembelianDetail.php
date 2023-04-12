@@ -11,6 +11,7 @@
  * @property string $harga_beli
  * @property string $harga_jual
  * @property string $harga_jual_rekomendasi
+ * @property string $ppn
  * @property string $tanggal_kadaluwarsa
  * @property string $updated_at
  * @property string $updated_by
@@ -21,6 +22,8 @@
  * @property Pembelian $pembelian
  * @property User $updatedBy
  * @property ReturPembelianDetail[] $returPembelianDetails
+ * @property HargaPokokPenjualan[] $hargaPokokPenjualans
+ * @property InventoryBalance[] $inventoryBalances
  */
 class PembelianDetail extends CActiveRecord
 {
@@ -47,11 +50,11 @@ class PembelianDetail extends CActiveRecord
         return [
             ['pembelian_id, barang_id, harga_beli, harga_jual', 'required'],
             ['pembelian_id, barang_id, qty, updated_by', 'length', 'max' => 10],
-            ['harga_beli, harga_jual, harga_jual_rekomendasi', 'length', 'max' => 18],
+            ['harga_beli, harga_jual, harga_jual_rekomendasi, ppn', 'length', 'max' => 18],
             ['tanggal_kadaluwarsa, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, pembelian_id, barang_id, qty, harga_beli, harga_jual, harga_jual_rekomendasi, tanggal_kadaluwarsa, updated_at, updated_by, created_at, barcode, namaBarang, subTotal, pembelianStatus', 'safe', 'on' => 'search'],
+            ['id, pembelian_id, barang_id, qty, harga_beli, harga_jual, harga_jual_rekomendasi, ppn, tanggal_kadaluwarsa, updated_at, updated_by, created_at, barcode, namaBarang, subTotal, pembelianStatus', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -67,6 +70,8 @@ class PembelianDetail extends CActiveRecord
             'pembelian'             => [self::BELONGS_TO, 'Pembelian', 'pembelian_id'],
             'updatedBy'             => [self::BELONGS_TO, 'User', 'updated_by'],
             'returPembelianDetails' => [self::HAS_MANY, 'ReturPembelianDetail', 'pembelian_detail_id'],
+            'hargaPokokPenjualans'  => [self::HAS_MANY, 'HargaPokokPenjualan', 'pembelian_detail_id'],
+            'inventoryBalances'     => [self::HAS_MANY, 'InventoryBalance', 'pembelian_detail_id'],
         ];
     }
 
@@ -83,6 +88,7 @@ class PembelianDetail extends CActiveRecord
             'harga_beli'             => 'Harga Beli',
             'harga_jual'             => 'Harga Jual',
             'harga_jual_rekomendasi' => 'RRP',
+            'ppn'                    => 'PPN',
             'tanggal_kadaluwarsa'    => 'Tanggal Kadaluwarsa',
             'updated_at'             => 'Updated At',
             'updated_by'             => 'Updated By',
@@ -115,6 +121,7 @@ class PembelianDetail extends CActiveRecord
         $criteria->compare('harga_beli', $this->harga_beli, true);
         $criteria->compare('harga_jual', $this->harga_jual, true);
         $criteria->compare('harga_jual_rekomendasi', $this->harga_jual_rekomendasi, true);
+        $criteria->compare('ppn',$this->ppn,true);
         $criteria->compare('tanggal_kadaluwarsa', $this->tanggal_kadaluwarsa, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
@@ -185,16 +192,10 @@ class PembelianDetail extends CActiveRecord
      */
     public function isBarangBaru()
     {
-        $ketemu = Yii::app()->db->createCommand()->
-                select('barang.id')->
-                from('pembelian_detail detail')->
-                join('pembelian', 'detail.pembelian_id = pembelian.id')->
-                join('barang', 'detail.barang_id = barang.id')->
-                where('barang.created_at >= pembelian.created_at AND pembelian.id = :pembelianId AND barang.id = :barangId', [
-                    ':pembelianId' => $this->pembelian_id,
-                    ':barangId'    => $this->barang_id
-                ])->
-                queryRow();
+        $ketemu = Yii::app()->db->createCommand()->select('barang.id')->from('pembelian_detail detail')->join('pembelian', 'detail.pembelian_id = pembelian.id')->join('barang', 'detail.barang_id = barang.id')->where('barang.created_at >= pembelian.created_at AND pembelian.id = :pembelianId AND barang.id = :barangId', [
+            ':pembelianId' => $this->pembelian_id,
+            ':barangId'    => $this->barang_id
+        ])->queryRow();
 
         return $ketemu != false;
     }
@@ -205,23 +206,17 @@ class PembelianDetail extends CActiveRecord
      */
     public function isHargaJualBerubah()
     {
-        $ketemu = Yii::app()->db->createCommand()->
-                select('detail.barang_id')->
-                from('pembelian_detail detail')->
-                join('pembelian', 'detail.pembelian_id = pembelian.id')->
-                join('(SELECT
+        $ketemu = Yii::app()->db->createCommand()->select('detail.barang_id')->from('pembelian_detail detail')->join('pembelian', 'detail.pembelian_id = pembelian.id')->join('(SELECT
                             barang_id, harga
                         FROM
                             barang_harga_jual hj
                         WHERE
                             hj.barang_id = :barangId
                         ORDER BY id DESC
-                        LIMIT 1) thj', 'thj.barang_id = detail.barang_id')->
-                where('pembelian.id = :pembelianId AND detail.barang_id = :barangId AND detail.harga_jual != thj.harga', [
-                    ':pembelianId' => $this->pembelian_id,
-                    ':barangId'    => $this->barang_id
-                ])->
-                queryRow();
+                        LIMIT 1) thj', 'thj.barang_id = detail.barang_id')->where('pembelian.id = :pembelianId AND detail.barang_id = :barangId AND detail.harga_jual != thj.harga', [
+            ':pembelianId' => $this->pembelian_id,
+            ':barangId'    => $this->barang_id
+        ])->queryRow();
 
         return $ketemu != false;
     }

@@ -2,45 +2,49 @@
 /* @var $this PembelianController */
 /* @var $model Pembelian */
 
-$this->breadcrumbs = array(
-    'Pembelian' => array('index'),
-    $model->id => array('view', 'id' => $model->id),
+$this->breadcrumbs = [
+    'Pembelian' => ['index'],
+    $model->id  => ['view', 'id' => $model->id],
     'Ubah',
-);
+];
 
-$this->boxHeader['small'] = 'Ubah';
+$this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
 ?>
 <div class="row">
     <div class="medium-5 large-5 columns">
         <?php
-        echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Pembelian', $this->createUrl('simpanpembelian', array('id' => $model->id)), array(
-            'data' => "simpan=true",
-            'type' => 'POST',
-            'beforeSend' => 'function() {
+        echo CHtml::ajaxLink(
+            '<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Pembelian',
+            $this->createUrl('simpanpembelian', ['id' => $model->id]),
+            [
+                'data'       => 'simpan=true',
+                'type'       => 'POST',
+                'beforeSend' => 'function() {
                                 $("#tombol-simpan").addClass("warning");
                                 $("#tombol-simpan").html("<i class=\"fa fa-floppy-o fa-spin\"></i> <span class=\"ak\">S</span>impan Pembelian");
                             }',
-            'complete' => 'function() {
+                'complete'   => 'function() {
                                 $("#tombol-simpan").removeClass("warning");
                             }',
-            'success' => 'function(data) {
+                'success'    => 'function(data) {
                             if (data.sukses) {
                                 location.reload();;
                             }
-                        }'
-                ), array(
-            'class' => 'tiny bigfont button',
-            'accesskey' => 's',
-            'id' => 'tombol-simpan'
-                )
+                        }',
+            ],
+            [
+                'class'     => 'tiny bigfont button',
+                'accesskey' => 's',
+                'id'        => 'tombol-simpan',
+            ]
         );
         ?>
         <?php
-        echo CHtml::link('<i class="fa fa-times"></i> Bata<span class="ak">l</a>', $this->createUrl('hapus', array('id' => $model->id)), array(
-            'class' => 'alert tiny bigfont button',
-            'accesskey' => 'l'
-        ));
+        echo CHtml::link('<i class="fa fa-times"></i> Bata<span class="ak">l</a>', $this->createUrl('hapus', ['id' => $model->id]), [
+            'class'     => 'alert tiny bigfont button',
+            'accesskey' => 'l',
+        ]);
         ?>
     </div>
     <div class="medium-7 large-7 columns header" style="text-align: right">
@@ -52,18 +56,18 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
 <div class="row">
     <?php
     if ($pilihBarang) {
-        $this->renderPartial('_pilih_barang', array(
+        $this->renderPartial('_pilih_barang', [
             'pembelianModel' => $model,
-            'barangBarcode' => $barangBarcode,
-            'barangNama' => $barangNama,
-            'barang' => $barang,
-            'pembulatan' => $pembulatan,
-            'barangList' => $barangList,
-            'curSupplierCr' => $curSupplierCr,
-            'tipeCari' => $tipeCari,
+            'barangBarcode'  => $barangBarcode,
+            'barangNama'     => $barangNama,
+            'barang'         => $barang,
+            'pembulatan'     => $pembulatan,
+            'barangList'     => $barangList,
+            'curSupplierCr'  => $curSupplierCr,
+            'tipeCari'       => $tipeCari,
             'lv1'            => $lv1,
             'strukturDummy'  => $strukturDummy,
-        ));
+        ]);
     }
     ?>
     <div class="small-12 columns">
@@ -75,21 +79,20 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
 
 <div class="row">
     <?php
-    $this->renderPartial('_detail', array(
-        'pembelian' => $model,
+    $this->renderPartial('_detail', [
+        'pembelian'       => $model,
         'pembelianDetail' => $pembelianDetail,
-        'pilihBarang' => $pilihBarang
-    ));
+        'pilihBarang'     => $pilihBarang,
+    ]);
     ?>
 </div>
 <script>
-
     function updateTotal() {
-        var dataurl = "<?php echo $this->createUrl('total', array('id' => $model->id)); ?>";
+        var dataurl = "<?php echo $this->createUrl('total', ['id' => $model->id]); ?>";
         $.ajax({
             url: dataurl,
             type: "GET",
-            success: function (data) {
+            success: function(data) {
                 if (data.sukses) {
                     $("#total-pembelian").text(data.totalF);
                     console.log(data.totalF);
@@ -99,41 +102,44 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
     }
 </script>
 <?php
-$this->menu = array(
-    array('itemOptions' => array('class' => 'divider'), 'label' => false),
-    array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
-                    'accesskey' => 't'
-                )),
-            array('label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
-                    'class' => 'alert button',
-                    'accesskey' => 'h',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
-                )),
-            array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                    'accesskey' => 'i'
-                ))
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    ),
-    array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
-                )),
-            array('label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
-                    'class' => 'alert button',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
-                )),
-            array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                ))
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    )
-);
+$this->menu = [
+    ['itemOptions' => ['class' => 'divider'], 'label' => false],
+    [
+        'itemOptions'          => ['class' => 'has-form hide-for-small-only'], 'label' => false,
+        'items'             => [
+            ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
+                'class'     => 'button',
+                'accesskey' => 't',
+            ]],
+            ['label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', ['id' => $model->id]), 'linkOptions' => [
+                'class'     => 'alert button',
+                'accesskey' => 'h',
+                'submit'    => ['hapus', 'id' => $model->id],
+                'confirm'   => 'Anda yakin?',
+            ]],
+            ['label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => [
+                'class'     => 'success button',
+                'accesskey' => 'i',
+            ]],
+        ],
+        'submenuOptions'    => ['class' => 'button-group'],
+    ],
+    [
+        'itemOptions'          => ['class' => 'has-form show-for-small-only'], 'label' => false,
+        'items'             => [
+            ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
+                'class' => 'button',
+            ]],
+            ['label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', ['id' => $model->id]), 'linkOptions' => [
+                'class'   => 'alert button',
+                'submit'  => ['hapus', 'id' => $model->id],
+                'confirm' => 'Anda yakin?',
+            ]],
+            ['label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => [
+                'class' => 'success button',
+            ]],
+        ],
+        'submenuOptions'    => ['class' => 'button-group'],
+    ],
+];
+?>

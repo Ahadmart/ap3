@@ -319,6 +319,7 @@ class PembelianController extends Controller
             $detail->tanggal_kadaluwarsa    = $_POST['tanggal_kadaluwarsa'];
             $detail->harga_jual             = $_POST['hargajual'];
             $detail->harga_jual_rekomendasi = empty($_POST['rrp']) ? 0 : $_POST['rrp'];
+            $detail->ppn                    = empty($_POST['ppn']) ? 0 : $_POST['ppn'];
 
             // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
             // echo terlihat di console
@@ -424,8 +425,8 @@ class PembelianController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-                $this->createUrl('view', ['id' => $data->id]) . '">' .
-                $data->nomor . '</a>';
+            $this->createUrl('view', ['id' => $data->id]) . '">' .
+            $data->nomor . '</a>';
         }
         return $return;
     }
@@ -434,8 +435,8 @@ class PembelianController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-                $this->createUrl('ubah', ['id' => $data->id]) . '">' .
-                $data->tanggal . '</a>';
+            $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+            $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -445,8 +446,8 @@ class PembelianController extends Controller
     public function renderLinkToSupplier($data)
     {
         return '<a href="' .
-            $this->createUrl('supplier/view', ['id' => $data->profil_id]) . '">' .
-            $data->profil->nama . '</a>';
+        $this->createUrl('supplier/view', ['id' => $data->profil_id]) . '">' .
+        $data->profil->nama . '</a>';
     }
 
     public function actionTambahBarangBaru($id)
