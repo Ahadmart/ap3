@@ -166,9 +166,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             hargaBeli = hargaBeli + (hargaBeli / 100 * ppn);
             hargaJualH = hargaBeli + (hargaBeli / 100 * profitPersen);
             hargaJual = hargaJualH - (hargaJualH % <?= $pembulatan; ?>) + <?= $pembulatan; ?>;
+            ppnJual = 11;
+            hargaJualBersih = hargaJualH / ((100 + ppnJual) / 100);
+            ppnNominal = hargaJual - hargaJualBersih;
+            margin = hargaJualBersih - hargaBeli;
             $("#harga-beli").val(hargaBeli);
             $("#harga-jual").val(hargaJual);
-            $("#harga-jual-raw").html(hargaJualH);
+            // $("#harga-jual-raw").html(hargaJualH);
+            $("#harga-jual-bersih").html("Harga jual bersih: " + hargaJualBersih);
+            $("#harga-jual-ppn").html("PPN: " + ppnNominal);
+            $("#harga-jual-margin").html("Margin: " + margin);
         }
     }
 
@@ -460,6 +467,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
     <div class="panel">
         <h5><span id="barang-info"></span></h5>
         <div class="row">
+            <div class="small-12 columns">
+                <?php echo CHtml::checkBox('kena-ppn') ?>
+                <?php echo CHtml::label('Kena PPN','kena-ppn'); ?>
+            </div>
+        </div>
+        <div class="row">
             <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('<u><b>J</b></u>umlah yang dibeli', 'qty') ?>
                 <div class="row collapse">
@@ -536,7 +549,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Harga Jual', 'hargajual', array('id' => 'label-harga-jual')) ?>
                 <?php echo CHtml::textField('hargajual', '', array('id' => 'harga-jual', 'style' => 'margin-bottom:0', 'autocomplete' => 'off', 'class' => 'i-pembelian')); ?>
-                <?php echo CHtml::label('test', '', ['id' => 'harga-jual-raw']); ?>
+                <?php echo CHtml::label('test', '', ['id' => 'harga-jual-bersih']); ?>
+                <?php echo CHtml::label('test', '', ['id' => 'harga-jual-ppn']); ?>
+                <?php echo CHtml::label('test', '', ['id' => 'harga-jual-margin']); ?>
             </div>
             <!--            <div class="medium-6 large-4 columns">
                 <?php // echo CHtml::label('RRP', 'rrp', array('id' => 'label-rrp')) 
