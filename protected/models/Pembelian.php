@@ -232,6 +232,7 @@ class Pembelian extends CActiveRecord
 								b.nama,
 								b.barcode,
 								sb.nama satuan,
+                                b.kena_ppn,
 								(select harga_beli from pembelian_detail where barang_id=:barangId
 								order by id desc limit 1) harga_beli,
 								(select harga
