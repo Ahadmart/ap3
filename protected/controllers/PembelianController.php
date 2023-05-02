@@ -303,6 +303,7 @@ class PembelianController extends Controller
             'labelRrp'       => number_format($barang['rrp'], 0, ',', '.'),
             'rrp'            => number_format($barang['rrp'], 0, '', ''),
             'satuan'         => $barang['satuan'],
+            'kenaPpn'        => $barang['kena_ppn'] == 1 ? true : false,
         ];
         echo CJSON::encode($arr);
     }
