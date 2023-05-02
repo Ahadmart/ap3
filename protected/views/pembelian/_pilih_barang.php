@@ -106,6 +106,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
     function updateFormDetail(info) {
         $("#barang-info").html(info['nama'] + ' <small>' + info['barcode'] + '</small>');
         $("#barang-id").val(info['barangId']);
+        $("#kena-ppn").prop("checked", info['kenaPpn']);
         $("#label-harga-beli").text('Harga Beli (' + info['labelHargaBeli'] + ')');
         $("#harga-beli").val(info['hargaBeli']);
         $("#label-harga-jual").text('Harga Jual (' + info['labelHargaJual'] + ')');
@@ -234,6 +235,26 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
 
             return false;
         });
+        $(document).on('change', "#kena-ppn", function() {
+            console.log("kena-ppn diclick")
+            // if (this.checked) {
+            // Update barang
+            var datakirim = {
+                'id': $("#barang-id").val(),
+                'kena-ppn': this.checked ? 1 : 0
+            };
+            var dataurl = "<?php echo $this->createUrl('updatekenappn') ?>";
+
+            $.ajax({
+                data: datakirim,
+                url: dataurl,
+                type: "POST",
+                dataType: "json",
+                // success: updateFormDetail
+            });
+
+            // }
+        })
     });
 
 
@@ -356,7 +377,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 ]);
                 ?>  
             </div>
-            <input type="hidden" id="input-struktur" />
+            <input type=" hidden" id="input-struktur" />
         </div>
         <script>
             function lv1Dipilih(id) {
@@ -469,7 +490,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         <div class="row">
             <div class="small-12 columns">
                 <?php echo CHtml::checkBox('kena-ppn') ?>
-                <?php echo CHtml::label('Kena PPN','kena-ppn'); ?>
+                <?php echo CHtml::label('Kena PPN', 'kena-ppn'); ?>
             </div>
         </div>
         <div class="row">
@@ -549,9 +570,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Harga Jual', 'hargajual', array('id' => 'label-harga-jual')) ?>
                 <?php echo CHtml::textField('hargajual', '', array('id' => 'harga-jual', 'style' => 'margin-bottom:0', 'autocomplete' => 'off', 'class' => 'i-pembelian')); ?>
-                <?php echo CHtml::label('test', '', ['id' => 'harga-jual-bersih']); ?>
-                <?php echo CHtml::label('test', '', ['id' => 'harga-jual-ppn']); ?>
-                <?php echo CHtml::label('test', '', ['id' => 'harga-jual-margin']); ?>
+                <?php echo CHtml::label('Harga jual bersih:', '', ['id' => 'harga-jual-bersih']); ?>
+                <?php echo CHtml::label('PPN:', '', ['id' => 'harga-jual-ppn']); ?>
+                <?php echo CHtml::label('Margin:', '', ['id' => 'harga-jual-margin']); ?>
             </div>
             <!--            <div class="medium-6 large-4 columns">
                 <?php // echo CHtml::label('RRP', 'rrp', array('id' => 'label-rrp')) 

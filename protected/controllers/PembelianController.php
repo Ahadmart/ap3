@@ -426,8 +426,8 @@ class PembelianController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('view', ['id' => $data->id]) . '">' .
-            $data->nomor . '</a>';
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->nomor . '</a>';
         }
         return $return;
     }
@@ -436,8 +436,8 @@ class PembelianController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('ubah', ['id' => $data->id]) . '">' .
-            $data->tanggal . '</a>';
+                $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+                $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -447,8 +447,8 @@ class PembelianController extends Controller
     public function renderLinkToSupplier($data)
     {
         return '<a href="' .
-        $this->createUrl('supplier/view', ['id' => $data->profil_id]) . '">' .
-        $data->profil->nama . '</a>';
+            $this->createUrl('supplier/view', ['id' => $data->profil_id]) . '">' .
+            $data->profil->nama . '</a>';
     }
 
     public function actionTambahBarangBaru($id)
@@ -841,6 +841,26 @@ class PembelianController extends Controller
                 $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
                 $this->renderPartial('_grid3', ['lv3' => $model]);
                 break;
+        }
+    }
+
+    /**
+     * Update status kena_ppn barang dari detail pembelian
+     */
+    public function actionUpdateKenaPpn()
+    {
+        if (isset($_POST['kena-ppn'])) {
+            $barangId         = $_POST['id'];
+            $kenaPpn          = $_POST['kena-ppn'] ? 1 : 0;
+            $barang           = Barang::model()->findByPk($barangId);
+            $barang->kena_ppn = $kenaPpn;
+
+            $return = ['sukses' => false];
+            if ($barang->save()) {
+                $return = ['sukses' => true];
+            }
+
+            $this->renderJSON($return);
         }
     }
 }
