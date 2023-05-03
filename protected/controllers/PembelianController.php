@@ -198,6 +198,8 @@ class PembelianController extends Controller
         $strukturDummy->unsetAttributes(); // clear any default values
         $strukturDummy->setAttribute('level', 0);
 
+        $configPpnJual = Config::model()->find("nama='ppn.penjualan'");
+
         $this->render('ubah', [
             'model'           => $model,
             'barangBarcode'   => $barangBarcode,
@@ -211,6 +213,7 @@ class PembelianController extends Controller
             'tipeCari'        => $configCariBarang->nilai,
             'lv1'             => $lv1,
             'strukturDummy'   => $strukturDummy,
+            'ppnJual'         => $configPpnJual->nilai,
             //'totalPembelian' => $model->ambilTotal()
         ]);
     }

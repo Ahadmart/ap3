@@ -53,6 +53,7 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
         <span class="secondary label">Total</span><span class="label" id="total-pembelian"><?php echo $model->total; ?></span>
     </div>
 </div>
+<input type="hidden" id="ppnjual-val" value="<?= $ppnJual ?>" />
 <div class="row">
     <?php
     if ($pilihBarang) {

@@ -167,16 +167,25 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             hargaBeli = hargaBeli + (hargaBeli / 100 * ppn);
             hargaJualH = hargaBeli + (hargaBeli / 100 * profitPersen);
             hargaJual = hargaJualH - (hargaJualH % <?= $pembulatan; ?>) + <?= $pembulatan; ?>;
-            ppnJual = 11;
-            hargaJualBersih = hargaJualH / ((100 + ppnJual) / 100);
+            ppnJual = $("#ppnjual-val").val();
+            console.log("ppn jual: " + ppnJual + "%");
+            hargaJualBersih = hargaJual / (1 + ppnJual / 100);
+            console.log("HJ: " + hargaJual);
+            console.log("HJ Net: " + hargaJualBersih)
             ppnNominal = hargaJual - hargaJualBersih;
             margin = hargaJualBersih - hargaBeli;
             $("#harga-beli").val(hargaBeli);
             $("#harga-jual").val(hargaJual);
             // $("#harga-jual-raw").html(hargaJualH);
-            $("#harga-jual-bersih").html("Harga jual bersih: " + hargaJualBersih);
-            $("#harga-jual-ppn").html("PPN: " + ppnNominal);
-            $("#harga-jual-margin").html("Margin: " + margin);
+            $("#harga-jual-bersih").html("Harga jual bersih: " + hargaJualBersih.toLocaleString('id-ID', {
+                maximumFractionDigits: 2
+            }));
+            $("#harga-jual-ppn").html("PPN: " + ppnNominal.toLocaleString('id-ID', {
+                maximumFractionDigits: 2
+            }));
+            $("#harga-jual-margin").html("Margin: " + margin.toLocaleString('id-ID', {
+                maximumFractionDigits: 2
+            }));
         }
     }
 
