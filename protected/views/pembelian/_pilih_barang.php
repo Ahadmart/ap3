@@ -164,15 +164,29 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             hargaBeli = hargaBeli - (hargaBeli / 100 * diskonPersen) - diskonRupiah;
 
             // Baru kemudian hitung PPN
+            ppnBeliNom = 0;
+            ppnJualNom = 0;
+            ppnJual = $("#ppnjual-val").val();
             hargaBeli = hargaBeli + (hargaBeli / 100 * ppn);
             hargaJualH = hargaBeli + (hargaBeli / 100 * profitPersen);
             hargaJual = hargaJualH - (hargaJualH % <?= $pembulatan; ?>) + <?= $pembulatan; ?>;
-            ppnJual = $("#ppnjual-val").val();
-            console.log("ppn jual: " + ppnJual + "%");
-            hargaJualBersih = hargaJual / (1 + ppnJual / 100);
-            console.log("HJ: " + hargaJual);
-            console.log("HJ Net: " + hargaJualBersih)
-            ppnNominal = hargaJual - hargaJualBersih;
+            if ($("#kena-ppn").is(':checked')) {
+                hargaBeliBersih = hargaBeli / (1 + ppn / 100);
+                console.log("HB: " + hargaBeli + "; HB Net: " + hargaBeliBersih);
+                ppnBeliNom = hargaBeli - hargaBeliBersih;
+                console.log("ppn beli: " + ppnBeliNom);
+                // console.log("ppn jual: " + ppnJual + "%");
+                hargaJualBersih = hargaJualH / (1 + ppnJual / 100);
+                // console.log("HJ: " + hargaJual + ", HJH: " + hargaJualH);
+                console.log("HJ Net: " + hargaJualBersih)
+            } else {
+                hargaJualBersih = hargaJual;
+            }
+            ppnJualNom = hargaJual - hargaJualBersih;
+            if (ppnBeliNom > 0) {
+                ppnJualNom = hargaJual - (hargaJualH / (1 + ppnJual / 100)) - ppnBeliNom;
+                hargaJualBersih = hargaJual - ppnJualNom;
+            }
             margin = hargaJualBersih - hargaBeli;
             $("#harga-beli").val(hargaBeli);
             $("#harga-jual").val(hargaJual);
@@ -180,12 +194,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             $("#harga-jual-bersih").html("Harga jual bersih: " + hargaJualBersih.toLocaleString('id-ID', {
                 maximumFractionDigits: 2
             }));
-            $("#harga-jual-ppn").html("PPN: " + ppnNominal.toLocaleString('id-ID', {
+            $("#harga-jual-ppn").html("PPN: " + ppnJualNom.toLocaleString('id-ID', {
                 maximumFractionDigits: 2
             }));
             $("#harga-jual-margin").html("Margin: " + margin.toLocaleString('id-ID', {
                 maximumFractionDigits: 2
-            }));
+            }) + " (" + (margin / hargaJual * 100).toLocaleString('id-ID', {
+                maximumFractionDigits: 2
+            }) + "%)");
         }
     }
 
@@ -245,7 +261,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             return false;
         });
         $(document).on('change', "#kena-ppn", function() {
-            console.log("kena-ppn diclick")
+            // console.log("kena-ppn diclick")
             // if (this.checked) {
             // Update barang
             var datakirim = {

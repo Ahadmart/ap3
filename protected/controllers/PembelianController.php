@@ -860,7 +860,10 @@ class PembelianController extends Controller
 
             $return = ['sukses' => false];
             if ($barang->save()) {
-                $return = ['sukses' => true];
+                $return = [
+                    'sukses'  => true,
+                    'kenaPpn' => $kenaPpn
+                ];
             }
 
             $this->renderJSON($return);
