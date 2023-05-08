@@ -169,14 +169,22 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             ppnJual = $("#ppnjual-val").val();
             hargaBeli = hargaBeli + (hargaBeli / 100 * ppn);
             hargaJualH = hargaBeli + (hargaBeli / 100 * profitPersen);
-            hargaJual = hargaJualH - (hargaJualH % <?= $pembulatan; ?>) + <?= $pembulatan; ?>;
+            sisaPembulatan = hargaJualH % <?= $pembulatan ?>;
+            console.log("Sisa pembulatan: " + sisaPembulatan);
+            if (sisaPembulatan == 0) {
+                console.log("Sisa pembulatan = 0 ");
+                hargaJual = hargaJualH;
+            } else {
+                console.log("Sisa pembulatan != 0 ");
+                hargaJual = hargaJualH - sisaPembulatan + <?= $pembulatan; ?>;
+            }
             if ($("#kena-ppn").is(':checked')) {
                 hargaBeliBersih = hargaBeli / (1 + ppn / 100);
                 console.log("HB: " + hargaBeli + "; HB Net: " + hargaBeliBersih);
                 ppnBeliNom = hargaBeli - hargaBeliBersih;
                 console.log("ppn beli: " + ppnBeliNom);
                 // console.log("ppn jual: " + ppnJual + "%");
-                hargaJualBersih = hargaJualH / (1 + ppnJual / 100);
+                hargaJualBersih = hargaJual / (1 + ppnJual / 100);
                 // console.log("HJ: " + hargaJual + ", HJH: " + hargaJualH);
                 console.log("HJ Net: " + hargaJualBersih)
             } else {
@@ -191,17 +199,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             $("#harga-beli").val(hargaBeli);
             $("#harga-jual").val(hargaJual);
             // $("#harga-jual-raw").html(hargaJualH);
-            $("#harga-jual-bersih").html("Harga jual bersih: " + hargaJualBersih.toLocaleString('id-ID', {
-                maximumFractionDigits: 2
-            }));
-            $("#harga-jual-ppn").html("PPN: " + ppnJualNom.toLocaleString('id-ID', {
-                maximumFractionDigits: 2
-            }));
-            $("#harga-jual-margin").html("Margin: " + margin.toLocaleString('id-ID', {
-                maximumFractionDigits: 2
-            }) + " (" + (margin / hargaJual * 100).toLocaleString('id-ID', {
-                maximumFractionDigits: 2
-            }) + "%)");
+            var lang = 'id-ID'
+            var options = {
+                maximumFractionDigits: 0
+            }
+            $("#harga-jual-bersih").html("Harga jual bersih: " + hargaJualBersih.toLocaleString(lang, options));
+            $("#harga-jual-ppn").html("PPN: " + ppnJualNom.toLocaleString(lang, options));
+            $("#harga-jual-margin").html("Margin: " + margin.toLocaleString(lang, options) + " (" + (margin / hargaJual * 100).toLocaleString(lang, {maximumFractionDigits: 2}) + "%)");
         }
     }
 
