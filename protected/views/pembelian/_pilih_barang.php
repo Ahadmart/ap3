@@ -203,9 +203,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             var options = {
                 maximumFractionDigits: 0
             }
+            $("#harga-beli-bersih").html("Harga beli bersih: " + hargaBeliBersih.toLocaleString(lang, options));
+            $("#harga-beli-ppn").html("PPN: " + ppnBeliNom.toLocaleString(lang, options));
             $("#harga-jual-bersih").html("Harga jual bersih: " + hargaJualBersih.toLocaleString(lang, options));
             $("#harga-jual-ppn").html("PPN: " + ppnJualNom.toLocaleString(lang, options));
-            $("#harga-jual-margin").html("Margin: " + margin.toLocaleString(lang, options) + " (" + (margin / hargaJual * 100).toLocaleString(lang, {maximumFractionDigits: 2}) + "%)");
+            $("#harga-jual-margin").html("Margin: " + margin.toLocaleString(lang, options) + " (" + (margin / hargaJual * 100).toLocaleString(lang, {
+                maximumFractionDigits: 2
+            }) + "%)");
         }
     }
 
@@ -594,7 +598,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         <div class="row">
             <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Harga Beli', 'hargabeli', array('id' => 'label-harga-beli')) ?>
-                <?php echo CHtml::textField('hargabeli', '', array('id' => 'harga-beli', 'autocomplete' => 'off', 'class' => 'i-pembelian')); ?>
+                <?php echo CHtml::textField('hargabeli', '', array('id' => 'harga-beli', 'style' => 'margin-bottom:0', 'autocomplete' => 'off', 'class' => 'i-pembelian')); ?>
+                <?php echo CHtml::label('Harga beli bersih:', '', ['id' => 'harga-beli-bersih']); ?>
+                <?php echo CHtml::label('PPN:', '', ['id' => 'harga-beli-ppn']); ?>
             </div>
             <div class="medium-6 large-4 columns">
                 <?php echo CHtml::label('Harga Jual', 'hargajual', array('id' => 'label-harga-jual')) ?>
