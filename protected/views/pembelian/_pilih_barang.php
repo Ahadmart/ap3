@@ -188,6 +188,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 // console.log("HJ: " + hargaJual + ", HJH: " + hargaJualH);
                 console.log("HJ Net: " + hargaJualBersih)
             } else {
+                hargaBeliBersih = hargaBeli;
                 hargaJualBersih = hargaJual;
             }
             ppnJualNom = hargaJual - hargaJualBersih;
@@ -207,7 +208,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             $("#harga-beli-ppn").html("PPN: " + ppnBeliNom.toLocaleString(lang, options));
             $("#harga-jual-bersih").html("Harga jual bersih: " + hargaJualBersih.toLocaleString(lang, options));
             $("#harga-jual-ppn").html("PPN: " + ppnJualNom.toLocaleString(lang, options));
-            $("#harga-jual-margin").html("Margin: " + margin.toLocaleString(lang, options) + " (" + (margin / hargaJual * 100).toLocaleString(lang, {
+            $("#harga-jual-margin").html("Margin: " + margin.toLocaleString(lang, options) + " (" + (margin / hargaJualBersih * 100).toLocaleString(lang, {
                 maximumFractionDigits: 2
             }) + "%)");
         }
