@@ -10,7 +10,6 @@
  */
 class ReportPenjualanForm extends CFormModel
 {
-
     const JENIS_PENJUALAN = 1;
     const JENIS_TRANSFER  = 2;
 
@@ -77,8 +76,8 @@ class ReportPenjualanForm extends CFormModel
 
     public function reportPenjualan($hideOpenTxn = false)
     {
-        $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i') . ":00";
-        $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i') . ":00";
+        $dari   = date_format(date_create_from_format('d-m-Y H:i', $this->dari), 'Y-m-d H:i') . ':00';
+        $sampai = date_format(date_create_from_format('d-m-Y H:i', $this->sampai), 'Y-m-d H:i') . ':00';
 
         $tableName = $this->tableName();
 
@@ -90,15 +89,15 @@ class ReportPenjualanForm extends CFormModel
 
         $whereSub = '';
         if (!empty($this->profilId)) {
-            $whereSub .= " AND pj.profil_id = :profilId";
+            $whereSub .= ' AND pj.profil_id = :profilId';
         }
 
         if (!empty($this->userId)) {
-            $whereSub .= " AND pj.updated_by = :userId";
+            $whereSub .= ' AND pj.updated_by = :userId';
         }
 
         if ($this->transferMode > 0) {
-            $whereSub .= " AND pj.transfer_mode = :transferMode";
+            $whereSub .= ' AND pj.transfer_mode = :transferMode';
         }
 
         $hideOpenTxnJoin = '';
@@ -143,8 +142,8 @@ class ReportPenjualanForm extends CFormModel
                 AND pj.tanggal >= :dari AND pj.tanggal <= :sampai
                 {$whereSub}
             {$kategoriQuery}
-            ${hideOpenTxnJoin}
-            ${hideOpenTxnCond}
+            {$hideOpenTxnJoin}
+            {$hideOpenTxnCond}
             GROUP BY pd.penjualan_id) t_penjualan
                 JOIN
             (SELECT
@@ -157,8 +156,8 @@ class ReportPenjualanForm extends CFormModel
                 AND pj.status != :statusDraft
                 AND pj.tanggal >= :dari AND pj.tanggal <= :sampai
                 {$whereSub}
-                ${hideOpenTxnJoin}
-                ${hideOpenTxnCond}
+                {$hideOpenTxnJoin}
+                {$hideOpenTxnCond}
             GROUP BY pj.id) t_modal ON t_penjualan.penjualan_id = t_modal.id
                 JOIN
             profil ON t_penjualan.profil_id = profil.id
@@ -188,30 +187,46 @@ class ReportPenjualanForm extends CFormModel
                 pj.tanggal BETWEEN :dari AND :sampai
                 {$whereSub}
         ";
+        $qtyQuery = "
+        SELECT SUM(qty) qty
+        FROM penjualan_detail pd
+             JOIN penjualan pj ON pd.penjualan_id=pj.id AND pj.status != :statusDraft
+             {$kategoriQuery}
+        WHERE pj.tanggal BETWEEN :dari AND :sampai
+            {$whereSub}
+        ";
 
         Yii::app()->db->createCommand("DELETE FROM {$tableName} WHERE user_id={$userId}")->execute();
         $command = Yii::app()->db->createCommand($sql);
 
-        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
-        $command->bindValue(":dari", $dari);
-        $command->bindValue(":sampai", $sampai);
+        $command->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $command->bindValue(':dari', $dari);
+        $command->bindValue(':sampai', $sampai);
 
         $jmlItemCom = Yii::app()->db->createCommand($jmlItemQuery);
-        $jmlItemCom->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
-        $jmlItemCom->bindValue(":dari", $dari);
-        $jmlItemCom->bindValue(":sampai", $sampai);
+        $jmlItemCom->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $jmlItemCom->bindValue(':dari', $dari);
+        $jmlItemCom->bindValue(':sampai', $sampai);
+
+        $qtyCom = Yii::app()->db->createCommand($qtyQuery);
+        $qtyCom->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $qtyCom->bindValue(':dari', $dari);
+        $qtyCom->bindValue(':sampai', $sampai);
 
         if (!empty($this->profilId)) {
-            $command->bindValue(":profilId", $this->profilId);
-            $jmlItemCom->bindValue(":profilId", $this->profilId);
+            $command->bindValue(':profilId', $this->profilId);
+            $jmlItemCom->bindValue(':profilId', $this->profilId);
+            $qtyCom->bindValue(':profilId', $this->profilId);
         }
         if (!empty($this->userId)) {
-            $command->bindValue(":userId", $this->userId);
-            $jmlItemCom->bindValue(":userId", $this->userId);
+            $command->bindValue(':userId', $this->userId);
+            $jmlItemCom->bindValue(':userId', $this->userId);
+            $qtyCom->bindValue(':userId', $this->userId);
         }
         if (!empty($this->kategoriId)) {
             $command->bindValue(':kategoriId', $this->kategoriId);
             $jmlItemCom->bindValue(':kategoriId', $this->kategoriId);
+            $qtyCom->bindValue(':kategoriId', $this->kategoriId);
         }
 
         if ($this->transferMode > 0) {
@@ -226,6 +241,7 @@ class ReportPenjualanForm extends CFormModel
             }
             $command->bindValue(':transferMode', $q);
             $jmlItemCom->bindValue(':transferMode', $q);
+            $qtyCom->bindValue(':transferMode', $q);
         }
 
         $command->execute();
@@ -240,11 +256,13 @@ class ReportPenjualanForm extends CFormModel
         $penjualan = $com->queryAll();
         $rekap     = $commandRekap->queryRow();
         $jmlItem   = $jmlItemCom->queryRow();
+        $qty       = $qtyCom->queryRow();
 
         return [
-            'detail' => $penjualan,
-            'rekap'  => $rekap,
+            'detail'  => $penjualan,
+            'rekap'   => $rekap,
             'jmlItem' => $jmlItem,
+            'qty'     => $qty,
         ];
     }
 
