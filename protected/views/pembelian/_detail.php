@@ -49,23 +49,23 @@ endif;
                 'value'             => 'number_format($data->harga_beli, 0, ",", ".")'
             ],
             [
-                'header'              => 'Net',
-                'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                'htmlOptions'       => ['class' => 'rata-kanan'],
-                'value'             => function ($data) {
-                    if ($data->ppn > 0) {
-                        return number_format($data->harga_beli * 100 / (100 + $data->ppn), 0, ',', '.');
-                    }
-                }
-            ],
-            [
                 'name'              => 'ppn',
                 'headerHtmlOptions' => ['class' => 'rata-kanan'],
                 'htmlOptions'       => ['class' => 'rata-kanan'],
                 'value'             => function ($data) {
                     if ($data->ppn > 0) {
                         $ppnNominal = $data->harga_beli / (100 + $data->ppn) * $data->ppn;
-                        return  $ppnNominal . " (" . $data->ppn . "%)";
+                        return  number_format($ppnNominal, 0, ',', '.') . " (" . $data->ppn . "%)";
+                    }
+                }
+            ],
+            [
+                'header'              => 'Net',
+                'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                'htmlOptions'       => ['class' => 'rata-kanan'],
+                'value'             => function ($data) {
+                    if ($data->ppn > 0) {
+                        return number_format($data->harga_beli * 100 / (100 + $data->ppn), 0, ',', '.');
                     }
                 }
             ],
