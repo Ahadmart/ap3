@@ -803,6 +803,13 @@ class Penjualan extends CActiveRecord
         $detail->qty                    = $qty;
         $detail->harga_jual             = $hargaJual;
         $detail->harga_jual_rekomendasi = HargaJualRekomendasi::model()->terkini($barangId);
+        $barang = Barang::model()->findByPk($barangId);
+        if ($barang->kena_ppn == Barang::PPN_YES) {
+            $ppn = Config::model()->find('nama="ppn.penjualan"');
+            // Yii::log("Ppn jual nominal: " . $ppn->nilai);
+            $detail->ppn = floatval($hargaJual) - (floatval($hargaJual) / (1 + $ppn->nilai / 100));
+            // Yii::log("Ppn nominal: " . $detail->ppn);
+        }
         if ($diskon > 0) {
             $detail->diskon = $diskon;
         }
