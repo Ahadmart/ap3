@@ -803,7 +803,7 @@ class Penjualan extends CActiveRecord
         $detail->qty                    = $qty;
         $detail->harga_jual             = $hargaJual;
         $detail->harga_jual_rekomendasi = HargaJualRekomendasi::model()->terkini($barangId);
-        $barang = Barang::model()->findByPk($barangId);
+        $barang                         = Barang::model()->findByPk($barangId);
         if ($barang->kena_ppn == Barang::PPN_YES) {
             $ppn = Config::model()->find('nama="ppn.penjualan"');
             // Yii::log("Ppn jual nominal: " . $ppn->nilai);
@@ -1428,7 +1428,7 @@ class Penjualan extends CActiveRecord
         $profil = Profil::model()->findByPk($this->profil_id);
 
         $details = Yii::app()->db->createCommand('
-            select barang.barcode, barang.nama, satuan.nama namasatuan, pd.qty, pd.harga_jual, pd.diskon, pd.harga_jual_rekomendasi
+            select barang.barcode, barang.nama, satuan.nama namasatuan, pd.qty, pd.harga_jual, pd.ppn, pd.diskon, pd.harga_jual_rekomendasi
             from penjualan_detail pd
             join barang on pd.barang_id = barang.id
             join barang_satuan satuan on satuan.id = barang.satuan_id
@@ -1470,6 +1470,7 @@ class Penjualan extends CActiveRecord
 
         $total       = 0;
         $totalDiskon = 0;
+        $totalPpn    = 0;
         foreach ($details as $detail) {
             $txtHarga = $detail['qty'] . ' ' . $detail['namasatuan'] . '  @ ' . number_format($detail['harga_jual']) . ' : ';
 
@@ -1499,11 +1500,13 @@ class Penjualan extends CActiveRecord
             }
 
             $total += $netSubTotal;
+            $totalPpn += $detail['qty'] * $detail['ppn'];
         }
 
         $struk .= str_pad('', $jumlahKolom, '-') . PHP_EOL;
 
-        $txtTotal = 'Total : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+        $txtTotal    = 'Total : ' . str_pad(number_format($total, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
+        $txtTotalPpn = 'PPN (Incl) : ' . str_pad(number_format($totalPpn, 0, ',', '.'), 11, ' ', STR_PAD_LEFT);
 
         $diskonNota  = 0;
         $koinDipakai = 0;
@@ -1556,6 +1559,9 @@ class Penjualan extends CActiveRecord
         $struk .= str_pad($txtTotal, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         if (isset($txtDiskonNota)) {
             $struk .= str_pad($txtDiskonNota, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
+        }
+        if ($totalPpn > 0) {
+            $struk .= str_pad($txtTotalPpn, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
         }
         if (isset($txtkoinDipakai)) {
             $struk .= str_pad($txtkoinDipakai, $jumlahKolom - 1, ' ', STR_PAD_LEFT) . PHP_EOL;
