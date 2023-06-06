@@ -6,87 +6,95 @@
 
 <div class="form">
 
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'pembelian-ppn-form',
-	// Please note: When you enable ajax validation, make sure the corresponding
-	// controller action is handling ajax validation correctly.
-	// There is a call to performAjaxValidation() commented in generated controller code.
-	// See class documentation of CActiveForm for details on this.
-	'enableAjaxValidation'=>false,
-)); ?>
+	<?php $form = $this->beginWidget('CActiveForm', [
+		'id'                   => 'pembelian-ppn-form',
+		// Please note: When you enable ajax validation, make sure the corresponding
+		// controller action is handling ajax validation correctly.
+		// There is a call to performAjaxValidation() commented in generated controller code.
+		// See class documentation of CActiveForm for details on this.
+		'enableAjaxValidation' => false,
+	]); ?>
 
-	<?php echo $form->errorSummary($model,'Error: Perbaiki input',null,array('class'=>'panel callout')); ?>
+	<?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, ['class' => 'panel callout']); ?>
 
+	<?php
+	/*
 	<div class="row">
 		<div class="small-12 columns">
-		<?php echo $form->labelEx($model,'pembelian_id'); ?>
-				<?php echo $form->textField($model,'pembelian_id',array('size'=>10,'maxlength'=>10)); ?>
-		<?php echo $form->error($model,'pembelian_id', array('class'=>'error')); ?>
+			<?php echo $form->labelEx($model, 'pembelian_id'); ?>
+			<?php echo $form->textField($model, 'pembelian_id', ['size' => 10, 'maxlength' => 10]); ?>
+			<?php echo $form->error($model, 'pembelian_id', ['class' => 'error']); ?>
+		</div>
+	</div>
+	*/
+	?>
+	<div class="large-8 columns">
+		<div class="row collapse">
+			<label>Pembelian</label>
+			<div class="small-8 columns">
+				<?php echo CHtml::textField('nomorpembelian', empty($model->pembelian_id) ? '' : $model->pembelian->nomor, array('size' => 60, 'maxlength' => 500, 'disabled' => 'disabled')); ?>
+			</div>
+			<div class="small-1 columns">
+				<a class="tiny bigfont secondary button postfix" id="tombol-hapuspembelian"><i class="fa fa-eraser"></i></a>
+			</div>
+			<div class="small-3 columns">
+				<a class="tiny bigfont button postfix" id="tombol-browse" accesskey="p"><span class="ak">P</span>ilih..</a>
+			</div>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-12 columns">
-		<?php echo $form->labelEx($model,'no_faktur_pajak'); ?>
-				<?php echo $form->textField($model,'no_faktur_pajak',array('size'=>45,'maxlength'=>45)); ?>
-		<?php echo $form->error($model,'no_faktur_pajak', array('class'=>'error')); ?>
+			<?php echo $form->labelEx($model, 'no_faktur_pajak'); ?>
+			<?php echo $form->textField($model, 'no_faktur_pajak', ['size' => 45, 'maxlength' => 45]); ?>
+			<?php echo $form->error($model, 'no_faktur_pajak', ['class' => 'error']); ?>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-12 columns">
-		<?php echo $form->labelEx($model,'total_ppn_hitung'); ?>
-				<?php echo $form->textField($model,'total_ppn_hitung',array('size'=>18,'maxlength'=>18)); ?>
-		<?php echo $form->error($model,'total_ppn_hitung', array('class'=>'error')); ?>
+			<?php echo $form->labelEx($model, 'total_ppn_hitung'); ?>
+			<?php echo $form->textField($model, 'total_ppn_hitung', ['size' => 18, 'maxlength' => 18]); ?>
+			<?php echo $form->error($model, 'total_ppn_hitung', ['class' => 'error']); ?>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-12 columns">
-		<?php echo $form->labelEx($model,'total_ppn_faktur'); ?>
-				<?php echo $form->textField($model,'total_ppn_faktur',array('size'=>18,'maxlength'=>18)); ?>
-		<?php echo $form->error($model,'total_ppn_faktur', array('class'=>'error')); ?>
+			<?php echo $form->labelEx($model, 'total_ppn_faktur'); ?>
+			<?php echo $form->textField($model, 'total_ppn_faktur', ['size' => 18, 'maxlength' => 18]); ?>
+			<?php echo $form->error($model, 'total_ppn_faktur', ['class' => 'error']); ?>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-12 columns">
-		<?php echo $form->labelEx($model,'status'); ?>
-				<?php echo $form->textField($model,'status'); ?>
-		<?php echo $form->error($model,'status', array('class'=>'error')); ?>
+			<?php echo $form->labelEx($model, 'status'); ?>
+			<?php echo $form->textField($model, 'status'); ?>
+			<?php echo $form->error($model, 'status', ['class' => 'error']); ?>
 		</div>
 	</div>
 
 	<div class="row">
 		<div class="small-12 columns">
-		<?php echo $form->labelEx($model,'updated_at'); ?>
-				<?php echo $form->textField($model,'updated_at'); ?>
-		<?php echo $form->error($model,'updated_at', array('class'=>'error')); ?>
+			<?php echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', ['class' => 'tiny bigfont button']); ?>
 		</div>
 	</div>
 
-	<div class="row">
-		<div class="small-12 columns">
-		<?php echo $form->labelEx($model,'updated_by'); ?>
-				<?php echo $form->textField($model,'updated_by',array('size'=>10,'maxlength'=>10)); ?>
-		<?php echo $form->error($model,'updated_by', array('class'=>'error')); ?>
-		</div>
-	</div>
-
-	<div class="row">
-		<div class="small-12 columns">
-		<?php echo $form->labelEx($model,'created_at'); ?>
-				<?php echo $form->textField($model,'created_at'); ?>
-		<?php echo $form->error($model,'created_at', array('class'=>'error')); ?>
-		</div>
-	</div>
-
-	<div class="row">
-		<div class="small-12 columns">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Tambah' : 'Simpan', array('class'=>'tiny bigfont button')); ?>
-		</div>
-	</div>
-
-<?php $this->endWidget(); ?>
+	<?php $this->endWidget(); ?>
 
 </div>
+
+<div class="row">
+	<div class="small-12 columns">
+		<div id="tabel-pembelian" style="display: none">
+			<?php $this->renderPartial('_pembelian', ['model' => $pembelianModel]); ?>
+		</div>
+	</div>
+</div>
+<script>
+	$("#tombol-browse").click(function() {
+		$("#tabel-pembelian").slideToggle(500);
+		$("input[name='Profil[nama]']").focus();
+	});
+</script>
