@@ -65,7 +65,7 @@ class PpnpembelianController extends Controller
 
         $this->render('tambah', [
             'model'          => $model,
-            'pembelianModel' => $pembelianModel
+            'pembelianModel' => $pembelianModel,
         ]);
     }
 
@@ -150,5 +150,17 @@ class PpnpembelianController extends Controller
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
+    }
+
+    public function actionPilihPembelian($id)
+    {
+        $pembelian = Pembelian::model()->findByPk($id);
+        $return    = [
+            'id'       => $id,
+            'nomor'    => $pembelian->nomor,
+            'profil'   => $pembelian->profil->nama,
+            'totalPpn' => $pembelian->ambilTotalPpn()
+        ];
+        $this->renderJSON($return);
     }
 }

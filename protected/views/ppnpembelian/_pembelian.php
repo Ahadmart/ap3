@@ -26,7 +26,9 @@ $this->boxHeader['normal'] = 'Pembelian';
                     'header'    => '<span class="ak">N</span>omor',
                     'accesskey' => 'n',
                     'type'      => 'raw',
-                    // 'value'     => [$this, 'renderLinkToView'],
+                    'value'     => function ($data) {
+                        return '<a href="' . Yii::app()->controller->createUrl('pilihpembelian', ['id' => $data->id]) . '" class="pilih pembelian">' . $data->nomor . '</a>';
+                    },
                 ],
                 [
                     'class'     => 'BDataColumn',
@@ -34,7 +36,6 @@ $this->boxHeader['normal'] = 'Pembelian';
                     'header'    => 'Tangga<span class="ak">l</span>',
                     'accesskey' => 'l',
                     'type'      => 'raw',
-                    // 'value'     => [$this, 'renderLinkToUbah'],
                 ],
                 [
                     'class'     => 'BDataColumn',
@@ -91,7 +92,7 @@ $this->boxHeader['normal'] = 'Pembelian';
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => ''],
     [
-        'itemOptions'   => ['class' => 'has-form hide-for-small-only'], 'label' => '',
+        'itemOptions'    => ['class' => 'has-form hide-for-small-only'], 'label' => '',
         'items'          => [
             ['label' => '<i class="fa fa-download"></i> I<span class="ak">m</span>port', 'url' => $this->createUrl('import'), 'linkOptions' => [
                 'class'     => 'warning button',
@@ -105,7 +106,7 @@ $this->menu = [
         'submenuOptions' => ['class' => 'button-group'],
     ],
     [
-        'itemOptions'   => ['class' => 'has-form show-for-small-only'], 'label' => '',
+        'itemOptions'    => ['class' => 'has-form show-for-small-only'], 'label' => '',
         'items'          => [
             ['label' => '<i class="fa fa-download"></i>', 'url' => $this->createUrl('import'), 'linkOptions' => [
                 'class' => 'warning button',
