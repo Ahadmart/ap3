@@ -101,7 +101,7 @@ option {
         font-size: 0.825em;
     }
 
-    tr.baru {
+    tr.baru, tr.manual {
         background-color: #f57c00;
         font-weight: bold;
 
@@ -669,7 +669,7 @@ select {
 input[type="checkbox"] + label,
 input[type="radio"] + label {
     vertical-align: middle;
-    margin-top: -0.5rem;
+    // margin-top: -0.5rem;
 }
 
 pre {

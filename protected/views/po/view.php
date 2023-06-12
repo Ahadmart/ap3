@@ -23,41 +23,41 @@ $this->pageTitle = Yii::app()->name . ' - ' . $this->boxHeader['normal'];
         <ul class="button-group right">
             <li><a href="<?= $this->createUrl('beli', ['id' => $model->id]) ?>" class="tiny bigfont alert button" accesskey="l"><i class="fa fa-truck fa-fw"></i> Pembe<span class="ak">l</span>ian</a></li>
             <?php
-            if (!empty($printerPo)):
-                ?>
+            if (!empty($printerPo)) :
+            ?>
                 <li>
                     <a href="#" accesskey="c" data-dropdown="print" aria-controls="print" aria-expanded="false" class="tiny bigfont success button dropdown"><i class="fa fa-print fa-fw"></i> <span class="ak">C</span>etak</a>
                     <ul id="print" data-dropdown-content class="small f-dropdown content" aria-hidden="true">
                         <?php
                         foreach ($printerPo as $printer) {
-                            ?>
+                        ?>
                             <?php
                             if ($printer['tipe_id'] == Device::TIPE_PDF_PRINTER) {
                                 /* Jika printer pdf, tambahkan pilihan ukuran kertas */ ?>
                                 <span class="sub-dropdown"><?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></span>
                                 <ul>
                                     <?php
-                                    foreach ($kertasUntukPdf as $key => $value):
-                                        ?>
+                                    foreach ($kertasUntukPdf as $key => $value) :
+                                    ?>
                                         <li><a target="_blank" href="<?php echo $this->createUrl('print', ['id' => $model->id, 'printId' => $printer['id'], 'kertas' => $key]) ?>"><?php echo $value; ?></a></li>
-                                        <?php
+                                    <?php
                                     endforeach; ?>
                                 </ul>
-                                <?php
+                            <?php
                             } else {
-                                ?>
+                            ?>
                                 <li>
                                     <a href="<?php echo $this->createUrl('print', ['id' => $model->id, 'printId' => $printer['id']]) ?>">
                                         <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
                                 </li>
-                                <?php
-                            } ?>
                             <?php
+                            } ?>
+                        <?php
                         }
                         ?>
                     </ul>
                 </li>
-                <?php
+            <?php
             endif;
             ?>
         </ul>
@@ -71,6 +71,11 @@ $this->pageTitle = Yii::app()->name . ' - ' . $this->boxHeader['normal'];
             'dataProvider' => $poDetail->search('t.id'),
             'filter'       => $poDetail,
             'summaryText'  => '{start}-{end} dari {count}, Total: ' . $model->total,
+            'rowCssClassExpression' => function ($row, $data) {
+                if ($data->ads == 0) {
+                    return 'manual';
+                }
+            },
             'columns'      => [
                 [
                     'class'     => 'BDataColumn',
@@ -83,6 +88,18 @@ $this->pageTitle = Yii::app()->name . ' - ' . $this->boxHeader['normal'];
                     'name'      => 'nama',
                     'header'    => '<span class="ak">N</span>ama Barang',
                     'accesskey' => 'n',
+                ],
+                [
+                    'name'              => 'ads',
+                    'headerHtmlOptions' => ['style' => 'width:75px', 'class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'filter'            => false
+                ],
+                [
+                    'name'              => 'saran_order',
+                    'headerHtmlOptions' => ['style' => 'width:75px', 'class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'filter'            => false
                 ],
                 [
                     'name'              => 'qty_order',
@@ -120,38 +137,40 @@ $this->pageTitle = Yii::app()->name . ' - ' . $this->boxHeader['normal'];
 <?php
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
-    ['itemOptions' => ['class' => 'has-form hide-for-small-only'], 'label' => false,
+    [
+        'itemOptions' => ['class' => 'has-form hide-for-small-only'], 'label' => false,
         'items'    => [
             ['label' => '<i class="fa fa-pencil"></i> <span class="ak">U</span>bah', 'url' => $this->createUrl('ubah', ['id' => $model->id]), 'linkOptions' => [
-                    'class'     => 'button',
-                    'accesskey' => 'u'
-                ]],
+                'class'     => 'button',
+                'accesskey' => 'u'
+            ]],
             ['label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', ['id' => $model->id]), 'linkOptions' => [
-                    'class'     => 'alert button',
-                    'accesskey' => 'h',
-                    'submit'    => ['hapus', 'id' => $model->id],
-                    'confirm'   => 'Anda yakin?'
-                ]],
+                'class'     => 'alert button',
+                'accesskey' => 'h',
+                'submit'    => ['hapus', 'id' => $model->id],
+                'confirm'   => 'Anda yakin?'
+            ]],
             ['label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => [
-                    'class'     => 'success button',
-                    'accesskey' => 'i'
-                ]]
+                'class'     => 'success button',
+                'accesskey' => 'i'
+            ]]
         ],
         'submenuOptions' => ['class' => 'button-group']
     ],
-    ['itemOptions' => ['class' => 'has-form show-for-small-only'], 'label' => false,
+    [
+        'itemOptions' => ['class' => 'has-form show-for-small-only'], 'label' => false,
         'items'    => [
             ['label' => '<i class="fa fa-pencil"></i>', 'url' => $this->createUrl('ubah', ['id' => $model->id]), 'linkOptions' => [
-                    'class' => 'button',
-                ]],
+                'class' => 'button',
+            ]],
             ['label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', ['id' => $model->id]), 'linkOptions' => [
-                    'class'   => 'alert button',
-                    'submit'  => ['hapus', 'id' => $model->id],
-                    'confirm' => 'Anda yakin?'
-                ]],
+                'class'   => 'alert button',
+                'submit'  => ['hapus', 'id' => $model->id],
+                'confirm' => 'Anda yakin?'
+            ]],
             ['label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => [
-                    'class' => 'success button',
-                ]]
+                'class' => 'success button',
+            ]]
         ],
         'submenuOptions' => ['class' => 'button-group']
     ]
