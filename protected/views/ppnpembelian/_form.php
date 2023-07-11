@@ -49,7 +49,8 @@
 				'size'        => 45,
 				'maxlength'   => 45,
 				'placeholder' => '___.___.___._-___.___',
-				'data-slots'  => '_'
+				'data-slots'  => '_',
+				'data-accept' => '\d'
 			]); ?>
 			<?php echo $form->error($model, 'no_faktur_pajak', ['class' => 'error']); ?>
 		</div>
@@ -81,6 +82,7 @@
 
 </div>
 <script>
+	// Sumber: https://stackoverflow.com/questions/12578507/implement-an-input-with-a-mask
 	document.addEventListener('DOMContentLoaded', () => {
 		for (const el of document.querySelectorAll("[placeholder][data-slots]")) {
 			const pattern = el.getAttribute("placeholder"),
