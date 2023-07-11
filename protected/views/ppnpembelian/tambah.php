@@ -49,7 +49,8 @@ $this->boxHeader['normal'] = 'Tambah Pembelian Ppn';
         var options = {
             maximumFractionDigits: 2
         }
-        $("#PembelianPpn_total_ppn_hitung").val(totalPpn.toLocaleString(lang, options));
+        // $("#PembelianPpn_total_ppn_hitung").val(totalPpn.toLocaleString(lang, options));
+        $("#PembelianPpn_total_ppn_hitung").val(totalPpn);
     }
 </script>
 <?php
