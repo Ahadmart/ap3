@@ -50,8 +50,33 @@ $this->boxHeader['normal'] = 'Tambah Pembelian Ppn';
             maximumFractionDigits: 2
         }
         // $("#PembelianPpn_total_ppn_hitung").val(totalPpn.toLocaleString(lang, options));
-        $("#PembelianPpn_total_ppn_hitung").val(totalPpn);
+        // $("#PembelianPpn_total_ppn_hitung").val(totalPpn);
+        // $("#PembelianPpn_total_ppn_hitung").value = totalPpn;
+        $("#PembelianPpn_total_ppn_hitung").attr('value', totalPpn);
     }
+    // $(document).ready(function() {
+    //     $(":submit").click(function(event) {
+    //         console.log(this.form);
+    //         this.form.submit();
+    //         // $("form").each(function() {
+    //         // console.log(this.form.find(':input[name="PembelianPpn[total_ppn_hitung]"]').val()) //<-- Should return all input elements in that specific form.
+    //         // });
+    //         return false;
+    //     });
+    // });
+    const form = document.getElementById("pembelian-ppn-form");
+    form.addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent form submission
+
+      // Loop through form elements and log their values
+      for (let i = 0; i < form.elements.length; i++) {
+        const element = form.elements[i];
+
+        if (element.type !== "submit") {
+          console.log(element.name + ": " + element.value);
+        }
+      }
+    });
 </script>
 <?php
 
