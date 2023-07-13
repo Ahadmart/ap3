@@ -67,15 +67,29 @@ $this->boxHeader['normal'] = 'Tambah Pembelian Ppn';
     const form = document.getElementById("pembelian-ppn-form");
     form.addEventListener("submit", function(event) {
       event.preventDefault(); // Prevent form submission
-
-      // Loop through form elements and log their values
+      // Loop through form elements and save their values
+      var dataKirim={};
       for (let i = 0; i < form.elements.length; i++) {
         const element = form.elements[i];
 
         if (element.type !== "submit") {
-          console.log(element.name + ": " + element.value);
+        //   console.log(element.name + ": " + element.value);
+          dataKirim[element.name] = element.value;
         }
       }
+      console.log(dataKirim);
+
+      $.ajax({
+            type: "POST",
+            url: '<?php echo $this->createUrl('tambah'); ?>',
+            data: dataKirim,
+            dataType: "json",
+            success: function (data) {
+                if (data.sukses) {
+                    console.log("Data Kirim Sukses")
+                }
+            }
+        });
     });
 </script>
 <?php

@@ -132,4 +132,10 @@ class PembelianPpn extends CActiveRecord
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
+
+    public function beforeValidate()
+    {
+        $this->no_faktur_pajak = str_replace([".", "-"], '', $this->no_faktur_pajak);
+        return parent::beforeValidate();
+    }
 }

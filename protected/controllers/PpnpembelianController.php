@@ -52,9 +52,13 @@ class PpnpembelianController extends Controller
 
         if (isset($_POST['PembelianPpn'])) {
             $model->attributes = $_POST['PembelianPpn'];
+            echo "Data diterima: ";
+            print_r($model->attributes);
             if ($model->save()) {
-                $this->redirect(['view', 'id' => $model->id]);
+                //     $this->redirect(['view', 'id' => $model->id]);
+                echo "Data berhasil disimpan";
             }
+            Yii::app()->end();
         }
 
         $pembelianModel = new Pembelian('search');
