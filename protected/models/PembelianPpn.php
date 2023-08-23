@@ -20,6 +20,11 @@
  */
 class PembelianPpn extends CActiveRecord
 {
+    const STATUS_DRAFT   = 0;
+    const STATUS_PENDING = 10;
+    const STATUS_VALID   = 20;
+    public $pembelianNomor;
+
     /**
      * @return string the associated database table name
      */
@@ -36,7 +41,7 @@ class PembelianPpn extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            ['pembelian_id, total_ppn_hitung, total_ppn_faktur', 'required'],
+            ['pembelian_id, total_ppn_hitung', 'required'],
             ['status', 'numerical', 'integerOnly' => true],
             ['pembelian_id, updated_by', 'length', 'max' => 10],
             ['no_faktur_pajak', 'length', 'max' => 45],
@@ -44,7 +49,7 @@ class PembelianPpn extends CActiveRecord
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, pembelian_id, no_faktur_pajak, total_ppn_hitung, total_ppn_faktur, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, pembelian_id, no_faktur_pajak, total_ppn_hitung, total_ppn_faktur, status, updated_at, updated_by, created_at, pembelianNomor', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -76,6 +81,7 @@ class PembelianPpn extends CActiveRecord
             'updated_at'       => 'Updated At',
             'updated_by'       => 'Updated By',
             'created_at'       => 'Created At',
+            'pembelianNomor'   => 'Pembelian',
         ];
     }
 
@@ -107,8 +113,25 @@ class PembelianPpn extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $criteria->with   = ['pembelian'];
+        $criteria->select = 't.*, p.*';
+        $criteria->join   = 'right join pembelian p on p.id = t.pembelian_id';
+        $criteria->compare('p.nomor', $this->pembelianNomor, true);
+
+        $sort = [
+            'defaultOrder' => 'p.nomor desc',
+            'attributes'   => [
+                '*',
+                'pembelianNomor' => [
+                    'asc'  => 'p.nomor',
+                    'desc' => 'p.nomor desc',
+                ],
+            ],
+        ];
+
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
+            'sort'     => $sort,
         ]);
     }
 
@@ -135,7 +158,7 @@ class PembelianPpn extends CActiveRecord
 
     public function beforeValidate()
     {
-        $this->no_faktur_pajak = str_replace([".", "-"], '', $this->no_faktur_pajak);
+        $this->no_faktur_pajak = str_replace(['.', '-'], '', $this->no_faktur_pajak);
         return parent::beforeValidate();
     }
 }

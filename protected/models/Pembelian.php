@@ -371,6 +371,21 @@ class Pembelian extends CActiveRecord
                     throw new Exception('Gagal simpan hutang_id');
                 }
 
+                /*
+                 * Hitung ppn pembelian
+                 */
+                $jmlPpn = $this->ambilTotalPpn();
+                if ($jmlPpn > 0) {
+                    // Jika ada maka simpan ke tabel pembelian_ppn
+                    $pembelianPpn                   = new PembelianPpn();
+                    $pembelianPpn->pembelian_id     = $this->id;
+                    $pembelianPpn->total_ppn_hitung = $jmlPpn;
+                    $pembelianPpn->status           = PembelianPpn::STATUS_PENDING;
+                    if (!$pembelianPpn->save()) {
+                        throw new Exception('Gagal simpan PPN Pembelian');
+                    }
+                }
+
                 $transaction->commit();
                 return ['sukses' => true];
             } else {
