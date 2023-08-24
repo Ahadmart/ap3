@@ -82,6 +82,9 @@ return [
                 ],
             ],
         ],
+        'format' => [
+            'class' => 'BFormatter',
+        ],
     ],
     // application-level parameters that can be accessed
     // using Yii::app()->params['paramName']
