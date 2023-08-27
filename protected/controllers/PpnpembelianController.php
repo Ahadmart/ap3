@@ -3,17 +3,6 @@
 class PpnpembelianController extends Controller
 {
     /**
-     * @return array action filters
-     */
-    public function filters()
-    {
-        return [
-            'accessControl', // perform access control for CRUD operations
-            'postOnly + delete', // we only allow deletion via POST request
-        ];
-    }
-
-    /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
      * @return array access control rules
@@ -40,75 +29,33 @@ class PpnpembelianController extends Controller
     }
 
     /**
-     * Creates a new model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     */
-    public function actionTambah()
-    {
-        $model = new PembelianPpn;
-
-        // Uncomment the following line if AJAX validation is needed
-        // $this->performAjaxValidation($model);
-
-        if (isset($_POST['PembelianPpn'])) {
-            $model->attributes = $_POST['PembelianPpn'];
-            echo "Data diterima: ";
-            print_r($model->attributes);
-            if ($model->save()) {
-                //     $this->redirect(['view', 'id' => $model->id]);
-                echo "Data berhasil disimpan";
-            }
-            Yii::app()->end();
-        }
-
-        $pembelianModel = new Pembelian('search');
-        $pembelianModel->unsetAttributes(); // clear any default values
-        if (isset($_GET['Pembelian'])) {
-            $pembelianModel->attributes = $_GET['Pembelian'];
-        }
-
-        $this->render('tambah', [
-            'model'          => $model,
-            'pembelianModel' => $pembelianModel,
-        ]);
-    }
-
-    /**
-     * Updates a particular model.
+     * Validasi data.
      * @param integer $id the ID of the model to be updated
      */
-    public function actionUbah($id)
+    public function actionValidasi($id)
     {
         $model = $this->loadModel($id);
 
+        if ($model->status == PembelianPpn::STATUS_VALID) {
+            // Jika status sudah valid, diarahkan ke view
+            $this->redirect(['view', 'id' => $id]);
+        }
+
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
         if (isset($_POST['PembelianPpn'])) {
             $model->attributes = $_POST['PembelianPpn'];
+            $model->status = PembelianPpn::STATUS_VALID;
+            $model->setScenario('validasi');
             if ($model->save()) {
                 $this->redirect(['view', 'id' => $id]);
             }
         }
 
-        $this->render('ubah', [
+        $this->render('validasi', [
             'model' => $model,
         ]);
-    }
-
-    /**
-     * Deletes a particular model.
-     * If deletion is successful, the browser will be redirected to the 'admin' page.
-     * @param integer $id the ID of the model to be deleted
-     */
-    public function actionHapus($id)
-    {
-        $this->loadModel($id)->delete();
-
-        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax'])) {
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
-        }
     }
 
     /**
@@ -156,15 +103,14 @@ class PpnpembelianController extends Controller
         }
     }
 
-    public function actionPilihPembelian($id)
+    public function renderLinkToValidasi($data)
     {
-        $pembelian = Pembelian::model()->findByPk($id);
-        $return    = [
-            'id'       => $id,
-            'nomor'    => $pembelian->nomor,
-            'profil'   => $pembelian->profil->nama,
-            'totalPpn' => $pembelian->ambilTotalPpn()
-        ];
-        $this->renderJSON($return);
+        $return = '';
+        if (isset($data->pembelian)) {
+            $return = '<a href="' .
+                $this->createUrl('validasi', ['id' => $data->id]) . '">' .
+                $data->pembelian->nomor . '</a>';
+        }
+        return $return;
     }
 }

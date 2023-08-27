@@ -20,7 +20,7 @@
  */
 class PembelianPpn extends CActiveRecord
 {
-    const STATUS_DRAFT   = 0;
+    // const STATUS_DRAFT   = 0;
     const STATUS_PENDING = 10;
     const STATUS_VALID   = 20;
     public $pembelianNomor;
@@ -42,6 +42,7 @@ class PembelianPpn extends CActiveRecord
         // will receive user inputs.
         return [
             ['pembelian_id, total_ppn_hitung', 'required'],
+            ['no_faktur_pajak, total_ppn_faktur', 'required', 'on' => 'validasi'],
             ['status', 'numerical', 'integerOnly' => true],
             ['pembelian_id, updated_by', 'length', 'max' => 10],
             ['no_faktur_pajak', 'length', 'max' => 45],
@@ -82,6 +83,7 @@ class PembelianPpn extends CActiveRecord
             'updated_by'       => 'Updated By',
             'created_at'       => 'Created At',
             'pembelianNomor'   => 'Pembelian',
+            'namaStatus'       => 'Status',
         ];
     }
 
@@ -108,7 +110,7 @@ class PembelianPpn extends CActiveRecord
         $criteria->compare('no_faktur_pajak', $this->no_faktur_pajak, true);
         $criteria->compare('total_ppn_hitung', $this->total_ppn_hitung, true);
         $criteria->compare('total_ppn_faktur', $this->total_ppn_faktur, true);
-        $criteria->compare('status', $this->status);
+        $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
@@ -160,5 +162,20 @@ class PembelianPpn extends CActiveRecord
     {
         $this->no_faktur_pajak = str_replace(['.', '-'], '', $this->no_faktur_pajak);
         return parent::beforeValidate();
+    }
+
+    public function listStatus()
+    {
+        return [
+            // self::STATUS_DRAFT   => 'Draft',
+            self::STATUS_PENDING => 'Pending',
+            self::STATUS_VALID   => 'Valid',
+        ];
+    }
+
+    public function getNamaStatus()
+    {
+        $list = $this->listStatus();
+        return $list[$this->status];
     }
 }
