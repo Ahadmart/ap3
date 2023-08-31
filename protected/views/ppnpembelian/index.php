@@ -19,33 +19,44 @@ $this->boxHeader['normal'] = 'Pembelian Ppn';
 			'dataProvider' => $model->search(),
 			'filter'       => $model,
 			'columns'      => [
-				// 'id',
-				// 'pembelian_id',
-                [
-                    'class'     => 'BDataColumn',
-                    'name'      => 'pembelianNomor',
-                    'header'    => '<span class="ak">P</span>embelian',
-                    'accesskey' => 'p',
-                    'type'      => 'raw',
-                    'value'     => [$this, 'renderLinkToValidasi'],
-                ],
-				'no_faktur_pajak:ppnFaktur',
-				'total_ppn_hitung:uang',
-				'total_ppn_faktur:uang',
-				// 'status',
-                [
-                    'name'   => 'status',
-                    'value'  => '$data->namaStatus',
-                    'filter' => $model->listStatus(),
-                ],
-				/*
-				'updated_at',
-				'updated_by',
-				'created_at',
 				[
-					'class' => 'BButtonColumn',
+					'class'     => 'BDataColumn',
+					'name'      => 'pembelianNomor',
+					'header'    => '<span class="ak">P</span>embelian',
+					'accesskey' => 'p',
+					'type'      => 'raw',
+					'value'     => [$this, 'renderLinkToValidasi'],
 				],
-				*/
+				'no_faktur_pajak:ppnFaktur',
+				[
+					'name'              => 'total_ppn_hitung',
+					'type'              => 'uang',
+					'htmlOptions'       => ['class' => 'rata-kanan'],
+					'headerHtmlOptions' => ['class' => 'rata-kanan'],
+				],
+				[
+					'name'              => 'total_ppn_faktur',
+					'type'              => 'uang',
+					'htmlOptions'       => ['class' => 'rata-kanan'],
+					'headerHtmlOptions' => ['class' => 'rata-kanan'],
+				],
+				[
+					'name'   => 'status',
+					'value'  => '$data->namaStatus',
+					'filter' => $model->listStatus(),
+				],
+				[
+					'name'  => 'namaUpdatedBy',
+					'value' => '$data->updatedBy->nama_lengkap',
+				],
+				/*
+    'updated_at',
+    'updated_by',
+    'created_at',
+    [
+    'class' => 'BButtonColumn',
+    ],
+     */
 			],
 		]);
 		?>

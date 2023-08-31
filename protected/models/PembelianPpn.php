@@ -24,6 +24,7 @@ class PembelianPpn extends CActiveRecord
     const STATUS_PENDING = 10;
     const STATUS_VALID   = 20;
     public $pembelianNomor;
+    public $namaUpdatedBy;
 
     /**
      * @return string the associated database table name
@@ -50,7 +51,7 @@ class PembelianPpn extends CActiveRecord
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, pembelian_id, no_faktur_pajak, total_ppn_hitung, total_ppn_faktur, status, updated_at, updated_by, created_at, pembelianNomor', 'safe', 'on' => 'search'],
+            ['id, pembelian_id, no_faktur_pajak, total_ppn_hitung, total_ppn_faktur, status, updated_at, updated_by, created_at, pembelianNomor, namaUpdatedBy', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -84,6 +85,7 @@ class PembelianPpn extends CActiveRecord
             'created_at'       => 'Created At',
             'pembelianNomor'   => 'Pembelian',
             'namaStatus'       => 'Status',
+            'namaUpdatedBy'    => 'User',
         ];
     }
 
@@ -112,10 +114,11 @@ class PembelianPpn extends CActiveRecord
         $criteria->compare('total_ppn_faktur', $this->total_ppn_faktur, true);
         $criteria->compare('t.status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
-        $criteria->compare('updated_by', $this->updated_by, true);
+        $criteria->compare('t.updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
 
-        $criteria->with   = ['pembelian'];
+        $criteria->with   = ['pembelian', 'updatedBy'];
         $criteria->select = 't.*, p.*';
         $criteria->join   = 'right join pembelian p on p.id = t.pembelian_id';
         $criteria->compare('p.nomor', $this->pembelianNomor, true);
@@ -127,6 +130,10 @@ class PembelianPpn extends CActiveRecord
                 'pembelianNomor' => [
                     'asc'  => 'p.nomor',
                     'desc' => 'p.nomor desc',
+                ],
+                'namaUpdatedBy' => [
+                    'asc'  => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc',
                 ],
             ],
         ];
