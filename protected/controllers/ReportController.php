@@ -2068,4 +2068,19 @@ class ReportController extends Controller
             'printers' => $printers,
         ]);
     }
+
+    /**
+     * Report PPN
+     *
+     * @return void
+     */
+    public function actionPpn()
+    {
+        $this->layout = '//layouts/box_kecil';
+        $model = new ReportPpnForm();
+        
+        $this->render('ppn', [
+            'model' => $model,
+        ]);
+    }
 }
