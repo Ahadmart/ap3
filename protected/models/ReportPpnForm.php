@@ -36,5 +36,30 @@ class ReportPpnForm extends CFormModel
 
     public function reportPpn()
     {
+        return [
+            'totalPpnPembelianPending' => $this->totalPpnPembelianPending()
+        ];
+    }
+
+    public function totalPpnPembelianPending()
+    {
+        // Fix me: Masih kurang kondisi periode
+        $sql = '
+        SELECT 
+            SUM(total_ppn_hitung) total
+        FROM
+            pembelian_ppn
+        WHERE
+            status = :statusPending
+        ';
+
+        $command = Yii::app()->db->createCommand($sql);
+
+        $command->bindValues([
+            ':statusPending' => PembelianPpn::STATUS_PENDING
+        ]);
+
+        $r = $command->queryRow();
+        return $r['total'];
     }
 }

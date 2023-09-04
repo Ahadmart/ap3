@@ -2072,15 +2072,36 @@ class ReportController extends Controller
     /**
      * Report PPN
      *
-     * @return void
+     * @return view
      */
     public function actionPpn()
     {
         $this->layout = '//layouts/box_kecil';
-        $model = new ReportPpnForm();
-        
+        $model        = new ReportPpnForm();
+
         $this->render('ppn', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * GetPpn: Ambil data report PPN
+     *
+     * @return string json
+     */
+    public function actionGetPpn()
+    {
+        if (!isset($_POST['periode'])) {
+            $this->renderJSON(['sukses' => false]);
+            Yii::app()->end();
+        }
+
+        $reportPpnForm = new ReportPpnForm();
+
+        $reportPpnForm->periode                   = $_POST['periode'];
+        $reportPpnForm->detailPpnPembelianValid   = isset($_POST['detailValid']) ? $_POST['detailValid'] : 0;
+        $reportPpnForm->detailPpnPembelianPending = isset($_POST['detailPending']) ? $_POST['detailPending'] : 0;
+
+        $this->renderJSON($reportPpnForm->reportPpn());
     }
 }

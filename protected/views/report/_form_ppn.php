@@ -20,7 +20,7 @@ $form = $this->beginWidget('CActiveForm', [
 <div class="row">
     <div class="small-12 columns">
         <?php echo $form->labelEx($model, 'periode'); ?>
-        <?php echo $form->textField($model, 'periode', ['class' => 'tanggalan rata-kanan', 'value' => empty($model->tanggal) ? date('Y-m') : $model->tanggal]); ?>
+        <?php echo $form->textField($model, 'periode', ['class' => 'periode rata-kanan', 'value' => empty($model->tanggal) ? date('Y-m') : $model->tanggal]); ?>
         <?php echo $form->error($model, 'periode', ['class' => 'error']); ?>
     </div>
     <div class="small-12 medium-6 columns">
@@ -51,7 +51,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
 ?>
 <script>
     $(function() {
-        $('.tanggalan').fdatepicker({
+        $('.periode').fdatepicker({
             format: 'yyyy-mm',
             startView: 'year',
             minView: 'year',
@@ -61,9 +61,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
 
     $(".tombol-submit").click(function() {
         var dataKirim = {
-            'tanggal': $("#ReportPpnForm_periode").val(),
-            'invGroup': $("#ReportPpnForm_detailPpnPembelianValid").is(':checked') ? 1 : 0,
-            'keuGroup': $("#ReportPpnForm_detailPpnPembelianPending").is(':checked') ? 1 : 0
+            'periode': $("#ReportPpnForm_periode").val(),
+            'detailValid': $("#ReportPpnForm_detailPpnPembelianValid").is(':checked') ? 1 : 0,
+            'detailPending': $("#ReportPpnForm_detailPpnPembelianPending").is(':checked') ? 1 : 0
         };
         $.ajax({
             type: "POST",
