@@ -7,9 +7,14 @@
  */
 class ReportPpnForm extends CFormModel
 {
-    public $periode; // date Ym
-    public $detailPpnPembelianValid   = true;
-    public $detailPpnPembelianPending = true;
+    public string $periode; // date Ym
+    public bool $detailPpnPembelianValid   = true;
+    public bool $detailPpnPembelianPending = true;
+
+    // Variabel untuk convert periode dalam range Y-m-d H:i:s
+    // (Agar tetap menggunakan index)
+    public DateTime $tanggalAwal;
+    public DateTime $tanggalAkhir;
 
     /**
      * Declares the validation rules.     *
@@ -36,54 +41,74 @@ class ReportPpnForm extends CFormModel
 
     public function reportPpn()
     {
+        $this->tanggalAwal  = DateTime::createFromFormat('Y-m-d H:i:s', $this->periode . '-01 00:00:00');
+        $this->tanggalAkhir = DateTime::createFromFormat('Y-m-d H:i:s', $this->periode . '-01 00:00:00');
+        $this->tanggalAkhir->modify('+1 month');
         return [
             'totalPpnPembelianPending'  => $this->totalPpnPembelianPending(),
             'totalPpnPembelianValid'    => $this->totalPpnPembelianValid(),
             'detailPpnPembelianPending' => $this->detailPpnPembelianPending(),
             'detailPpnPembelianValid'   => $this->detailPpnPembelianValid(),
+            'totalPpnPenjualan'         => $this->totalPpnPenjualan(),
         ];
     }
 
     public function totalPpnPembelianPending()
     {
-        // Fix me: Masih kurang kondisi periode
         $sql = '
         SELECT
-            SUM(total_ppn_hitung) total
+            IFNULL(SUM(total_ppn_hitung), 0)  total
         FROM
-            pembelian_ppn
+            pembelian_ppn t
+                JOIN
+            pembelian p ON p.id = t.pembelian_id
         WHERE
-            status = :statusPending
+            t.status = :statusPending
+                AND p.tanggal >= :tglAwal
+                AND p.tanggal < :tglAkhir
         ';
 
         $command = Yii::app()->db->createCommand($sql);
 
         $command->bindValues([
             ':statusPending' => PembelianPpn::STATUS_PENDING,
+            ':tglAwal'       => $this->tanggalAwal->format('Y-m-d H:i:s'),
+            ':tglAkhir'      => $this->tanggalAkhir->format('Y-m-d H:i:s'),
         ]);
 
+        if ($command->queryRow() == false) {
+            return 0;
+        }
         $r = $command->queryRow();
         return $r['total'];
     }
 
     public function totalPpnPembelianValid()
     {
-        // Fix me: Masih kurang kondisi periode
         $sql = '
         SELECT
-            SUM(total_ppn_faktur) total
+            IFNULL(SUM(total_ppn_faktur), 0)  total
         FROM
-            pembelian_ppn
+            pembelian_ppn t
+                JOIN
+            pembelian p ON p.id = t.pembelian_id
         WHERE
-            status = :statusValid
+            t.status = :statusValid
+                AND p.tanggal >= :tglAwal
+                AND p.tanggal < :tglAkhir
         ';
 
         $command = Yii::app()->db->createCommand($sql);
 
         $command->bindValues([
             ':statusValid' => PembelianPpn::STATUS_VALID,
+            ':tglAwal'     => $this->tanggalAwal->format('Y-m-d H:i:s'),
+            ':tglAkhir'    => $this->tanggalAkhir->format('Y-m-d H:i:s'),
         ]);
 
+        if ($command->queryRow() == false) {
+            return 0;
+        }
         $r = $command->queryRow();
         return $r['total'];
     }
@@ -94,22 +119,26 @@ class ReportPpnForm extends CFormModel
         SELECT
             profil.nama,
             no_faktur_pajak,
-            pembelian.nomor,
+            p.nomor,
             total_ppn_hitung AS jumlah
         FROM
             pembelian_ppn t
                 JOIN
-            pembelian ON pembelian.id = t.pembelian_id
+            pembelian p ON p.id = t.pembelian_id
                 JOIN
-            profil ON profil.id = pembelian.profil_id
+            profil ON profil.id = p.profil_id
         WHERE
             t.status = :statusPending
+                AND p.tanggal >= :tglAwal
+                AND p.tanggal < :tglAkhir
         ';
 
         $command = Yii::app()->db->createCommand($sql);
 
         $command->bindValues([
             ':statusPending' => PembelianPpn::STATUS_PENDING,
+            ':tglAwal'       => $this->tanggalAwal->format('Y-m-d H:i:s'),
+            ':tglAkhir'      => $this->tanggalAkhir->format('Y-m-d H:i:s'),
         ]);
 
         return $command->queryAll();
@@ -121,24 +150,58 @@ class ReportPpnForm extends CFormModel
         SELECT
             profil.nama,
             no_faktur_pajak,
-            pembelian.nomor,
+            p.nomor,
             total_ppn_faktur AS jumlah
         FROM
             pembelian_ppn t
                 JOIN
-            pembelian ON pembelian.id = t.pembelian_id
+            pembelian p ON p.id = t.pembelian_id
                 JOIN
-            profil ON profil.id = pembelian.profil_id
+            profil ON profil.id = p.profil_id
         WHERE
             t.status = :statusValid
+                AND p.tanggal >= :tglAwal
+                AND p.tanggal < :tglAkhir
         ';
 
         $command = Yii::app()->db->createCommand($sql);
 
         $command->bindValues([
             ':statusValid' => PembelianPpn::STATUS_VALID,
+            ':tglAwal'     => $this->tanggalAwal->format('Y-m-d H:i:s'),
+            ':tglAkhir'    => $this->tanggalAkhir->format('Y-m-d H:i:s'),
         ]);
 
         return $command->queryAll();
+    }
+
+    public function totalPpnPenjualan()
+    {
+        $sql = '
+        SELECT
+            SUM(qty * ppn) total
+        FROM
+            penjualan_detail t
+                JOIN
+            penjualan p ON p.id = t.penjualan_id
+        WHERE
+            p.tanggal >= :tglAwal
+                AND p.tanggal < :tglAkhir
+        GROUP BY penjualan_id
+        HAVING SUM(qty * ppn) > 0
+        ';
+
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValues([
+            ':tglAwal'  => $this->tanggalAwal->format('Y-m-d H:i:s'),
+            ':tglAkhir' => $this->tanggalAkhir->format('Y-m-d H:i:s'),
+
+        ]);
+
+        if ($command->queryRow() == false) {
+            return 0;
+        }
+        $r = $command->queryRow();
+        return $r['total'];
     }
 }
