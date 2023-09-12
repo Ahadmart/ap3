@@ -2099,8 +2099,8 @@ class ReportController extends Controller
         $reportPpnForm = new ReportPpnForm();
 
         $reportPpnForm->periode                   = $_POST['periode'];
-        $reportPpnForm->detailPpnPembelianValid   = isset($_POST['detailValid']) ? $_POST['detailValid'] : 0;
-        $reportPpnForm->detailPpnPembelianPending = isset($_POST['detailPending']) ? $_POST['detailPending'] : 0;
+        $reportPpnForm->detailPpnPembelianValid   = $_POST['detailValid'];
+        $reportPpnForm->detailPpnPembelianPending = $_POST['detailPending'];
 
         $this->renderJSON($reportPpnForm->reportPpn());
     }

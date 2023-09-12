@@ -39,33 +39,43 @@ class ReportPpnForm extends CFormModel
         ];
     }
 
+    public function beforeValidate()
+    {
+        $this->detailPpnPembelianPending = $this->detailPpnPembelianPending == 1 ? true : false;
+        $this->detailPpnPembelianValid   = $this->detailPpnPembelianValid == 1 ? true : false;
+        return parent::beforeValidate();
+    }
+
     public function reportPpn()
     {
         $this->tanggalAwal  = DateTime::createFromFormat('Y-m-d H:i:s', $this->periode . '-01 00:00:00');
         $this->tanggalAkhir = DateTime::createFromFormat('Y-m-d H:i:s', $this->periode . '-01 00:00:00');
         $this->tanggalAkhir->modify('+1 month');
-        return [
-            'totalPpnPembelianPending'  => $this->totalPpnPembelianPending(),
-            'totalPpnPembelianValid'    => $this->totalPpnPembelianValid(),
-            'detailPpnPembelianPending' => $this->detailPpnPembelianPending(),
-            'detailPpnPembelianValid'   => $this->detailPpnPembelianValid(),
-            'totalPpnPenjualan'         => $this->totalPpnPenjualan(),
+        $r = [
+            'totalPpnPembelianPending' => $this->totalPpnPembelianPending(),
+            'totalPpnPembelianValid'   => $this->totalPpnPembelianValid(),
+            'totalPpnPenjualan'        => $this->totalPpnPenjualan(),
         ];
+        if ($this->detailPpnPembelianPending) {
+            $r['detailPpnPembelianPending'] = $this->detailPpnPembelianPending();
+        }
+        if ($this->detailPpnPembelianValid) {
+            $r['detailPpnPembelianValid'] = $this->detailPpnPembelianValid();
+        }
+        return $r;
     }
 
     public function totalPpnPembelianPending()
     {
         $sql = '
         SELECT
-            IFNULL(SUM(total_ppn_hitung), 0)  total
+            IFNULL(SUM(total_ppn_hitung), 0) total
         FROM
-            pembelian_ppn t
-                JOIN
-            pembelian p ON p.id = t.pembelian_id
+            pembelian_ppn
         WHERE
-            t.status = :statusPending
-                AND p.tanggal >= :tglAwal
-                AND p.tanggal < :tglAkhir
+            status = :statusPending
+                AND updated_at >= :tglAwal
+                AND updated_at < :tglAkhir
         ';
 
         $command = Yii::app()->db->createCommand($sql);
@@ -87,15 +97,13 @@ class ReportPpnForm extends CFormModel
     {
         $sql = '
         SELECT
-            IFNULL(SUM(total_ppn_faktur), 0)  total
+            IFNULL(SUM(total_ppn_faktur), 0) total
         FROM
-            pembelian_ppn t
-                JOIN
-            pembelian p ON p.id = t.pembelian_id
+            pembelian_ppn
         WHERE
-            t.status = :statusValid
-                AND p.tanggal >= :tglAwal
-                AND p.tanggal < :tglAkhir
+            status = :statusValid
+                AND updated_at >= :tglAwal
+                AND updated_at < :tglAkhir
         ';
 
         $command = Yii::app()->db->createCommand($sql);
@@ -129,8 +137,8 @@ class ReportPpnForm extends CFormModel
             profil ON profil.id = p.profil_id
         WHERE
             t.status = :statusPending
-                AND p.tanggal >= :tglAwal
-                AND p.tanggal < :tglAkhir
+                AND t.updated_at >= :tglAwal
+                AND t.updated_at < :tglAkhir
         ';
 
         $command = Yii::app()->db->createCommand($sql);
@@ -160,8 +168,8 @@ class ReportPpnForm extends CFormModel
             profil ON profil.id = p.profil_id
         WHERE
             t.status = :statusValid
-                AND p.tanggal >= :tglAwal
-                AND p.tanggal < :tglAkhir
+                AND t.updated_at >= :tglAwal
+                AND t.updated_at < :tglAkhir
         ';
 
         $command = Yii::app()->db->createCommand($sql);
