@@ -25,18 +25,17 @@ $form = $this->beginWidget('CActiveForm', [
     </div>
     <div class="small-12 medium-6 columns">
         <div class="row">
-            <?php echo $form->checkBox($model, 'detailPpnPembelianPending'); ?>
-            <?php echo $form->labelEx($model, 'detailPpnPembelianPending'); ?>
-            <?php echo $form->error($model, 'detailPpnPembelianPending', ['class' => 'error']); ?>
-        </div>
-        <div class="row">
             <?php echo $form->checkBox($model, 'detailPpnPembelianValid'); ?>
             <?php echo $form->labelEx($model, 'detailPpnPembelianValid'); ?>
             <?php echo $form->error($model, 'detailPpnPembelianValid', ['class' => 'error']); ?>
         </div>
+        <div class="row">
+            <?php echo $form->checkBox($model, 'detailPpnPembelianPending'); ?>
+            <?php echo $form->labelEx($model, 'detailPpnPembelianPending'); ?>
+            <?php echo $form->error($model, 'detailPpnPembelianPending', ['class' => 'error']); ?>
+        </div>
     </div>
 
-    <div class="row">
         <div class="small-12 columns">
             <?php echo CHtml::submitButton('Submit', ['class' => 'tiny bigfont button right tombol-submit']); ?>
         </div>
@@ -44,11 +43,41 @@ $form = $this->beginWidget('CActiveForm', [
 </div>
 <div class="row">
     <div class="small-12 columns">
-        <table id="report" class="tabel-index" style="display:none">
+        <table id="rekap" class="tabel-index" style="display:none">
             <thead>
                 <tr>
                     <td>Nama</td>
                     <td class="rata-kanan">Total</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <table id="detail-valid" class="tabel-index" style="display:none">
+            <caption>Detail PPN Pembelian Valid</caption>
+            <thead>
+                <tr>
+                    <td>Supplier</td>
+                    <td>Faktur Pajak</td>
+                    <td>Pembelian</td>
+                    <td class="rata-kanan">PPN</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <table id="detail-pending" class="tabel-index" style="display:none">
+            <thead>
+                <tr>
+                    <td>Supplier</td>
+                    <td>Pembelian</td>
+                    <td class="rata-kanan">PPN</td>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -78,6 +107,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             'detailValid': $("#ReportPpnForm_detailPpnPembelianValid").is(':checked') ? 1 : 0,
             'detailPending': $("#ReportPpnForm_detailPpnPembelianPending").is(':checked') ? 1 : 0
         };
+        $("#rekap").hide();
+        $("#detail-valid").hide();
+        $("#detail-pending").hide();
         $.ajax({
             type: "POST",
             url: '<?php echo $this->createUrl('getppn'); ?>',
@@ -85,26 +117,32 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             dataType: "json",
             success: function(hasil) {
                 if (hasil.sukses) {
-                    $("#report").show();
-                    isiTabelPpn(hasil.data)
+                    $("#rekap").show();
+                    isiTabelPpn(hasil.data);
+                    if (hasil.data.detailPpnPembelianValid.length > 0) {
+                        $("#detail-valid").show();
+                        isiDetailValid(hasil.data.detailPpnPembelianValid)
+                    }
+                    if (hasil.data.detailPpnPembelianPending.length > 0) {
+                        $("#detail-pending").show();
+                        isiDetailPending(hasil.data.detailPpnPembelianPending)
+                    }
                 }
             }
         });
         return false;
     });
 
+    lang = 'id-ID';
+    options = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }
 
     function isiTabelPpn(data) {
-        var tBody = $("#report tbody");
+        var tBody = $("#rekap tbody");
         tBody.html('');
-        var totalPpnPenjualan = data.totalPpnPenjualan;
-        console.log("Total Penjualan: " + totalPpnPenjualan);
-        var lang = 'id-ID';
-        var options = {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }
-        console.log("Total Penjualan: " + parseFloat(totalPpnPenjualan).toLocaleString(lang, options));
+        // console.log("Total Penjualan: " + parseFloat(data.totalPpnPenjualan).toLocaleString(lang, options));
         var totalPpnJual = $('<tr>');
         totalPpnJual.append($('<td>').text('Total PPN Penjualan'));
         totalPpnJual.append($('<td class="rata-kanan">').text(parseFloat(data.totalPpnPenjualan).toLocaleString(lang, options)));
@@ -121,5 +159,29 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
         TotalPpnBeliPending.append($('<td>').text('Total PPN Pembelian Pending'));
         TotalPpnBeliPending.append($('<td class="rata-kanan">').text(parseFloat(data.totalPpnPembelianPending).toLocaleString(lang, options)));
         tBody.append(TotalPpnBeliPending);
+    }
+
+    function isiDetailValid(data) {
+        var tBody = $("#detail-valid tbody");
+        tBody.html("");
+        $.each(data, function(i, item) {
+            var row = $('<tr>');
+            row.append($('<td>').text(item.nama));
+            row.append($('<td>').text(item.no_faktur_pajak));
+            row.append($('<td>').text(item.nomor));
+            row.append($('<td class="rata-kanan">').text(parseFloat(item.jumlah).toLocaleString(lang, options)));
+            tBody.append(row);
+        })
+    }
+    function isiDetailPending(data) {
+        var tBody = $("#detail-pending tbody");
+        tBody.html("");
+        $.each(data, function(i, item) {
+            var row = $('<tr>');
+            row.append($('<td>').text(item.nama));
+            row.append($('<td>').text(item.nomor));
+            row.append($('<td class="rata-kanan">').text(parseFloat(item.jumlah).toLocaleString(lang, options)));
+            tBody.append(row);
+        })
     }
 </script>
