@@ -62,7 +62,10 @@ class ReportPpnForm extends CFormModel
         if ($this->detailPpnPembelianValid) {
             $r['detailPpnPembelianValid'] = $this->detailPpnPembelianValid();
         }
-        return $r;
+        return [
+            'sukses' => true,
+            'data'   => $r
+        ];
     }
 
     public function totalPpnPembelianPending()

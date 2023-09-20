@@ -25,14 +25,14 @@ $form = $this->beginWidget('CActiveForm', [
     </div>
     <div class="small-12 medium-6 columns">
         <div class="row">
-            <?php echo $form->checkBox($model, 'detailPpnPembelianValid'); ?>
-            <?php echo $form->labelEx($model, 'detailPpnPembelianValid'); ?>
-            <?php echo $form->error($model, 'detailPpnPembelianValid', ['class' => 'error']); ?>
-        </div>
-        <div class="row">
             <?php echo $form->checkBox($model, 'detailPpnPembelianPending'); ?>
             <?php echo $form->labelEx($model, 'detailPpnPembelianPending'); ?>
             <?php echo $form->error($model, 'detailPpnPembelianPending', ['class' => 'error']); ?>
+        </div>
+        <div class="row">
+            <?php echo $form->checkBox($model, 'detailPpnPembelianValid'); ?>
+            <?php echo $form->labelEx($model, 'detailPpnPembelianValid'); ?>
+            <?php echo $form->error($model, 'detailPpnPembelianValid', ['class' => 'error']); ?>
         </div>
     </div>
 
@@ -40,6 +40,19 @@ $form = $this->beginWidget('CActiveForm', [
         <div class="small-12 columns">
             <?php echo CHtml::submitButton('Submit', ['class' => 'tiny bigfont button right tombol-submit']); ?>
         </div>
+    </div>
+</div>
+<div class="row">
+    <div class="small-12 columns">
+        <table id="report" class="tabel-index" style="display:none">
+            <thead>
+                <tr>
+                    <td>Nama</td>
+                    <td class="rata-kanan">Total</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 </div>
 <?php
@@ -70,10 +83,43 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             url: '<?php echo $this->createUrl('getppn'); ?>',
             data: dataKirim,
             dataType: "json",
-            success: function(data) {
-                if (data.sukses) {}
+            success: function(hasil) {
+                if (hasil.sukses) {
+                    $("#report").show();
+                    isiTabelPpn(hasil.data)
+                }
             }
         });
         return false;
     });
+
+
+    function isiTabelPpn(data) {
+        var tBody = $("#report tbody");
+        tBody.html('');
+        var totalPpnPenjualan = data.totalPpnPenjualan;
+        console.log("Total Penjualan: " + totalPpnPenjualan);
+        var lang = 'id-ID';
+        var options = {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+        console.log("Total Penjualan: " + parseFloat(totalPpnPenjualan).toLocaleString(lang, options));
+        var totalPpnJual = $('<tr>');
+        totalPpnJual.append($('<td>').text('Total PPN Penjualan'));
+        totalPpnJual.append($('<td class="rata-kanan">').text(parseFloat(data.totalPpnPenjualan).toLocaleString(lang, options)));
+        tBody.append(totalPpnJual);
+        var TotalPpnBeliValid = $('<tr>');
+        TotalPpnBeliValid.append($('<td>').text('Total PPN Pembelian Valid'));
+        TotalPpnBeliValid.append($('<td class="rata-kanan">').text(parseFloat(data.totalPpnPembelianValid).toLocaleString(lang, options)));
+        tBody.append(TotalPpnBeliValid);
+        var TotalPpnHutang = $('<tr>');
+        TotalPpnHutang.append($('<td>').text('PPN Terhutang'));
+        TotalPpnHutang.append($('<td class="rata-kanan">').text((parseFloat(data.totalPpnPembelianValid - data.totalPpnPenjualan)).toLocaleString(lang, options)));
+        tBody.append(TotalPpnHutang);
+        var TotalPpnBeliPending = $('<tr>');
+        TotalPpnBeliPending.append($('<td>').text('Total PPN Pembelian Pending'));
+        TotalPpnBeliPending.append($('<td class="rata-kanan">').text(parseFloat(data.totalPpnPembelianPending).toLocaleString(lang, options)));
+        tBody.append(TotalPpnBeliPending);
+    }
 </script>
