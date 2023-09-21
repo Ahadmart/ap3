@@ -675,3 +675,9 @@ pre {
         display: table-cell;
     }
 }
+
+table caption {
+    color: $warna-text;
+    margin-bottom: 10px;
+    text-align: left;
+}
