@@ -166,7 +166,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             // Baru kemudian hitung PPN
             ppnBeliNom = 0;
             ppnJualNom = 0;
-            ppnJual = $("#ppnjual-val").val();
+            ppnJual = parseInt($("#ppnjual-val").val());
             hargaBeli = hargaBeli + (hargaBeli / 100 * ppn);
             hargaJualH = hargaBeli + (hargaBeli / 100 * profitPersen);
             sisaPembulatan = hargaJualH % <?= $pembulatan ?>;
@@ -191,6 +191,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 hargaBeliBersih = hargaBeli;
                 hargaJualBersih = hargaJual;
             }
+            console.log("HJ Net1: " + hargaJualBersih)
             ppnJualNom = hargaJual - hargaJualBersih;
             if (ppnBeliNom > 0) {
                 ppnJualNom = hargaJual - (hargaJualH / (1 + ppnJual / 100)) - ppnBeliNom;
@@ -206,6 +207,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             }
             $("#harga-beli-bersih").html("Harga beli bersih: " + hargaBeliBersih.toLocaleString(lang, options));
             $("#harga-beli-ppn").html("PPN: " + ppnBeliNom.toLocaleString(lang, options));
+            console.log("HJ Net2: " + hargaJualBersih)
+            console.log("HJ Net2 Formatted: " + hargaJualBersih.toLocaleString(lang, options))
             $("#harga-jual-bersih").html("Harga jual bersih: " + hargaJualBersih.toLocaleString(lang, options));
             $("#harga-jual-ppn").html("PPN: " + ppnJualNom.toLocaleString(lang, options));
             $("#harga-jual-margin").html("Margin: " + margin.toLocaleString(lang, options) + " (" + (margin / hargaJualBersih * 100).toLocaleString(lang, {

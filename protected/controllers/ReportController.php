@@ -180,8 +180,8 @@ class ReportController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-                $this->createUrl('pilihuser', ['id' => $data->id]) .
-                '" class="pilih user">' . $data->nama_lengkap . '</a>';
+            $this->createUrl('pilihuser', ['id' => $data->id]) .
+            '" class="pilih user">' . $data->nama_lengkap . '</a>';
         }
         return $return;
     }
@@ -604,15 +604,15 @@ class ReportController extends Controller
 
         $text      = $model->toCsv($hideOpenTxn);
         $namaStruk = '';
-        if (!empty($model->strukLv1)) :
+        if (!empty($model->strukLv1)):
             $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
             $namaStruk .= $strukLv1->nama;
         endif;
-        if (!empty($model->strukLv2)) :
+        if (!empty($model->strukLv2)):
             $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
             $namaStruk .= '_' . $strukLv2->nama;
         endif;
-        if (!empty($model->strukLv3)) :
+        if (!empty($model->strukLv3)):
             $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
             $namaStruk .= '_' . $strukLv3->nama;
         endif;
@@ -806,8 +806,8 @@ class ReportController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-                $this->createUrl('pilihitemkeu', ['id' => $data->id]) .
-                '" class="pilih itemkeu">' . $data->nama . '</a>';
+            $this->createUrl('pilihitemkeu', ['id' => $data->id]) .
+            '" class="pilih itemkeu">' . $data->nama . '</a>';
         }
         return $return;
     }
@@ -878,15 +878,15 @@ class ReportController extends Controller
 
         $text      = $model->toCsv();
         $namaStruk = '';
-        if (!empty($model->strukLv1)) :
+        if (!empty($model->strukLv1)):
             $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
             $namaStruk .= $strukLv1->nama;
         endif;
-        if (!empty($model->strukLv2)) :
+        if (!empty($model->strukLv2)):
             $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
             $namaStruk .= '_' . $strukLv2->nama;
         endif;
-        if (!empty($model->strukLv3)) :
+        if (!empty($model->strukLv3)):
             $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
             $namaStruk .= '_' . $strukLv3->nama;
         endif;
@@ -2079,8 +2079,14 @@ class ReportController extends Controller
         $this->layout = '//layouts/box_kecil';
         $model        = new ReportPpnForm();
 
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+        $kertasPdf = ReportPpnForm::listKertas();
+
         $this->render('ppn', [
-            'model' => $model,
+            'model'    => $model,
+            'printers' => $printers,
+            'kertasPdf' => $kertasPdf
         ]);
     }
 
@@ -2095,13 +2101,22 @@ class ReportController extends Controller
             $this->renderJSON(['sukses' => false]);
             Yii::app()->end();
         }
+        $this->renderJSON($this->getPpn($_POST['periode'], $_POST['detailValid'], $_POST['detailPending']));
+    }
 
-        $reportPpnForm = new ReportPpnForm();
+    public function getPpn($periode, $detailValid, $detailPending)
+    {
+        $report                            = new ReportPpnForm();
+        $report->periode                   = $periode;
+        $report->detailPpnPembelianValid   = $detailValid;
+        $report->detailPpnPembelianPending = $detailPending;
+        return $report->reportPpn();
+    }
 
-        $reportPpnForm->periode                   = $_POST['periode'];
-        $reportPpnForm->detailPpnPembelianValid   = $_POST['detailValid'];
-        $reportPpnForm->detailPpnPembelianPending = $_POST['detailPending'];
+    public function actionPrintPpn()
+    {
 
-        $this->renderJSON($reportPpnForm->reportPpn());
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $printers             = Device::model()->listDevices($tipePrinterAvailable);
     }
 }

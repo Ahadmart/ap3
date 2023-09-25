@@ -7,6 +7,16 @@
  */
 class ReportPpnForm extends CFormModel
 {
+    // constant untuk kertas pdf
+    const KERTAS_LETTER = 10;
+    const KERTAS_A4     = 20;
+    const KERTAS_FOLIO  = 30;
+    /* ===================== */
+    const KERTAS_LETTER_NAMA = 'Letter';
+    const KERTAS_A4_NAMA     = 'A4';
+    const KERTAS_FOLIO_NAMA  = 'Folio';
+
+    // var
     public string $periode; // date Ym
     public bool $detailPpnPembelianValid   = true;
     public bool $detailPpnPembelianPending = true;
@@ -214,5 +224,14 @@ class ReportPpnForm extends CFormModel
         }
         $r = $command->queryRow();
         return $r['total'];
+    }
+
+    public static function listKertas()
+    {
+        return [
+            self::KERTAS_A4     => self::KERTAS_A4_NAMA,
+            self::KERTAS_FOLIO  => self::KERTAS_FOLIO_NAMA,
+            self::KERTAS_LETTER => self::KERTAS_LETTER_NAMA
+        ];
     }
 }
