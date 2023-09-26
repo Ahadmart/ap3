@@ -125,3 +125,12 @@ td{
 .remarks-d{
     text-align: justify;
 }
+
+caption{
+    text-align: left;
+    font-weight: bold;
+}
+
+tr.alt{
+    background-color: #E0E0E0;
+}

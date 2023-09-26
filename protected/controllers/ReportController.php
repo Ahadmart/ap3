@@ -180,8 +180,8 @@ class ReportController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-            $this->createUrl('pilihuser', ['id' => $data->id]) .
-            '" class="pilih user">' . $data->nama_lengkap . '</a>';
+                $this->createUrl('pilihuser', ['id' => $data->id]) .
+                '" class="pilih user">' . $data->nama_lengkap . '</a>';
         }
         return $return;
     }
@@ -604,15 +604,15 @@ class ReportController extends Controller
 
         $text      = $model->toCsv($hideOpenTxn);
         $namaStruk = '';
-        if (!empty($model->strukLv1)):
+        if (!empty($model->strukLv1)) :
             $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
             $namaStruk .= $strukLv1->nama;
         endif;
-        if (!empty($model->strukLv2)):
+        if (!empty($model->strukLv2)) :
             $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
             $namaStruk .= '_' . $strukLv2->nama;
         endif;
-        if (!empty($model->strukLv3)):
+        if (!empty($model->strukLv3)) :
             $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
             $namaStruk .= '_' . $strukLv3->nama;
         endif;
@@ -806,8 +806,8 @@ class ReportController extends Controller
         $return = '';
         if (isset($data->nama)) {
             $return = '<a href="' .
-            $this->createUrl('pilihitemkeu', ['id' => $data->id]) .
-            '" class="pilih itemkeu">' . $data->nama . '</a>';
+                $this->createUrl('pilihitemkeu', ['id' => $data->id]) .
+                '" class="pilih itemkeu">' . $data->nama . '</a>';
         }
         return $return;
     }
@@ -878,15 +878,15 @@ class ReportController extends Controller
 
         $text      = $model->toCsv();
         $namaStruk = '';
-        if (!empty($model->strukLv1)):
+        if (!empty($model->strukLv1)) :
             $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
             $namaStruk .= $strukLv1->nama;
         endif;
-        if (!empty($model->strukLv2)):
+        if (!empty($model->strukLv2)) :
             $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
             $namaStruk .= '_' . $strukLv2->nama;
         endif;
-        if (!empty($model->strukLv3)):
+        if (!empty($model->strukLv3)) :
             $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
             $namaStruk .= '_' . $strukLv3->nama;
         endif;
@@ -2113,10 +2113,31 @@ class ReportController extends Controller
         return $report->reportPpn();
     }
 
-    public function actionPrintPpn()
+    public function actionPrintPpn($printer, $kertas, $periode, $detailValid, $detailPending)
     {
+        $r = $this->getPpn($periode, $detailValid, $detailPending);
+        // $device = Device::model()->findByPk($printer);
+        // Saat ini hanya pdf
+        $this->ppnPdf($r['data'], $kertas, $periode);
+    }
 
-        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
-        $printers             = Device::model()->listDevices($tipePrinterAvailable);
+    public function ppnPdf($report, $kertas, $periode)
+    {
+        /*
+         * Persiapan render PDF
+         */
+
+        require_once __DIR__ . '/../vendor/autoload.php';
+        $listKertas = ReportPpnForm::listKertas();
+        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $mpdf->WriteHTML($this->renderPartial('ppn_pdf', [
+            'report' => $report,
+            'periode' => $periode,
+        ], true));
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->pagenumPrefix = 'Hal ';
+        $mpdf->pagenumSuffix = ' / ';
+        // Render PDF
+        $mpdf->Output("PPN {$periode}.pdf", 'I');
     }
 }

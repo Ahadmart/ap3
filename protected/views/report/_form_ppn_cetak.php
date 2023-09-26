@@ -18,28 +18,25 @@
                         <?php
                         foreach ($kertasPdf as $key => $value) :
                         ?>
-                            <li><a target="blank" class="export-pdf" data-kertas="<?= $key ?>" href="<?=
-                                                                                                        $this->createUrl('printppn', [
-                                                                                                            'printId' => $printer['id'],
-                                                                                                            'kertas' => $key
-                                                                                                        ])
-                                                                                                        ?>"><?= $value; ?></a></li>
+                            <li><a target="blank" class="export-pdf" data-kertas="<?= $key ?>" data-printer="<?= $printer['id'] ?>"><?= $value; ?></a></li>
                         <?php
                         endforeach;
                         ?>
                     </ul>
                 <?php
                 } else {
+                    /* Untuk nanti
                 ?>
-                    <li>
-                        <a href="<?=
-                                    $this->createUrl('printppn', [
-                                        'printId' => $printer['id'],
-                                    ])
-                                    ?>">
-                            <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
-                    </li>
+                        <li>
+                            <a href="<?=
+                                        $this->createUrl('printppn', [
+                                            'printer' => $printer['id'],
+                                        ])
+                                        ?>">
+                                <?= $printer['nama']; ?> <small><?= $printer['keterangan']; ?></small></a>
+                        </li>
                 <?php
+                */
                 }
                 ?>
             <?php
@@ -50,7 +47,15 @@
 </ul>
 <script>
     $(".export-pdf").click(function() {
-        console.log($(this).data("kertas"));
+        formData = {
+            'printer': $(this).data('printer'),
+            'kertas': $(this).data("kertas"),
+            'periode': $("#ReportPpnForm_periode").val(),
+            'detailValid': $("#ReportPpnForm_detailPpnPembelianValid").is(':checked') ? 1 : 0,
+            'detailPending': $("#ReportPpnForm_detailPpnPembelianPending").is(':checked') ? 1 : 0
+        };
+        url = "<?= $this->createUrl('printppn') ?>?" + Object.keys(formData).map(key => `${key}=${encodeURIComponent(formData[key])}`).join('&')
+        window.open(url)
         return false;
     })
 </script>
