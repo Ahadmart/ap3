@@ -193,7 +193,18 @@ class ReportPpnForm extends CFormModel
             ':tglAkhir'    => $this->tanggalAkhir->format('Y-m-d H:i:s'),
         ]);
 
-        return $command->queryAll();
+        $r         = $command->queryAll();
+        $rF        = [];
+        $formatter = new BFormatter;
+        foreach ($r as $row) {
+            $rF[] = [
+                'nama'            => $row['nama'],
+                'no_faktur_pajak' => $formatter->ppnFaktur($row['no_faktur_pajak']),
+                'nomor'           => $row['nomor'],
+                'jumlah'          => $row['jumlah']
+            ];
+        }
+        return $rF;
     }
 
     public function totalPpnPenjualan()
