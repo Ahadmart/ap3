@@ -2081,11 +2081,11 @@ class ReportController extends Controller
 
         $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
-        $kertasPdf = ReportPpnForm::listKertas();
+        $kertasPdf            = ReportPpnForm::listKertas();
 
         $this->render('ppn', [
-            'model'    => $model,
-            'printers' => $printers,
+            'model'     => $model,
+            'printers'  => $printers,
             'kertasPdf' => $kertasPdf
         ]);
     }
@@ -2128,16 +2128,18 @@ class ReportController extends Controller
          */
 
         require_once __DIR__ . '/../vendor/autoload.php';
-        $listKertas = ReportPpnForm::listKertas();
+        $confNamaToko       = Config::model()->find("nama = 'toko.nama'");
+        $listKertas     = ReportPpnForm::listKertas();
         $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('ppn_pdf', [
-            'report' => $report,
-            'periode' => $periode,
+            'namaToko' => $confNamaToko->nilai,
+            'report'   => $report,
+            'periode'  => $periode,
         ], true));
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumPrefix = 'Hal ';
         $mpdf->pagenumSuffix = ' / ';
         // Render PDF
-        $mpdf->Output("PPN {$periode}.pdf", 'I');
+        $mpdf->Output("Laporan PPN: {$confNamaToko->nilai} {$periode}.pdf", 'I');
     }
 }

@@ -1,8 +1,8 @@
 <html>
 
 <head>
-    <title>Laporan PPN : <?= $periode; ?>
-    </title>
+    <?php /*<title>Laporan PPN : <?= $namaToko ?> <?= $periode; ?>
+    </title> */?>
     <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf-laporan.css" />
     <!-- <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" /> -->
 </head>
@@ -12,7 +12,7 @@
             <htmlpagefooter name="footer">
                 <table style="border-top:thin solid black">
                     <tr>
-                        <td style="text-align:left">Laporan PPN: <?= $periode ?>
+                        <td style="text-align:left">Laporan PPN: <?= $namaToko ?> <?= $periode ?>
     </td>
     <td style="text-align:center">
     </td>
@@ -25,6 +25,7 @@
     mpdf-->
     <div id="header1" style="border-bottom: 1px solid black; padding-bottom: 5px">
         <div>Laporan PPN</div>
+        <div><?= $namaToko ?></div>
         <div id="periode"><?= $periode ?></div>
     </div>
     <br />
