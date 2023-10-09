@@ -30,7 +30,8 @@
 			<?php echo $form->textField($model, 'no_faktur_pajak', [
 				'size'        => 45,
 				'maxlength'   => 45,
-				'placeholder' => '___.___.___._-___.___',
+				// 'placeholder' => '___.___.___._-___.___',
+				'placeholder' => '___.___-__.________',
 				'data-slots'  => '_',
 				'data-accept' => '\d'
 			]); ?>

@@ -1,7 +1,7 @@
 <?php
 class BFormatter extends CFormatter
 {
-    public function formatPpnFaktur($value, $pattern = '___.___.___._-___.___')
+    public function formatPpnFaktur($value, $pattern = '___.___-__.________') // $pattern = '___.___.___._-___.___'
     {
         $r = '';
         if (!empty($value)) {
