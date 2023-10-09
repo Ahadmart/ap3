@@ -1,7 +1,7 @@
 <?php
 class BFormatter extends CFormatter
 {
-    public function formatPpnFaktur($value, $pattern = '___.___-__.________') // $pattern = '___.___.___._-___.___'
+    public function formatByPattern($value, $pattern)
     {
         $r = '';
         if (!empty($value)) {
@@ -20,6 +20,16 @@ class BFormatter extends CFormatter
         return $r;
     }
 
+    public function formatPpnFaktur($value, $pattern = '___.___-__.________')
+    {
+        return $this->formatByPattern($value, $pattern);
+    }
+
+    public function formatNpwp($value, $pattern = '___.___.___._-___.___')
+    {
+        return $this->formatByPattern($value, $pattern);
+    }
+
     public function formatTanggalWaktu($value, $format = 'd-m-Y H:i:s')
     {
         return date($format, strtotime($value));
@@ -32,10 +42,10 @@ class BFormatter extends CFormatter
 
     public function formatNomorDokumen($value)
     {
-        $kodeCabang = substr($value, 0, 2);
+        $kodeCabang  = substr($value, 0, 2);
         $kodeDokumen = substr($value, 2, 2);
-        $tahunBulan = substr($value, 4, 4);
-        $urutan = substr($value, -6);
+        $tahunBulan  = substr($value, 4, 4);
+        $urutan      = substr($value, -6);
         return $kodeCabang . ' ' . $kodeDokumen . ' ' . $tahunBulan . ' ' . $urutan;
     }
 }
