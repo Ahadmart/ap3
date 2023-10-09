@@ -43,7 +43,7 @@ if (isset($report['rekap']) && $report['rekap']) {
     }
     ?>
     <div class="row">
-        <div class="small-6 columns">
+        <div class="small-3 columns">
             <?php
             $this->renderPartial('_form_penjualan_cetak', [
                 'model'    => $model,
@@ -52,35 +52,126 @@ if (isset($report['rekap']) && $report['rekap']) {
             ]);
             ?>
         </div>
-        <div class="small-6 columns rata-kanan">
+        <div class="small-6 columns">
+            <?php $formatter = new BFormatter ?>
+            <table style="float:right">
+                <tr>
+                    <td class="rata-kanan">Total Ppn Penjualan</td>
+                    <td class="rata-kanan"><?= $formatter->formatUang($reportPpn['totalPpnPenjualan']) ?></td>
+                    <td class="rata-kanan"></td>
+                </tr>
+                <tr>
+                    <td class="rata-kanan">Ppn Pembelian Valid</td>
+                    <td class="rata-kanan"><?= $formatter->formatUang($reportPpn['totalPpnPembelianValid']) ?></td>
+                    <td class="rata-kanan"></td>
+                </tr>
+                <tr>
+                    <td class="rata-kanan">Ppn Pembelian Pending</td>
+                    <td class="rata-kanan"><?= $formatter->formatUang($reportPpn['totalPpnPembelianPending']) ?></td>
+                    <td class="rata-kanan"></td>
+                </tr>
+                <tr>
+                    <td class="rata-kanan">Margin Bersih</td>
+                    <?php
+                    $marginBersih = $report['rekap']['margin'] - ($reportPpn['totalPpnPenjualan'] - $reportPpn['totalPpnPembelianValid']);
+                    $marginBersihPersen   = $marginBersih / $report['rekap']['total'] * 100;
+                    ?>
+                    <td class="rata-kanan"><?= $formatter->formatUang($marginBersih) ?></td>
+                    <td class="rata-kanan">(<?= $formatter->formatUang($marginBersihPersen) ?>%)</td>
+                </tr>
+                <tr>
+                    <td class="rata-kanan">Potensi Margin Bersih</td>
+                    <?php
+                    $potensiMarginBersih       = $report['rekap']['margin'] - ($reportPpn['totalPpnPenjualan'] - $reportPpn['totalPpnPembelianValid'] - $reportPpn['totalPpnPembelianPending']);
+                    $potensiMarginBersihPersen = $potensiMarginBersih / $report['rekap']['total'] * 100;
+                    ?>
+                    <td class="rata-kanan"><?= $formatter->formatUang($potensiMarginBersih) ?></td>
+                    <td class="rata-kanan">(<?= $formatter->formatUang($potensiMarginBersihPersen) ?>%)</td>
+                </tr>
+            </table>
+        </div>
+        <div class="small-3 columns">
+            <table style="float:right">
+                <tr>
+                    <td class="rata-kanan">Total</td>
+                    <td class="rata-kanan"><?= $formatter->formatUang($report['rekap']['total']) ?></td>
+                </tr>
+                <tr>
+                    <td class="rata-kanan">Margin</td>
+                    <td class="rata-kanan"><?= $formatter->formatUang($report['rekap']['margin']) ?></td>
+                </tr>
+                <?php if ($report['rekap']['total'] != 0) {
+                ?>
+                    <tr>
+                        <td class="rata-kanan">Profit Margin</td>
+                        <td class="rata-kanan"><?= number_format($report['rekap']['margin'] / $report['rekap']['total'] * 100, 2, ',', '.') ?>%</td>
+                    </tr>
+                <?php
+                }
+                ?>
+                <?php
+                if (!empty($report['detail'])) :
+                ?>
+                    <tr>
+                        <td class="rata-kanan">Transaksi</td>
+                        <td class="rata-kanan"><?= count($report['detail']) ?></td>
+                    </tr>
+                <?php
+                endif;
+                ?>
+                <?php
+                if (!empty($report['jmlItem'])) :
+                ?>
+                    <tr>
+                        <td class="rata-kanan">Item</td>
+                        <td class="rata-kanan"><?= $report['jmlItem']['jml_item'] ?></td>
+                    </tr>
+                <?php
+                endif;
+                ?>
+                <?php
+                if (!empty($report['qty'])) :
+                ?>
+                    <tr>
+                        <td class="rata-kanan">Sales Qty</td>
+                        <td class="rata-kanan"><?= $report['qty']['qty'] ?></td>
+                    </tr>
+                <?php
+                endif;
+                ?>
+            </table>
+            <?php
+            /*
             <h6>Total : <?php echo number_format($report['rekap']['total'], 0, ',', '.'); ?></h6>
             <h6>Margin : <?php echo number_format($report['rekap']['margin'], 0, ',', '.'); ?></h6>
             <?php if ($report['rekap']['total'] != 0) {
             ?>
-                <h6>Profit Margin: <?php echo number_format($report['rekap']['margin'] / $report['rekap']['total'] * 100, 2, ',', '.'); ?>%</h6>
+    <h6>Profit Margin: <?php echo number_format($report['rekap']['margin'] / $report['rekap']['total'] * 100, 2, ',', '.'); ?>%</h6>
             <?php
             }
             ?>
             <?php
             if (!empty($report['detail'])) :
             ?>
-                <h6><?= count($report['detail']) ?> Transaksi</h6>
+    <h6><?= count($report['detail']) ?> Transaksi</h6>
             <?php
             endif;
             ?>
             <?php
             if (!empty($report['jmlItem'])) :
             ?>
-                <h6><?= $report['jmlItem']['jml_item'] ?> Item</h6>
+    <h6><?= $report['jmlItem']['jml_item'] ?> Item</h6>
             <?php
             endif;
             ?>
             <?php
             if (!empty($report['qty'])) :
             ?>
-                <h6><?= $report['qty']['qty'] ?> Sales Qty</h6>
+    <h6><?= $report['qty']['qty'] ?> Sales Qty</h6>
             <?php
             endif;
+            ?>
+            */
             ?>
         </div>
     </div>

@@ -94,12 +94,22 @@ class ReportController extends Controller
             $hideOpenTxn = false;
         }
 
-        $model  = new ReportPenjualanForm;
-        $report = [];
+        $model                    = new ReportPenjualanForm;
+        $report                   = [];
+        $totalPpnPenjualan        = 0;
+        $totalPpnPembelianValid   = 0;
+        $totalPpnPembelianPending = 0;
         if (isset($_POST['ReportPenjualanForm'])) {
             $model->attributes = $_POST['ReportPenjualanForm'];
             if ($model->validate()) {
                 $report = $model->reportPenjualan($hideOpenTxn);
+                // Tambahan report ppn
+                $ppn                      = new ReportPpnForm();
+                $ppn->tanggalAwal         = DateTime::createFromFormat('d-m-Y H:i:s', $_POST['ReportPenjualanForm']['dari'] . ':00');
+                $ppn->tanggalAkhir        = DateTime::createFromFormat('d-m-Y H:i:s', $_POST['ReportPenjualanForm']['sampai'] . ':00');
+                $totalPpnPenjualan        = $ppn->totalPpnPenjualan();
+                $totalPpnPembelianValid   = $ppn->totalPpnPembelianValid();
+                $totalPpnPembelianPending = $ppn->totalPpnPembelianPending();
             }
         }
 
@@ -126,12 +136,17 @@ class ReportController extends Controller
         }
 
         $this->render('penjualan', [
-            'model'    => $model,
-            'profil'   => $profil,
-            'user'     => $user,
-            'report'   => $report,
-            'printers' => $printers,
-            'pesan1'   => $pesan1,
+            'model'     => $model,
+            'profil'    => $profil,
+            'user'      => $user,
+            'report'    => $report,
+            'printers'  => $printers,
+            'pesan1'    => $pesan1,
+            'reportPpn' => [
+                'totalPpnPenjualan'        => $totalPpnPenjualan,
+                'totalPpnPembelianValid'   => $totalPpnPembelianValid,
+                'totalPpnPembelianPending' => $totalPpnPembelianPending,
+            ],
         ]);
     }
 
@@ -2086,7 +2101,7 @@ class ReportController extends Controller
         $this->render('ppn', [
             'model'     => $model,
             'printers'  => $printers,
-            'kertasPdf' => $kertasPdf
+            'kertasPdf' => $kertasPdf,
         ]);
     }
 
@@ -2128,9 +2143,9 @@ class ReportController extends Controller
          */
 
         require_once __DIR__ . '/../vendor/autoload.php';
-        $confNamaToko       = Config::model()->find("nama = 'toko.nama'");
-        $listKertas     = ReportPpnForm::listKertas();
-        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $confNamaToko = Config::model()->find("nama = 'toko.nama'");
+        $listKertas   = ReportPpnForm::listKertas();
+        $mpdf         = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
         $mpdf->WriteHTML($this->renderPartial('ppn_pdf', [
             'namaToko' => $confNamaToko->nilai,
             'report'   => $report,
