@@ -74,7 +74,7 @@ if (isset($report['rekap']) && $report['rekap']) {
                     <td class="rata-kanan">Margin Bersih</td>
                     <?php
                     $marginBersih = $report['rekap']['margin'] - ($reportPpn['totalPpnPenjualan'] - $reportPpn['totalPpnPembelianValid']);
-                    $marginBersihPersen   = $marginBersih / $report['rekap']['total'] * 100;
+                    $marginBersihPersen   = $report['rekap']['total'] == 0 ? '' : $marginBersih / $report['rekap']['total'] * 100;
                     ?>
                     <td class="rata-kanan"><?= $formatter->formatUang($marginBersih) ?></td>
                     <td class="rata-kanan">(<?= $formatter->formatUang($marginBersihPersen) ?>%)</td>
@@ -82,8 +82,8 @@ if (isset($report['rekap']) && $report['rekap']) {
                 <tr>
                     <td class="rata-kanan">Potensi Margin Bersih</td>
                     <?php
-                    $potensiMarginBersih       = $report['rekap']['margin'] - ($reportPpn['totalPpnPenjualan'] - $reportPpn['totalPpnPembelianValid'] - $reportPpn['totalPpnPembelianPending']);
-                    $potensiMarginBersihPersen = $potensiMarginBersih / $report['rekap']['total'] * 100;
+                    $potensiMarginBersih       = $report['rekap']['margin'] - ($reportPpn['totalPpnPenjualan'] - ($reportPpn['totalPpnPembelianValid'] - $reportPpn['totalPpnPembelianPending']));
+                    $potensiMarginBersihPersen = $report['rekap']['total'] == 0 ? '' : $potensiMarginBersih / $report['rekap']['total'] * 100;
                     ?>
                     <td class="rata-kanan"><?= $formatter->formatUang($potensiMarginBersih) ?></td>
                     <td class="rata-kanan">(<?= $formatter->formatUang($potensiMarginBersihPersen) ?>%)</td>
@@ -95,50 +95,30 @@ if (isset($report['rekap']) && $report['rekap']) {
                 <tr>
                     <td class="rata-kanan">Total</td>
                     <td class="rata-kanan"><?= $formatter->formatUang($report['rekap']['total']) ?></td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td class="rata-kanan">Margin</td>
                     <td class="rata-kanan"><?= $formatter->formatUang($report['rekap']['margin']) ?></td>
+                    <td class="rata-kanan">(<?= $report['rekap']['total'] == 0 ? '' : $formatter->formatUang($report['rekap']['margin'] / $report['rekap']['total'] * 100) ?>%)</td>
                 </tr>
-                <?php if ($report['rekap']['total'] != 0) {
-                ?>
-                    <tr>
-                        <td class="rata-kanan">Profit Margin</td>
-                        <td class="rata-kanan"><?= number_format($report['rekap']['margin'] / $report['rekap']['total'] * 100, 2, ',', '.') ?>%</td>
-                    </tr>
-                <?php
-                }
-                ?>
                 <?php
                 if (!empty($report['detail'])) :
                 ?>
                     <tr>
-                        <td class="rata-kanan">Transaksi</td>
-                        <td class="rata-kanan"><?= count($report['detail']) ?></td>
+                        <td class="rata-kanan" colspan="3"><?= count($report['detail']) ?> Transaksi 
+                    <?php
+                    if (!empty($report['jmlItem'])){
+                        echo ' ('.$report['jmlItem']['jml_item'].' Item)';
+                    }
+                    if (!empty($report['qty'])){
+                        echo ' ('.$report['qty']['qty'].' pcs)';
+                    }
+                    ?></td>
                     </tr>
                 <?php
                 endif;
-                ?>
-                <?php
-                if (!empty($report['jmlItem'])) :
-                ?>
-                    <tr>
-                        <td class="rata-kanan">Item</td>
-                        <td class="rata-kanan"><?= $report['jmlItem']['jml_item'] ?></td>
-                    </tr>
-                <?php
-                endif;
-                ?>
-                <?php
-                if (!empty($report['qty'])) :
-                ?>
-                    <tr>
-                        <td class="rata-kanan">Sales Qty</td>
-                        <td class="rata-kanan"><?= $report['qty']['qty'] ?></td>
-                    </tr>
-                <?php
-                endif;
-                ?>
+                ?>               
             </table>
             <?php
             /*

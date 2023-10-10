@@ -37,7 +37,10 @@ class BFormatter extends CFormatter
 
     public function formatUang($value)
     {
-        return number_format($value, 2, ',', '.');
+        if (!empty($value)) {
+            return number_format($value, 2, ',', '.');
+        }
+        return '';
     }
 
     public function formatNomorDokumen($value)
