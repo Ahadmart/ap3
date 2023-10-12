@@ -379,6 +379,7 @@ class Pembelian extends CActiveRecord
                     // Jika ada maka simpan ke tabel pembelian_ppn
                     $pembelianPpn                   = new PembelianPpn();
                     $pembelianPpn->pembelian_id     = $this->id;
+                    $pembelianPpn->npwp             = $this->profil->npwp;
                     $pembelianPpn->total_ppn_hitung = $jmlPpn;
                     $pembelianPpn->status           = PembelianPpn::STATUS_PENDING;
                     if (!$pembelianPpn->save()) {

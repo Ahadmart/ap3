@@ -17,6 +17,7 @@
  * @property integer $jenis_kelamin
  * @property string $tanggal_lahir
  * @property string $surel
+ * @property string $npwp
  * @property string $keterangan
  * @property string $updated_at
  * @property string $updated_by
@@ -28,10 +29,13 @@
  * @property Penerimaan[] $penerimaans
  * @property Pengeluaran[] $pengeluarans
  * @property Penjualan[] $penjualans
+ * @property PenjualanMember[] $penjualanMembers
+ * @property Po[] $pos
  * @property ProfilTipe $tipe
  * @property User $updatedBy
  * @property ReturPembelian[] $returPembelians
  * @property ReturPenjualan[] $returPenjualans
+ * @property So[] $sos
  * @property SupplierBarang[] $supplierBarangs
  */
 class Profil extends CActiveRecord
@@ -70,6 +74,7 @@ class Profil extends CActiveRecord
             ['identitas, hp, surel', 'length', 'max' => 255],
             ['nama, alamat1, alamat2, alamat3', 'length', 'max' => 100],
             ['telp', 'length', 'max' => 20],
+            ['npwp', 'length', 'max' => 16],
             ['keterangan', 'length', 'max' => 1000],
             ['updated_by', 'length', 'max' => 10],
             ['created_at, updated_at, updated_by, tanggal_lahir', 'safe'],
@@ -138,6 +143,7 @@ class Profil extends CActiveRecord
             'jenis_kelamin' => 'Jenis Kelamin',
             'tanggal_lahir' => 'Tanggal Lahir',
             'surel'         => 'Surel',
+            'npwp'          => 'Npwp',
             'keterangan'    => 'Keterangan',
             'updated_at'    => 'Updated At',
             'updated_by'    => 'Updated By',
@@ -176,6 +182,7 @@ class Profil extends CActiveRecord
         $criteria->compare('jenis_kelamin', $this->jenis_kelamin);
         $criteria->compare('tanggal_lahir', $this->tanggal_lahir, true);
         $criteria->compare('surel', $this->surel, true);
+        $criteria->compare('npwp', $this->npwp, true);
         $criteria->compare('keterangan', $this->keterangan, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
@@ -252,6 +259,7 @@ class Profil extends CActiveRecord
     public function beforeValidate()
     {
         $this->tanggal_lahir = !empty($this->tanggal_lahir) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_lahir), 'Y-m-d') : null;
+        $this->npwp          = str_replace(['.', '-'], '', $this->npwp);
         return parent::beforeValidate();
     }
 

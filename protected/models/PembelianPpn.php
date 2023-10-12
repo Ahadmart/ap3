@@ -114,7 +114,7 @@ class PembelianPpn extends CActiveRecord
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('pembelian_id', $this->pembelian_id, true);
-        $criteria->compare('npwp', $this->npwp, true);
+        $criteria->compare('t.npwp', str_replace(['.', '-'], '', $this->npwp), true);
         $criteria->compare('no_faktur_pajak', $this->no_faktur_pajak, true);
         $criteria->compare('total_ppn_hitung', $this->total_ppn_hitung, true);
         $criteria->compare('total_ppn_faktur', $this->total_ppn_faktur, true);
@@ -172,6 +172,18 @@ class PembelianPpn extends CActiveRecord
         $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
+    }
+
+    public function afterSave()
+    {
+        // Update npwp di profil
+        if (!empty($this->npwp)) {
+            $profil = Profil::model()->findByPk($this->pembelian->profil_id);
+            if ($profil->npwp != $this->npwp) {
+                Profil::model()->updateByPk($this->pembelian->profil_id, ['npwp' => $this->npwp]);
+            }
+        }
+        return parent::afterSave();
     }
 
     public function beforeValidate()
