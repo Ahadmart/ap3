@@ -6,6 +6,7 @@
  * The followings are the available columns in table 'pembelian_ppn':
  * @property string $id
  * @property string $pembelian_id
+ * @property string $npwp
  * @property string $no_faktur_pajak
  * @property string $total_ppn_hitung
  * @property string $total_ppn_faktur
@@ -25,6 +26,7 @@ class PembelianPpn extends CActiveRecord
     const STATUS_VALID   = 20;
     public $pembelianNomor;
     public $namaUpdatedBy;
+    public $pembelianProfil;
 
     /**
      * @return string the associated database table name
@@ -46,12 +48,13 @@ class PembelianPpn extends CActiveRecord
             ['no_faktur_pajak, total_ppn_faktur', 'required', 'on' => 'validasi'],
             ['status', 'numerical', 'integerOnly' => true],
             ['pembelian_id, updated_by', 'length', 'max' => 10],
+            ['npwp', 'length', 'max' => 16],
             ['no_faktur_pajak', 'length', 'max' => 45],
             ['total_ppn_hitung, total_ppn_faktur', 'length', 'max' => 18],
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, pembelian_id, no_faktur_pajak, total_ppn_hitung, total_ppn_faktur, status, updated_at, updated_by, created_at, pembelianNomor, namaUpdatedBy', 'safe', 'on' => 'search'],
+            ['id, pembelian_id, npwp, no_faktur_pajak, total_ppn_hitung, total_ppn_faktur, status, updated_at, updated_by, created_at, pembelianNomor, namaUpdatedBy, pembelianProfil', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -76,6 +79,7 @@ class PembelianPpn extends CActiveRecord
         return [
             'id'               => 'ID',
             'pembelian_id'     => 'Pembelian',
+            'npwp'             => 'Npwp',
             'no_faktur_pajak'  => 'No Faktur Pajak',
             'total_ppn_hitung' => 'Total Ppn Hitung',
             'total_ppn_faktur' => 'Total Ppn Faktur',
@@ -86,6 +90,7 @@ class PembelianPpn extends CActiveRecord
             'pembelianNomor'   => 'Pembelian',
             'namaStatus'       => 'Status',
             'namaUpdatedBy'    => 'User',
+            'pembelianProfil'  => 'Profil',
         ];
     }
 
@@ -109,6 +114,7 @@ class PembelianPpn extends CActiveRecord
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('pembelian_id', $this->pembelian_id, true);
+        $criteria->compare('npwp', $this->npwp, true);
         $criteria->compare('no_faktur_pajak', $this->no_faktur_pajak, true);
         $criteria->compare('total_ppn_hitung', $this->total_ppn_hitung, true);
         $criteria->compare('total_ppn_faktur', $this->total_ppn_faktur, true);
@@ -117,24 +123,27 @@ class PembelianPpn extends CActiveRecord
         $criteria->compare('t.updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
         $criteria->compare('updatedBy.nama_lengkap', $this->namaUpdatedBy, true);
+        $criteria->compare('profil.nama', $this->pembelianProfil, true);
 
-        $criteria->with   = ['pembelian', 'updatedBy'];
-        $criteria->select = 't.*, p.*';
-        $criteria->join   = 'right join pembelian p on p.id = t.pembelian_id';
-        $criteria->compare('p.nomor', $this->pembelianNomor, true);
+        $criteria->with   = ['pembelian', 'updatedBy', 'pembelian.profil'];
+        $criteria->compare('pembelian.nomor', $this->pembelianNomor, true);
 
         $sort = [
-            'defaultOrder' => 'p.nomor desc',
+            'defaultOrder' => 'pembelian.nomor desc',
             'attributes'   => [
                 '*',
                 'pembelianNomor' => [
-                    'asc'  => 'p.nomor',
-                    'desc' => 'p.nomor desc',
+                    'asc'  => 'pembelian.nomor',
+                    'desc' => 'pembelian.nomor desc',
                 ],
                 'namaUpdatedBy' => [
                     'asc'  => 'updatedBy.nama_lengkap',
                     'desc' => 'updatedBy.nama_lengkap desc',
                 ],
+                'pembelianProfil' => [
+                    'asc'  => 'profil.nama',
+                    'desc' => 'profil.nama desc',
+                ]
             ],
         ];
 
@@ -167,6 +176,7 @@ class PembelianPpn extends CActiveRecord
 
     public function beforeValidate()
     {
+        $this->npwp            = str_replace(['.', '-'], '', $this->npwp);
         $this->no_faktur_pajak = str_replace(['.', '-'], '', $this->no_faktur_pajak);
         return parent::beforeValidate();
     }
@@ -185,4 +195,9 @@ class PembelianPpn extends CActiveRecord
         $list = $this->listStatus();
         return $list[$this->status];
     }
+
+    // public function getPembelianProfil()
+    // {
+    //     return isset($this->pembelian_id) ? $this->pembelian->profil->nama : '';
+    // }
 }

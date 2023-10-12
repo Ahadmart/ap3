@@ -21,6 +21,19 @@
 	<div class="row">
 		<div class="small-12 columns">
 			<h4><small>Pembelian</small> <?= Yii::app()->format->nomorDokumen($model->pembelian->nomor) ?> <small>dari</small> <?= $model->pembelian->profil->nama ?></h4>
+		</div>
+		<div class="medium-8 columns">
+			<?php echo $form->labelEx($model, 'npwp'); ?>
+			<?php echo $form->textField($model, 'npwp', [
+				'size'        => 45,
+				'maxlength'   => 45,
+				'placeholder' => '___.___.___._-___.___',
+				'data-slots'  => '_',
+				'data-accept' => '\d'
+			]); ?>
+			<?php echo $form->error($model, 'npwp', ['class' => 'error']); ?>
+		</div>
+		<div class="small-12 columns">
 			<h4><small>Total Ppn hitung</small> <?= Yii::app()->format->uang($model->total_ppn_hitung) ?></h4>
 		</div>
 	</div>
@@ -30,7 +43,6 @@
 			<?php echo $form->textField($model, 'no_faktur_pajak', [
 				'size'        => 45,
 				'maxlength'   => 45,
-				// 'placeholder' => '___.___.___._-___.___',
 				'placeholder' => '___.___-__.________',
 				'data-slots'  => '_',
 				'data-accept' => '\d'

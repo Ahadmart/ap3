@@ -18,8 +18,9 @@ $this->boxHeader['normal'] = 'Ppn Pembelian: ' . $model->pembelian->nomor;
                 [
                     'name'  => 'pembelian.nomor',
                     'label' => 'Pembelian',
-                    'type' => 'nomorDokumen',
+                    'type'  => 'nomorDokumen',
                 ],
+                'npwp:npwp',
                 'no_faktur_pajak:ppnFaktur',
                 'total_ppn_hitung:uang',
                 'total_ppn_faktur:uang',

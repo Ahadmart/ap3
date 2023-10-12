@@ -27,6 +27,11 @@ $this->boxHeader['normal'] = 'Pembelian Ppn';
 					'type'      => 'raw',
 					'value'     => [$this, 'renderLinkToValidasi'],
 				],
+				[
+					'name'   => 'pembelianProfil',
+					'value'  => '$data->pembelian->profil->nama',
+				],
+				'npwp:npwp',
 				'no_faktur_pajak:ppnFaktur',
 				[
 					'name'              => 'total_ppn_hitung',
