@@ -404,7 +404,7 @@ class Po extends CActiveRecord
     {
         $sql = '
         SELECT
-            barcode, nama, harga_beli harga, qty_order qty, stok
+            barcode, nama, harga_beli harga, qty_order qty, stok, saran_order
         FROM
             po_detail
         WHERE
