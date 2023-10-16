@@ -408,30 +408,37 @@ class PoController extends Controller
         if (isset($_POST['input-detail']) && $_POST['input-detail'] == 1 && $_POST['qty'] > 0) {
             $sudahAda = PoDetail::sudahAda($id, $_POST['barang-id']);
             $qtyOrder = 0;
+            // if (!is_null($sudahAda)) {
+            //     $qtyOrder = $sudahAda->qty_order;
+            //     $sudahAda->delete();
+            // }
             if (!is_null($sudahAda)) {
-                $qtyOrder = $sudahAda->qty_order;
-                $sudahAda->delete();
-            }
-            $barang = Barang::model()->findByPk($_POST['barang-id']);
-
-            $detail             = new PoDetail;
-            $detail->po_id      = $id;
-            $detail->barang_id  = $_POST['barang-id'];
-            $detail->barcode    = $barang->barcode;
-            $detail->nama       = $barang->nama;
-            $detail->qty_order  = $qtyOrder + $_POST['qty'];
-            $detail->harga_beli = $_POST['hargabeli'];
-            $detail->harga_jual = $_POST['hargajual'];
-            $detail->status     = PoDetail::STATUS_ORDER;
-            $detail->stok       = $barang->stok;
-
-            // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
-            // echo terlihat di console
-            if ($detail->save()) {
-                //HargaJualBarang::model()->updateHargaJual($_POST['barang-id'], $inputHargaJual);
-                echo 'berhasil';
+                if (PoDetail::model()->updateByPk($sudahAda->id, ['qty_order' => $sudahAda->qty_order + $_POST['qty']]) > 0) {
+                    echo 'Update berhasil';
+                } else {
+                    echo 'Update gagal';
+                }
             } else {
-                echo 'gagal';
+                $barang = Barang::model()->findByPk($_POST['barang-id']);
+
+                $detail             = new PoDetail;
+                $detail->po_id      = $id;
+                $detail->barang_id  = $_POST['barang-id'];
+                $detail->barcode    = $barang->barcode;
+                $detail->nama       = $barang->nama;
+                $detail->qty_order  = $qtyOrder + $_POST['qty'];
+                $detail->harga_beli = $_POST['hargabeli'];
+                $detail->harga_jual = $_POST['hargajual'];
+                $detail->status     = PoDetail::STATUS_ORDER;
+                $detail->stok       = $barang->stok;
+                // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
+                // echo terlihat di console
+                if ($detail->save()) {
+                    //HargaJualBarang::model()->updateHargaJual($_POST['barang-id'], $inputHargaJual);
+                    echo 'Tambah barang berhasil';
+                } else {
+                    echo 'Tambah barang gagal';
+                }
             }
         }
     }
