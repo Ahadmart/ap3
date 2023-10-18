@@ -15,7 +15,6 @@ $this->boxHeader['normal'] = 'Retur Pembelian: ' . $model->nomor;
         <span class="secondary label">Supplier</span><span class="label"><?php echo $model->profil->nama; ?></span>
         <span class="secondary label">Tanggal</span><span class="label"><?php echo $model->tanggal; ?></span>
         <span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span>
-        <span class="secondary label">Total</span><span class="alert label"><?php echo $model->total; ?></span>
         <span class="secondary label">Status</span><span class="warning label"><?php
                                                                                 echo $model->getNamaStatus();
                                                                                 if ($model->status == ReturPembelian::STATUS_BATAL) {
@@ -26,7 +25,8 @@ $this->boxHeader['normal'] = 'Retur Pembelian: ' . $model->nomor;
 
                                                                                     echo " ({$updatedAt})";
                                                                                 }
-                                                                                ?></span>
+                                                                                ?></span><br />
+        <span class="secondary label label-total">Total</span><span class="alert label label-total"><?php echo $model->total; ?></span>
 
         <ul class="button-group right">
             <?php
