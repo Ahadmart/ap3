@@ -39,8 +39,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
     </div>
     <div class="medium-6 large-7 columns header" style="text-align: right">
         <span class="secondary label">Supplier</span><span class="label"><?php echo $model->profil->nama; ?></span>
-        <span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span>
-        <span class="secondary label">Total</span><span class="label" id="total-retur-pembelian"><?php echo $model->total; ?></span>
+        <span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span><br />
+        <span class="secondary label label-total">Total</span><span class="label label-total" id="total-retur-pembelian"><?php echo $model->total; ?></span>
     </div>
 </div>
 <div class="row">
