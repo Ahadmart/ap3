@@ -26,13 +26,13 @@
  */
 class Device extends CActiveRecord
 {
-
-    const TIPE_POS_CLIENT = 0;
-    const TIPE_LPR = 1;
-    const TIPE_TEXT_PRINTER = 2;
-    const TIPE_PDF_PRINTER = 3;
-    const TIPE_CSV_PRINTER = 4;
+    const TIPE_POS_CLIENT      = 0;
+    const TIPE_LPR             = 1;
+    const TIPE_TEXT_PRINTER    = 2;
+    const TIPE_PDF_PRINTER     = 3;
+    const TIPE_CSV_PRINTER     = 4;
     const TIPE_BROWSER_PRINTER = 5;
+    const TIPE_JSON_FILE       = 7; // Samakan dengan ahad-dc
 
     /**
      * @return string the associated database table name
@@ -49,17 +49,17 @@ class Device extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('tipe_id', 'required'),
-            array('tipe_id, lf_sebelum, lf_setelah, paper_autocut, cashdrawer_kick', 'numerical', 'integerOnly' => true),
-            array('nama, address', 'length', 'max' => 100),
-            array('keterangan', 'length', 'max' => 500),
-            array('default_printer_id, updated_by', 'length', 'max' => 10),
-            array('created_at, nama, updated_at, updated_by', 'safe'),
+        return [
+            ['tipe_id', 'required'],
+            ['tipe_id, lf_sebelum, lf_setelah, paper_autocut, cashdrawer_kick', 'numerical', 'integerOnly' => true],
+            ['nama, address', 'length', 'max' => 100],
+            ['keterangan', 'length', 'max' => 500],
+            ['default_printer_id, updated_by', 'length', 'max' => 10],
+            ['created_at, nama, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, tipe_id, nama, keterangan, address, updated_at, updated_by, created_at', 'safe', 'on' => 'search'),
-        );
+            ['id, tipe_id, nama, keterangan, address, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -69,12 +69,12 @@ class Device extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-            'defaultPrinter' => array(self::BELONGS_TO, 'Device', 'default_printer_id'),
-            'devices' => array(self::HAS_MANY, 'Device', 'default_printer_id'),
-            'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
-            'kasirs' => array(self::HAS_MANY, 'Kasir', 'device_id'),
-        );
+        return [
+            'defaultPrinter' => [self::BELONGS_TO, 'Device', 'default_printer_id'],
+            'devices'        => [self::HAS_MANY, 'Device', 'default_printer_id'],
+            'updatedBy'      => [self::BELONGS_TO, 'User', 'updated_by'],
+            'kasirs'         => [self::HAS_MANY, 'Kasir', 'device_id'],
+        ];
     }
 
     /**
@@ -82,22 +82,22 @@ class Device extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'tipe_id' => 'Tipe',
-            'nama' => 'Nama',
-            'keterangan' => 'Keterangan',
-            'address' => 'Address',
+        return [
+            'id'                 => 'ID',
+            'tipe_id'            => 'Tipe',
+            'nama'               => 'Nama',
+            'keterangan'         => 'Keterangan',
+            'address'            => 'Address',
             'default_printer_id' => 'Default Printer',
-            'lf_sebelum' => 'LF Sebelum',
-            'lf_setelah' => 'LF Setelah',
-            'paper_autocut' => 'Otomatis Potong Kertas',
-            'cashdrawer_kick' => 'Otomatis Buka Laci Kas',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-            'created_at' => 'Created At',
-            'namaTipe' => 'Tipe'
-        );
+            'lf_sebelum'         => 'LF Sebelum',
+            'lf_setelah'         => 'LF Setelah',
+            'paper_autocut'      => 'Otomatis Potong Kertas',
+            'cashdrawer_kick'    => 'Otomatis Buka Laci Kas',
+            'updated_at'         => 'Updated At',
+            'updated_by'         => 'Updated By',
+            'created_at'         => 'Created At',
+            'namaTipe'           => 'Tipe',
+        ];
     }
 
     /**
@@ -132,12 +132,12 @@ class Device extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
-        return new CActiveDataProvider($this, array(
+        return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort' => array(
-                'defaultOrder' => 'tipe_id, nama'
-            )
-        ));
+            'sort'     => [
+                'defaultOrder' => 'tipe_id, nama',
+            ],
+        ]);
     }
 
     /**
@@ -153,31 +153,31 @@ class Device extends CActiveRecord
 
     public function beforeValidate()
     {
-        $this->default_printer_id = empty($this->default_printer_id) ? NULL : $this->default_printer_id;
+        $this->default_printer_id = empty($this->default_printer_id) ? null : $this->default_printer_id;
         return parent::beforeValidate();
     }
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
 
     public function listTipe()
     {
-        return array(
-            Device::TIPE_POS_CLIENT => 'Client (Workstation)',
-            Device::TIPE_LPR => 'Printer - LPR (Unix/Linux)',
-            Device::TIPE_TEXT_PRINTER => 'Printer - Plain Text',
-            Device::TIPE_PDF_PRINTER => 'Printer - PDF',
-            Device::TIPE_CSV_PRINTER => 'Printer - CSV',
-            Device::TIPE_BROWSER_PRINTER => 'Printer - Browser'
-        );
+        return [
+            Device::TIPE_POS_CLIENT      => 'Client (Workstation)',
+            Device::TIPE_LPR             => 'Printer - LPR (Unix/Linux)',
+            Device::TIPE_TEXT_PRINTER    => 'Printer - Plain Text',
+            Device::TIPE_PDF_PRINTER     => 'Printer - PDF',
+            Device::TIPE_CSV_PRINTER     => 'Printer - CSV',
+            Device::TIPE_BROWSER_PRINTER => 'Printer - Browser',
+            Device::TIPE_JSON_FILE       => 'File - JSON',
+        ];
     }
 
     public function listPrinter()
@@ -196,12 +196,12 @@ class Device extends CActiveRecord
      * @param array $tipe array of tipe printer
      * @return array id, tipe_id, nama, keterangan dari device
      */
-    public function listDevices($tipe = NULL)
+    public function listDevices($tipe = null)
     {
         $command = Yii::app()->db->createCommand()
-                ->select('id, tipe_id, nama, keterangan, address')
-                ->from($this->tableName())
-                ->order('tipe_id, nama');
+            ->select('id, tipe_id, nama, keterangan, address')
+            ->from($this->tableName())
+            ->order('tipe_id, nama');
         if (!is_null($tipe)) {
             foreach ($tipe as $tipeId) {
                 $command->orWhere("tipe_id={$tipeId}");
@@ -214,7 +214,7 @@ class Device extends CActiveRecord
     {
         $revText = '';
         if ($this->tipe_id == self::TIPE_LPR) {
-            $revText = chr(27) . "@"; //Init printer
+            $revText = chr(27) . '@'; //Init printer
         }
         // Tambahkan line feed, jika ada
         for ($index = 0; $index < $this->lf_sebelum; $index++) {
@@ -231,7 +231,7 @@ class Device extends CActiveRecord
     {
         $r = '';
         if ($this->paper_autocut == 1) {
-            $r = chr(27) . "@" . chr(29) . "V" . chr(1);
+            $r = chr(27) . '@' . chr(29) . 'V' . chr(1);
         }
         return $r;
     }
@@ -241,7 +241,7 @@ class Device extends CActiveRecord
         /**
          * Init printer, dan buka cash drawer
          */
-        $command = chr(27) . "@"; //Init printer
+        $command = chr(27) . '@'; //Init printer
         $command .= chr(27) . chr(112) . chr(48) . chr(60) . chr(120); // buka cash drawer
         $command .= chr(27) . chr(101) . chr(1); //1 reverse lf
 
@@ -269,5 +269,4 @@ class Device extends CActiveRecord
         $perintah = "echo \"{$this->revisiText($text)}\" |lpr {$perintahPrinter} -l";
         exec($perintah, $output);
     }
-
 }
