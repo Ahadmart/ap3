@@ -422,9 +422,25 @@ class Po extends CActiveRecord
      */
     public function toJson()
     {
-        $param = [];
+        $param  = [];
         $detail = [];
-        $sql = '';
+
+        $sqlParam = '
+        SELECT
+            `range`,
+            `order_period`,
+            `lead_time`,
+            `ssd`,
+            `rak_id`,
+            `struktur_lv1`,
+            `struktur_lv2`,
+            `struktur_lv3`
+        FROM
+            po_analisapls_param
+        WHERE
+            po_id = :poId
+        ';
+        $param = Yii::app()->db->createCommand($sqlParam)->bindValue(':poId', $this->id)->queryAll();
 
         $sql = '
         SELECT
@@ -434,12 +450,11 @@ class Po extends CActiveRecord
         WHERE
             po_id = :poId
         ';
-
         $detail = Yii::app()->db->createCommand($sql)->bindValue(':poId', $this->id)->queryAll();
 
         return json_encode([
-            'param' => $param,
-            'detail' => $detail
+            'param'  => $param,
+            'detail' => $detail,
         ]);
     }
 
@@ -574,7 +589,7 @@ class Po extends CActiveRecord
                 ';
         /*
         `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
-         `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
+        `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
          */
 
         try {
@@ -605,9 +620,9 @@ class Po extends CActiveRecord
         $strukturList = [];
         if ($strukLv3 > 0) {
             $strukturList[] = $strukLv3;
-        } else if ($strukLv2 > 0) {
+        } elseif ($strukLv2 > 0) {
             $strukturList = StrukturBarang::listChildStruk($strukLv2);
-        } else if ($strukLv1 > 0) {
+        } elseif ($strukLv1 > 0) {
             $strukturListLv2 = StrukturBarang::listChildStruk($strukLv1);
             foreach ($strukturListLv2 as $strukturIdLv2) {
                 $strukturList = array_merge($strukturList, StrukturBarang::listChildStruk($strukturIdLv2));
