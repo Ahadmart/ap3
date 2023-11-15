@@ -102,7 +102,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                     ?>
                     <tr>
                         <td></td>
-                        <td colspan="3" style="font-weight: bold">Total / Balance</td>
+                        <td colspan="4" style="font-weight: bold">Total / Balance</td>
                         <td class="rata-kanan" style="font-weight: bold">
                             <?= number_format($totalIn, 0, ',', '.') ?>
                         </td>
