@@ -22,7 +22,7 @@ class PoController extends Controller
             $poDetail->attributes = $_GET['PoDetail'];
         }
 
-        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER, Device::TIPE_PDF_PRINTER];
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER, Device::TIPE_PDF_PRINTER, Device::TIPE_JSON_FILE];
 
         $printerPo = empty($tipePrinterAvailable) ? [] : Device::model()->listDevices($tipePrinterAvailable);
 
@@ -516,7 +516,10 @@ class PoController extends Controller
                     $this->exportPdf($id, $_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    $this->eksporCsv($id);
+                    $this->exportCsv($id);
+                    break;
+                case Device::TIPE_JSON_FILE:
+                    $this->exportJson($id);
                     break;
             }
         }
@@ -581,7 +584,7 @@ class PoController extends Controller
      * Render csv untuk didownload
      * @param int $id PO Id
      */
-    public function eksporCsv($id)
+    public function exportCsv($id)
     {
         $model = $this->loadModel($id);
         $text  = $model->toCsv();
@@ -589,6 +592,26 @@ class PoController extends Controller
         $timeStamp       = date('Ymd His');
         $namaFile        = "PO_{$model->nomor}_{$model->profil->nama}_{$timeStamp}.csv";
         $contentTypeMeta = 'text/csv';
+
+        $this->renderPartial('_file_text', [
+            'namaFile'    => $namaFile,
+            'text'        => $text,
+            'contentType' => $contentTypeMeta,
+        ]);
+    }
+
+    /**
+     * Render json untuk didownload
+     * @param int $id PO Id
+     */
+    public function exportJson($id)
+    {
+        $model = $this->loadModel($id);
+        $text  = $model->toJson();
+
+        $timeStamp       = date('Ymd His');
+        $namaFile        = "PO_{$model->nomor}_{$model->profil->nama}_{$timeStamp}.json";
+        $contentTypeMeta = 'text/json';
 
         $this->renderPartial('_file_text', [
             'namaFile'    => $namaFile,
@@ -651,13 +674,13 @@ class PoController extends Controller
         $plsParam = PoAnalisaplsParam::model()->find('po_id=:poId', [':poId' => $model->id]);
         if (is_null($plsParam)) {
             $plsParam = new PoAnalisaplsParam();
-            echo 'Analisa Baru';
-            print_r($attributes);
+            // echo 'Analisa Baru';
+            // print_r($attributes);
         };
         $plsParam->attributes = $attributes;
         if (!$plsParam->save()) {
-            echo 'Gagal simpan analisa';
-            print_r($plsParam->errors);
+            // echo 'Gagal simpan analisa';
+            // print_r($plsParam->errors);
         }
 
         // $return['rakId'] = $_POST['rakId'];

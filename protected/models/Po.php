@@ -416,6 +416,33 @@ class Po extends CActiveRecord
         return $this->array2csv($report);
     }
 
+    /**
+     * Export PO ke JSON
+     * @return text json parameter analia pls dan detail po
+     */
+    public function toJson()
+    {
+        $param = [];
+        $detail = [];
+        $sql = '';
+
+        $sql = '
+        SELECT
+            barcode, nama, harga_beli harga, qty_order qty, stok, saran_order
+        FROM
+            po_detail
+        WHERE
+            po_id = :poId
+        ';
+
+        $detail = Yii::app()->db->createCommand($sql)->bindValue(':poId', $this->id)->queryAll();
+
+        return json_encode([
+            'param' => $param,
+            'detail' => $detail
+        ]);
+    }
+
     public function analisaPLS($hariPenjualan, $orderPeriod, $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3, $semuaBarang)
     {
         // Keseluruhan proses bisa menjadi butuh memory banyak jika semuaBarang dicentang
