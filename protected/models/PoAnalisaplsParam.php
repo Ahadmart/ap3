@@ -79,11 +79,11 @@ class PoAnalisaplsParam extends CActiveRecord
 	{
 		return [
 			'id'           => 'ID',
-			'po_id'        => 'Po',
-			'range'        => 'Range',
+			'po_id'        => 'PO',
+			'range'        => 'Range Penjualan',
 			'order_period' => 'Order Period',
 			'lead_time'    => 'Lead Time',
-			'ssd'          => 'Ssd',
+			'ssd'          => 'Safety Stock Day',
 			'rak_id'       => 'Rak',
 			'struktur_lv1' => 'Struktur Lv1',
 			'struktur_lv2' => 'Struktur Lv2',

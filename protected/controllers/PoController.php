@@ -28,11 +28,14 @@ class PoController extends Controller
 
         $kertasUntukPdf = Po::listNamaKertas();
 
+        $aPlsParam = PoAnalisaplsParam::model()->find('po_id=:poId', [':poId' => $id]);
+
         $this->render('view', [
             'model'          => $model,
             'poDetail'       => $poDetail,
             'printerPo'      => $printerPo,
             'kertasUntukPdf' => $kertasUntukPdf,
+            'aPlsParam'      => $aPlsParam
         ]);
     }
 
