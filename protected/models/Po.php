@@ -422,19 +422,25 @@ class Po extends CActiveRecord
      */
     public function toJson()
     {
-        $param  = [];
-        $detail = [];
+        $info  = [];
+        $param = [];
+        $data  = [];
+
+        $info = [
+            'nomor' => $this->nomor,
+            'pubkey' => ''
+        ];
 
         $sqlParam = '
         SELECT
-            `range`,
-            `order_period`,
-            `lead_time`,
+            `range` AS r,
+            `order_period` AS op,
+            `lead_time` AS lt,
             `ssd`,
-            `rak_id`,
-            `struktur_lv1`,
-            `struktur_lv2`,
-            `struktur_lv3`
+            `rak_id` AS rid,
+            `struktur_lv1` AS lv1,
+            `struktur_lv2` AS lv2,
+            `struktur_lv3` AS lv3
         FROM
             po_analisapls_param
         WHERE
@@ -444,17 +450,18 @@ class Po extends CActiveRecord
 
         $sql = '
         SELECT
-            barcode, nama, harga_beli harga, qty_order qty, stok, saran_order
+            barcode AS b, nama AS n, harga_beli h, qty_order qty, stok AS stk, saran_order AS so
         FROM
             po_detail
         WHERE
             po_id = :poId
         ';
-        $detail = Yii::app()->db->createCommand($sql)->bindValue(':poId', $this->id)->queryAll();
+        $data = Yii::app()->db->createCommand($sql)->bindValue(':poId', $this->id)->queryAll();
 
         return json_encode([
-            'param'  => $param,
-            'detail' => $detail,
+            'info'  => $info,
+            'param' => $param,
+            'data'  => $data,
         ]);
     }
 
