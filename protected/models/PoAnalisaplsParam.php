@@ -64,10 +64,10 @@ class PoAnalisaplsParam extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return [
 			'po'          => [self::BELONGS_TO, 'Po', 'po_id'],
-			'rak'         => [self::BELONGS_TO, 'BarangRak', 'rak_id'],
-			'strukturLv1' => [self::BELONGS_TO, 'BarangStruktur', 'struktur_lv1'],
-			'strukturLv2' => [self::BELONGS_TO, 'BarangStruktur', 'struktur_lv2'],
-			'strukturLv3' => [self::BELONGS_TO, 'BarangStruktur', 'struktur_lv3'],
+			'rak'         => [self::BELONGS_TO, 'RakBarang', 'rak_id'],
+			'strukturLv1' => [self::BELONGS_TO, 'StrukturBarang', 'struktur_lv1'],
+			'strukturLv2' => [self::BELONGS_TO, 'StrukturBarang', 'struktur_lv2'],
+			'strukturLv3' => [self::BELONGS_TO, 'StrukturBarang', 'struktur_lv3'],
 			'updatedBy'   => [self::BELONGS_TO, 'User', 'updated_by'],
 		];
 	}
