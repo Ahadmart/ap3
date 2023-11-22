@@ -427,22 +427,36 @@ class Po extends CActiveRecord
         $data  = [];
 
         $info = [
-            'nomor' => $this->nomor,
-            'pubkey' => ''
+            't'   => 'PO',
+            'no'  => $this->nomor,
+            'tgl' => $this->tanggal,
+            // 'pubkey' => ''
         ];
 
         $sqlParam = '
         SELECT
-            `range` AS r,
+            `range` AS h,
             `order_period` AS op,
             `lead_time` AS lt,
             `ssd`,
-            `rak_id` AS rid,
-            `struktur_lv1` AS lv1,
-            `struktur_lv2` AS lv2,
-            `struktur_lv3` AS lv3
+            `rak_id` AS rId,
+            `struktur_lv1` AS l1Id,
+            `struktur_lv2` AS l2Id,
+            `struktur_lv3` AS l3Id,
+            rak.nama r,
+            lv1.nama l1,
+            lv2.nama l2,
+            lv3.nama l3
         FROM
-            po_analisapls_param
+            po_analisapls_param t
+                JOIN
+            barang_rak rak ON rak.id = t.rak_id
+                JOIN
+            barang_struktur lv1 ON lv1.id = t.struktur_lv1
+                JOIN
+            barang_struktur lv2 ON lv2.id = t.struktur_lv2
+                JOIN
+            barang_struktur lv3 ON lv3.id = t.struktur_lv3
         WHERE
             po_id = :poId
         ';
@@ -450,7 +464,7 @@ class Po extends CActiveRecord
 
         $sql = '
         SELECT
-            barcode AS b, nama AS n, harga_beli h, qty_order qty, stok AS stk, saran_order AS so
+            barcode AS b, nama AS n, harga_beli h, qty_order qo, stok AS s, saran_order AS so
         FROM
             po_detail
         WHERE
