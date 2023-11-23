@@ -449,18 +449,18 @@ class Po extends CActiveRecord
             lv3.nama l3
         FROM
             po_analisapls_param t
-                JOIN
+                LEFT JOIN
             barang_rak rak ON rak.id = t.rak_id
-                JOIN
+                LEFT JOIN
             barang_struktur lv1 ON lv1.id = t.struktur_lv1
-                JOIN
+                LEFT JOIN
             barang_struktur lv2 ON lv2.id = t.struktur_lv2
-                JOIN
+                LEFT JOIN
             barang_struktur lv3 ON lv3.id = t.struktur_lv3
         WHERE
             po_id = :poId
         ';
-        $param = Yii::app()->db->createCommand($sqlParam)->bindValue(':poId', $this->id)->queryAll();
+        $param = Yii::app()->db->createCommand($sqlParam)->bindValue(':poId', $this->id)->queryRow();
 
         $sql = '
         SELECT
