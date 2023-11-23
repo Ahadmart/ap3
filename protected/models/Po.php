@@ -416,6 +416,69 @@ class Po extends CActiveRecord
         return $this->array2csv($report);
     }
 
+    /**
+     * Export PO ke JSON
+     * @return text json parameter analia pls dan detail po
+     */
+    public function toJson()
+    {
+        $info  = [];
+        $param = [];
+        $data  = [];
+
+        $info = [
+            't'   => 'PO',
+            'no'  => $this->nomor,
+            'tgl' => $this->tanggal,
+            // 'pubkey' => ''
+        ];
+
+        $sqlParam = '
+        SELECT
+            `range` AS h,
+            `order_period` AS op,
+            `lead_time` AS lt,
+            `ssd`,
+            `rak_id` AS rId,
+            `struktur_lv1` AS l1Id,
+            `struktur_lv2` AS l2Id,
+            `struktur_lv3` AS l3Id,
+            rak.nama r,
+            lv1.nama l1,
+            lv2.nama l2,
+            lv3.nama l3
+        FROM
+            po_analisapls_param t
+                LEFT JOIN
+            barang_rak rak ON rak.id = t.rak_id
+                LEFT JOIN
+            barang_struktur lv1 ON lv1.id = t.struktur_lv1
+                LEFT JOIN
+            barang_struktur lv2 ON lv2.id = t.struktur_lv2
+                LEFT JOIN
+            barang_struktur lv3 ON lv3.id = t.struktur_lv3
+        WHERE
+            po_id = :poId
+        ';
+        $param = Yii::app()->db->createCommand($sqlParam)->bindValue(':poId', $this->id)->queryRow();
+
+        $sql = '
+        SELECT
+            barcode AS b, nama AS n, harga_beli h, qty_order qo, stok AS s, saran_order AS so
+        FROM
+            po_detail
+        WHERE
+            po_id = :poId
+        ';
+        $data = Yii::app()->db->createCommand($sql)->bindValue(':poId', $this->id)->queryAll();
+
+        return json_encode([
+            'info'  => $info,
+            'param' => $param,
+            'data'  => $data,
+        ]);
+    }
+
     public function analisaPLS($hariPenjualan, $orderPeriod, $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3, $semuaBarang)
     {
         // Keseluruhan proses bisa menjadi butuh memory banyak jika semuaBarang dicentang
@@ -547,7 +610,7 @@ class Po extends CActiveRecord
                 ';
         /*
         `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
-         `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
+        `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
          */
 
         try {
@@ -578,9 +641,9 @@ class Po extends CActiveRecord
         $strukturList = [];
         if ($strukLv3 > 0) {
             $strukturList[] = $strukLv3;
-        } else if ($strukLv2 > 0) {
+        } elseif ($strukLv2 > 0) {
             $strukturList = StrukturBarang::listChildStruk($strukLv2);
-        } else if ($strukLv1 > 0) {
+        } elseif ($strukLv1 > 0) {
             $strukturListLv2 = StrukturBarang::listChildStruk($strukLv1);
             foreach ($strukturListLv2 as $strukturIdLv2) {
                 $strukturList = array_merge($strukturList, StrukturBarang::listChildStruk($strukturIdLv2));

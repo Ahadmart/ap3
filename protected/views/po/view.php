@@ -67,11 +67,47 @@ $this->pageTitle = Yii::app()->name . ' - ' . $this->boxHeader['normal'];
 <div class="row">
     <div class="small-12 columns">
         <?php
+        if (isset($aPlsParam) && !is_null($aPlsParam)) {
+        ?>
+            <a href='#' data-reveal-id="aPlsParam-view" class="tiny button">Analisa PLS Parameter >></a>
+            <div id='aPlsParam-view' class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+                <?php
+                $this->widget('BDetailView', [
+                    'data'       => $aPlsParam,
+                    'attributes' => [
+                        'range',
+                        'order_period',
+                        'lead_time',
+                        'ssd',
+                        [
+                            'name'  => 'rak.nama',
+                            'label' => 'Rak',
+                        ],
+                        [
+                            'name'  => 'strukturLv1.nama',
+                            'label' => 'Struktur Lv1',
+                        ],
+                        [
+                            'name'  => 'strukturLv2.nama',
+                            'label' => 'Struktur Lv2',
+                        ],
+                        [
+                            'name'  => 'strukturLv3.nama',
+                            'label' => 'Struktur Lv3',
+                        ],
+                    ]
+                ]);
+                ?>
+            </div>
+        <?php
+        }
+        ?>
+        <?php
         $this->widget('BGridView', [
-            'id'           => 'po-detail-grid',
-            'dataProvider' => $poDetail->search('t.id'),
-            'filter'       => $poDetail,
-            'summaryText'  => '{start}-{end} dari {count}, Total: <span class="label-total">' . $model->total . '</span>',
+            'id'                    => 'po-detail-grid',
+            'dataProvider'          => $poDetail->search('t.id'),
+            'filter'                => $poDetail,
+            'summaryText'           => '{start}-{end} dari {count}, Total: <span class="label-total">' . $model->total . '</span>',
             'rowCssClassExpression' => function ($row, $data) {
                 if ($data->ads == 0) {
                     return 'manual';
@@ -140,7 +176,7 @@ $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
         'itemOptions' => ['class' => 'has-form hide-for-small-only'], 'label' => false,
-        'items'    => [
+        'items'       => [
             ['label' => '<i class="fa fa-pencil"></i> <span class="ak">U</span>bah', 'url' => $this->createUrl('ubah', ['id' => $model->id]), 'linkOptions' => [
                 'class'     => 'button',
                 'accesskey' => 'u'
@@ -160,7 +196,7 @@ $this->menu = [
     ],
     [
         'itemOptions' => ['class' => 'has-form show-for-small-only'], 'label' => false,
-        'items'    => [
+        'items'       => [
             ['label' => '<i class="fa fa-pencil"></i>', 'url' => $this->createUrl('ubah', ['id' => $model->id]), 'linkOptions' => [
                 'class' => 'button',
             ]],
@@ -176,3 +212,4 @@ $this->menu = [
         'submenuOptions' => ['class' => 'button-group']
     ]
 ];
+?>

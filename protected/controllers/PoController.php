@@ -2,7 +2,6 @@
 
 class PoController extends Controller
 {
-
     const PROFIL_ALL      = 0;
     const PROFIL_SUPPLIER = Profil::TIPE_SUPPLIER;
 
@@ -23,17 +22,20 @@ class PoController extends Controller
             $poDetail->attributes = $_GET['PoDetail'];
         }
 
-        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER, Device::TIPE_PDF_PRINTER];
+        $tipePrinterAvailable = [Device::TIPE_CSV_PRINTER, Device::TIPE_PDF_PRINTER, Device::TIPE_JSON_FILE];
 
         $printerPo = empty($tipePrinterAvailable) ? [] : Device::model()->listDevices($tipePrinterAvailable);
 
         $kertasUntukPdf = Po::listNamaKertas();
+
+        $aPlsParam = PoAnalisaplsParam::model()->find('po_id=:poId', [':poId' => $id]);
 
         $this->render('view', [
             'model'          => $model,
             'poDetail'       => $poDetail,
             'printerPo'      => $printerPo,
             'kertasUntukPdf' => $kertasUntukPdf,
+            'aPlsParam'      => $aPlsParam
         ]);
     }
 
@@ -190,6 +192,7 @@ class PoController extends Controller
         $model = $this->loadModel($id);
         if ($model->status == Po::STATUS_DRAFT) {
             PoDetail::model()->deleteAll('po_id=:poId', [':poId' => $id]);
+            PoAnalisaplsParam::model()->deleteAll('po_id=:poId', [':poId' => $id]);
             $model->delete();
         }
 
@@ -517,7 +520,10 @@ class PoController extends Controller
                     $this->exportPdf($id, $_GET['kertas']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
-                    $this->eksporCsv($id);
+                    $this->exportCsv($id);
+                    break;
+                case Device::TIPE_JSON_FILE:
+                    $this->exportJson($id);
                     break;
             }
         }
@@ -582,7 +588,7 @@ class PoController extends Controller
      * Render csv untuk didownload
      * @param int $id PO Id
      */
-    public function eksporCsv($id)
+    public function exportCsv($id)
     {
         $model = $this->loadModel($id);
         $text  = $model->toCsv();
@@ -590,6 +596,26 @@ class PoController extends Controller
         $timeStamp       = date('Ymd His');
         $namaFile        = "PO_{$model->nomor}_{$model->profil->nama}_{$timeStamp}.csv";
         $contentTypeMeta = 'text/csv';
+
+        $this->renderPartial('_file_text', [
+            'namaFile'    => $namaFile,
+            'text'        => $text,
+            'contentType' => $contentTypeMeta,
+        ]);
+    }
+
+    /**
+     * Render json untuk didownload
+     * @param int $id PO Id
+     */
+    public function exportJson($id)
+    {
+        $model = $this->loadModel($id);
+        $text  = $model->toJson();
+
+        $timeStamp       = date('Ymd His');
+        $namaFile        = "PO_{$model->nomor}_{$model->profil->nama}_{$timeStamp}.json";
+        $contentTypeMeta = 'text/json';
 
         $this->renderPartial('_file_text', [
             'namaFile'    => $namaFile,
@@ -628,15 +654,39 @@ class PoController extends Controller
         if (isset($configFilterPerSup) && $configFilterPerSup->nilai == 1) {
             $profilId = $model->profil_id;
         }
-        $rakId    = empty($_POST['rakId']) ? null : $_POST['rakId'];
-        $strukLv1 = empty($_POST['strukLv1']) ? null : $_POST['strukLv1'];
-        $strukLv2 = empty($_POST['strukLv2']) ? null : $_POST['strukLv2'];
-        $strukLv3 = empty($_POST['strukLv3']) ? null : $_POST['strukLv3'];
-        $leadTime = empty($_POST['leadTime']) ? 0 : $_POST['leadTime'];
-        $ssd      = empty($_POST['ssd']) ? 0 : $_POST['ssd'];
+        $rakId       = empty($_POST['rakId']) ? null : $_POST['rakId'];
+        $strukLv1    = empty($_POST['strukLv1']) ? null : $_POST['strukLv1'];
+        $strukLv2    = empty($_POST['strukLv2']) ? null : $_POST['strukLv2'];
+        $strukLv3    = empty($_POST['strukLv3']) ? null : $_POST['strukLv3'];
+        $leadTime    = empty($_POST['leadTime']) ? 0 : $_POST['leadTime'];
+        $ssd         = empty($_POST['ssd']) ? 0 : $_POST['ssd'];
         $semuaBarang = $_POST['semuaBarang'] == 'true' ? true : false;
 
         $return = $model->analisaPLS($_POST['hariPenjualan'], $_POST['orderPeriod'], $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3, $semuaBarang);
+
+        $attributes = [
+            'po_id'        => $model->id,
+            'range'        => $_POST['hariPenjualan'],
+            'order_period' => $_POST['orderPeriod'],
+            'lead_time'    => $leadTime,
+            'ssd'          => $ssd,
+            'rak_id'       => $rakId,
+            'struktur_lv1' => $strukLv1,
+            'struktur_lv2' => $strukLv2,
+            'struktur_lv3' => $strukLv3
+        ];
+        $plsParam = PoAnalisaplsParam::model()->find('po_id=:poId', [':poId' => $model->id]);
+        if (is_null($plsParam)) {
+            $plsParam = new PoAnalisaplsParam();
+            // echo 'Analisa Baru';
+            // print_r($attributes);
+        };
+        $plsParam->attributes = $attributes;
+        if (!$plsParam->save()) {
+            // echo 'Gagal simpan analisa';
+            // print_r($plsParam->errors);
+        }
+
         // $return['rakId'] = $_POST['rakId'];
         $this->renderJSON($return);
         // print_r($return);
