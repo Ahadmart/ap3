@@ -192,6 +192,7 @@ class PoController extends Controller
         $model = $this->loadModel($id);
         if ($model->status == Po::STATUS_DRAFT) {
             PoDetail::model()->deleteAll('po_id=:poId', [':poId' => $id]);
+            PoAnalisaplsParam::model()->deleteAll('po_id=:poId', [':poId' => $id]);
             $model->delete();
         }
 
