@@ -206,4 +206,9 @@ class StockOpnameDetail extends CActiveRecord
         return $this->qty_sebenarnya - $this->qty_tercatat;
     }
 
+    public function bedaRaknya(){
+        $so = StockOpname::model()->findByPk($this->stock_opname_id);
+        return $so->rak_id != $this->barang->rak_id;
+    }
+
 }
