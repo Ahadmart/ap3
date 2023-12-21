@@ -53,7 +53,7 @@ class KasirController extends Controller
 
 
         if (isset($_POST['Kasir'])) {
-            $kasirBuka = Kasir::sedangBuka(Yii::app()->user->id);
+            $kasirBuka = Kasir::sedangBuka($_POST['Kasir']['user_id']);
             if (!is_null($kasirBuka)) {
                 throw new CHttpException(500, 'Tidak bisa buka kasir! Kasir "' . $kasirBuka->user->nama_lengkap . '" sudah buka di ' . $kasirBuka->device->nama);
             }

@@ -755,6 +755,6 @@ class Kasir extends CActiveRecord
 
     public static function sedangBuka($userId)
     {
-        return Kasir::model()->find('waktu_tutup is null AND updated_by = :userId', [':userId' => $userId]);
+        return Kasir::model()->find('waktu_tutup is null AND user_id = :userId', [':userId' => $userId]);
     }
 }
