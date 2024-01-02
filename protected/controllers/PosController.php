@@ -444,7 +444,14 @@ class PosController extends Controller
 
                     $return = ['sukses' => true];
                 } else {
-                    throw new Exception('Tidak ada otorisasi Admin', 500);
+                    // throw new Exception('Tidak ada otorisasi Admin', 401);
+                    $return = [
+                        'sukses' => false,
+                        'error'  => [
+                            'code' => '401',
+                            'msg'  => 'Hapus detail harus dengan otorisasi Admin',
+                        ],
+                    ];
                 }
             }
         }

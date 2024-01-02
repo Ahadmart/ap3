@@ -409,8 +409,8 @@ class Penjualan extends CActiveRecord
             if (is_null($barang)) {
                 throw new Exception('Barang tidak ditemukan', 500);
             }
-            if ($barang->status == Barang::STATUS_TIDAK_AKTIF) {
-                throw new Exception('Barang Tidak Aktif', 500);
+            if ($barang->status == Barang::STATUS_TIDAK_AKTIF && $barang->stok <= 0) {
+                throw new Exception('Barang Tidak Aktif dan Tidak Ada Stok', 500);
             }
             $this->tambahBarangProc($barang, $qty);
 
@@ -441,7 +441,16 @@ class Penjualan extends CActiveRecord
      */
     public function tambahBarangDetail($barang, $qty)
     {
-        $sisa            = $qty;
+        $sisa = $qty;
+        /*
+         * Jika ini barang non aktif, maka cek stok realtime
+         * Barang non aktif tidak boleh minus
+         */
+        // Yii::log("Barang: {$barang->barcode}, qty: {$qty}, stok: {$barang->stok}");
+        if ($barang->status == Barang::STATUS_TIDAK_AKTIF && (int) $qty > (int) $barang->stok) {
+            throw new Exception('Stok barang non aktif tidak cukup. Stok: ' . $barang->stok, 500);
+        }
+
         $hargaJualNormal = HargaJual::model()->terkini($barang->id);
         // Yii::log("Tambah barang detail; barangID: ".$barang->id, "info");
         /*

@@ -120,19 +120,30 @@ $this->widget('BGridView', array(
                     $("#tombol-admin-mode").removeClass('alert');
                     $.fn.yiiGridView.update("penjualan-detail-grid");
                     updateTotal();
+                } else {
+                    $.gritter.add({
+                        title: 'Error '+response.error.code,
+                        text: response.error.msg,
+                        time: 10000,
+                    });
+
+                    if (response.error.code == 401) {
+                        $("#tombol-admin-mode").addClass('geleng');
+                        $("#tombol-admin-mode").addClass('alert');
+                    }
                 }
             },
-            error: function(response, newValue) {
-                if (response.status === 500) {
-                    $.gritter.add({
-                        title: 'Error 500',
-                        text: 'Hapus detail harus dengan otorisasi Admin',
-                        time: 3000,
-                    });
-                    $("#tombol-admin-mode").addClass('geleng');
-                    $("#tombol-admin-mode").addClass('alert');
-                }
-            }
+            // error: function(response, newValue) {
+            //     if (response.status === 500) {
+            //         $.gritter.add({
+            //             title: 'Error 401',
+            //             text: 'Hapus detail harus dengan otorisasi Admin',
+            //             time: 3000,
+            //         });
+            //         $("#tombol-admin-mode").addClass('geleng');
+            //         $("#tombol-admin-mode").addClass('alert');
+            //     }
+            // }
         });
         $('.editable-qty').on('shown', function(e, editable) {
             setTimeout(function() {
