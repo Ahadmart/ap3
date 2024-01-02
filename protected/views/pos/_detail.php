@@ -124,7 +124,7 @@ $this->widget('BGridView', array(
                     $.gritter.add({
                         title: 'Error '+response.error.code,
                         text: response.error.msg,
-                        time: 10000,
+                        time: 3000,
                     });
 
                     if (response.error.code == 401) {
