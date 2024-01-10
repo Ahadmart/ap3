@@ -596,12 +596,14 @@ class Po extends CActiveRecord
                 barang ON barang.id = po_detail.barang_id
             SET
                 `saran_order` = CASE
-                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) > 0 THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`))
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) > 0 
+                        THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`))
                         ELSE 0
                         END,
                 `qty_order` = CASE
-                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`)) > 0 THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`))
-                        ELSE 0
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) > IFNULL(po_detail.restock_min, 0) 
+                        THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`))
+                        ELSE IFNULL(po_detail.restock_min, 0)
                         END,
                 `po_detail`.`harga_jual` = bhj.harga,
                 `po_detail`.`harga_beli` = belid.harga_beli
