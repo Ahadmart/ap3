@@ -606,7 +606,17 @@ class Po extends CActiveRecord
                             IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`), 
                             0)
                         END,
-                `qty_order` = `saran_order`,
+                `qty_order` = CASE
+                WHEN 
+                    CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) > IFNULL(po_detail.restock_min, 0) 
+                THEN 
+                    IF (CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) - IF(`stok` < 0, 0, `stok`) > 0,
+                    CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) - IF(`stok` < 0, 0, `stok`), 
+                    0)
+                ELSE IF (IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`) > 0, 
+                    IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`), 
+                    0)
+                END,
                 `po_detail`.`harga_jual` = bhj.harga,
                 `po_detail`.`harga_beli` = belid.harga_beli
             WHERE
