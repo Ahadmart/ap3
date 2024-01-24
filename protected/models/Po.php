@@ -595,37 +595,46 @@ class Po extends CActiveRecord
                     JOIN
                 barang ON barang.id = po_detail.barang_id
             SET
-                `saran_order` = CASE
-                        WHEN 
-                            CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) > IFNULL(po_detail.restock_min, 0) 
-                        THEN 
-                            IF (CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) - IF(`stok` < 0, 0, `stok`) > 0,
-                            CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) - IF(`stok` < 0, 0, `stok`), 
-                            0)
-                        ELSE IF (IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`) > 0, 
-                            IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`), 
-                            0)
-                        END,
-                `qty_order` = CASE
-                WHEN 
-                    CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) > IFNULL(po_detail.restock_min, 0) 
-                THEN 
-                    IF (CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) - IF(`stok` < 0, 0, `stok`) > 0,
-                    CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) - IF(`stok` < 0, 0, `stok`), 
-                    0)
-                ELSE IF (IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`) > 0, 
-                    IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`), 
-                    0)
+                `qty_butuh` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`),
+                `saran_order` = 
+                CASE
+                    WHEN `stok` < `po_detail`.`restock_min` THEN
+                    CASE
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < IF(`stok` < 0, 0, `stok`) THEN
+                        `po_detail`.`restock_min` - IF(`stok` < 0, 0, `stok`)
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < `po_detail`.`restock_min` THEN
+                        `po_detail`.`restock_min` - IF(`stok` < 0, 0, `stok`)
+                        ELSE
+                        CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) - IF(`stok` < 0, 0, `stok`)
+                    END
+                    ELSE
+                    CASE
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < `po_detail`.`restock_min` THEN
+                        0
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < IF(`stok` < 0, 0, `stok`) THEN
+                        0
+                        ELSE
+                        CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) - IF(`stok` < 0, 0, `stok`)
+                    END
+                END,
+                `qty_order` = 
+                CASE
+                    WHEN `stok` < `po_detail`.`restock_min` AND CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < IF(`stok` < 0, 0, `stok`) THEN
+                        `po_detail`.`restock_min` - IF(`stok` < 0, 0, `stok`)
+                    WHEN `stok` < `po_detail`.`restock_min` AND CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < `po_detail`.`restock_min` THEN
+                        `po_detail`.`restock_min` - IF(`stok` < 0, 0, `stok`)
+                    WHEN `stok` < `po_detail`.`restock_min` THEN
+                        CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) - IF(`stok` < 0, 0, `stok`)
+                    WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < `po_detail`.`restock_min` OR CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < IF(`stok` < 0, 0, `stok`) THEN
+                        0
+                    ELSE
+                        CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) - IF(`stok` < 0, 0, `stok`)
                 END,
                 `po_detail`.`harga_jual` = bhj.harga,
                 `po_detail`.`harga_beli` = belid.harga_beli
             WHERE
                 po_id = :poId
                 ';
-        /*
-        `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
-        `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
-         */
 
         try {
             $command = Yii::app()->db->createCommand($sql);
@@ -634,6 +643,60 @@ class Po extends CActiveRecord
                 ':leadTime'    => $leadTime,
                 ':ssd'         => $ssd,
                 ':poId'        => $this->id,
+            ]);
+            return [
+                'sukses' => true,
+                'data'   => $hasil,
+            ];
+        } catch (Exception $ex) {
+            return [
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+                ],
+            ];
+        }
+    }
+
+    static function hitungSaranOrderPerBarang($detailId)
+    {
+        $sql = '
+        UPDATE po_detail
+        JOIN barang ON barang.id = po_detail.barang_id
+        JOIN po_analisapls_param param ON param.po_id = po_detail.po_id
+        SET saran_order = 
+            CASE
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` AND CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`) THEN
+                `po_detail`.`restock_min` - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` AND CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < `po_detail`.`restock_min` THEN
+                `po_detail`.`restock_min` - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` THEN
+                CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < `po_detail`.`restock_min` OR CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`) THEN
+                0
+                ELSE
+                CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+            END,
+            `qty_order` =
+            CASE
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` AND CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`) THEN
+                `po_detail`.`restock_min` - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` AND CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < `po_detail`.`restock_min` THEN
+                `po_detail`.`restock_min` - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` THEN
+                CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < `po_detail`.`restock_min` OR CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`) THEN
+                0
+                ELSE
+                CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+            END
+        WHERE `po_detail`.`id` = :poDetailId;
+        ';
+        try {
+            $command = Yii::app()->db->createCommand($sql);
+            $hasil   = $command->execute([
+                ':poDetailId'        => $detailId,
             ]);
             return [
                 'sukses' => true,

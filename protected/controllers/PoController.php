@@ -886,24 +886,10 @@ class PoController extends Controller
             $poDetail    = PoDetail::model()->findByPk($pk);
             $rowAffected = $poDetail->updateByPk($pk, [
                 'restock_min' => $_POST['value'],
-                // 'saran_order' => $poDetail->saran_order - $poDetail->restock_min + $_POST['value'],
-                'qty_order'   => $poDetail->saran_order + $_POST['value'],
                 'updated_by'  => Yii::app()->user->id,
-            ]);
-            // if ($_POST['value'] > $poDetail->qty_order) {
-            //     $rowAffected = $poDetail->updateByPk($pk, [
-            //         'restock_min' => $_POST['value'],
-            //         'qty_order'   => $_POST['value'],
-            //         'updated_by'  => Yii::app()->user->id,
-            //     ]);
-            // } else {
-            //     $rowAffected = $poDetail->updateByPk($pk, [
-            //         'restock_min' => $_POST['value'],
-            //         'updated_by'  => Yii::app()->user->id,
-            //     ]);
-            // }
+            ]);            
             if ($rowAffected > 0) {
-                $return = ['sukses' => true];
+                $return = Po::hitungSaranOrderPerBarang($poDetail->id);
             }
             // Barang juga diupdate mudah-mudahan lancar tanpa transaction
             $barangId = PoDetail::model()->findByPk($pk)->barang_id;
