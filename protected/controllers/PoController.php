@@ -144,6 +144,19 @@ class PoController extends Controller
         $configCariBarang = Config::model()->find("nama='po.caribarangmode'");
 
         $modelReportPls = new ReportPlsForm;
+        $poParam = PoAnalisaplsParam::model()->find('po_id=:poId',[':poId'=>$id]);
+        if (!is_null($poParam)){
+            // var_dump($poParam);Yii::app()->end();
+            // Jika ada param sebelumnya, repopulated variabel $modelReportPls
+            $modelReportPls->jumlahHari = $poParam->range;
+            $modelReportPls->orderPeriod = $poParam->order_period;
+            $modelReportPls->leadTime = $poParam->lead_time;
+            $modelReportPls->ssd = $poParam->ssd;
+            $modelReportPls->rakId = $poParam->rak_id;
+            $modelReportPls->strukLv1 = $poParam->struktur_lv1;
+            $modelReportPls->strukLv2 = $poParam->struktur_lv2;
+            $modelReportPls->strukLv3 = $poParam->struktur_lv3;
+        }
 
         $PLSDetail = new PoDetail('search');
         $PLSDetail->unsetAttributes();
