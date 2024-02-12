@@ -35,15 +35,16 @@
  */
 class DiskonBarang extends CActiveRecord
 {
-    const TIPE_PROMO              = 0;
-    const TIPE_GROSIR             = 1;
-    const TIPE_BANDED             = 2;
-    const TIPE_MANUAL             = 3;
-    const TIPE_PROMO_MEMBER       = 4;
-    const TIPE_QTY_GET_BARANG     = 5;
-    const TIPE_NOMINAL_GET_BARANG = 6;
-    const TIPE_PROMO_PERKATEGORI  = 7;
-    const TIPE_PROMO_PERSTRUKTUR  = 8;
+    const TIPE_PROMO                   = 0;
+    const TIPE_GROSIR                  = 1;
+    const TIPE_BANDED                  = 2;
+    const TIPE_MANUAL                  = 3;
+    const TIPE_PROMO_MEMBER            = 4;
+    const TIPE_QTY_GET_BARANG          = 5;
+    const TIPE_NOMINAL_GET_BARANG      = 6;
+    const TIPE_PROMO_PERKATEGORI       = 7;
+    const TIPE_PROMO_PERSTRUKTUR       = 8;
+    const TIPE_QTY_GET_BARANG_MULTIVAR = 9;
     /* ========= */
     const SEMUA_BARANG = 1;
     /* ========= */
@@ -216,28 +217,30 @@ class DiskonBarang extends CActiveRecord
     public function listTipe()
     {
         return [
-            self::TIPE_PROMO              => 'Promo (diskon per waktu tertentu)',
-            self::TIPE_PROMO_PERKATEGORI  => 'Promo per Kategori Barang',
-            self::TIPE_PROMO_PERSTRUKTUR  => 'Promo per Struktur Barang',
-            self::TIPE_PROMO_MEMBER       => 'Promo Member',
-            self::TIPE_GROSIR             => 'Grosir (beli banyak harga turun)',
-            self::TIPE_BANDED             => 'Banded (beli qty tertentu harga turun)',
-            self::TIPE_QTY_GET_BARANG     => 'Beli x dapat y (Quantity tertentu dapat barang)',
-            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y (Nominal tertentu dapat barang)',
+            self::TIPE_PROMO                   => 'Promo (diskon per waktu tertentu)',
+            self::TIPE_PROMO_PERKATEGORI       => 'Promo per Kategori Barang',
+            self::TIPE_PROMO_PERSTRUKTUR       => 'Promo per Struktur Barang',
+            self::TIPE_PROMO_MEMBER            => 'Promo Member',
+            self::TIPE_GROSIR                  => 'Grosir (beli banyak harga turun)',
+            self::TIPE_BANDED                  => 'Banded (beli qty tertentu harga turun)',
+            self::TIPE_QTY_GET_BARANG          => 'Beli x dapat y (Quantity tertentu dapat barang)',
+            self::TIPE_QTY_GET_BARANG_MULTIVAR => 'Beli xx dapat yy (Qty x (varian) dapat y (varian))',
+            self::TIPE_NOMINAL_GET_BARANG      => 'Beli Rp.x dapat y (Nominal tertentu dapat barang)',
         ];
     }
 
     public function listTipeSort()
     {
         return [
-            self::TIPE_PROMO              => 'Promo',
-            self::TIPE_PROMO_PERKATEGORI  => 'Promo per Kategori',
-            self::TIPE_PROMO_PERSTRUKTUR  => 'Promo per Struktur',
-            self::TIPE_PROMO_MEMBER       => 'Promo Member',
-            self::TIPE_GROSIR             => 'Grosir',
-            self::TIPE_BANDED             => 'Banded',
-            self::TIPE_QTY_GET_BARANG     => 'Beli x dapat y',
-            self::TIPE_NOMINAL_GET_BARANG => 'Beli Rp.x dapat y',
+            self::TIPE_PROMO                   => 'Promo',
+            self::TIPE_PROMO_PERKATEGORI       => 'Promo per Kategori',
+            self::TIPE_PROMO_PERSTRUKTUR       => 'Promo per Struktur',
+            self::TIPE_PROMO_MEMBER            => 'Promo Member',
+            self::TIPE_GROSIR                  => 'Grosir',
+            self::TIPE_BANDED                  => 'Banded',
+            self::TIPE_QTY_GET_BARANG          => 'Beli x dapat y',
+            self::TIPE_QTY_GET_BARANG_MULTIVAR => 'Beli x(varian) dapat y(varian)',
+            self::TIPE_NOMINAL_GET_BARANG      => 'Beli Rp.x dapat y',
         ];
     }
 

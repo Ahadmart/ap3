@@ -377,6 +377,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
             case '<?= DiskonBarang::TIPE_PROMO_PERSTRUKTUR ?>':
                 promoPerStrukturFields();
                 break;
+            case '<?= DiskonBarang::TIPE_QTY_GET_BARANG_MULTIVAR; ?>':
+                qtyGetBarangVarFields();
+                break;
         }
     }
 
@@ -481,6 +484,19 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         $("#input-barang-bonus").show(500);
         $("#row-barang-bonus").show(500);
         $(".row-bonus-nilai").show(500);
+        enDisScan(true);
+    }
+
+    function qtyGetBarangVarFields() {
+        $("#list-kategori").hide(500);
+        $("#list-struktur").hide(500);
+        $("#row-qty-min").hide(500);
+        $("#row-qty-max").hide(500);
+        $("#cb_semua_barang").hide(500);
+        $("#row-qty").hide(500);
+        $(".row-nilai-diskon").hide(500);
+        $("#input-barang-bonus").hide(500);
+        $(".row-bonus-nilai").hide(500);
         enDisScan(true);
     }
 
