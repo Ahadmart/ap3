@@ -30,7 +30,6 @@
  */
 class InventoryBalance extends CActiveRecord
 {
-
     const ASAL_PEMBELIAN = 1;
     const ASAL_RETURJUAL = 2;
     const ASAL_SO        = 3;
@@ -104,6 +103,7 @@ class InventoryBalance extends CActiveRecord
             'updated_at'                => 'Updated At',
             'updated_by'                => 'Updated By',
             'created_at'                => 'Created At',
+            'namaProfilPembelian'       => 'Profil',
         ];
     }
 
@@ -165,11 +165,10 @@ class InventoryBalance extends CActiveRecord
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
@@ -210,7 +209,7 @@ class InventoryBalance extends CActiveRecord
                 $this->qty += $layerTerakhir->qty;
                 $layerTerakhir->qty = 0;
                 if (!$layerTerakhir->save()) {
-                    throw new Exception("Gagal simpan layer terakhir");
+                    throw new Exception('Gagal simpan layer terakhir');
                 }
             }
         }
@@ -218,7 +217,7 @@ class InventoryBalance extends CActiveRecord
         if ($this->save()) {
             return true;
         } else {
-            throw new Exception("Gagal simpan layer inventory");
+            throw new Exception('Gagal simpan layer inventory');
         }
     }
 
@@ -258,12 +257,11 @@ class InventoryBalance extends CActiveRecord
              * sisa selalu > 0
              */
             if ($inventory->qty > $sisa) {
-
                 /* Inventory cukup. 0 (nol) kan sisa, kurangi inventory */
                 $inventory->qty -= $sisa;
                 $qtyTerpakai = $sisa;
                 $sisa        = 0;
-            } else if ($inventory->qty <= $sisa && $inventory->qty > 0) {
+            } elseif ($inventory->qty <= $sisa && $inventory->qty > 0) {
                 /*
                  * Inventory kurang (tapi masih positif). Kurangi sisa. 0 (nol) kan.
                  */
@@ -504,7 +502,7 @@ class InventoryBalance extends CActiveRecord
                 $inventoryBalance->qty += $layerTerakhir->qty;
                 $layerTerakhir->qty = 0;
                 if (!$layerTerakhir->save()) {
-                    throw new Exception("Gagal simpan layer terakhir");
+                    throw new Exception('Gagal simpan layer terakhir');
                 }
             }
 
@@ -513,7 +511,7 @@ class InventoryBalance extends CActiveRecord
                     return true;
                 }
             } else {
-                throw new Exception("Gagal simpan layer inventory");
+                throw new Exception('Gagal simpan layer inventory');
             }
         }
 
@@ -521,7 +519,7 @@ class InventoryBalance extends CActiveRecord
          * berarti qty barang yang diretur lebih banyak dari qty barang yang di jual ??
          * cari di penjualan berikutnya */
         if ($sisa > 0) {
-            throw new Exception("Retur jual lebih banyak dari penjualan: barang=" . $returPenjualanDetail->penjualanDetail->barang->nama);
+            throw new Exception('Retur jual lebih banyak dari penjualan: barang=' . $returPenjualanDetail->penjualanDetail->barang->nama);
         }
     }
 
@@ -530,7 +528,7 @@ class InventoryBalance extends CActiveRecord
         $selisih = $soDetail->qty_sebenarnya - $soDetail->qty_tercatat;
         if ($selisih > 0) {
             $this->soPlus($soModel, $soDetail->id, $soDetail->barang_id, $selisih);
-        } else if ($selisih < 0) {
+        } elseif ($selisih < 0) {
             $this->soMinus($soDetail->barang_id, $selisih);
         } else {
             /* Jika selisih 0, nothing to do */
@@ -571,11 +569,10 @@ class InventoryBalance extends CActiveRecord
              * sisa selalu > 0
              */
             if ($inventory->qty > $sisa) {
-
                 /* Inventory cukup. 0 (nol) kan sisa, kurangi inventory */
                 $inventory->qty -= $sisa;
                 $sisa = 0;
-            } else if ($inventory->qty <= $sisa && $inventory->qty > 0) {
+            } elseif ($inventory->qty <= $sisa && $inventory->qty > 0) {
                 /*
                  * Inventory kurang (tapi masih positif). Kurangi sisa. 0 (nol) kan.
                  */
@@ -674,11 +671,10 @@ class InventoryBalance extends CActiveRecord
             $i->pembelian_detail_id    = $pembelianDetailIdTerakhir; // Diisi dengan pembelian terakhir, untuk kompatibilitas dg proses lain
             $i->stock_opname_detail_id = $soDetailId;
             if (!$i->save()) {
-                throw new Exception("Gagal membuat layer dari SO", 500);
+                throw new Exception('Gagal membuat layer dari SO', 500);
             }
             $sisa = 0;
         } else {
-
             $kapasitasInventory = $inventory->qty_awal - $inventory->qty;
             if ($kapasitasInventory != 0) {
                 if ($sisa < $kapasitasInventory) {
@@ -705,7 +701,6 @@ class InventoryBalance extends CActiveRecord
     public function getNamaAsal()
     {
         switch ($this->asal) {
-
             case InventoryBalance::ASAL_PEMBELIAN:
                 return 'Pembelian';
 
@@ -745,6 +740,16 @@ class InventoryBalance extends CActiveRecord
         }
         return is_null($inventory) ? 0 : $inventory->harga_beli;
     }
+    
+    /**
+     * Ambil nama profil
+     *
+     * @return string nama profil dari pembelian layer stok saat ini
+     */
+    public function getNamaProfilPembelian()
+    {
+        return $this->pembelianDetail->pembelian->profil->nama;
+    }
 
     /**
      * Mengembalikan nama controller tergantung dari asal dokumen
@@ -754,17 +759,16 @@ class InventoryBalance extends CActiveRecord
     public function namaAsalController()
     {
         switch ($this->asal) {
-
             case InventoryBalance::ASAL_PEMBELIAN:
                 return 'pembelian';
 
             case InventoryBalance::ASAL_RETURJUAL:
                 return 'returpenjualan';
 
-            case InventoryBalance::ASAL_SO;
+            case InventoryBalance::ASAL_SO:
                 return 'stockopname';
 
-            case InventoryBalance::ASAL_RETURBELI;
+            case InventoryBalance::ASAL_RETURBELI:
                 return 'returpembelian';
         }
     }
@@ -772,7 +776,6 @@ class InventoryBalance extends CActiveRecord
     public function modelAsal()
     {
         switch ($this->asal) {
-
             case InventoryBalance::ASAL_PEMBELIAN:
                 return Pembelian::model()->find('nomor=:nomor', [':nomor' => $this->nomor_dokumen]);
 
@@ -789,7 +792,7 @@ class InventoryBalance extends CActiveRecord
 
     public function totalInventory()
     {
-        $sql = "
+        $sql = '
             SELECT
                 SUM(harga_beli * qty) total
             FROM
@@ -799,14 +802,14 @@ class InventoryBalance extends CActiveRecord
                     AND barang.`status` = :statusAktif
             WHERE
                 ib.qty > 0
-               ";
+               ';
         $inventory = Yii::app()->db->createCommand($sql)->bindValue(':statusAktif', Barang::STATUS_AKTIF)->queryRow();
         return $inventory['total'];
     }
 
     public function totalNilaiReturBeliPosted()
     {
-        $sql = "
+        $sql = '
         SELECT
             SUM(d.qty * ib.harga_beli) total
         FROM
@@ -816,7 +819,7 @@ class InventoryBalance extends CActiveRecord
                 AND r.status = :statusPosted
                 JOIN
             inventory_balance ib ON ib.id = d.inventory_balance_id
-               ";
+               ';
         $nilai = Yii::app()->db->createCommand($sql)->bindValue(':statusPosted', ReturPembelian::STATUS_POSTED)->queryRow();
         return $nilai['total'];
     }
@@ -839,7 +842,7 @@ class InventoryBalance extends CActiveRecord
         $ib->qty_awal                  = $detail->qty;
         $ib->qty                       = $detail->qty;
         if (!$ib->save()) {
-            throw new Exception("Gagal simpan layer inventory untuk retur beli");
+            throw new Exception('Gagal simpan layer inventory untuk retur beli');
         }
         return true;
     }
