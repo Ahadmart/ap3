@@ -2,7 +2,6 @@
 
 class DiskonbarangController extends Controller
 {
-
     /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
@@ -45,10 +44,17 @@ class DiskonbarangController extends Controller
         $strukturDummy->unsetAttributes(); // clear any default values
         $strukturDummy->setAttribute('level', 0);
 
+        $varianDiskon = new DiskonBarangVarianDetail('search');
+        $varianDiskon->setAttribute('tipe', DiskonBarangVarianDetail::TIPE_BARANG_DISKON);
+        $varianBonus = new DiskonBarangVarianDetail('search');
+        $varianBonus->setAttribute('tipe', DiskonBarangVarianDetail::TIPE_BARANG_BONUS);
+
         $this->render('tambah', [
-            'model' => $model,
-            'lv1' => $lv1,
+            'model'         => $model,
+            'lv1'           => $lv1,
             'strukturDummy' => $strukturDummy,
+            'varianDiskon'  => $varianDiskon,
+            'varianBonus'   => $varianBonus,
         ]);
     }
 
@@ -68,8 +74,9 @@ class DiskonbarangController extends Controller
 
         if (isset($_POST['DiskonBarang'])) {
             $model->attributes = $_POST['DiskonBarang'];
-            if ($model->save())
+            if ($model->save()) {
                 $this->redirect(['view', 'id' => $id]);
+            }
         }
 
         $this->render('ubah', [
@@ -83,14 +90,14 @@ class DiskonbarangController extends Controller
      * @param integer $id the ID of the model to be deleted
      */
     /*
-      public function actionHapus($id)
-      {
-      $this->loadModel($id)->delete();
+    public function actionHapus($id)
+    {
+    $this->loadModel($id)->delete();
 
-      // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-      if (!isset($_GET['ajax']))
-      $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-      }
+    // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+    if (!isset($_GET['ajax']))
+    $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+    }
      * Update: Diskon tidak bisa dihapus, hanya bisa dinonaktifkan
      *
      */
@@ -100,8 +107,8 @@ class DiskonbarangController extends Controller
      */
     public function actionIndex()
     {
-        $model         = new DiskonBarang('search');
-        $model->unsetAttributes();  // clear any default values
+        $model = new DiskonBarang('search');
+        $model->unsetAttributes(); // clear any default values
         $model->status = 1;
         if (isset($_GET['DiskonBarang'])) {
             $model->attributes = $_GET['DiskonBarang'];
@@ -122,8 +129,10 @@ class DiskonbarangController extends Controller
     public function loadModel($id)
     {
         $model = DiskonBarang::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+
         return $model;
     }
 
@@ -141,19 +150,18 @@ class DiskonbarangController extends Controller
 
     public function actionGetDataBarang()
     {
-        $return  = [
-            'sukses' => false
+        $return = [
+            'sukses' => false,
         ];
         $barcode = $_POST['barcode'];
         $barang  = Barang::model()->find('barcode=:barcode', [
-            ':barcode' => $barcode
+            ':barcode' => $barcode,
         ]);
 
         if (is_null($barang)) {
-
             $this->renderJSON(array_merge($return, ['error' => [
                 'code' => '500',
-                'msg'  => 'Barang tidak ditemukan'
+                'msg'  => 'Barang tidak ditemukan',
             ]]));
         }
         $return = [
@@ -165,7 +173,7 @@ class DiskonbarangController extends Controller
             'hargaJual'    => $barang->getHargaJual(),
             'hargaJualRaw' => $barang->getHargaJualRaw(),
             'hargaBeli'    => $barang->getHargaBeli(),
-            'stok'         => $barang->getStok()
+            'stok'         => $barang->getStok(),
         ];
 
         $this->renderJSON($return);
@@ -183,20 +191,20 @@ class DiskonbarangController extends Controller
         foreach ($arrTerm as $bTerm) {
             if (!$firstRow) {
                 $wBarcode .= ' AND ';
-                $wNama    .= ' AND ';
+                $wNama .= ' AND ';
             }
-            $wBarcode           .= "barcode like :term{$i}";
-            $wNama              .= "nama like :term{$i}";
+            $wBarcode .= "barcode like :term{$i}";
+            $wNama .= "nama like :term{$i}";
             $param[":term{$i}"] = "%{$bTerm}%";
-            $firstRow           = FALSE;
+            $firstRow           = false;
             $i++;
         }
         $wBarcode .= ')';
-        $wNama    .= ')';
+        $wNama .= ')';
         //      echo $wBarcode.' AND '.$wNama;
         //      print_r($param);
 
-        $q         = new CDbCriteria();
+        $q = new CDbCriteria();
         $q->addCondition("{$wBarcode} OR {$wNama}");
         $q->params = $param;
         $barangs   = Barang::model()->aktif()->findAll($q);
@@ -207,7 +215,7 @@ class DiskonbarangController extends Controller
                 'label' => $barang->nama,
                 'value' => $barang->barcode,
                 'stok'  => is_null($barang->stok) ? 'null' : $barang->stok,
-                'harga' => $barang->hargaJual
+                'harga' => $barang->hargaJual,
             ];
         }
 
@@ -221,13 +229,13 @@ class DiskonbarangController extends Controller
             $return = '<a href="' .
                 $this->createUrl('view', ['id' => $data->id]) . '">' .
                 $data->barang->nama . '</a>';
-        } else if ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERKATEGORI) {
+        } elseif ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERKATEGORI) {
             $return = '<a href="' .
                 $this->createUrl('view', ['id' => $data->id]) . '">' .
                 $data->barangKategori->nama . '</a>';
-        } else if ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERSTRUKTUR) {
+        } elseif ($data->tipe_diskon_id == DiskonBarang::TIPE_PROMO_PERSTRUKTUR) {
             $strukturBarang = StrukturBarang::model()->findByPk($data->barang_struktur_id);
-            $return = '<a href="' .
+            $return         = '<a href="' .
                 $this->createUrl('view', ['id' => $data->id]) . '">' .
                 $strukturBarang->getFullPath() . '</a>';
         } else {
@@ -246,7 +254,7 @@ class DiskonbarangController extends Controller
                 $hargaJual     = number_format($data->barangBonus->hargaJualRaw, 0, ',', '.');
                 $diskonNominal = number_format($data->barang_bonus_diskon_nominal, 0, ',', '.');
                 $net           = number_format($data->barangBonus->hargaJualRaw - $data->barang_bonus_diskon_nominal, 0, ',', '.');
-                $text          .= "<br />" . $hargaJual . ' - ' . $diskonNominal . ' = ' . $net;
+                $text .= '<br />' . $hargaJual . ' - ' . $diskonNominal . ' = ' . $net;
             }
         }
         return $text;
@@ -304,5 +312,13 @@ class DiskonbarangController extends Controller
                 $this->renderPartial('_grid3', ['lv3' => $model]);
                 break;
         }
+    }
+
+    function actionTambahDetailDiskonForm()
+    {
+        $model = new DiskonBarangVarianDetail();
+        $this->renderPartial('_form_var_diskon', [
+            'model' => $model
+        ]);
     }
 }

@@ -18,6 +18,8 @@
     ?>
 
     <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, ['class' => 'panel callout']); ?>
+    <div id="tambah-detail-diskon" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
+    <div id="tambah-detail-bonus" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 
     <div class="row">
         <div class="small-12 columns">
@@ -25,7 +27,7 @@
             <?php
             echo $form->dropDownList($model, 'tipe_diskon_id', $model->listTipe(), [
                 'prompt'    => 'Pilih Satu..',
-                'autofocus' => 'autofocus'
+                'autofocus' => 'autofocus',
             ]);
             ?>
             <?php echo $form->error($model, 'tipe_diskon_id', ['class' => 'error']); ?>
@@ -86,7 +88,7 @@
                 ),
                 [
                     'prompt'    => 'Pilih Satu..',
-                    'autofocus' => 'autofocus'
+                    'autofocus' => 'autofocus',
                 ]
             );
             ?>
@@ -105,23 +107,23 @@
             <div class="medium-4 columns" id="grid1-container">
                 <?php
                 $this->renderPartial('_grid1', [
-                    'lv1' => $lv1
+                    'lv1' => $lv1,
                 ]);
                 ?>
             </div>
             <div class="medium-4 columns" id="grid2-container">
                 <?php
                 $this->renderPartial('_grid2', [
-                    'lv2' => $strukturDummy
+                    'lv2' => $strukturDummy,
                 ]);
                 ?>
             </div>
             <div class="medium-4 columns" id="grid3-container"">
                 <?php
                 $this->renderPartial('_grid3', [
-                    'lv3' => $strukturDummy
+                    'lv3' => $strukturDummy,
                 ]);
-                ?>  
+                ?>
             </div>
             <!-- <input type=" hidden" id="input-struktur" /> -->
         </div>
@@ -131,19 +133,19 @@
                 if (!Array.isArray(lv1Id) || !lv1Id.length) {
                     console.log("1 tidak dipilih");
                     <?php /* render nothing */ ?>
-                    $("#grid2-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid2-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 2,
                         parent: 0
                     });
                     // $('#input-struktur').val("");
                 } else {
                     console.log(lv1Id[0] + ":1 dipilih");
-                    $("#grid2-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid2-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 2,
                         parent: lv1Id[0]
                     });
                 }
-                $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                $("#grid3-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                     level: 3,
                     parent: 0
                 });
@@ -154,14 +156,14 @@
                 if (!Array.isArray(lv2Id) || !lv2Id.length) {
                     console.log("2 tidak dipilih");
                     <?php /* render nothing */ ?>
-                    $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid3-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 3,
                         parent: 0
                     });
                     // $('#input-struktur').val("");
                 } else {
                     console.log(lv2Id[0] + ":2 dipilih");
-                    $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid3-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 3,
                         parent: lv2Id[0]
                     });
@@ -183,6 +185,24 @@
     <div class="row">
         <div class="panel" id="info-barang" style="display: none; padding-bottom: 15px; margin-left: none; margin-right: none">
 
+        </div>
+    </div>
+
+    <div class="row" id="input-var-diskon" style="display: none">
+        <div class="small-12 column">
+            <h4>Barang Diskon</h4>
+            <?=
+            CHtml::link('<i class="fa fa-plus"></i>', '#', [
+                'class'          => 'button tiny bigfont',
+                'data-reveal-id' => 'tambah-detail-diskon',
+                'id'             => 'tombol-tdb-diskon',
+            ])
+            ?>
+            <?php
+            $this->renderPartial('_detail_var_diskon', [
+                'varianDiskon' => $varianDiskon
+            ])
+            ?>
         </div>
     </div>
 
@@ -228,6 +248,26 @@
             </div>
         </div>
     </div>
+
+    <div class="row" id="input-var-bonus" style="display: none">
+        <div class="small-12 column">
+            <hr />
+            <h4>Barang Bonus</h4>
+            <?=
+            CHtml::link('<i class="fa fa-plus"></i>', '#', [
+                'class'          => 'button tiny bigfont',
+                'data-reveal-id' => 'tambah-detail-bonus',
+                'id'             => 'tombol-tdb-bonus',
+            ])
+            ?>
+            <?php
+            $this->renderPartial('_detail_var_bonus', [
+                'varianBonus' => $varianBonus
+            ])
+            ?>
+        </div>
+    </div>
+
     <div id="input-barang-bonus" style="display: none">
 
         <div class="row" id="row-barang-bonus">
@@ -386,6 +426,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     function promoFields() {
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
+        $("#input-var-diskon").hide(500);
+        $("#input-var-bonus").hide(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -396,6 +438,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function promoPerKategoriFields() {
+        $("#input-var-diskon").hide(500);
+        $("#input-var-bonus").hide(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -408,6 +452,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     }
 
     function promoPerStrukturFields() {
+        $("#input-var-diskon").hide(500);
+        $("#input-var-bonus").hide(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -422,6 +468,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     function promoMemberFields() {
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
+        $("#input-var-diskon").hide(500);
+        $("#input-var-bonus").hide(500);
         $("#row-qty").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").show(500);
@@ -435,6 +483,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     function grosirFields() {
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
+        $("#input-var-diskon").hide(500);
+        $("#input-var-bonus").hide(500);
         $("#row-qty").hide(500);
         $("#cb_semua_barang").hide(500);
         $("#row-qty-max").hide(500);
@@ -447,6 +497,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     function bandedFields() {
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
+        $("#input-var-diskon").hide(500);
+        $("#input-var-bonus").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").hide(500);
         $("#cb_semua_barang").hide(500);
@@ -459,6 +511,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     function qtyGetBarangFields() {
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
+        $("#input-var-diskon").hide(500);
+        $("#input-var-bonus").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").show(500);
         $("#cb_semua_barang").hide(500);
@@ -472,6 +526,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     function nominalGetBarangFields() {
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
+        $("#input-var-diskon").hide(500);
+        $("#input-var-bonus").hide(500);
         $("#row-qty-min").hide(500);
         $("#row-qty-max").hide(500);
         $("#row-qty").hide(500);
@@ -490,12 +546,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
     function qtyGetBarangVarFields() {
         $("#list-kategori").hide(500);
         $("#list-struktur").hide(500);
+        $("#input-var-diskon").show(500);
+        $("#input-var-bonus").show(500);
         $("#row-qty-min").hide(500);
-        $("#row-qty-max").hide(500);
+        $("#row-qty-max").show(500);
         $("#cb_semua_barang").hide(500);
-        $("#row-qty").hide(500);
+        $("#row-qty").show(500);
         $(".row-nilai-diskon").hide(500);
-        $("#input-barang-bonus").hide(500);
+        $("#input-barang-bonus").show(500);
+        $("#row-barang-bonus").hide(500);
+        $("#row-qty-bonus").show(500);
         $(".row-bonus-nilai").hide(500);
         enDisScan(true);
     }
@@ -811,4 +871,24 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/d
         }
         return s.join(dec);
     }
+
+    $("#tombol-tdb-diskon").click(function() {
+        $('#tambah-detail-diskon').foundation('reveal', 'open', {
+            url: '<?= $this->createUrl('tambahdetaildiskonform'); ?>',
+            success: function(data) {},
+            error: function() {
+                alert('Gagal mengambil form tambah detail barang diskon!');
+            }
+        });
+    });
+
+    $("#tombol-tdb-bonus").click(function() {
+        $('#tambah-detail-bonus').foundation('reveal', 'open', {
+            url: '<?= $this->createUrl('tambahdetailbonusform'); ?>',
+            success: function(data) {},
+            error: function() {
+                alert('Gagal mengambil form tambah detail barang bonus!');
+            }
+        });
+    });
 </script>
