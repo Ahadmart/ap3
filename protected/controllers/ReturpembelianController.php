@@ -496,7 +496,7 @@ class ReturpembelianController extends Controller
         $csv   = $model->keCsv();
 
         $timeStamp = date('Ymd His');
-        $namaFile  = "{$model->nomor}_{$model->profil->nama}_{$timeStamp}";
+        $namaFile  = "RB_{$model->nomor}_{$model->profil->nama}_{$timeStamp}";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
