@@ -286,12 +286,6 @@ class FontVariables
 				"unbatang" => [/* Korean */
 					'R' => "UnBatang_0613.ttf",
 				],
-                "ubuntu" => [
-                    'R' => "Ubuntu-R.ttf",
-                    'B' => "Ubuntu-B.ttf",
-                    'I' => "Ubuntu-RI.ttf",
-                    'BI' => "Ubuntu-BI.ttf",
-                ],
                 "opensans" => [
                     'R' => "OpenSans-R.ttf",
                     'B' => "OpenSans-B.ttf",
