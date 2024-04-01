@@ -153,6 +153,19 @@ class PosController extends Controller
 
         $this->showVoucherMOL = true;
 
+        $clientWS = new AhadPosWsClient();
+        $data = [
+            'tipe' => 'trx',
+            'time' => Date('Y-m-d H:i:s'),
+            'u-id' => Yii::app()->user->id,
+            'profil' => [
+                'id' => $model->profil_id,
+                'nama' => $model->profil->nama,
+                'mol' => $this->memberOnline,
+            ],
+            'detail' => $model->getDetailArr(),
+        ];
+
         $this->render(
             'ubah',
             [
@@ -167,6 +180,7 @@ class PosController extends Controller
                 'poins'                => $poins,
             ]
         );
+        $clientWS->sendMessage(json_encode($data));
     }
 
     /**

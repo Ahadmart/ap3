@@ -2066,4 +2066,19 @@ class Penjualan extends CActiveRecord
         fclose($df);
         return ob_get_clean();
     }
+
+    public function getDetailArr()
+    {
+        $sql = "
+        SELECT 
+            *
+        FROM
+            penjualan_detail
+        WHERE
+            penjualan_id = :id
+        ";
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValue(':id', $this->id);
+        return $command->queryAll();
+    }
 }
