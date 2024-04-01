@@ -24,9 +24,36 @@
 </div>
 <div class="row" style="height:75vh">
     <div class="medium-8 columns box kiri_bawah">
-        <h4><?= $ipServer ?></h4>
+        <h4><?= $ws['ip'] ?></h4>
         <p>User: <?= $user['namaLengkap'] ?> (<?= $user['id'] ?>)</p>
     </div>
     <div class="medium-4 columns box kanan_bawah">
     </div>
 </div>
+<script>
+    var ws = new WebSocket("ws://<?= $ws['ip'] ?>:<?= $ws['port'] ?>/");
+
+    function showMessage(pesan) {
+        var output = $(".box.kiri_bawah");
+        output.html(pesan + "<br />");
+        try {
+            var parsed = JSON.parse(pesan);
+            output.innerHTML = pesan;
+        } catch (e) {
+            output.innerHTML += pesan + "<br />";
+        }
+    }
+    ws.addEventListener("open", function(event) {
+        console.log("Connected to server");
+        showMessage("Connected to server");
+    });
+    ws.addEventListener("message", function(event) {
+        showMessage(event.data);
+    });
+    ws.addEventListener("close", function(event) {
+        showMessage("Disconnected from server");
+    });
+    ws.addEventListener("error", function(event) {
+        showMessage("Error: " + event.data);
+    });
+</script>

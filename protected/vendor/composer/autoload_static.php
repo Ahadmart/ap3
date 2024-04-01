@@ -22,6 +22,10 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         array (
             'setasign\\Fpdi\\' => 14,
         ),
+        'W' => 
+        array (
+            'WebSocket\\' => 10,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Php83\\' => 23,
@@ -45,6 +49,8 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         array (
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
+            'Phrity\\Util\\' => 12,
+            'Phrity\\Net\\' => 11,
         ),
         'M' => 
         array (
@@ -70,6 +76,10 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         'setasign\\Fpdi\\' => 
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
+        'WebSocket\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phrity/websocket/src',
         ),
         'Symfony\\Polyfill\\Php83\\' => 
         array (
@@ -129,8 +139,17 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'Phrity\\Util\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phrity/util-errorhandler/src',
+        ),
+        'Phrity\\Net\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phrity/net-uri/src',
+            1 => __DIR__ . '/..' . '/phrity/net-stream/src',
         ),
         'Mpdf\\PsrLogAwareTrait\\' => 
         array (
