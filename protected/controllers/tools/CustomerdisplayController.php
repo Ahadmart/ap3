@@ -43,8 +43,11 @@ class CustomerdisplayController extends Controller
 
     public function actionDesktop()
     {
-        $ipServer = $_SERVER['SERVER_ADDR'];
-        $user     = [
+        $ws = [
+            'ip'   => $_SERVER['SERVER_ADDR'],
+            'port' => 48080,
+        ];
+        $user = [
             'id'          => Yii::app()->user->id,
             'namaLengkap' => Yii::app()->user->namaLengkap,
         ];
@@ -53,7 +56,7 @@ class CustomerdisplayController extends Controller
 
         $this->render('desktop', [
             'namaToko' => $namaToko,
-            'ipServer' => $ipServer,
+            'ws'       => $ws,
             'user'     => $user,
         ]);
     }

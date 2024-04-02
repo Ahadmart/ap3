@@ -154,14 +154,14 @@ class PosController extends Controller
         $this->showVoucherMOL = true;
 
         $clientWS = new AhadPosWsClient();
-        $data = [
-            'tipe' => 'trx',
-            'time' => Date('Y-m-d H:i:s'),
-            'u-id' => Yii::app()->user->id,
-            'profil' => [
-                'id' => $model->profil_id,
+        $data     = [
+            'tipe'      => AhadPosWsClient::TIPE_PROCESS,
+            'timestamp' => Date('Y-m-d H:i:s'),
+            'u_id'      => Yii::app()->user->id,
+            'profil'    => [
+                'id'   => $model->profil_id,
                 'nama' => $model->profil->nama,
-                'mol' => $this->memberOnline,
+                'mol'  => $this->memberOnline,
             ],
             'detail' => $model->getDetailArr(),
         ];
@@ -482,9 +482,17 @@ class PosController extends Controller
         $model->status     = '=' . Penjualan::STATUS_DRAFT;
         $model->updated_by = '=' . Yii::app()->user->id;
 
+        $clientWS = new AhadPosWsClient();
+        $data     = [
+            'tipe'      => AhadPosWsClient::TIPE_IDLE,
+            'timestamp' => Date('Y-m-d H:i:s'),
+            'u_id'      => Yii::app()->user->id,
+        ];
+
         $this->render('suspended', [
             'model' => $model,
         ]);
+        $clientWS->sendMessage(json_encode($data));
     }
 
     public function actionCekHarga()
