@@ -41,7 +41,7 @@ h1 {
     background-color: rgba(255, 255, 255, 0.01);
 }
 .kanan_bawah {
-    background-color: rgba(255, 255, 255, .5);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 #info_kasir {
     margin: auto;
@@ -52,6 +52,17 @@ h1 {
         margin-bottom: 1.25rem;
     }
 }
+#info_cust {
+    margin: auto;
+    p {
+        margin-bottom: 0;
+        font-size: 1.25rem;
+    }
+    p:nth-of-type(1) {
+        margin-top: .5rem;
+        font-size: 1.5rem;
+    }
+}
 
 #welcome {
     margin: 0;
@@ -60,5 +71,30 @@ h1 {
     transform: translateY(-50%);
     img {
         margin-bottom: 1.25rem;
+    }
+}
+
+#scan {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    p {
+        margin-bottom: 0;
+        font-size: 1.25rem;
+        span {
+            padding: 0 5px;
+            display: inline-block;
+        }
+        span:nth-of-type(1) {
+            width: 6.5rem;
+        }
+    }
+    p:nth-of-type(1) {
+        margin-bottom: 1.25rem;
+        font-size: 2rem;
+    }
+    p:nth-of-type(3) {
+        font-size: 1.5rem;
     }
 }
