@@ -34,20 +34,58 @@
     </div>
 </div>
 <div class="row" style="height:75vh">
-    <div class="medium-8 columns box kiri_bawah" class="idle">
-        <h4><?= $ws['ip'] ?></h4>
-        <p>User: <?= $user['namaLengkap'] ?> (<?= $user['id'] ?>)</p>
+    <div class="medium-8 columns box kiri_bawah">
+        <div class="network_status">
+            <figure class="sinyal mati"></figure>
+        </div>
+        <div class="idle">
+            <h4><?= $ws['ip'] ?></h4>
+            <p>User: <?= $user['namaLengkap'] ?> (<?= $user['id'] ?>)</p>
+        </div>
     </div>
-    <div class="medium-4 columns box kanan_bawah" class="idle">
+    <div class="medium-4 columns box kanan_bawah">
+        <div id="time_board" class="idle">
+            <p id="waktu"><span id="jam"></span><span id="separator">:</span><span id="menit"></span></p>
+            <p id="tanggal"></p>
+            <hr />
+        </div>
     </div>
 </div>
 <script>
     $(document).ready(function() {
-        $(".idle").hide();
-        $(".proc").show();
+        // $(".idle").hide();
+        // $(".proc").show();
+        connectWebSocket();
+        setInterval('updateTimeBoard()', 1000);
     })
 
-    var ws = new WebSocket("ws://<?= $ws['ip'] ?>:<?= $ws['port'] ?>/");
+    function updateTimeBoard() {
+        const currentTime = new Date();
+        const currentDate = currentTime.getDate();
+        const currentMonth = currentTime.toLocaleString('id-ID', {
+            month: 'long'
+        });
+        const currentYear = currentTime.getFullYear();
+        var currentHours = currentTime.getHours();
+        var currentMinutes = currentTime.getMinutes();
+
+        // Convert the hours component to 12-hour format if needed
+        // currentHours = (currentHours > 12) ? currentHours - 12 : currentHours;
+
+        // Convert an hours component of "0" to "12"
+        currentHours = (currentHours == 0) ? 12 : currentHours;
+        // Pad the hours and minutes with leading zeros
+        currentHours = (currentHours < 10 ? "0" : "") + currentHours;
+        currentMinutes = (currentMinutes < 10 ? "0" : "") + currentMinutes;
+
+        // Compose the string for display
+        var currentDateString = currentDate + " " + currentMonth + " " + currentYear;
+        // var currentTimeString = currentHours + ":" + currentMinutes;
+
+        $("#time_board #jam").html(currentHours);
+        $("#time_board #menit").html(currentMinutes);
+        $("#time_board>#tanggal").html(currentDateString);
+    }
 
     function showMessage(pesan) {
         var output = $(".box.kiri_bawah");
@@ -58,7 +96,7 @@
             parseMessage(parsed);
 
         } catch (e) {
-            // output.html += pesan + "<br />";
+            output.html(pesan);
         }
     }
 
@@ -88,17 +126,36 @@
             });
         }
     }
-    ws.addEventListener("open", function(event) {
-        console.log("Connected to server");
-        showMessage("Connected to server");
-    });
-    ws.addEventListener("message", function(event) {
-        showMessage(event.data);
-    });
-    ws.addEventListener("close", function(event) {
-        showMessage("Disconnected from server");
-    });
-    ws.addEventListener("error", function(event) {
-        showMessage("Error: " + event.data);
-    });
+
+    let websocket;
+    const url = 'ws://<?= $ws['ip'] ?>:<?= $ws['port'] ?>';
+
+    function connectWebSocket() {
+        websocket = new WebSocket(url);
+
+        websocket.onopen = function() {
+            $(".sinyal").removeClass("mati error").addClass("nyala");
+            console.log('WebSocket connection established.');
+        };
+
+        websocket.onclose = function(event) {
+            $(".sinyal").removeClass("nyala error").addClass("mati");
+            console.log('WebSocket connection closed.');
+            // Try to reconnect after a delay
+            setTimeout(function() {
+                console.log('Attempting to reconnect...');
+                connectWebSocket();
+            }, 3000);
+        };
+
+        websocket.onerror = function(error) {
+            $(".sinyal").removeClass("nyala mati").addClass("error");
+            console.error('WebSocket error:', error);
+        };
+
+        // Handle incoming messages
+        websocket.onmessage = function(event) {
+            showMessage(event.data);
+        };
+    }
 </script>
