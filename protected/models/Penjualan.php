@@ -2071,9 +2071,15 @@ class Penjualan extends CActiveRecord
     {
         $sql = "
         SELECT 
-            *
+            barang.nama,
+            qty,
+            harga_jual,
+            diskon,
+            qty * harga_jual AS stotal
         FROM
-            penjualan_detail
+            penjualan_detail d
+                JOIN
+            barang ON barang.id = d.barang_id
         WHERE
             penjualan_id = :id
         ";

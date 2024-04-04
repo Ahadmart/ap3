@@ -49,12 +49,32 @@
             <p id="tanggal"></p>
             <hr />
         </div>
+        <div id="detail_tr" class="proc" style="display: none" ;>
+            <div class="t_wrapper">
+                <table class="t_detail" id="t_detail">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Harga</th>
+                            <th>Diskon</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                Total
+            </div>
+        </div>
     </div>
 </div>
 <script>
     $(document).ready(function() {
-        // $(".idle").hide();
-        // $(".proc").show();
+        $(".idle").hide();
+        $(".proc").show();
         connectWebSocket();
         setInterval('updateTimeBoard()', 1000);
     })
@@ -96,7 +116,8 @@
             parseMessage(parsed);
 
         } catch (e) {
-            output.html(pesan);
+            console.log("Message not JSON")
+            output.html(pesan + ' --- ' + e);
         }
     }
 
@@ -119,12 +140,35 @@
             $(".idle").fadeOut().promise().done(function() {
                 $(".proc").fadeIn();
             });
+            isiTabel(data);
         } else if (data.tipe == "<?= AhadPosWsClient::TIPE_IDLE ?>") {
             console.log("Tipe Idle");
             $(".proc").fadeOut().promise().done(function() {
                 $(".idle").fadeIn();
             });
         }
+    }
+
+    function isiTabel(data) {
+        // console.log("isi tabel")
+        var detail = data.detail
+        // console.log(detail)
+        var tbody = $(".t_detail tbody");
+        tbody.empty();
+        for (let i = 0; i < detail.length; i++) {
+            let barang = detail[i]
+            let content = '<tr><td>' + barang.nama + '</td><td>' + barang.harga_jual + '</td><td>' + barang.diskon + '</td><td>' + barang.qty + '</td><td>' + barang.stotal + '</td></tr>'
+            tbody.append(content)
+        }
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        console.log("Scroll to bottom")
+        let tableContainer = $(".t_wrapper")
+        tableContainer.animate({
+            scrollTop :tableContainer.prop("scrollHeight")
+        }, 2000);
     }
 
     let websocket;
