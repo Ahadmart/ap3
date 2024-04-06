@@ -18,7 +18,13 @@ class AhadPosWsClient
 
     public function sendMessage($msg)
     {
-        $this->client->text($msg);
+        try {
+            $this->client->text($msg);
+        } catch (\Throwable $e) {
+            // echo "# ERROR: {$e->getMessage()} [{$e->getCode()}]\n";
+            return false;
+        }
         $this->client->close();
+        return true;
     }
 }
