@@ -2073,9 +2073,9 @@ class Penjualan extends CActiveRecord
         SELECT 
             barang.nama,
             qty,
-            harga_jual,
-            diskon,
-            qty * harga_jual AS stotal
+            FORMAT(harga_jual, 0, 'id_ID') harga_jual,
+            FORMAT(diskon, 0, 'id_ID') diskon,
+            FORMAT(qty * harga_jual, 0, 'id_ID') AS stotal
         FROM
             penjualan_detail d
                 JOIN
