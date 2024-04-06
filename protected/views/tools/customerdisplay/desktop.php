@@ -12,10 +12,10 @@
             <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
             <h1>Selamat datang di <?= $namaToko ?></h1>
         </div>
-        <div id="scan" class="proc" style="display:none" ;>
-            <p>2 x Indomie goreng spc 80gr</p>
-            <p><span>Harga</span><span>:</span><span>2.500</span><span>(-500)</span></p>
-            <p><span>Subtotal</span><span>:</span><span>4.000</span></p>
+        <div id="last_scan" class="proc" style="display:none" ;>
+            <p>Nama Barang</p>
+            <p><span>Harga</span><span>:</span><span class="hj"></span><span class="hj_dis"></span></p>
+            <p><span>Subtotal</span><span>:</span><span class="stotal"></span></p>
         </div>
     </div>
     <div class="medium-4 columns box kanan_atas">
@@ -117,7 +117,7 @@
 
         } catch (e) {
             console.log("Message not JSON")
-            output.html(pesan + ' --- ' + e);
+            output.html('Kemungkinan Error: ' + e);
         }
     }
 
@@ -140,7 +140,8 @@
             $(".idle").fadeOut().promise().done(function() {
                 $(".proc").fadeIn();
             });
-            isiTabel(data);
+            injectTabel(data.detail);
+            injectLastScan(data.detail[data.detail.length - 1]);
         } else if (data.tipe == "<?= AhadPosWsClient::TIPE_IDLE ?>") {
             console.log("Tipe Idle");
             $(".proc").fadeOut().promise().done(function() {
@@ -149,26 +150,45 @@
         }
     }
 
-    function isiTabel(data) {
+    function injectTabel(detail) {
         // console.log("isi tabel")
-        var detail = data.detail
         // console.log(detail)
         var tbody = $(".t_detail tbody");
         tbody.empty();
-        for (let i = 0; i < detail.length; i++) {
-            let barang = detail[i]
-            let content = '<tr><td>' + barang.nama + '</td><td>' + barang.harga_jual + '</td><td>' + barang.diskon + '</td><td>' + barang.qty + '</td><td>' + barang.stotal + '</td></tr>'
-            tbody.append(content)
+        if (detail) {
+            for (let i = 0; i < detail.length; i++) {
+                let barang = detail[i]
+                let content = '<tr><td>' + barang.nama + '</td><td>' + barang.harga_jual + '</td><td>' + barang.diskon + '</td><td>' + barang.qty + '</td><td>' + barang.stotal + '</td></tr>'
+                tbody.append(content)
+            }
+            scrollToBottom();
         }
-        scrollToBottom();
+    }
+
+    function injectLastScan(item) {
+        if (item) {
+            $("#last_scan p:nth-child(1)").html(item.qty + ' x ' + item.nama)
+            $(".hj").html(item.harga_jual)
+            if (item.diskon) {
+                $(".hj_dis").html('(' + item.diskon + ')')
+            } else {
+                $(".hj_dis").html("");
+            }
+            $(".stotal").html(item.stotal)
+        } else {
+            $("#last_scan p:nth-child(1)").html("")
+            $(".hj").html("")
+            $(".hj_dis").html("");
+            $(".stotal").html("")
+        }
     }
 
     function scrollToBottom() {
         console.log("Scroll to bottom")
         let tableContainer = $(".t_wrapper")
         tableContainer.animate({
-            scrollTop :tableContainer.prop("scrollHeight")
-        }, 2000);
+            scrollTop: tableContainer.prop("scrollHeight")
+        }, 600);
     }
 
     let websocket;
