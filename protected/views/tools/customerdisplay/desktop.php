@@ -12,7 +12,7 @@
             <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
             <h1>Selamat datang di <?= $namaToko ?></h1>
         </div>
-        <div id="last_scan" class="proc" style="display:none" ;>
+        <div id="last_scan" class="proc">
             <p>Nama Barang</p>
             <p><span>Harga</span><span>:</span><span class="hj"></span><span class="hj_dis"></span></p>
             <p><span>Subtotal</span><span>:</span><span class="stotal"></span></p>
@@ -25,11 +25,15 @@
             <p><?= "{$user['namaLengkap']} [#{$user['id']}]" ?></p>
             <p>Selamat berbelanja di <?= $namaToko ?></p>
         </div>
-        <div id="info_cust" class="proc" style="display: none">
+        <div id="info_cust" class="proc">
             <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
             <p>Ahlan wa Sahlan!</p>
             <p>Silahkan input nomor</p>
             <p>member anda</p>
+        </div>
+        <div id="info_checkout" class="checkout">
+            <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
+            <p>Terima kasih!</p>
         </div>
     </div>
 </div>
@@ -41,6 +45,7 @@
         <div class="idle">
             <h4><?= $ws['ip'] ?></h4>
             <p>User: <?= $user['namaLengkap'] ?> (<?= $user['id'] ?>)</p>
+            <p>Tampilan iklan</p>
         </div>
     </div>
     <div class="medium-4 columns box kanan_bawah">
@@ -49,7 +54,7 @@
             <p id="tanggal"></p>
             <hr />
         </div>
-        <div id="detail_tr" class="proc" style="display: none" ;>
+        <div id="detail_tr" class="proc">
             <div class="t_wrapper">
                 <table class="t_detail" id="t_detail">
                     <thead>
@@ -65,16 +70,30 @@
                     </tbody>
                 </table>
             </div>
-            <div>
-                Total
+            <div id="total_container">
+                <span class="tarik_tunai">Tarik Tunai</span><span class="tarik_tunai tarik_tunai_val"></span>
+                <span class="total">Total</span><span class="total total_val">50.000</span>
             </div>
+        </div>
+        <div id="payment" class="checkout">
+            <span class="total">Total</span><span class="total">58.000</span>
+            <span>Cash</span><span>15.000</span>
+            <span>BSI</span><span>48.000</span>
+            <span class="payment_tt">Tarik Tunai</span><span class="payment_tt">100.000</span>
+            <span class="kembalian">Kembalian</span><span class="kembalian">5.000</span>
+            <p>Sampai bertemu lagi!</p>
         </div>
     </div>
 </div>
 <script>
     $(document).ready(function() {
-        $(".idle").hide();
-        $(".proc").show();
+        $(".idle").show();
+        // $(".idle").hide();
+        // $(".proc").show();
+        $(".proc").hide();
+        // $(".checkout").show();
+        $(".checkout").hide();
+        $(".tarik_tunai").hide();
         connectWebSocket();
         setInterval('updateTimeBoard()', 1000);
     })
@@ -126,8 +145,8 @@
     }
 
     function parseMessage(data) {
-        // console.log('User: ' + parsed.u_id)
-        var userId = data.u_id;
+        // console.log('User: ' + parsed.uId)
+        var userId = data.uId;
         if (isValidUser(userId)) {
             console.log('User accepted!');
             placeVar(data)
@@ -138,16 +157,59 @@
         if (data.tipe == "<?= AhadPosWsClient::TIPE_PROCESS ?>") {
             console.log("Tipe Process");
             $(".idle").fadeOut().promise().done(function() {
+                $(".checkout").hide();
                 $(".proc").fadeIn();
             });
-            injectTabel(data.detail);
-            injectLastScan(data.detail[data.detail.length - 1]);
+            if (data.detail) {
+                injectTabel(data.detail);
+                injectLastScan(data.detail[data.detail.length - 1]);
+            }
+            if (data.total) {
+                injectTotal(data.total)
+            }
+            if (data.tariktunai) {
+                injectTarikTunai(data.tariktunai)
+                $(".tarik_tunai").show();
+            } else {
+                $(".tarik_tunai").hide();
+            }
+            if (data.profil) {
+                if (data.profil.mol) {
+                    injectCustomer(data.profil.mol)
+                } else {
+                    injectCustomerUmum();
+                }
+            }
         } else if (data.tipe == "<?= AhadPosWsClient::TIPE_IDLE ?>") {
-            console.log("Tipe Idle");
+            console.log("Tipe Idle")
             $(".proc").fadeOut().promise().done(function() {
+                $(".checkout").hide();
                 $(".idle").fadeIn();
             });
+        } else if (data.tipe == "<?= AhadPosWsClient::TIPE_CHECKOUT ?>") {
+            console.log("Tipe Checkout")
+            $(".proc").fadeOut().promise().done(function() {
+                $(".idle").hide();
+                $(".checkout").fadeIn();
+            });
+            injectPayment(data)
         }
+    }
+
+    function injectPayment(data) {
+        $("#payment").html("");
+        if (data.total) {
+            totalText = '<span class="total">Total</span><span class="total">' + data.total + '</span>'
+            $("#payment").append(totalText)
+        }
+        if (data.bayar) {
+            data.bayar.forEach(akun => {
+                bayarText = '<span>' + akun.nama + '</span><span>' + akun.jml + '</span>'
+                $("#payment").append(bayarText)
+            });
+        }
+        $("#payment").append('<p>Sampai bertemu lagi!</p>')
+
     }
 
     function injectTabel(detail) {
@@ -160,16 +222,26 @@
                 let barang = detail[i]
                 let content = '<tr><td>' + barang.nama + '</td><td>' + barang.harga_jual + '</td><td>' + barang.diskon + '</td><td>' + barang.qty + '</td><td>' + barang.stotal + '</td></tr>'
                 tbody.append(content)
+                if (i == detail.length - 1) {
+                    scrollToBottom();
+                }
             }
-            scrollToBottom();
         }
+    }
+
+    function scrollToBottom() {
+        console.log("Scroll to bottom")
+        let tableContainer = $(".t_wrapper")
+        tableContainer.animate({
+            scrollTop: tableContainer.prop("scrollHeight")
+        }, 600);
     }
 
     function injectLastScan(item) {
         if (item) {
             $("#last_scan p:nth-child(1)").html(item.qty + ' x ' + item.nama)
             $(".hj").html(item.harga_jual)
-            if (item.diskon) {
+            if (item.diskon && item.diskon > 0) {
                 $(".hj_dis").html('(' + item.diskon + ')')
             } else {
                 $(".hj_dis").html("");
@@ -183,12 +255,29 @@
         }
     }
 
-    function scrollToBottom() {
-        console.log("Scroll to bottom")
-        let tableContainer = $(".t_wrapper")
-        tableContainer.animate({
-            scrollTop: tableContainer.prop("scrollHeight")
-        }, 600);
+    function injectTotal(value) {
+        $(".total_val").html(value)
+    }
+
+    function injectTarikTunai(value) {
+        if (value == 0) {
+            $(".tarik_tunai").hide();
+        } else {
+            $(".tarik_tunai").show();
+            $(".tarik_tunai_val").html(value)
+        }
+    }
+
+    function injectCustomer(data) {
+        $("#info_cust p").eq(0).html(data.namaLengkap);
+        $("#info_cust p").eq(1).html('Level ' + data.level);
+        $("#info_cust p").eq(2).html('Poin ' + data.poin + '    |    Koin ' + data.koin);
+    }
+
+    function injectCustomerUmum() {
+        $("#info_cust p").eq(0).html('Ahlan wa Sahlan!');
+        $("#info_cust p").eq(1).html('Silahkan input nomor');
+        $("#info_cust p").eq(2).html('member anda');
     }
 
     let websocket;
@@ -205,6 +294,11 @@
         websocket.onclose = function(event) {
             $(".sinyal").removeClass("nyala error").addClass("mati");
             console.log('WebSocket connection closed.');
+            // $(".proc").fadeOut().promise().done(function() {
+            //     $(".checkout").hide();
+            //     $(".idle").fadeIn();
+            // });
+
             // Try to reconnect after a delay
             setTimeout(function() {
                 console.log('Attempting to reconnect...');
