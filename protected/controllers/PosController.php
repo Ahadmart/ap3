@@ -153,19 +153,6 @@ class PosController extends Controller
 
         $this->showVoucherMOL = true;
 
-        $clientWS = new AhadPosWsClient();
-        $data     = [
-            'tipe'      => AhadPosWsClient::TIPE_PROCESS,
-            'timestamp' => Date('Y-m-d H:i:s'),
-            'u_id'      => Yii::app()->user->id,
-            'profil'    => [
-                'id'   => $model->profil_id,
-                'nama' => $model->profil->nama,
-                'mol'  => $this->memberOnline,
-            ],
-            'detail' => $model->getDetailArr(),
-        ];
-
         $this->render(
             'ubah',
             [
@@ -180,7 +167,19 @@ class PosController extends Controller
                 'poins'                => $poins,
             ]
         );
-        $clientWS->sendMessage(json_encode($data));
+
+        $clientWS = new AhadPosWsClient();
+        $data     = [
+            'tipe'   => AhadPosWsClient::TIPE_PROCESS,
+            'total'  => $model->total,
+            'profil' => [
+                'id'   => $model->profil_id,
+                'nama' => $model->profil->nama,
+                'mol'  => $this->memberOnline,
+            ],
+            'detail' => $model->getDetailArr(),
+        ];
+        $clientWS->sendJsonEncoded($data);
     }
 
     /**
@@ -225,6 +224,14 @@ class PosController extends Controller
         $this->render('//pos/index', [
             'model' => $model,
         ]);
+
+        $clientWS = new AhadPosWsClient();
+        $data     = [
+            'tipe'      => AhadPosWsClient::TIPE_IDLE,
+            'timestamp' => Date('Y-m-d H:i:s'),
+            'u_id'      => Yii::app()->user->id,
+        ];
+        $clientWS->sendMessage(json_encode($data));
     }
 
     /**
@@ -372,13 +379,25 @@ class PosController extends Controller
         echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
         number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
          */
-        $bayar      = empty($_POST['bayar']) ? 0 : $_POST['bayar'];
-        $total      = empty($_POST['total']) || $_POST['total'] == 'NaN' ? 0 : $_POST['total'];
-        $diskonNota = empty($_POST['diskonNota']) ? 0 : $_POST['diskonNota'];
-        $koinMOL    = empty($_POST['koinMOL']) ? 0 : $_POST['koinMOL'];
-        $infaq      = empty($_POST['infaq']) ? 0 : $_POST['infaq'];
-        $tarikTunai = empty($_POST['tarikTunai']) ? 0 : $_POST['tarikTunai'];
-        echo number_format($bayar - $total + $diskonNota + $koinMOL - $infaq - $tarikTunai, 0, ',', '.');
+        $bayar        = empty($_POST['bayar']) ? 0 : $_POST['bayar'];
+        $total        = empty($_POST['total']) || $_POST['total'] == 'NaN' ? 0 : $_POST['total'];
+        $diskonNota   = empty($_POST['diskonNota']) ? 0 : $_POST['diskonNota'];
+        $koinMOL      = empty($_POST['koinMOL']) ? 0 : $_POST['koinMOL'];
+        $infaq        = empty($_POST['infaq']) ? 0 : $_POST['infaq'];
+        $tarikTunai   = empty($_POST['tarikTunai']) ? 0 : $_POST['tarikTunai'];
+        $kembali      = number_format($bayar - $total + $diskonNota + $koinMOL - $infaq - $tarikTunai, 0, ',', '.');
+        $totalJendral = number_format($total - $diskonNota - $koinMOL + $infaq + $tarikTunai, 0, ',', '.');
+        echo $kembali;
+
+        $clientWS = new AhadPosWsClient();
+        $data     = [
+            'tipe'  => AhadPosWsClient::TIPE_PROCESS,
+            'total' => $totalJendral,
+        ];
+        if ($tarikTunai > 0) {
+            $data = array_merge($data, ['tariktunai' => number_format($tarikTunai, 0, ',', '.')]);
+        }
+        $clientWS->sendJsonEncoded($data);
     }
 
     public function renderQtyLinkEditable($data, $row)
@@ -482,17 +501,15 @@ class PosController extends Controller
         $model->status     = '=' . Penjualan::STATUS_DRAFT;
         $model->updated_by = '=' . Yii::app()->user->id;
 
-        $clientWS = new AhadPosWsClient();
-        $data     = [
-            'tipe'      => AhadPosWsClient::TIPE_IDLE,
-            'timestamp' => Date('Y-m-d H:i:s'),
-            'u_id'      => Yii::app()->user->id,
-        ];
-
         $this->render('suspended', [
             'model' => $model,
         ]);
-        $clientWS->sendMessage(json_encode($data));
+
+        $clientWS = new AhadPosWsClient();
+        $data     = [
+            'tipe' => AhadPosWsClient::TIPE_IDLE,
+        ];
+        $clientWS->sendJsonEncoded($data);
     }
 
     public function actionCekHarga()
@@ -540,6 +557,30 @@ class PosController extends Controller
                 }
             }
         }
+
+        // Kirim data checkout ke websocket :start
+        $bayar = [];
+        foreach ($_POST['pos']['bayar'] as $key => $val) {
+            $acc     = KasBank::model()->findByPk($key);
+            $bayar[] = [
+                'nama' => $acc->nama,
+                'jml'  => number_format($val, 0, ',', '.')
+            ];
+        }
+        $clientWS      = new AhadPosWsClient();
+        $tarikTunaiAcc = KasBank::model()->findByPk($_POST['pos']['tarik-tunai-acc']);
+        $data          = [
+            'tipe'        => AhadPosWsClient::TIPE_CHECKOUT,
+            'total'       => $pos->total,
+            'bayar'       => $bayar,
+            'tarik-tunai' => [
+                'acc' => $tarikTunaiAcc->nama,
+                'jml' => number_format($_POST['pos']['tarik-tunai'], 0, ',', '.')
+            ]
+        ];
+        $clientWS->sendJsonEncoded($data);
+        // Kirim data checkout ke websocket :end
+
         $this->renderJSON($return);
     }
 
