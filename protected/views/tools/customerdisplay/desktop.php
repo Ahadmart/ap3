@@ -19,10 +19,10 @@
         </div>
     </div>
     <div class="medium-4 columns box kanan_atas">
-        <!-- <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" /> -->
         <div id="info_kasir" class="idle">
             <p>Anda sedang dilayani oleh</p>
-            <p><?= "{$user['namaLengkap']} [#{$user['id']}]" ?></p>
+            <p><?= "{$user['namaLengkap']}" //[#{$user['id']}]" 
+                ?></p>
             <p>Selamat berbelanja di <?= $namaToko ?></p>
         </div>
         <div id="info_cust" class="proc">
@@ -53,6 +53,27 @@
             <p id="waktu"><span id="jam"></span><span id="separator">:</span><span id="menit"></span></p>
             <p id="tanggal"></p>
             <hr />
+            <p class="caption_selanjutnya"></p>
+            <p class="waktu_selanjutnya"></p>
+            <p class="sholat_selanjutnya"></p>
+            <jadwal_sholat>
+                <p>Jadwal Sholat Hari Ini</p>
+                <?php
+                $waktu = $jadwal['timings'];
+                $wSubuh = substr($waktu['Fajr'], 0, 5);
+                $wSyuruq = substr($waktu['Sunrise'], 0, 5);
+                $wZhuhur = substr($waktu['Dhuhr'], 0, 5);
+                $wAshar = substr($waktu['Asr'], 0, 5);
+                $wMaghrib = substr($waktu['Maghrib'], 0, 5);
+                $wIsya = substr($waktu['Isha'], 0, 5);
+                ?>
+                <span class="nama">(Subuh) الفجر</span><span class="waktu"><?= $wSubuh ?></span>
+                <span class="nama">(Syuruq) الشروق</span><span class="waktu"><?= $wSyuruq ?></span>
+                <span class="nama">(Zhuhur) الظُهر</span><span class="waktu"><?= $wZhuhur ?></span>
+                <span class="nama">('Ashar) العصر</span><span class="waktu"><?= $wAshar ?></span>
+                <span class="nama">(Maghrib) المغرب</span><span class="waktu"><?= $wMaghrib ?></span>
+                <span class="nama">(Isya') العِشاء</span><span class="waktu"><?= $wIsya ?></span>
+            </jadwal_sholat>
         </div>
         <div id="detail_tr" class="proc">
             <div class="t_wrapper">
@@ -79,6 +100,7 @@
             <span class="total">Total</span><span class="total">58.000</span>
             <span>Cash</span><span>15.000</span>
             <span>BSI</span><span>48.000</span>
+            <span>Mandiri Kartu Kredit</span><span>48.000</span>
             <span class="payment_tt">Tarik Tunai</span><span class="payment_tt">100.000</span>
             <span class="kembalian">Kembalian</span><span class="kembalian">5.000</span>
             <p>Sampai bertemu lagi!</p>
@@ -124,6 +146,42 @@
         $("#time_board #jam").html(currentHours);
         $("#time_board #menit").html(currentMinutes);
         $("#time_board>#tanggal").html(currentDateString);
+
+        let waktuSholat = {
+            'Subuh': '<?= $wSubuh ?>',
+            'Syuruq': '<?= $wSyuruq ?>',
+            'Zhuhur': '<?= $wZhuhur ?>',
+            'Ashar': '<?= $wAshar ?>',
+            'Maghrib': '<?= $wMaghrib ?>',
+            'Isya': '<?= $wIsya ?>'
+        };
+        let saatIni = currentHours + ':' + currentMinutes
+        let waktuSelanjutnya = null
+        let sholatSelanjutnya = null
+        // console.log('Saat ini: ' + saatIni)
+        Object.entries(waktuSholat).forEach(([nama, waktu]) => {
+            // console.log('Waktu: ' + waktu)
+            if (waktu > saatIni && waktuSelanjutnya == null) {
+                waktuSelanjutnya = waktu
+                sholatSelanjutnya = nama
+            }
+        })
+        // console.log('Selanjutnya: ' + waktuSelanjutnya)
+        // console.log(waktuSelanjutnya + '(-' + minsToStr(strToMins(saatIni) - strToMins(waktuSelanjutnya)) + ')')
+        if (waktuSelanjutnya) {
+            $(".caption_selanjutnya").html('Waktu Sholat selanjutnya')
+            $(".waktu_selanjutnya").html(waktuSelanjutnya + ' (' + minsToStr(strToMins(saatIni) - strToMins(waktuSelanjutnya)) + ')')
+            $(".sholat_selanjutnya").html(sholatSelanjutnya)
+        }
+    }
+
+    function strToMins(t) {
+        var s = t.split(":");
+        return Number(s[0]) * 60 + Number(s[1]);
+    }
+
+    function minsToStr(t) {
+        return Math.trunc(t / 60) + ':' + ('00' + t % 60).slice(-2);
     }
 
     function showMessage(pesan) {
@@ -156,8 +214,8 @@
     function placeVar(data) {
         if (data.tipe == "<?= AhadPosWsClient::TIPE_PROCESS ?>") {
             console.log("Tipe Process");
+            $(".checkout").hide();
             $(".idle").fadeOut().promise().done(function() {
-                $(".checkout").hide();
                 $(".proc").fadeIn();
             });
             if (data.detail) {
@@ -182,14 +240,14 @@
             }
         } else if (data.tipe == "<?= AhadPosWsClient::TIPE_IDLE ?>") {
             console.log("Tipe Idle")
+            $(".checkout").hide();
             $(".proc").fadeOut().promise().done(function() {
-                $(".checkout").hide();
                 $(".idle").fadeIn();
             });
         } else if (data.tipe == "<?= AhadPosWsClient::TIPE_CHECKOUT ?>") {
             console.log("Tipe Checkout")
+            $(".idle").hide();
             $(".proc").fadeOut().promise().done(function() {
-                $(".idle").hide();
                 $(".checkout").fadeIn();
             });
             injectPayment(data)
@@ -207,6 +265,14 @@
                 bayarText = '<span>' + akun.nama + '</span><span>' + akun.jml + '</span>'
                 $("#payment").append(bayarText)
             });
+        }
+        if (data.tarik_tunai && data.tarik_tunai.jml > 0) {
+            tarikTunaiText = '<span class="payment_tt">Tarik Tunai</span><span class="payment_tt">' + data.tarik_tunai.jml + '</span>'
+            $("#payment").append(tarikTunaiText)
+        }
+        if (data.kembalian && data.kembalian > 0) {
+            kembalianText = '<span class="kembalian">Kembalian</span><span class="kembalian">' + data.kembalian + '</span>'
+            $("#payment").append(kembalianText)
         }
         $("#payment").append('<p>Sampai bertemu lagi!</p>')
 
@@ -294,10 +360,10 @@
         websocket.onclose = function(event) {
             $(".sinyal").removeClass("nyala error").addClass("mati");
             console.log('WebSocket connection closed.');
-            // $(".proc").fadeOut().promise().done(function() {
-            //     $(".checkout").hide();
-            //     $(".idle").fadeIn();
-            // });
+            $(".proc").fadeOut().promise().done(function() {
+                $(".checkout").hide();
+                $(".idle").fadeIn();
+            });
 
             // Try to reconnect after a delay
             setTimeout(function() {

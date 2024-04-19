@@ -586,6 +586,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             });
             return false;
         }
+        $(".uang-dibayar").unbind('keyup')
         $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
         var dataUrl =
             '<?php echo $this->createUrl('simpan', ['id' => $model->id]); ?>';
