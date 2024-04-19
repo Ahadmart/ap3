@@ -54,10 +54,31 @@ class CustomerdisplayController extends Controller
         $config   = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
         $namaToko = $config->nilai;
 
+        /* Cek file jadwal sholat untuk bulan berjalan
+        Jika tidak ada, maka coba hapus file dengan pola sama
+        kemudian coba download dari internet.
+        Jika tidak berhasil tidak ditampilkan
+         */
+        $tahun       = date('Y');
+        $bulan       = date('n');
+        $fileName    = "jadwalsholat_{$tahun}{$bulan}.json";
+        $file        = __DIR__ . "/../../../assets/{$fileName}";
+        $fileContent = file_get_contents($file);
+        $jadwalSebulan    = json_decode($fileContent, true, 512, JSON_UNESCAPED_UNICODE);
+
+        $i = 0;
+        foreach ($jadwalSebulan['data'] as $jadwal) {
+            if ($jadwal['date']['gregorian']['date'] == date('d-m-Y')) {
+                break;
+            }
+            $i++;
+        }
+
         $this->render('desktop', [
             'namaToko' => $namaToko,
             'ws'       => $ws,
             'user'     => $user,
+            'jadwal'   => $jadwalSebulan['data'][$i],
         ]);
     }
 }
