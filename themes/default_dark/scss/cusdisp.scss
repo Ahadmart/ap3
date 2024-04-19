@@ -48,7 +48,7 @@ h1 {
     display: flex;
     // align-items: center;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     overflow: hidden;
 }
 #info_kasir {
@@ -70,6 +70,13 @@ h1 {
     p:nth-of-type(1) {
         margin-top: 0.5rem;
         font-size: 1.5rem;
+    }
+}
+
+#info_checkout {
+    margin: auto;
+    p {
+        font-size: 1.7rem;
     }
 }
 
@@ -112,21 +119,74 @@ h1 {
     position: absolute;
     bottom: 1rem;
     .sinyal {
-        display: block;
-        background: #000;
-        border-radius: 50%;
-        height: 14px;
-        width: 14px;
-        margin: 0;
+        // display: block;
+        // background: #000;
+        // border-radius: 50%;
+        // height: 14px;
+        // width: 14px;
+        // margin: 0;
+        // &.mati {
+        //     background: radial-gradient(circle at 10px 3px, #e31a1c, #000);
+        // }
+        // &.nyala {
+        //     background: radial-gradient(circle at 10px 3px, #65c728, #000);
+        // }
+        // &.error {
+        //     background: radial-gradient(circle at 10px 3px, #0079d8, #000);
+        // }
         &.mati {
-            background: radial-gradient(circle at 10px 3px, #e31a1c, #000);
+            margin: 0 auto;
+            width: 24px;
+            height: 24px;
+            background-color: #f00;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
+                inset #441313 0 -1px 9px,
+                rgba(255, 0, 0, 0.5) 0 2px 12px;
+            // -webkit-animation: blinkRed 0.5s infinite;
+            // -moz-animation: blinkRed 0.5s infinite;
+            // -ms-animation: blinkRed 0.5s infinite;
+            // -o-animation: blinkRed 0.5s infinite;
+            animation: merahKedip 0.5s infinite;
         }
         &.nyala {
-            background: radial-gradient(circle at 10px 3px, #65c728, #000);
+            margin: 0 auto;
+            width: 24px;
+            height: 24px;
+            background-color: #abff00;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
+                inset #304701 0 -1px 9px,
+                #89ff00 0 2px 12px;
         }
         &.error {
-            background: radial-gradient(circle at 10px 3px, #0079d8, #000);
+            margin: 0 auto;
+            width: 24px;
+            height: 24px;
+            background-color: #24e0ff;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
+                inset #006 0 -1px 9px,
+                #3f8cff 0 2px 14px;
         }
+    }
+}
+@keyframes merahKedip {
+    from {
+        background-color: #f00;
+    }
+    50% {
+        background-color: #a00;
+        box-shadow:
+            rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
+            inset #441313 0 -1px 9px,
+            rgba(255, 0, 0, 0.5) 0 2px 0;
+    }
+    to {
+        background-color: #f00;
     }
 }
 
@@ -138,6 +198,7 @@ h1 {
 /* Tabel Penjualan Detail */
 .t_wrapper {
     height: calc(100% - 100px);
+    // height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -148,21 +209,34 @@ h1 {
     border: none;
     overflow: auto;
     width: 100%;
+    margin-bottom: 0;
     // height: calc(100% - 60px);
     thead {
         font-weight: 500;
-        // color: rgba(0, 0, 0, 0.85);tr th {
         position: sticky;
         top: 0;
+        background-color: rgba(19, 37, 49, 0.85);
+    }
+    tbody {
+        tr:nth-of-type(n) {
+            background-color: rgba(5, 22, 49, 0.85);
+        }
+        tr:nth-of-type(2n) {
+            background-color: rgba(12, 28, 41, 0.7);
+        }
     }
     th {
-        // border-left: 1px dotted rgba(200, 209, 224, 0.6);
         border-bottom: 1px solid #e8e8e8;
-        background-color: rgba(255, 255, 255, 0.8);
         text-align: left;
-        // box-shadow: 0px 0px 0 2px #e8e8e8;
+        color: #e0e0e0;
     }
     td {
+        color: #ffeb3b;
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-shadow:
+            2px 6px 5px rgba(0, 0, 0, 0.2),
+            0px -4px 30px rgba(255, 255, 255, 0.4);
         text-align: right;
         &:nth-child(1) {
             text-align: left;
@@ -175,16 +249,89 @@ h1 {
 // }
 /* Eo Tabel Penjualan Detail */
 
+#total_container {
+    display: flex;
+    direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    align-content: space-between;
+    text-align: left;
+    height: 100px;
+    padding: 1.25rem 0 20px 0;
+    span {
+        width: 50%;
+        // height: 50%;
+        font-size: 1.1rem;
+        &:nth-of-type(2n) {
+            text-align: right;
+        }
+        &:nth-child(3),
+        &:nth-child(4) {
+            font-size: 2rem;
+        }
+    }
+}
+
+#payment {
+    margin: auto;
+    display: flex;
+    direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    // align-content:
+    text-align: left;
+    // height: 40%;
+    width: 70%;
+    // padding: 1.25rem 0 20px 0;
+    line-height: 2rem;
+    span {
+        width: 50%;
+        font-size: 1.1rem;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        &:nth-of-type(2n) {
+            text-align: right;
+        }
+        &.total {
+            font-size: 1.7rem;
+            margin-bottom: 1rem;
+        }
+        &.kembalian,
+        &.payment_tt {
+            font-size: 1.5rem;
+        }
+    }
+    p {
+        width: 100%;
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+}
+
 #time_board {
     // margin: auto;
     width: 100%;
-    color: $warna-text;
+    color: #e0e0e0;
     hr {
-        border-color: $warna-text;
+        border-color: #e0e0e0;
     }
     p {
         margin: 0;
         font-size: 2rem;
+        &:nth-child(4) {
+            font-size: 1rem;
+        }
+        &:nth-child(5){
+            margin-top: 1rem;
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 3rem;
+        }
+        &:nth-child(6) {
+            font-size: 1.4rem;
+        }
     }
     #waktu {
         font-size: 3rem;
@@ -192,6 +339,32 @@ h1 {
         #separator {
             padding: 0 2px;
             animation: blinker 2s linear infinite;
+        }
+    }
+    jadwal_sholat {
+        padding-top: 1rem;
+        display: flex;
+        direction: row;
+        flex-wrap: wrap;
+        align-items: baseline;
+        text-align: right;
+        line-height: 2rem;
+        font-size: 1.25rem;
+        width: 80%;
+        margin: auto;
+        & > p {
+            font-size: 1rem;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        span {
+            padding-right: 10px;
+            width: 50%;
+            &:nth-of-type(2n) {
+                // padding-left:20px;
+                text-align: center;
+            }
         }
     }
 }
