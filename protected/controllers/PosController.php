@@ -559,24 +559,39 @@ class PosController extends Controller
         }
 
         // Kirim data checkout ke websocket :start
-        $bayar = [];
+        $bayar      = [];
+        $totalBayar = 0;
         foreach ($_POST['pos']['bayar'] as $key => $val) {
             $acc     = KasBank::model()->findByPk($key);
             $bayar[] = [
                 'nama' => $acc->nama,
                 'jml'  => number_format($val, 0, ',', '.')
             ];
+            $totalBayar += $val;
         }
-        $clientWS      = new AhadPosWsClient();
-        $tarikTunaiAcc = KasBank::model()->findByPk($_POST['pos']['tarik-tunai-acc']);
-        $data          = [
+        $koinMOL = 0;
+        if (!empty($_POST['pos']['koin-mol'])) {
+            $koinMOL = $_POST['pos']['koin-mol'];
+            $bayar[] = [
+                'nama' => 'Koin',
+                'jml'  => number_format($koinMOL, 0, ',', '.')
+            ];
+            $totalBayar += $koinMOL;
+        }
+
+        $clientWS       = new AhadPosWsClient();
+        $tarikTunaiAcc  = KasBank::model()->findByPk($_POST['pos']['tarik-tunai-acc']);
+        $tarikTunaiJml  = empty($_POST['pos']['tarik-tunai']) ? 0 : $_POST['pos']['tarik-tunai'];
+        $totalPenjualan = $pos->ambilTotal();
+        $data           = [
             'tipe'        => AhadPosWsClient::TIPE_CHECKOUT,
-            'total'       => $pos->total,
+            'total'       => number_format($totalPenjualan + $tarikTunaiJml, 0, ',', '.'),
             'bayar'       => $bayar,
-            'tarik-tunai' => [
+            'tarik_tunai' => [
                 'acc' => $tarikTunaiAcc->nama,
-                'jml' => number_format($_POST['pos']['tarik-tunai'], 0, ',', '.')
-            ]
+                'jml' => number_format($tarikTunaiJml, 0, ',', '.')
+            ],
+            'kembalian' => number_format($totalBayar - ($totalPenjualan + $tarikTunaiJml), 0, ',', '.')
         ];
         $clientWS->sendJsonEncoded($data);
         // Kirim data checkout ke websocket :end
