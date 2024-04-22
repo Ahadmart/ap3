@@ -51,20 +51,40 @@ class CustomerdisplayController extends Controller
             'id'          => Yii::app()->user->id,
             'namaLengkap' => Yii::app()->user->namaLengkap,
         ];
-        $config   = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
-        $namaToko = $config->nilai;
+        $config    = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
+        $namaToko  = $config->nilai;
+        $latitude  = -6.3940;
+        $longitude = 106.8225;
+        $offset    = '3,3,-3,3,3,3,3,3';
 
         /* Cek file jadwal sholat untuk bulan berjalan
         Jika tidak ada, maka coba hapus file dengan pola sama
         kemudian coba download dari internet.
         Jika tidak berhasil tidak ditampilkan
          */
-        $tahun       = date('Y');
-        $bulan       = date('n');
-        $fileName    = "jadwalsholat_{$tahun}{$bulan}.json";
-        $file        = __DIR__ . "/../../../assets/{$fileName}";
-        $fileContent = file_get_contents($file);
-        $jadwalSebulan    = json_decode($fileContent, true, 512, JSON_UNESCAPED_UNICODE);
+        // $tahun    = date('Y');
+        // $bulan    = date('n');
+        $periode  = date('Yn');
+        $dir      = __DIR__ . '/../../../assets/';
+        $fileName = "jadwalsholat_{$periode}.json";
+        $file     = $dir . $fileName;
+
+        if (file_exists($file)) {
+            // Nothing to do
+        } else {
+            // Ambil jadwal sebulan ke internet
+            $this->getJadwalSholat($periode, $latitude, $longitude, $offset, $file);
+
+            // Coba hapus file bulan lalu
+            $periodeBulanLalu = date('Yn', strtotime('-1 months'));
+            $fileBulanLalu    = $dir . "jadwalsholat_{$periodeBulanLalu}.json";
+            if (file_exists($fileBulanLalu)) {
+                unlink($fileBulanLalu);
+            }
+        }
+
+        $fileContent   = file_get_contents($file);
+        $jadwalSebulan = json_decode($fileContent, true, 512, JSON_UNESCAPED_UNICODE);
 
         $i = 0;
         foreach ($jadwalSebulan['data'] as $jadwal) {
@@ -80,5 +100,33 @@ class CustomerdisplayController extends Controller
             'user'     => $user,
             'jadwal'   => $jadwalSebulan['data'][$i],
         ]);
+    }
+
+    private function getJadwalSholat($periode, $lat, $long, $offset, $file)
+    {
+        // echo 'Periode: ' . $periode . PHP_EOL;
+        // echo 'Koordinat: ' . $lat . ', ' . $long . PHP_EOL;
+
+        $tahun = date('Y');
+        $bulan = date('n');
+        $url   = "https://api.aladhan.com/v1/calendar/{$tahun}/{$bulan}";
+        $param = [
+            'latitude'  => $lat,
+            'longitude' => $long,
+            'method'    => 20,
+            'tune'      => $offset,
+        ];
+        file_put_contents($file, $this->getRequest($url, $param));
+    }
+
+    private function getRequest($url, $param)
+    {
+        $ch = curl_init($url . '?' . http_build_query($param));
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $r = curl_exec($ch);
+        curl_close($ch);
+
+        return $r;
     }
 }
