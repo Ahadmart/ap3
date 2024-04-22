@@ -107,8 +107,8 @@ class CustomerdisplayController extends Controller
         // echo 'Periode: ' . $periode . PHP_EOL;
         // echo 'Koordinat: ' . $lat . ', ' . $long . PHP_EOL;
 
-        $tahun = date('Y');
-        $bulan = date('n');
+        $tahun = substr($periode, 0, 4);
+        $bulan = substr($periode, 4, 2);
         $url   = "https://api.aladhan.com/v1/calendar/{$tahun}/{$bulan}";
         $param = [
             'latitude'  => $lat,
@@ -122,6 +122,7 @@ class CustomerdisplayController extends Controller
     private function getRequest($url, $param)
     {
         $ch = curl_init($url . '?' . http_build_query($param));
+        Yii::log("Ambil data dari {$url}?" . http_build_query($param));
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $r = curl_exec($ch);
