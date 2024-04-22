@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/../vendor/autoload.php';
 
 class AhadPosWsClient
@@ -16,7 +17,9 @@ class AhadPosWsClient
             'timestamp' => date('Y-m-d H:i:s'),
             'uId'       => Yii::app()->user->id,
         ];
-        $this->client = new WebSocket\Client('ws://localhost:48080/');
+        $configCD = Config::model()->find('nama=:nama', [':nama' => 'customerdisplay.wsport']);
+        $wsPort = $configCD->nilai;
+        $this->client = new WebSocket\Client('ws://localhost:' . $wsPort);
         $this->client
             ->addMiddleware(new WebSocket\Middleware\CloseHandler())
             ->addMiddleware(new WebSocket\Middleware\PingResponder());

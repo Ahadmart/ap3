@@ -43,9 +43,11 @@ class CustomerdisplayController extends Controller
 
     public function actionDesktop()
     {
-        $ws = [
+        $configCD = Config::model()->find('nama=:nama', [':nama' => 'customerdisplay.wsport']);
+        $wsPort   = $configCD->nilai;
+        $ws       = [
             'ip'   => $_SERVER['SERVER_ADDR'],
-            'port' => 48080,
+            'port' => $wsPort,
         ];
         $user = [
             'id'          => Yii::app()->user->id,
@@ -75,15 +77,11 @@ class CustomerdisplayController extends Controller
         if (file_exists($file)) {
             // Nothing to do
         } else {
-            // Ambil jadwal sebulan ke internet
-            $this->getJadwalSholat($periode, $latitude, $longitude, $offset, $file);
+            // Hapus file-file yang mungkin ada di bulan sebelumnya
+            array_map('unlink', glob($dir.'jadwalsholat*.json'));
 
-            // Coba hapus file bulan lalu
-            $periodeBulanLalu = date('Yn', strtotime('-1 months'));
-            $fileBulanLalu    = $dir . "jadwalsholat_{$periodeBulanLalu}.json";
-            if (file_exists($fileBulanLalu)) {
-                unlink($fileBulanLalu);
-            }
+            // Ambil jadwal bulan berjalan ke internet
+            $this->getJadwalSholat($periode, $latitude, $longitude, $offset, $file);
         }
 
         $fileContent   = file_get_contents($file);
