@@ -67,12 +67,12 @@
                 $wMaghrib = substr($waktu['Maghrib'], 0, 5);
                 $wIsya = substr($waktu['Isha'], 0, 5);
                 ?>
-                <span class="nama">(Subuh) الفجر</span><span class="waktu"><?= $wSubuh ?></span>
-                <span class="nama">(Syuruq) الشروق</span><span class="waktu"><?= $wSyuruq ?></span>
-                <span class="nama">(Zhuhur) الظُهر</span><span class="waktu"><?= $wZhuhur ?></span>
-                <span class="nama">('Ashar) العصر</span><span class="waktu"><?= $wAshar ?></span>
-                <span class="nama">(Maghrib) المغرب</span><span class="waktu"><?= $wMaghrib ?></span>
-                <span class="nama">(Isya') العِشاء</span><span class="waktu"><?= $wIsya ?></span>
+                <span class="nama">Subuh / الفجر</span><span class="waktu"><?= $wSubuh ?></span>
+                <span class="nama">Syuruq / الشروق</span><span class="waktu"><?= $wSyuruq ?></span>
+                <span class="nama">Zuhur / الظُهر</span><span class="waktu"><?= $wZhuhur ?></span>
+                <span class="nama">'Ashar / العصر</span><span class="waktu"><?= $wAshar ?></span>
+                <span class="nama">Maghrib / المغرب</span><span class="waktu"><?= $wMaghrib ?></span>
+                <span class="nama">Isya' / العِشاء</span><span class="waktu"><?= $wIsya ?></span>
             </jadwal_sholat>
         </div>
         <div id="detail_tr" class="proc">
