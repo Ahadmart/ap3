@@ -13,6 +13,7 @@ use Ratchet\WebSocket\WsServer;
  */
 class AhadposWSServer implements MessageComponentInterface
 {
+    protected $appName = 'Ahadpos Websocket Server';
     protected $clients;
 
     public function __construct()
@@ -24,14 +25,14 @@ class AhadposWSServer implements MessageComponentInterface
     {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
-        echo "New connection! ({$conn->resourceId})\n";
+        echo "{$this->appName}: New connection! ({$conn->resourceId})\n";
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
     {
         $numRecv = count($this->clients) - 1;
         echo sprintf(
-            'Connection %d sending message "%s" to %d other connection%s' . "\n",
+            $this->appName . ': Connection %d sending message "%s" to %d other connection%s' . "\n",
             $from->resourceId,
             $msg,
             $numRecv,
@@ -50,19 +51,19 @@ class AhadposWSServer implements MessageComponentInterface
     {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
-        echo "Connection {$conn->resourceId} has disconnected\n";
+        echo "{$this->appName}: Connection {$conn->resourceId} has disconnected\n";
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e)
     {
         // Error handling
-        echo "An error has occurred: {$e->getMessage()}\n";
+        echo "{$this->appName}: An error has occurred: {$e->getMessage()}\n";
         $conn->close();
     }
 }
 
 $port = 48080;
-echo "WebSocket server started on port {$port}...\n";
+echo "Ahadpos Websocket Server: Started on port {$port}...\n";
 $server = IoServer::factory(
     new HttpServer(
         new WsServer(
