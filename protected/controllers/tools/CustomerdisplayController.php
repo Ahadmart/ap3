@@ -51,11 +51,14 @@ class CustomerdisplayController extends Controller
             'id'          => Yii::app()->user->id,
             'namaLengkap' => Yii::app()->user->namaLengkap,
         ];
-        $config    = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
-        $namaToko  = $config->nilai;
-        $latitude  = -6.3940;
-        $longitude = 106.8225;
-        $offset    = '3,3,-3,3,3,3,3,3';
+        $config        = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
+        $koordinatConf = Config::model()->find('nama=:nama', [':nama' => 'jadwalsholat.koordinat']);
+        $offsetConf    = Config::model()->find('nama=:nama', [':nama' => 'jadwalsholat.offset']);
+        $koordinat     = explode(';', $koordinatConf->nilai);
+        $namaToko      = $config->nilai;
+        $latitude      = trim($koordinat[0]);
+        $longitude     = trim($koordinat[1]);
+        $offset        = $offsetConf->nilai;
 
         /* Cek file jadwal sholat untuk bulan berjalan
         Jika tidak ada, maka coba hapus file dengan pola sama
