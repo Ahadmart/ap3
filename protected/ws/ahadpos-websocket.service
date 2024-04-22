@@ -1,0 +1,12 @@
+[Unit]
+Description=Ahadpos Customer Display WebSocket Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/php /home/data/www/ahad/ahadpos3/protected/ws/ws_server.php
+WorkingDirectory=/home/data/www/ahad/ahadpos3/protected/ws/
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
