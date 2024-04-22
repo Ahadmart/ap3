@@ -21,7 +21,7 @@
     <div class="medium-4 columns box kanan_atas">
         <div id="info_kasir" class="idle">
             <p>Anda sedang dilayani oleh</p>
-            <p><?= "{$user['namaLengkap']}" //[#{$user['id']}]" 
+            <p><?= "{$user['namaLengkap']}" //[#{$user['id']}]"
                 ?></p>
             <p>Selamat berbelanja di <?= $namaToko ?></p>
         </div>
@@ -43,8 +43,12 @@
             <figure class="sinyal mati"></figure>
         </div>
         <div class="idle">
+            <?php
+            /*
             <h4><?= $ws['ip'] ?></h4>
             <p>User: <?= $user['namaLengkap'] ?> (<?= $user['id'] ?>)</p>
+            */
+            ?>
             <p>Tampilan iklan</p>
         </div>
     </div>
@@ -60,12 +64,12 @@
                 <p>Jadwal Sholat Hari Ini</p>
                 <?php
                 $waktu = $jadwal['timings'];
-                $wSubuh = substr($waktu['Fajr'], 0, 5);
-                $wSyuruq = substr($waktu['Sunrise'], 0, 5);
-                $wZhuhur = substr($waktu['Dhuhr'], 0, 5);
-                $wAshar = substr($waktu['Asr'], 0, 5);
-                $wMaghrib = substr($waktu['Maghrib'], 0, 5);
-                $wIsya = substr($waktu['Isha'], 0, 5);
+                $wSubuh    = substr($waktu['Fajr'], 0, 5);
+                $wSyuruq   = substr($waktu['Sunrise'], 0, 5);
+                $wZhuhur   = substr($waktu['Dhuhr'], 0, 5);
+                $wAshar    = substr($waktu['Asr'], 0, 5);
+                $wMaghrib  = substr($waktu['Maghrib'], 0, 5);
+                $wIsya     = substr($waktu['Isha'], 0, 5);
                 ?>
                 <span class="nama">Subuh / الفجر</span><span class="waktu"><?= $wSubuh ?></span>
                 <span class="nama">Syuruq / الشروق</span><span class="waktu"><?= $wSyuruq ?></span>
@@ -160,17 +164,26 @@
         let sholatSelanjutnya = null
         // console.log('Saat ini: ' + saatIni)
         Object.entries(waktuSholat).forEach(([nama, waktu]) => {
-            // console.log('Waktu: ' + waktu)
+            console.log('Waktu: ' + waktu)
             if (waktu > saatIni && waktuSelanjutnya == null) {
                 waktuSelanjutnya = waktu
                 sholatSelanjutnya = nama
             }
         })
-        // console.log('Selanjutnya: ' + waktuSelanjutnya)
-        // console.log(waktuSelanjutnya + '(-' + minsToStr(strToMins(saatIni) - strToMins(waktuSelanjutnya)) + ')')
+        var selisih = null
+        if (waktuSelanjutnya == null) {
+            // Berarti sekarang sudah lewat Isya'
+            waktuSelanjutnya = '<?= $wSubuh ?>'
+            sholatSelanjutnya = 'Subuh'
+            selisih = minsToStr(strToMins('24:00') - strToMins(saatIni) + strToMins(waktuSelanjutnya))
+        } else {
+            selisih = minsToStr(strToMins(saatIni) - strToMins(waktuSelanjutnya))
+        }
+        console.log('Selanjutnya: ' + waktuSelanjutnya)
+        console.log(waktuSelanjutnya + '(-' + selisih + ')')
         if (waktuSelanjutnya) {
             $(".caption_selanjutnya").html('Waktu Sholat selanjutnya')
-            $(".waktu_selanjutnya").html(waktuSelanjutnya + ' (' + minsToStr(strToMins(saatIni) - strToMins(waktuSelanjutnya)) + ')')
+            $(".waktu_selanjutnya").html(waktuSelanjutnya + ' (-' + selisih + ')')
             $(".sholat_selanjutnya").html(sholatSelanjutnya)
         }
     }
