@@ -2,9 +2,13 @@
 
 class BrosurpromoController extends Controller
 {
+	public $layout = '//layouts/box_kecil';
 	public function actionIndex()
 	{
-		$this->render('index');
+		$assetsPath = 'assets/brosurpromo/';
+		$this->render('index', [
+			'assetsPath' => $assetsPath
+		]);
 	}
 
 	// Uncomment the following methods and override them if needed
