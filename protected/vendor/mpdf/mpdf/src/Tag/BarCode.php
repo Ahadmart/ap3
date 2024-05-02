@@ -2,8 +2,6 @@
 
 namespace Mpdf\Tag;
 
-use Mpdf\Mpdf;
-
 class BarCode extends Tag
 {
 
@@ -251,7 +249,7 @@ class BarCode extends Tag
 			}
 			/* -- END CSS-IMAGE-FLOAT -- */
 
-			$e = Mpdf::OBJECT_IDENTIFIER . "type=barcode,objattr=" . serialize($objattr) . Mpdf::OBJECT_IDENTIFIER;
+			$e = "\xbb\xa4\xactype=barcode,objattr=" . serialize($objattr) . "\xbb\xa4\xac";
 
 			/* -- TABLES -- */
 			// Output it to buffers

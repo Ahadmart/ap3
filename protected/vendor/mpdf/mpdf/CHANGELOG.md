@@ -1,12 +1,3 @@
-mPDF 8.2.x
-===========================
-
-New features
-------------
-* Watermark text can now be colored using \Mpdf\Watermark DTO. \Mpdf\WatermarkImage DTO for images. (#1876)
-* Added support for `psr/http-message` v2 without dropping v1. (@markdorison, @apotek, @greg-1-anderson, @NigelCunningham #1907)
-* PHP 8.3 support in mPDF 8.2.1
-
 mPDF 8.1.x
 ===========================
 
@@ -15,10 +6,9 @@ New features
 
 * Service container for internal services
 * Set /Lang entry for better accessibility when document language is available (@cuongmits, #1418)
-* More verbose helper methods for `Output`: `OutputBinaryData`, `OutputHttpInline`, `OutputHttpDownload`, `OutputFile` (since v8.1.2)
+* More verbose helper methods for `Output`: `OutputBinaryData`, `OutputHttpInline`, `OutputHttpDownload`, `OutputFile`
 * Set font-size to `auto` in textarea and input in active forms to resize the font-size (@ChrisB9, #1721)
 * PHP 8.2 support in mPDF 8.1.3
-* Added support for `psr/log` v3 without dropping v2. (@markdorison, @apotek, @greg-1-anderson, #1857)
 
 Bugfixes
 --------
@@ -29,7 +19,6 @@ Bugfixes
 * Prevent hyphenation of urls starting with https and e-mail addresses (@HKandulla, #1634)
 * Colorspace restrictor reads mode from Mpdf and works again (Fix for #1094)
 * Prevent exception when multiple columns wrap to next page
-* Update default `curlUserAgent` configuration variable from Firefox 13 to 108
 
 mPDF 8.0.x
 ===========================

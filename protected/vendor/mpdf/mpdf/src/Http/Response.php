@@ -1,10 +1,8 @@
 <?php
 
-namespace Mpdf\PsrHttpMessageShim;
+namespace Mpdf\Http;
 
 use Psr\Http\Message\StreamInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\MessageInterface;
 
 /**
  * PSR-7 URI implementation ported from nyholm/psr7 and adapted for PHP 5.6
@@ -66,17 +64,17 @@ class Response implements \Psr\Http\Message\ResponseInterface
 		$this->protocol = $version;
 	}
 
-	public function getStatusCode(): int
+	public function getStatusCode()
 	{
 		return $this->statusCode;
 	}
 
-	public function getReasonPhrase(): string
+	public function getReasonPhrase()
 	{
 		return $this->reasonPhrase;
 	}
 
-	public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
+	public function withStatus($code, $reasonPhrase = '')
 	{
 		if (!\is_int($code) && !\is_string($code)) {
 			throw new \InvalidArgumentException('Status code has to be an integer');
@@ -97,12 +95,12 @@ class Response implements \Psr\Http\Message\ResponseInterface
 		return $new;
 	}
 
-	public function getProtocolVersion(): string
+	public function getProtocolVersion()
 	{
 		return $this->protocol;
 	}
 
-	public function withProtocolVersion(string $version): MessageInterface
+	public function withProtocolVersion($version)
 	{
 		if ($this->protocol === $version) {
 			return $this;
@@ -114,17 +112,17 @@ class Response implements \Psr\Http\Message\ResponseInterface
 		return $new;
 	}
 
-	public function getHeaders(): array
+	public function getHeaders()
 	{
 		return $this->headers;
 	}
 
-	public function hasHeader(string $header): bool
+	public function hasHeader($header)
 	{
 		return isset($this->headerNames[strtolower($header)]);
 	}
 
-	public function getHeader(string $header): array
+	public function getHeader($header)
 	{
 		$header = strtolower($header);
 
@@ -137,12 +135,12 @@ class Response implements \Psr\Http\Message\ResponseInterface
 		return $this->headers[$header];
 	}
 
-	public function getHeaderLine(string $header): string
+	public function getHeaderLine($header)
 	{
 		return implode(', ', $this->getHeader($header));
 	}
 
-	public function withHeader(string $header, $value): MessageInterface
+	public function withHeader($header, $value)
 	{
 		if (!is_array($value)) {
 			$value = [$value];
@@ -161,7 +159,7 @@ class Response implements \Psr\Http\Message\ResponseInterface
 		return $new;
 	}
 
-	public function withAddedHeader(string $header, $value): MessageInterface
+	public function withAddedHeader($header, $value)
 	{
 		if (!is_array($value)) {
 			$value = [$value];
@@ -182,7 +180,7 @@ class Response implements \Psr\Http\Message\ResponseInterface
 		return $new;
 	}
 
-	public function withoutHeader(string $header): MessageInterface
+	public function withoutHeader($header)
 	{
 		$normalized = strtolower($header);
 
@@ -198,7 +196,7 @@ class Response implements \Psr\Http\Message\ResponseInterface
 		return $new;
 	}
 
-	public function getBody(): StreamInterface
+	public function getBody()
 	{
 		if (!$this->stream) {
 			$this->stream = Stream::create('');
@@ -207,7 +205,7 @@ class Response implements \Psr\Http\Message\ResponseInterface
 		return $this->stream;
 	}
 
-	public function withBody(StreamInterface $body): MessageInterface
+	public function withBody(StreamInterface $body)
 	{
 		if ($body === $this->stream) {
 			return $this;
