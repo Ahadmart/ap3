@@ -49,7 +49,6 @@
             <p>User: <?= $user['namaLengkap'] ?> (<?= $user['id'] ?>)</p>
             */
             ?>
-            <p>Tampilan iklan</p>
         </div>
     </div>
     <div class="medium-4 columns box kanan_bawah">
