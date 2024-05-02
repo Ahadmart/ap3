@@ -29,19 +29,21 @@ function namaBulan($i)
 }
 ?>
 <html>
-    <head>
-        <title>Purchase Order : <?php echo $modelHeader->nomor; ?></title>
-        <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf.css" />
-        <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" />
-    </head>
-    <body>
-        <!--mpdf
+
+<head>
+    <title>Purchase Order : <?php echo $modelHeader->nomor; ?></title>
+    <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf.css" />
+    <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" />
+</head>
+
+<body>
+    <!--mpdf
             <htmlpagefooter name="footer">
                 <table style="border-top:thin solid black">
                     <tr>
                         <td style="text-align:left">PO No. <?php
-        echo $modelHeader->nomor == '' ? '..................' : $modelHeader->nomor;
-        ?>
+                                                            echo $modelHeader->nomor == '' ? '..................' : $modelHeader->nomor;
+                                                            ?>
                         </td>
                         <td style="text-align:center">
                         </td>
@@ -52,84 +54,84 @@ function namaBulan($i)
             </htmlpagefooter>
             <sethtmlpagefooter name="footer" value="on" />
           mpdf-->
-        <div id="header1">
-            <div>P O</div>
-            <barcode style="margin-left: -13px;" code="<?php echo $modelHeader->nomor; ?>" type="C128A" class="barcode" size="0.9" height="1" />
-        </div>
-        <div id="dari">
-            <div class="nama-toko"><?php echo $branchConfig['toko.nama']; ?></div>
-            <span class="alamat"><?php echo "{$branchConfig['toko.alamat1']}, {$branchConfig['toko.alamat2']}, {$branchConfig['toko.alamat3']}"; ?></span>
-            <div><?php echo $branchConfig['toko.telp']; ?></div>
-            <div class="email"><?php echo $branchConfig['toko.email']; ?></div>
-        </div>
-        <div class="garis">
-        </div>
-        <div id="kepada">
-            Kepada<br />
-            <span class="nama-customer"><?php echo $profil->nama; ?></span><br />
-            <span class="alamat"><?php echo $profil->alamat1; ?><?php echo is_null($profil->alamat2) || $profil->alamat2 == '' ? '' : ", {$profil->alamat2}"; ?><?php echo is_null($profil->alamat3) || $profil->alamat3 == '' ? '' : ", {$profil->alamat3}"; ?>
-            </span><br />
-            <?php echo $profil->telp; ?>
-        </div>
-        <div id="faktur-info">
-            <table>
+    <div id="header1">
+        <div>P O</div>
+        <barcode style="margin-left: -13px;" code="<?php echo $modelHeader->nomor; ?>" type="C128A" class="barcode" size="0.9" height="1" />
+    </div>
+    <div id="dari">
+        <div class="nama-toko"><?php echo $branchConfig['toko.nama']; ?></div>
+        <span class="alamat"><?php echo "{$branchConfig['toko.alamat1']}, {$branchConfig['toko.alamat2']}, {$branchConfig['toko.alamat3']}"; ?></span>
+        <div><?php echo $branchConfig['toko.telp']; ?></div>
+        <div class="email"><?php echo $branchConfig['toko.email']; ?></div>
+    </div>
+    <div class="garis">
+    </div>
+    <div id="kepada">
+        Kepada<br />
+        <span class="nama-customer"><?php echo $profil->nama; ?></span><br />
+        <span class="alamat"><?php echo $profil->alamat1; ?><?php echo is_null($profil->alamat2) || $profil->alamat2 == '' ? '' : ", {$profil->alamat2}"; ?><?php echo is_null($profil->alamat3) || $profil->alamat3 == '' ? '' : ", {$profil->alamat3}"; ?>
+        </span><br />
+        <?php echo $profil->telp; ?>
+    </div>
+    <div id="faktur-info">
+        <table>
+            <tr>
+                <td>No. PO</td>
+                <td><b><?php echo $modelHeader->nomor; ?></b></td>
+            </tr>
+            <tr>
+                <td>Tanggal</td>
+                <td><b><?php echo toIndoDate($modelHeader->tanggal); ?></b></td>
+            </tr>
+            <?php
+            if (isset($modelHeader->referensi) && !empty($modelHeader->referensi)) :
+            ?>
                 <tr>
-                    <td>No. PO</td>
-                    <td><b><?php echo $modelHeader->nomor; ?></b></td>
+                    <td>Ref</td>
+                    <td><b><?php echo $modelHeader->referensi; ?></b></td>
                 </tr>
                 <tr>
-                    <td>Tanggal</td>
-                    <td><b><?php echo toIndoDate($modelHeader->tanggal); ?></b></td>
+                    <td>Tgl Ref</td>
+                    <td><b><?php echo toIndoDate($modelHeader->tanggal_referensi); ?></b></td>
                 </tr>
-                <?php
-                if (isset($modelHeader->referensi) && !empty($modelHeader->referensi)):
-                    ?>
-                    <tr>
-                        <td>Ref</td>
-                        <td><b><?php echo $modelHeader->referensi; ?></b></td>
-                    </tr>
-                    <tr>
-                        <td>Tgl Ref</td>
-                        <td><b><?php echo toIndoDate($modelHeader->tanggal_referensi); ?></b></td>
-                    </tr>
-                    <?php
-                endif;
-                ?>
+            <?php
+            endif;
+            ?>
+            <tr>
+                <td colspan="2" id="header-total">
+                    Total<br />
+                    <span id="total">IDR. <?php echo $modelHeader->total; ?></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="clear">
+        <br />
+        <table id="tdetail">
+            <thead>
                 <tr>
-                    <td colspan="2" id="header-total">
-                        Total<br />
-                        <span id="total">IDR. <?php echo $modelHeader->total; ?></span>
-                    </td>
+                    <th style="width:5%">
+                        No
+                    </th>
+                    <th style="width:15%">
+                        Barcode
+                    </th>
+                    <th style="width:40%">
+                        Nama Barang
+                    </th>
+                    <th>
+                        Harga
+                    </th>
+                    <th>
+                        Qty
+                    </th>
+                    <th>
+                        Sub Total
+                    </th>
                 </tr>
-            </table>
-        </div>
-        <div class="clear">
-            <br />
-            <table id="tdetail">
-                <thead>
-                    <tr>
-                        <th style="width:5%">
-                            No
-                        </th>
-                        <th style="width:15%">
-                            Barcode
-                        </th>
-                        <th style="width:40%">
-                            Nama Barang
-                        </th>
-                        <th>
-                            Harga
-                        </th>
-                        <th>
-                            Qty
-                        </th>
-                        <th>
-                            Sub Total
-                        </th>
-                    </tr>
-                </thead>
-                <?php
-                /*
+            </thead>
+            <?php
+            /*
                   <tr>
                   <?php
                   for ($i = 1; $i <= 7; $i++) {
@@ -146,53 +148,54 @@ function namaBulan($i)
                   </tr>
                  *
                  */
-                ?>
+            ?>
 
-                <tr>
-                    <?php
-                    for ($i = 1; $i <= 6; $i++) {
-                        ?>
-                        <td style="padding:3px 0px"></td>
-                        <?php
-                    }
-                    ?>
-                </tr>
+            <tr>
                 <?php
-                $i     = 1;
-                $total = 0;
-                foreach ($poDetail as $row) {
-                    ?>
-                    <tr>
-                        <td><?php echo $i; ?></td>
-                        <td style="text-align:left;padding-left:5px"><?php echo $row->barcode; ?></td>
-                        <td style="text-align:left;padding-left:5px"><?php echo $row->nama; ?></td>
-                        <td style="text-align:right;padding-right:5px;"><?php echo $showHargaBeli ? number_format($row->harga_beli, 0, ",", ".") : '' ?></td>
-                        <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->qty_order, 0, ',', '.'); ?></td>
-                        <td style="text-align:right;padding-right:5px;"><?php echo $showHargaBeli ? number_format($row->qty_order * $row->harga_beli, 0, ',', '.') : '' ?></td>
-                    </tr>
-                    <?php
-                    $total = $total + ($row->qty_order * $row->harga_beli);
-                    $i++;
+                for ($i = 1; $i <= 6; $i++) {
+                ?>
+                    <td style="padding:3px 0px"></td>
+                <?php
                 }
                 ?>
+            </tr>
+            <?php
+            $i     = 1;
+            $total = 0;
+            foreach ($poDetail as $row) {
+            ?>
                 <tr>
-                    <?php
-                    for ($i = 1; $i <= 6; $i++) {
-                        ?>
-                        <td style="padding:3px 0px"></td>
-                        <?php
-                    }
-                    ?>
+                    <td><?php echo $i; ?></td>
+                    <td style="text-align:left;padding-left:5px"><?php echo $row->barcode; ?></td>
+                    <td style="text-align:left;padding-left:5px"><?php echo $row->nama; ?></td>
+                    <td style="text-align:right;padding-right:5px;"><?php echo $showHargaBeli ? number_format($row->harga_beli, 0, ",", ".") : '' ?></td>
+                    <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->qty_order, 0, ',', '.'); ?></td>
+                    <td style="text-align:right;padding-right:5px;"><?php echo $showHargaBeli ? number_format($row->qty_order * $row->harga_beli, 0, ',', '.') : '' ?></td>
                 </tr>
-                <tr>
-                    <td colspan="5" style="border: thin solid black;padding:5px 0px">
-                        T O T A L :
-                    </td>
-                    <td style="border: thin solid black;text-align: right;padding-right: 5px;">
-                        <?php echo number_format($total, 0, ',', '.'); ?>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </body>
+            <?php
+                $total = $total + ($row->qty_order * $row->harga_beli);
+                $i++;
+            }
+            ?>
+            <tr>
+                <?php
+                for ($i = 1; $i <= 6; $i++) {
+                ?>
+                    <td style="padding:3px 0px"></td>
+                <?php
+                }
+                ?>
+            </tr>
+            <tr>
+                <td colspan="5" style="border: thin solid black;padding:5px 0px">
+                    T O T A L :
+                </td>
+                <td style="border: thin solid black;text-align: right;padding-right: 5px;">
+                    <?php echo $showHargaBeli ? number_format($total, 0, ',', '.') : '' ?>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
 </html>
