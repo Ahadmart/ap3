@@ -40,7 +40,8 @@ $this->pageTitle = Yii::app()->name . ' - ' . $this->boxHeader['normal'];
                                     <?php
                                     foreach ($kertasUntukPdf as $key => $value) :
                                     ?>
-                                        <li><a target="_blank" href="<?php echo $this->createUrl('print', ['id' => $model->id, 'printId' => $printer['id'], 'kertas' => $key]) ?>"><?php echo $value; ?></a></li>
+                                        <li><a target="_blank" href="<?php echo $this->createUrl('print', ['id' => $model->id, 'printId' => $printer['id'], 'kertas' => $key, 'harga_beli' => 1]) ?>"><?php echo $value; ?></a></li>
+                                        <li><a target="_blank" href="<?php echo $this->createUrl('print', ['id' => $model->id, 'printId' => $printer['id'], 'kertas' => $key, 'harga_beli' => 0]) ?>"><?php echo $value; ?> (tanpa harga beli)</a></li>
                                     <?php
                                     endforeach; ?>
                                 </ul>

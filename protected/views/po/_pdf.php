@@ -166,9 +166,9 @@ function namaBulan($i)
                         <td><?php echo $i; ?></td>
                         <td style="text-align:left;padding-left:5px"><?php echo $row->barcode; ?></td>
                         <td style="text-align:left;padding-left:5px"><?php echo $row->nama; ?></td>
-                        <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->harga_beli, 0, ',', '.'); ?></td>
+                        <td style="text-align:right;padding-right:5px;"><?php echo $showHargaBeli ? number_format($row->harga_beli, 0, ",", ".") : '' ?></td>
                         <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->qty_order, 0, ',', '.'); ?></td>
-                        <td style="text-align:right;padding-right:5px;"><?php echo number_format($row->qty_order * $row->harga_beli, 0, ',', '.'); ?></td>
+                        <td style="text-align:right;padding-right:5px;"><?php echo $showHargaBeli ? number_format($row->qty_order * $row->harga_beli, 0, ',', '.') : '' ?></td>
                     </tr>
                     <?php
                     $total = $total + ($row->qty_order * $row->harga_beli);

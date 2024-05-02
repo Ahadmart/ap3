@@ -144,18 +144,18 @@ class PoController extends Controller
         $configCariBarang = Config::model()->find("nama='po.caribarangmode'");
 
         $modelReportPls = new ReportPlsForm;
-        $poParam = PoAnalisaplsParam::model()->find('po_id=:poId',[':poId'=>$id]);
-        if (!is_null($poParam)){
+        $poParam        = PoAnalisaplsParam::model()->find('po_id=:poId', [':poId' => $id]);
+        if (!is_null($poParam)) {
             // var_dump($poParam);Yii::app()->end();
             // Jika ada param sebelumnya, repopulated variabel $modelReportPls
-            $modelReportPls->jumlahHari = $poParam->range;
+            $modelReportPls->jumlahHari  = $poParam->range;
             $modelReportPls->orderPeriod = $poParam->order_period;
-            $modelReportPls->leadTime = $poParam->lead_time;
-            $modelReportPls->ssd = $poParam->ssd;
-            $modelReportPls->rakId = $poParam->rak_id;
-            $modelReportPls->strukLv1 = $poParam->struktur_lv1;
-            $modelReportPls->strukLv2 = $poParam->struktur_lv2;
-            $modelReportPls->strukLv3 = $poParam->struktur_lv3;
+            $modelReportPls->leadTime    = $poParam->lead_time;
+            $modelReportPls->ssd         = $poParam->ssd;
+            $modelReportPls->rakId       = $poParam->rak_id;
+            $modelReportPls->strukLv1    = $poParam->struktur_lv1;
+            $modelReportPls->strukLv2    = $poParam->struktur_lv2;
+            $modelReportPls->strukLv3    = $poParam->struktur_lv3;
         }
 
         $PLSDetail = new PoDetail('search');
@@ -530,7 +530,7 @@ class PoController extends Controller
                     // $this->printLpr($id, $device);
                     break;
                 case Device::TIPE_PDF_PRINTER:
-                    $this->exportPdf($id, $_GET['kertas']);
+                    $this->exportPdf($id, $_GET['kertas'], $_GET['harga_beli']);
                     break;
                 case Device::TIPE_CSV_PRINTER:
                     $this->exportCsv($id);
@@ -542,7 +542,7 @@ class PoController extends Controller
         }
     }
 
-    public function exportPdf($id, $kertas = Po::KERTAS_A4, $draft = false)
+    public function exportPdf($id, $kertas = Po::KERTAS_A4, $hargaBeli = 1, $draft = false)
     {
         $modelHeader = $this->loadModel($id);
         $configs     = Config::model()->findAll();
@@ -582,10 +582,11 @@ class PoController extends Controller
         $mpdf->WriteHTML($this->renderPartial(
             $viewCetak,
             [
-                'modelHeader'  => $modelHeader,
-                'branchConfig' => $branchConfig,
-                'profil'       => $profil,
-                'poDetail'     => $poDetail,
+                'modelHeader'   => $modelHeader,
+                'branchConfig'  => $branchConfig,
+                'profil'        => $profil,
+                'poDetail'      => $poDetail,
+                'showHargaBeli' => $hargaBeli == 1 ? true : false,
             ],
             true
         ));
@@ -900,7 +901,7 @@ class PoController extends Controller
             $rowAffected = $poDetail->updateByPk($pk, [
                 'restock_min' => $_POST['value'],
                 'updated_by'  => Yii::app()->user->id,
-            ]);            
+            ]);
             if ($rowAffected > 0) {
                 $return = Po::hitungSaranOrderPerBarang($poDetail->id);
             }
