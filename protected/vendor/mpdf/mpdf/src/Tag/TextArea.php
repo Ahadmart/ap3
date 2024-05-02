@@ -64,7 +64,7 @@ class TextArea extends Tag
 		if (isset($properties['FONT-FAMILY'])) {
 			$this->mpdf->SetFont($properties['FONT-FAMILY'], '', 0, false);
 		}
-		if (isset($properties['FONT-SIZE']) && $properties['FONT-SIZE'] !== 'auto') {
+		if (isset($properties['FONT-SIZE'])) {
 			$mmsize = $this->sizeConverter->convert($properties['FONT-SIZE'], $this->mpdf->default_font_size / Mpdf::SCALE);
 			$this->mpdf->SetFontSize($mmsize * Mpdf::SCALE, false);
 		}
@@ -75,9 +75,9 @@ class TextArea extends Tag
 		$objattr['fontsize'] = $this->mpdf->FontSizePt;
 		if ($this->mpdf->useActiveForms) {
 			if (isset($properties['TEXT-ALIGN'])) {
-				$objattr['text_align'] = $this->getAlign($properties['TEXT-ALIGN']);
+				$objattr['text_align'] = self::ALIGN[strtolower($properties['TEXT-ALIGN'])];
 			} elseif (isset($attr['ALIGN'])) {
-				$objattr['text_align'] = $this->getAlign($attr['ALIGN']);
+				$objattr['text_align'] = self::ALIGN[strtolower($attr['ALIGN'])];
 			}
 			if (isset($properties['OVERFLOW']) && strtolower($properties['OVERFLOW']) === 'hidden') {
 				$objattr['donotscroll'] = true;
@@ -110,7 +110,7 @@ class TextArea extends Tag
 			);
 		}
 		if (isset($properties['VERTICAL-ALIGN'])) {
-			$objattr['vertical-align'] = $this->getAlign($properties['VERTICAL-ALIGN']);
+			$objattr['vertical-align'] = self::ALIGN[strtolower($properties['VERTICAL-ALIGN'])];
 		}
 
 		$colsize = 20; //HTML default value
@@ -142,10 +142,6 @@ class TextArea extends Tag
 
 		$objattr['rows'] = $rowsize;
 		$objattr['cols'] = $colsize;
-
-		if ($properties['FONT-SIZE'] === 'auto' && $this->mpdf->useActiveForms) {
-			$objattr['use_auto_fontsize'] = true;
-		}
 
 		$this->mpdf->specialcontent = serialize($objattr);
 

@@ -47,7 +47,7 @@ class Columns extends Tag
 				if ($attr['VALIGN'] === 'J') {
 					$valign = 'J';
 				} else {
-					$valign = $this->getAlign($attr['VALIGN']);
+					$valign = self::ALIGN[$attr['VALIGN']];
 				}
 			} else {
 				$valign = '';

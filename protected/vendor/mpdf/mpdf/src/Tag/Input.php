@@ -70,7 +70,7 @@ class Input extends Tag
 		if (isset($properties['FONT-FAMILY'])) {
 			$this->mpdf->SetFont($properties['FONT-FAMILY'], $this->mpdf->FontStyle, 0, false);
 		}
-		if (isset($properties['FONT-SIZE']) && $properties['FONT-SIZE'] !== 'auto') {
+		if (isset($properties['FONT-SIZE'])) {
 			$mmsize = $this->sizeConverter->convert($properties['FONT-SIZE'], $this->mpdf->default_font_size / Mpdf::SCALE);
 			$this->mpdf->SetFontSize($mmsize * Mpdf::SCALE, false);
 		}
@@ -81,9 +81,9 @@ class Input extends Tag
 		$objattr['fontsize'] = $this->mpdf->FontSizePt;
 		if ($this->mpdf->useActiveForms) {
 			if (isset($attr['ALIGN'])) {
-				$objattr['text_align'] = $this->getAlign($attr['ALIGN']);
+				$objattr['text_align'] = self::ALIGN[strtolower($attr['ALIGN'])];
 			} elseif (isset($properties['TEXT-ALIGN'])) {
-				$objattr['text_align'] = $this->getAlign($properties['TEXT-ALIGN']);
+				$objattr['text_align'] = self::ALIGN[strtolower($properties['TEXT-ALIGN'])];
 			}
 			if (isset($properties['BORDER-TOP-COLOR'])) {
 				$objattr['border-col'] = $this->colorConverter->convert($properties['BORDER-TOP-COLOR'], $this->mpdf->PDFAXwarnings);
@@ -105,7 +105,7 @@ class Input extends Tag
 		}
 
 		if ($properties['VERTICAL-ALIGN']) {
-			$objattr['vertical-align'] = $this->getAlign($properties['VERTICAL-ALIGN']);
+			$objattr['vertical-align'] = self::ALIGN[strtolower($properties['VERTICAL-ALIGN'])];
 		}
 
 		switch (strtoupper($attr['TYPE'])) {
@@ -199,7 +199,7 @@ class Input extends Tag
 					$objattr['padding_right'] = 0;
 
 					if (isset($properties['VERTICAL-ALIGN'])) {
-						$objattr['vertical-align'] = $this->getAlign($properties['VERTICAL-ALIGN']);
+						$objattr['vertical-align'] = self::ALIGN[strtolower($properties['VERTICAL-ALIGN'])];
 					}
 
 					$w = 0;
@@ -356,11 +356,6 @@ class Input extends Tag
 				if (strtoupper($attr['TYPE']) === 'PASSWORD') {
 					$type = 'PASSWORD';
 				}
-
-				if ($properties['FONT-SIZE'] === 'auto' && $this->mpdf->useActiveForms) {
-					$objattr['use_auto_fontsize'] = true;
-				}
-
 				if (isset($attr['VALUE'])) {
 					if ($type === 'PASSWORD') {
 						$num_stars = mb_strlen($attr['VALUE'], $this->mpdf->mb_enc);
