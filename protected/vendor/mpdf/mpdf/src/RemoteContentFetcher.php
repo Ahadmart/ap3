@@ -31,7 +31,7 @@ class RemoteContentFetcher implements \Psr\Log\LoggerAwareInterface
 
 		$ch = curl_init($url);
 
-		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0.1'); // mPDF 5.7.4
+		curl_setopt($ch, CURLOPT_USERAGENT, $this->mpdf->curlUserAgent);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_NOBODY, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -50,10 +50,32 @@ class RemoteContentFetcher implements \Psr\Log\LoggerAwareInterface
 			curl_setopt($ch, CURLOPT_CAINFO, $this->mpdf->curlCaCertificate);
 		}
 
+		if ($this->mpdf->curlProxy) {
+			curl_setopt($ch, CURLOPT_PROXY, $this->mpdf->curlProxy);
+			if ($this->mpdf->curlProxyAuth) {
+				curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->mpdf->curlProxyAuth);
+			}
+		}
+
 		$data = curl_exec($ch);
 
 		if (curl_error($ch)) {
-			$this->logger->error(sprintf('cURL error: "%s"', curl_error($ch)), ['context' => LogContext::REMOTE_CONTENT]);
+			$message = sprintf('cURL error: "%s"', curl_error($ch));
+			$this->logger->error($message, ['context' => LogContext::REMOTE_CONTENT]);
+
+			if ($this->mpdf->debug) {
+				throw new \Mpdf\MpdfException($message);
+			}
+		}
+
+		$info = curl_getinfo($ch);
+		if (isset($info['http_code']) && $info['http_code'] !== 200) {
+			$message = sprintf('HTTP error: %d', $info['http_code']);
+			$this->logger->error($message, ['context' => LogContext::REMOTE_CONTENT]);
+
+			if ($this->mpdf->debug) {
+				throw new \Mpdf\MpdfException($message);
+			}
 		}
 
 		curl_close($ch);

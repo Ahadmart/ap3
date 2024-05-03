@@ -2,17 +2,17 @@
         "packages": [
                 {
                         "name": "mpdf/mpdf",
-                        "version": "v8.0.0",
-                        "version_normalized": "8.0.0.0",
+                        "version": "v8.0.7",
+                        "version_normalized": "8.0.7.0",
                         "source": {
                                 "type": "git",
                                 "url": "https://github.com/mpdf/mpdf.git",
-                                "reference": "c13ebc0fd5cc0613dfb1fd37d55a67859b92cf0c"
+                                "reference": "7daf07f15334ed59a276bd52131dcca48794cdbd"
                         },
                         "dist": {
                                 "type": "zip",
-                                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/c13ebc0fd5cc0613dfb1fd37d55a67859b92cf0c",
-                                "reference": "c13ebc0fd5cc0613dfb1fd37d55a67859b92cf0c",
+                                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/7daf07f15334ed59a276bd52131dcca48794cdbd",
+                                "reference": "7daf07f15334ed59a276bd52131dcca48794cdbd",
                                 "shasum": ""
                         },
                         "require": {
@@ -20,7 +20,7 @@
                                 "ext-mbstring": "*",
                                 "myclabs/deep-copy": "^1.7",
                                 "paragonie/random_compat": "^1.4|^2.0|9.99.99",
-                                "php": "^5.6 || ~7.0.0 || ~7.1.0 || ~7.2.0 || ~7.3.0",
+                                "php": "^5.6 || ~7.0.0 || ~7.1.0 || ~7.2.0 || ~7.3.0 || ~7.4.0",
                                 "psr/log": "^1.0",
                                 "setasign/fpdi": "^2.1"
                         },
@@ -28,7 +28,7 @@
                                 "mockery/mockery": "^0.9.5",
                                 "mpdf/qrcode": "^1.0.0",
                                 "phpunit/phpunit": "^5.0",
-                                "squizlabs/php_codesniffer": "^2.7.0",
+                                "squizlabs/php_codesniffer": "^3.5.0",
                                 "tracy/tracy": "^2.4"
                         },
                         "suggest": {
@@ -36,7 +36,7 @@
                                 "ext-xml": "Needed mainly for SVG manipulation",
                                 "ext-zlib": "Needed for compression of embedded resources, such as fonts"
                         },
-                        "time": "2019-03-15T22:03:58+00:00",
+                        "time": "2020-07-15T09:48:00+00:00",
                         "type": "library",
                         "extra": {
                                 "branch-alias": {
@@ -75,6 +75,12 @@
                                 "issues": "https://github.com/mpdf/mpdf/issues",
                                 "source": "https://github.com/mpdf/mpdf"
                         },
+                        "funding": [
+                                {
+                                        "url": "https://www.paypal.me/mpdf",
+                                        "type": "custom"
+                                }
+                        ],
                         "install-path": "../mpdf/mpdf"
                 },
                 {

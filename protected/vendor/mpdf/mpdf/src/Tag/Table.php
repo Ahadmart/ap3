@@ -163,7 +163,7 @@ class Table extends Tag
 		}
 
 		if (isset($attr['ALIGN']) && array_key_exists(strtolower($attr['ALIGN']), self::ALIGN)) {
-			$table['a'] = self::ALIGN[strtolower($attr['ALIGN'])];
+			$table['a'] = $this->getAlign($attr['ALIGN']);
 		}
 		if (!$table['a']) {
 			if ($table['direction'] === 'rtl') {
@@ -190,10 +190,10 @@ class Table extends Tag
 		}
 
 		if (isset($properties['VERTICAL-ALIGN']) && array_key_exists(strtolower($properties['VERTICAL-ALIGN']), self::ALIGN)) {
-			$table['va'] = self::ALIGN[strtolower($properties['VERTICAL-ALIGN'])];
+			$table['va'] = $this->getAlign($properties['VERTICAL-ALIGN']);
 		}
 		if (isset($properties['TEXT-ALIGN']) && array_key_exists(strtolower($properties['TEXT-ALIGN']), self::ALIGN)) {
-			$table['txta'] = self::ALIGN[strtolower($properties['TEXT-ALIGN'])];
+			$table['txta'] = $this->getAlign($properties['TEXT-ALIGN']);
 		}
 
 		if (!empty($properties['AUTOSIZE']) && $this->mpdf->tableLevel == 1) {
@@ -276,7 +276,8 @@ class Table extends Tag
 
 		if (isset($properties['FONT-SIZE'])) {
 			if ($this->mpdf->tableLevel > 1) {
-				$mmsize = $this->sizeConverter->convert($properties['FONT-SIZE'], $this->mpdf->base_table_properties['FONT-SIZE']);
+				$tableFontSize = $this->sizeConverter->convert($this->mpdf->base_table_properties['FONT-SIZE']);
+				$mmsize = $this->sizeConverter->convert($properties['FONT-SIZE'], $tableFontSize);
 			} else {
 				$mmsize = $this->sizeConverter->convert($properties['FONT-SIZE'], $this->mpdf->default_font_size / Mpdf::SCALE);
 			}
