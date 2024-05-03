@@ -13,10 +13,6 @@ class Cache
 
 	public function __construct($basePath, $cleanupInterval = 3600)
 	{
-		if (!is_int($cleanupInterval) && false !== $cleanupInterval) {
-			throw new \Mpdf\MpdfException('Cache cleanup interval has to be an integer or false');
-		}
-
 		if (!$this->createBasePath($basePath)) {
 			throw new \Mpdf\MpdfException(sprintf('Temporary files directory "%s" is not writable', $basePath));
 		}
@@ -76,7 +72,6 @@ class Cache
 	{
 		$tempFile = tempnam($this->basePath, 'cache_tmp_');
 		file_put_contents($tempFile, $data);
-		chmod($tempFile, 0664);
 
 		$path = $this->getFilePath($filename);
 		rename($tempFile, $path);
@@ -111,9 +106,7 @@ class Cache
 
 	private function isOld(DirectoryIterator $item)
 	{
-		return $this->cleanupInterval
-			? $item->getMTime() + $this->cleanupInterval < time()
-			: false;
+		return $item->getMTime() + $this->cleanupInterval < time();
 	}
 
 	public function isDotFile(DirectoryIterator $item)

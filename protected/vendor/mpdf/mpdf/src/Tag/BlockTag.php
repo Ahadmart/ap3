@@ -4,7 +4,7 @@ namespace Mpdf\Tag;
 
 use Mpdf\Conversion\DecToAlpha;
 use Mpdf\Conversion\DecToRoman;
-use Mpdf\Mpdf;
+
 use Mpdf\Utils\Arrays;
 use Mpdf\Utils\UtfString;
 
@@ -248,8 +248,10 @@ abstract class BlockTag extends Tag
 
 		// If page-box has changed AND/OR PAGE-BREAK-BEFORE
 		// mPDF 6 (uses $p - preview of properties so blklvl can be imcremented after page-break)
-		if (!$this->mpdf->tableLevel && (($pagesel && (!$this->mpdf->page_box['current'] || $pagesel != $this->mpdf->page_box['current']))
-				|| (isset($p['PAGE-BREAK-BEFORE']) && $p['PAGE-BREAK-BEFORE']))) {
+		if (!$this->mpdf->tableLevel && (($pagesel && (!isset($this->mpdf->page_box['current'])
+						|| $pagesel != $this->mpdf->page_box['current']))
+				|| (isset($p['PAGE-BREAK-BEFORE'])
+					&& $p['PAGE-BREAK-BEFORE']))) {
 			// mPDF 6 pagebreaktype
 			$startpage = $this->mpdf->page;
 			$pagebreaktype = $this->mpdf->defaultPagebreakType;
@@ -257,7 +259,7 @@ abstract class BlockTag extends Tag
 			if ($this->mpdf->ColActive) {
 				$pagebreaktype = 'cloneall';
 			}
-			if ($pagesel && (!$this->mpdf->page_box['current'] || $pagesel != $this->mpdf->page_box['current'])) {
+			if ($pagesel && (!isset($this->mpdf->page_box['current']) || $pagesel != $this->mpdf->page_box['current'])) {
 				$pagebreaktype = 'cloneall';
 			}
 			$this->mpdf->_preForcedPagebreak($pagebreaktype);
@@ -316,7 +318,7 @@ abstract class BlockTag extends Tag
 				} // *CSS-PAGE*
 			} /* -- CSS-PAGE -- */
 			// Must Add new page if changed page properties
-			elseif (!$this->mpdf->page_box['current'] || $pagesel != $this->mpdf->page_box['current']) {
+			elseif (!isset($this->mpdf->page_box['current']) || $pagesel != $this->mpdf->page_box['current']) {
 				$this->mpdf->AddPage($this->mpdf->CurOrientation, '', '', '', '', '', '', '', '', '', '', '', '', '', '', 0, 0, 0, 0, $pagesel);
 			}
 			/* -- END CSS-PAGE -- */
@@ -991,7 +993,7 @@ abstract class BlockTag extends Tag
 					$content = $this->mpdf->textbuffer[0][0];
 				} else {
 					for ($i = 0; $i < count($this->mpdf->textbuffer); $i++) {
-						if (0 !== strpos($this->mpdf->textbuffer[$i][0], Mpdf::OBJECT_IDENTIFIER)) { //inline object
+						if (0 !== strpos($this->mpdf->textbuffer[$i][0], "\xbb\xa4\xac")) { //inline object
 							$content .= $this->mpdf->textbuffer[$i][0];
 						}
 					}
@@ -1002,7 +1004,7 @@ abstract class BlockTag extends Tag
 					$objattr['type'] = 'toc';
 					$objattr['toclevel'] = $this->mpdf->h2toc[$tag];
 					$objattr['CONTENT'] = htmlspecialchars($content);
-					$e = Mpdf::OBJECT_IDENTIFIER . "type=toc,objattr=" . serialize($objattr) . Mpdf::OBJECT_IDENTIFIER;
+					$e = "\xbb\xa4\xactype=toc,objattr=" . serialize($objattr) . "\xbb\xa4\xac";
 					array_unshift($this->mpdf->textbuffer, [$e]);
 				}
 				/* -- END TOC -- */
@@ -1012,7 +1014,7 @@ abstract class BlockTag extends Tag
 					$objattr['type'] = 'bookmark';
 					$objattr['bklevel'] = $this->mpdf->h2bookmarks[$tag];
 					$objattr['CONTENT'] = $content;
-					$e = Mpdf::OBJECT_IDENTIFIER . "type=toc,objattr=" . serialize($objattr) . Mpdf::OBJECT_IDENTIFIER;
+					$e = "\xbb\xa4\xactype=toc,objattr=" . serialize($objattr) . "\xbb\xa4\xac";
 					array_unshift($this->mpdf->textbuffer, [$e]);
 				}
 				/* -- END BOOKMARKS -- */
@@ -1064,7 +1066,7 @@ abstract class BlockTag extends Tag
 				$this->mpdf->pageoutput[$this->mpdf->page] = [];
 			}
 			// mod changes operands to integers before processing
-			$this->mpdf->y = (round($this->mpdf->blk[$this->mpdf->blklvl]['float_endpos'] * 1000) % 1000000) / 1000;
+			$this->mpdf->y = (($this->mpdf->blk[$this->mpdf->blklvl]['float_endpos'] * 1000) % 1000000) / 1000;
 		}
 		/* -- END CSS-FLOAT -- */
 
@@ -1080,7 +1082,7 @@ abstract class BlockTag extends Tag
 
 		// called from after e.g. </table> </div> </div> ...    Outputs block margin/border and padding
 		if (count($this->mpdf->textbuffer) && $this->mpdf->textbuffer[count($this->mpdf->textbuffer) - 1]) {
-			if (0 !== strpos($this->mpdf->textbuffer[count($this->mpdf->textbuffer) - 1][0], Mpdf::OBJECT_IDENTIFIER)) { // not special content
+			if (0 !== strpos($this->mpdf->textbuffer[count($this->mpdf->textbuffer) - 1][0], "\xbb\xa4\xac")) { // not special content
 				// Right trim last content and adjust OTLdata
 				if (preg_match('/[ ]+$/', $this->mpdf->textbuffer[count($this->mpdf->textbuffer) - 1][0], $m)) {
 					$strip = strlen($m[0]);

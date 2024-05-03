@@ -1,23 +1,22 @@
 <phpunit
 	bootstrap="tests/bootstrap.php"
 	colors="true"
-	backupGlobals="false"
-	beStrictAboutTestsThatDoNotTestAnything="false">
+	backupGlobals="false">
 
 	<testsuites>
-		<testsuite name="Tests">
-			<directory suffix="Test.php">./tests</directory>
+		<testsuite>
+			<directory suffix=".php">./tests</directory>
 		</testsuite>
 	</testsuites>
 
-	<coverage processUncoveredFiles="true">
-		<include>
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="true">
 			<directory suffix=".php">src</directory>
-		</include>
-		<report>
-			<html outputDirectory="build/coverage"/>
-			<text outputFile="php://stdout" showOnlySummary="true"/>
-		</report>
-	</coverage>
+		</whitelist>
+	</filter>
+
+	<listeners>
+		<listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
+	</listeners>
 
 </phpunit>

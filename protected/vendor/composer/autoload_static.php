@@ -14,7 +14,6 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
-        'db356362850385d08a5381de2638b5fd' => __DIR__ . '/..' . '/mpdf/mpdf/src/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -54,8 +53,6 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         ),
         'M' => 
         array (
-            'Mpdf\\PsrLogAwareTrait\\' => 22,
-            'Mpdf\\PsrHttpMessageShim\\' => 24,
             'Mpdf\\' => 5,
         ),
         'G' => 
@@ -135,7 +132,7 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         ),
         'Psr\\Log\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/log/src',
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
         ),
         'Psr\\Http\\Message\\' => 
         array (
@@ -148,16 +145,8 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         ),
         'Phrity\\Net\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phrity/net-uri/src',
-            1 => __DIR__ . '/..' . '/phrity/net-stream/src',
-        ),
-        'Mpdf\\PsrLogAwareTrait\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mpdf/psr-log-aware-trait/src',
-        ),
-        'Mpdf\\PsrHttpMessageShim\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mpdf/psr-http-message-shim/src',
+            0 => __DIR__ . '/..' . '/phrity/net-stream/src',
+            1 => __DIR__ . '/..' . '/phrity/net-uri/src',
         ),
         'Mpdf\\' => 
         array (

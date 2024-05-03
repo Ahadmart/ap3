@@ -1539,10 +1539,6 @@ class Otl
 									continue;
 								}
 
-								if (!isset($this->OTLdata[$ptr + 1])) {
-									continue;
-								}
-
 								$nextGlyph = $this->OTLdata[$ptr + 1]['hex'];
 								$nextGID = $this->OTLdata[$ptr + 1]['uni'];
 								if (isset($this->GSLuCoverage[$lu][$c][$nextGID])) {
@@ -4368,7 +4364,7 @@ class Otl
 			$this->seek($offset);
 			$ClassFormat = $this->read_ushort();
 			$GlyphClass = [];
-			$GlyphByClass = [];
+			//      $GlyphByClass = array(0=>array());  // NB This forces an index[0]
 			if ($ClassFormat == 1) {
 				$StartGlyph = $this->read_ushort();
 				$GlyphCount = $this->read_ushort();
@@ -5571,39 +5567,29 @@ class Otl
 	 */
 	public function bidiReorder(&$chunkorder, &$content, &$cOTLdata, $blockdir)
 	{
+
 		$bidiData = [];
 
 		// First combine into one array (and get the highest level in use)
 		$numchunks = count($content);
 		$maxlevel = 0;
-
 		for ($nc = 0; $nc < $numchunks; $nc++) {
-
 			$numchars = isset($cOTLdata[$nc]['char_data']) ? count($cOTLdata[$nc]['char_data']) : 0;
 			for ($i = 0; $i < $numchars; ++$i) {
-
-				$carac = [
-					'level' => 0,
-				];
-
+				$carac = [];
 				if (isset($cOTLdata[$nc]['GPOSinfo'][$i])) {
 					$carac['GPOSinfo'] = $cOTLdata[$nc]['GPOSinfo'][$i];
 				}
-
 				$carac['uni'] = $cOTLdata[$nc]['char_data'][$i]['uni'];
-
 				if (isset($cOTLdata[$nc]['char_data'][$i]['type'])) {
 					$carac['type'] = $cOTLdata[$nc]['char_data'][$i]['type'];
 				}
-
 				if (isset($cOTLdata[$nc]['char_data'][$i]['level'])) {
 					$carac['level'] = $cOTLdata[$nc]['char_data'][$i]['level'];
 				}
-
 				if (isset($cOTLdata[$nc]['char_data'][$i]['orig_type'])) {
 					$carac['orig_type'] = $cOTLdata[$nc]['char_data'][$i]['orig_type'];
 				}
-
 				$carac['group'] = $cOTLdata[$nc]['group'][$i];
 				$carac['chunkid'] = $chunkorder[$nc]; // gives font id and/or object ID
 
@@ -5611,7 +5597,7 @@ class Otl
 				$bidiData[] = $carac;
 			}
 		}
-		if ($maxlevel === 0) {
+		if ($maxlevel == 0) {
 			return;
 		}
 
@@ -5625,7 +5611,7 @@ class Otl
 		//  The types of characters used here are the original types, not those modified by the previous phase cf N1 and N2*******
 		//  Because a Paragraph Separator breaks lines, there will be at most one per line, at the end of that line.
 		// Set the initial paragraph embedding level
-		if ($blockdir === 'rtl') {
+		if ($blockdir == 'rtl') {
 			$pel = 1;
 		} else {
 			$pel = 0;
@@ -5645,7 +5631,6 @@ class Otl
 			$revarr = [];
 			$onlevel = false;
 			for ($i = 0; $i < $numchars; ++$i) {
-
 				if ($bidiData[$i]['level'] >= $j) {
 					$onlevel = true;
 					// L4. A character is depicted by a mirrored glyph if and only if (a) the resolved directionality of that character is R, and (b) the Bidi_Mirrored property value of that character is true.
@@ -5654,25 +5639,20 @@ class Otl
 					}
 
 					$revarr[] = $bidiData[$i];
-
 				} else {
-
 					if ($onlevel) {
 						$revarr = array_reverse($revarr);
 						$ordarray = array_merge($ordarray, $revarr);
 						$revarr = [];
 						$onlevel = false;
 					}
-
 					$ordarray[] = $bidiData[$i];
 				}
 			}
-
 			if ($onlevel) {
 				$revarr = array_reverse($revarr);
 				$ordarray = array_merge($ordarray, $revarr);
 			}
-
 			$bidiData = $ordarray;
 		}
 
@@ -6155,25 +6135,16 @@ class Otl
 		if ($available == '') {
 			return '';
 		}
-
-		$tags = $ietf
-			? preg_split('/-/', $ietf)
-			: [];
-
+		$tags = preg_split('/-/', $ietf);
 		$lang = '';
 		$country = '';
 		$script = '';
-
-		$lang = isset($tags[0])
-			? strtolower($tags[0])
-			: '';
-
+		$lang = strtolower($tags[0]);
 		if (isset($tags[1]) && $tags[1]) {
 			if (strlen($tags[1]) == 2) {
 				$country = strtolower($tags[1]);
 			}
 		}
-
 		if (isset($tags[2]) && $tags[2]) {
 			$country = strtolower($tags[2]);
 		}
@@ -6185,7 +6156,6 @@ class Otl
 		} else {
 			$langsys = "DFLT";
 		}
-
 		if (strpos($available, $langsys) === false) {
 			if (strpos($available, "DFLT") !== false) {
 				return "DFLT";
@@ -6193,7 +6163,6 @@ class Otl
 				return '';
 			}
 		}
-
 		return $langsys;
 	}
 

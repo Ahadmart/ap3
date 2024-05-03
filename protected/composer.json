@@ -1,6 +1,6 @@
 {
     "require": {
-        "mpdf/mpdf": "^8.2",
+        "mpdf/mpdf": "8.0.7",
         "cboden/ratchet": "^0.4.4",
         "phrity/websocket": "^2.2"
     }

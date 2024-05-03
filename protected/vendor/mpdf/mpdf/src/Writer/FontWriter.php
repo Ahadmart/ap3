@@ -3,6 +3,7 @@
 namespace Mpdf\Writer;
 
 use Mpdf\Strict;
+
 use Mpdf\Fonts\FontCache;
 use Mpdf\Mpdf;
 use Mpdf\TTFontFile;
