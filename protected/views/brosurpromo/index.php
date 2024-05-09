@@ -7,93 +7,70 @@ $this->breadcrumbs = array(
 $this->boxHeader['small'] = 'Brosur Promo';
 $this->boxHeader['normal'] = 'Brosur Promo';
 ?>
+<style>
+	.brosur-card-container {
+		display: flex;
+		gap: 20px;
+	}
+
+	.brosur-card {
+		width: 200px;
+		/* height: 400px; */
+	}
+
+	.brosur-card .img {
+		height: 200px;
+		width: 200px;
+		display: flex;
+		align-items: center;
+	}
+
+	.tombol-brosur {
+		display: flex;
+		flex-direction: row;
+		gap: 2%;
+	}
+
+	.tombol-brosur>a,
+	.tombol-brosur>label {
+		width: 49%;
+	}
+
+	input[type="file"] {
+		display: none;
+	}
+
+	.custom-upload {
+		font-size: 0.875rem;
+	}
+</style>
 
 <div class="row">
 	<div class="small-12 column">
-		<?php
-		/*
-		<ul class="clearing-thumbs small-block-grid-1" data-clearing>
-			<li>
-				<a href="assets/brosurpromo/brosur 1.png"><img src="assets/brosurpromo/brosur 1-th.png"></a>
-				<a class="tiny bigfont button">Ganti</a>
-			</li>
-			<li>
-				<a href="assets/brosurpromo/brosur 2.jpg"><img src="assets/brosurpromo/brosur 2-th.jpg"></a>
-				<a class="tiny bigfont button">Ganti</a>
-			</li>
-			<li>
-				<a href="assets/brosurpromo/brosur 3.jpg"><img src="assets/brosurpromo/brosur 3-th.jpg"></a>
-				<a class="tiny bigfont button">Ganti</a>
-			</li>
-		</ul>
-		*/
-		?>
-		<table class="tabel-index">
-			<thead>
-				<th style="text-align:center">Thumbnail</th>
-				<th style="text-align:center">Aksi</th>
-			</thead>
-			<tbody>
-
-				<tr>
-					<td style="text-align:center">
-						<a href="<?= $assetsPath ?>brosur 1.png"><img src="<?= $assetsPath ?>brosur 1-th.png"></a>
-					</td>
-					<td style="text-align:center">
-						<form action="/upload" method="post" enctype="multipart/form-data">
-							<div class="row">
-								<div class="small-12 column">
-									<input class="tiny bigfont secondary button" name="file-gambar" type="file" />
-								</div>
-							</div>
-							<div>
-								<div class="small-12 column">
-									<input class="tiny bigfont expand button" name="upload-gambar" type="submit" value="Upload">
-								</div>
-							</div>
-						</form>
-					</td>
-				</tr>
-				<tr>
-					<td style="text-align:center">
-						<a href="<?= $assetsPath ?>brosur 2.jpg"><img src="<?= $assetsPath ?>/brosur 2-th.jpg"></a>
-					</td>
-					<td style="text-align:center">
-						<form action="/upload" method="post" enctype="multipart/form-data">
-							<div class="row">
-								<div class="small-12 column">
-									<input class="tiny bigfont secondary button" name="file-gambar" type="file" />
-								</div>
-							</div>
-							<div>
-								<div class="small-12 column">
-									<input class="tiny bigfont expand button" name="upload-gambar" type="submit" value="Upload">
-								</div>
-							</div>
-						</form>
-					</td>
-				</tr>
-
-				<tr>
-					<td style="text-align:center">
-						<a href="<?= $assetsPath ?>brosur 3.jpg"><img src="<?= $assetsPath ?>brosur 3-th.jpg"></a>
-					</td>
-					<td style="text-align:center">
-						<form action="/upload" method="post" enctype="multipart/form-data">
-							<div class="row">
-								<div class="small-12 column">
-									<input class="tiny bigfont secondary button" name="file-gambar" type="file" />
-								</div>
-							</div>
-							<div>
-								<div class="small-12 column">
-									<input class="tiny bigfont expand button" name="upload-gambar" type="submit" value="Upload">
-								</div>
-							</div>
-						</form>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div class="brosur-card-container">
+			<?php
+			foreach ($imgs as $img) {
+			?>
+				<div class="brosur-card">
+					<div class="img">
+						<a href="<?= $assetsPath . $img['filename'] ?>"><img src="<?= $assetsPathTh . $img['filename'] ?>"></a>
+					</div>
+					<div class="tombol-brosur">
+						<a class="tiny bigfont button">Hapus</a>
+						<label for="file_<?= $img['filename'] ?>" class="custom-upload" onclick="showFilesGanti('file_<?= $img['filename'] ?>')">Ganti</label>
+					</div>
+					<form action="<?= $this->createUrl('upload', ['asal' => $img['filename']]) ?>" method='POST' enctype="multipart/form-data">
+						<input name="file_<?= $img['filename'] ?>" type="file" onchange="this.form.submit()" />
+					</form>
+				</div>
+			<?php
+			}
+			?>
+		</div>
 	</div>
 </div>
+<script>
+	function showFilesGanti(name) {
+		$("input[name='" + name + "']").click();
+	}
+</script>

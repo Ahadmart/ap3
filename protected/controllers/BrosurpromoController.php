@@ -2,12 +2,27 @@
 
 class BrosurpromoController extends Controller
 {
-	public $layout = '//layouts/box_kecil';
+	// public $layout = '//layouts/box_kecil';
 	public function actionIndex()
 	{
 		$assetsPath = 'assets/brosurpromo/';
+		$assetsPathTh = 'assets/brosurpromo/th/';
+		$imgs = [];
+		foreach (glob($assetsPath . '*.{jpg,JPG,jpeg,JPEG,png,PNG}', GLOB_BRACE) as $filename) {
+			$imgs[] = [
+				'filename' => basename($filename),
+				'realpath' => realpath($filename),
+			];
+		}
+
+		// echo '<pre>';
+		// print_r($imgs);
+		// echo '</pre>';
+
 		$this->render('index', [
-			'assetsPath' => $assetsPath
+			'assetsPath' => $assetsPath,
+			'assetsPathTh' => $assetsPathTh,
+			'imgs' => $imgs
 		]);
 	}
 
