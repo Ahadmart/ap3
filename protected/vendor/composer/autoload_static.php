@@ -55,6 +55,10 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         array (
             'Mpdf\\' => 5,
         ),
+        'I' => 
+        array (
+            'Imagine\\' => 8,
+        ),
         'G' => 
         array (
             'GuzzleHttp\\Psr7\\' => 16,
@@ -151,6 +155,10 @@ class ComposerStaticInitedbcfd78de10212d212066228789af95
         'Mpdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
+        ),
+        'Imagine\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/imagine/imagine/src',
         ),
         'GuzzleHttp\\Psr7\\' => 
         array (

@@ -1,0 +1,61 @@
+{
+    "name": "imagine/imagine",
+    "description": "Image processing for PHP 5.3",
+    "keywords": [
+        "image manipulation",
+        "image processing",
+        "drawing",
+        "graphics"
+    ],
+    "homepage": "http://imagine.readthedocs.org/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bulat Shakirzyanov",
+            "email": "mallluhuct@gmail.com",
+            "homepage": "http://avalanche123.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5 || ^7.5 || ^8.4 || ^9.3"
+    },
+    "suggest": {
+        "ext-exif": "to read EXIF metadata",
+        "ext-gd": "to use the GD implementation",
+        "ext-imagick": "to use the Imagick implementation",
+        "ext-gmagick": "to use the Gmagick implementation"
+    },
+    "autoload": {
+        "psr-4": {
+            "Imagine\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Imagine\\Test\\": "tests/tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "1.x-dev"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "/.*",
+            "/tests",
+            "/vendor",
+            "/bin",
+            "docs/_build",
+            "Imagine-*.tgz",
+            "imagine-*.phar",
+            "composer.phar"
+        ]
+    },
+    "scripts": {
+        "test": "phpunit --verbose"
+    }
+}
