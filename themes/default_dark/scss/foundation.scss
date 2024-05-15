@@ -86,9 +86,3 @@
 @import '../scsslib/foundation/components/type';
 @import '../scsslib/foundation/components/offcanvas';
 @import '../scsslib/foundation/components/visibility';
-
-
-.custom-upload{
-  // @include button-base;
-  @include button($button-tny, $primary-color);
-}
