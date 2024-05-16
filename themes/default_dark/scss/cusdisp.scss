@@ -118,6 +118,7 @@ h1 {
 .network_status {
     position: absolute;
     bottom: 1rem;
+    right: 1rem;
     .sinyal {
         // display: block;
         // background: #000;
@@ -323,7 +324,7 @@ h1 {
         &:nth-child(4) {
             font-size: 1rem;
         }
-        &:nth-child(5){
+        &:nth-child(5) {
             margin-top: 1rem;
             font-size: 3rem;
             font-weight: 700;
@@ -371,5 +372,18 @@ h1 {
 @keyframes blinker {
     50% {
         opacity: 0;
+    }
+}
+
+#brosur-container {
+    height: 100%;
+    display: flex;
+    > img {
+        display: block;
+        max-width: 100%;
+        max-height: 80%;
+        width: auto;
+        height: auto;
+        margin: auto;
     }
 }

@@ -3,13 +3,13 @@
 class BrosurpromoController extends Controller
 {
 	// public $layout = '//layouts/box_kecil';
-	public $assetsPath   = 'assets/brosurpromo/';
-	public $assetsPathTh = 'assets/brosurpromo/th/';
+	const ASSETS_PATH    = 'assets/brosurpromo/';
+	const ASSETS_PATH_TH = 'assets/brosurpromo/th/';
 
 	protected function ambilBrosur()
 	{
 		$imgs = [];
-		foreach (glob($this->assetsPath . '*.*', GLOB_BRACE) as $filename) {
+		foreach (glob(self::ASSETS_PATH . '*.*', GLOB_BRACE) as $filename) {
 			$imgs[] = [
 				'filename' => basename($filename),
 				'realpath' => realpath($filename),
@@ -17,12 +17,26 @@ class BrosurpromoController extends Controller
 		}
 		return $imgs;
 	}
+	
+	/**
+	 * Method getBrosurPromo
+	 *
+	 * @return array $imgs[] img's urls
+	 */
+	protected function getBrosurPromo()
+	{
+		$imgs = [];
+		foreach (glob(self::ASSETS_PATH . '*.*', GLOB_BRACE) as $filename) {
+				$imgs[] =  $this->createUrl($filename);
+		}
+		return $imgs;
+	}
 
 	public function actionIndex()
 	{
 		$this->render('index', [
-			'assetsPath'   => $this->assetsPath,
-			'assetsPathTh' => $this->assetsPathTh,
+			'assetsPath'   => self::ASSETS_PATH,
+			'assetsPathTh' => self::ASSETS_PATH_TH,
 			'imgs'         => $this->ambilBrosur(),
 		]);
 	}
@@ -46,32 +60,39 @@ class BrosurpromoController extends Controller
 			$now->setTimezone(new DateTimeZone('Asia/Jakarta'));
 			$timestamp    = $now->format('m-d-YTH:i:s.uP');
 			$fileName     = 'brosur-' . $timestamp;
-			$fullFilePath = realpath($this->assetsPath) . '/' . $fileName . '.' . $file->extensionName;
+			$fullFilePath = realpath(self::ASSETS_PATH) . '/' . $fileName . '.' . $file->extensionName;
 			// echo $fullFilePath;
 			// echo Yii::app()->basePath;
-			if (!is_dir(realpath($this->assetsPath))) {
-				mkdir($this->assetsPath);
+			if (!is_dir(realpath(self::ASSETS_PATH))) {
+				mkdir(self::ASSETS_PATH);
 			}
 			if ($file->saveAs($fullFilePath)) {
 				$imagine   = new \Imagine\Gd\Imagine();
 				$image     = $imagine->open($fullFilePath);
 				$thumbnail = $image->thumbnail(new \Imagine\Image\Box(200, 200));
-				if (!is_dir(realpath($this->assetsPathTh))) {
-					mkdir($this->assetsPathTh);
+				if (!is_dir(realpath(self::ASSETS_PATH_TH))) {
+					mkdir(self::ASSETS_PATH_TH);
 				}
-				$thumbnail->save(realpath($this->assetsPathTh) . '/' . $fileName . '.' . $file->extensionName);
+				$thumbnail->save(realpath(self::ASSETS_PATH_TH) . '/' . $fileName . '.' . $file->extensionName);
 			} else {
 				echo 'Gagal simpan ke: ' . $fullFilePath;
 			}
 		}
 		// echo '</pre>';
+        $clientWS = new AhadPosWsClient();
+		$clientWS->setGlobal(true);
+        $data     = [
+            'tipe' => AhadPosWsClient::TIPE_BROSUR_UPDATE,
+			'imgs' => $this->getBrosurPromo()
+        ];
+        $clientWS->sendJsonEncoded($data);
 	}
 
 	public function actionLoadBrosur()
 	{
 		$this->renderPartial('_brosur', [
-			'assetsPath'   => $this->assetsPath,
-			'assetsPathTh' => $this->assetsPathTh,
+			'assetsPath'   => self::ASSETS_PATH,
+			'assetsPathTh' => self::ASSETS_PATH_TH,
 			'imgs'         => $this->ambilBrosur(),
 		]);
 	}
@@ -80,8 +101,8 @@ class BrosurpromoController extends Controller
 	{
 		if (isset($_POST['filename'])) {
 			$fileName = $_POST['filename'];
-			$r1       = $this->hapusFile(realpath($this->assetsPath) . '/' . $fileName);
-			$r2       = $this->hapusFile(realpath($this->assetsPathTh) . '/' . $fileName);
+			$r1       = $this->hapusFile(realpath(self::ASSETS_PATH) . '/' . $fileName);
+			$r2       = $this->hapusFile(realpath(self::ASSETS_PATH_TH) . '/' . $fileName);
 		}
 
 		if ($r1 === 0 and $r2 === 0) {
@@ -93,6 +114,13 @@ class BrosurpromoController extends Controller
 				'sukses' => false,
 			];
 		}
+        $clientWS = new AhadPosWsClient();
+		$clientWS->setGlobal(true);
+        $data     = [
+            'tipe' => AhadPosWsClient::TIPE_BROSUR_UPDATE,
+			'imgs' => $this->getBrosurPromo()
+        ];
+        $clientWS->sendJsonEncoded($data);
 		$this->renderJSON($h);
 	}
 

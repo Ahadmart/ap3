@@ -39,19 +39,23 @@
 </div>
 <div class="row" style="height:75vh">
     <div class="medium-8 columns box kiri_bawah">
-        <div class="network_status">
-            <figure class="sinyal mati"></figure>
-        </div>
         <div class="idle">
             <?php
             /*
             <h4><?= $ws['ip'] ?></h4>
             <p>User: <?= $user['namaLengkap'] ?> (<?= $user['id'] ?>)</p>
             */
+            // var_dump($brosurs);
             ?>
+        </div>
+        <div id="brosur-container">
+            <img />
         </div>
     </div>
     <div class="medium-4 columns box kanan_bawah">
+        <div class="network_status">
+            <figure class="sinyal mati"></figure>
+        </div>
         <div id="time_board" class="idle">
             <p id="waktu"><span id="jam"></span><span id="separator">:</span><span id="menit"></span></p>
             <p id="tanggal"></p>
@@ -111,6 +115,10 @@
     </div>
 </div>
 <script>
+    var brosur = <?= $brosurs ?>;
+    var curBrosur = 0;
+    var brosurIntervalID;
+
     $(document).ready(function() {
         $(".idle").show();
         // $(".idle").hide();
@@ -119,9 +127,39 @@
         // $(".checkout").show();
         $(".checkout").hide();
         $(".tarik_tunai").hide();
+        changeBrosur();
         connectWebSocket();
         setInterval('updateTimeBoard()', 1000);
+
     })
+
+    function changeBrosur() {
+        var jmlBrosur = window.brosur.length;
+        // console.log("Jumlah Brosur: " + jmlBrosur);
+        if (brosurIntervalID) {
+            clearInterval(brosurIntervalID);
+            $("#brosur-container>img").attr('src', '');
+        }
+        if (jmlBrosur > 0) {
+            $("#brosur-container img").attr('src', brosur[curBrosur]);
+            brosurIntervalID = setInterval(function() {
+                $("#brosur-container img").attr('src', brosur[curBrosur]);
+                curBrosur++
+                if (curBrosur >= jmlBrosur) {
+                    curBrosur = 0
+                }
+                // console.log('CurBrosur: ' + curBrosur + ' (' + (parseInt(curBrosur) + 1) + '/' + jmlBrosur + ')');
+                var imgSrc = window.brosur[curBrosur];
+                // console.log(imgSrc);
+                if (jmlBrosur > 1) {
+                    $("#brosur-container>img").fadeOut(700, function() {
+                        $("#brosur-container>img").attr('src', imgSrc);
+                        $("#brosur-container>img").fadeIn(700);
+                    });
+                }
+            }, 5000)
+        }
+    }
 
     function updateTimeBoard() {
         const currentTime = new Date();
@@ -163,7 +201,7 @@
         let sholatSelanjutnya = null
         // console.log('Saat ini: ' + saatIni)
         Object.entries(waktuSholat).forEach(([nama, waktu]) => {
-            console.log('Waktu: ' + waktu)
+            // console.log('Waktu: ' + waktu)
             if (waktu > saatIni && waktuSelanjutnya == null) {
                 waktuSelanjutnya = waktu
                 sholatSelanjutnya = nama
@@ -176,10 +214,10 @@
             sholatSelanjutnya = 'Subuh'
             selisih = minsToStr(strToMins('24:00') - strToMins(saatIni) + strToMins(waktuSelanjutnya))
         } else {
-            selisih = minsToStr(strToMins(saatIni) - strToMins(waktuSelanjutnya))
+            selisih = minsToStr(strToMins(waktuSelanjutnya) - strToMins(saatIni))
         }
-        console.log('Selanjutnya: ' + waktuSelanjutnya)
-        console.log(waktuSelanjutnya + '(-' + selisih + ')')
+        // console.log('Selanjutnya: ' + waktuSelanjutnya)
+        // console.log(waktuSelanjutnya + '(-' + selisih + ')')
         if (waktuSelanjutnya) {
             $(".caption_selanjutnya").html('Waktu Sholat selanjutnya')
             $(".waktu_selanjutnya").html(waktuSelanjutnya + ' (-' + selisih + ')')
@@ -216,16 +254,22 @@
 
     function parseMessage(data) {
         // console.log('User: ' + parsed.uId)
-        var userId = data.uId;
-        if (isValidUser(userId)) {
-            console.log('User accepted!');
-            placeVar(data)
+        if (data.tipe == "<?= AhadPosWsClient::TIPE_BROSUR_UPDATE ?>") {
+            // console.log(data.imgs);
+            window.brosur = data.imgs;
+            changeBrosur();
+        } else {
+            var userId = data.uId;
+            if (isValidUser(userId)) {
+                // console.log('User accepted!');
+                placeVar(data)
+            }
         }
     }
 
     function placeVar(data) {
         if (data.tipe == "<?= AhadPosWsClient::TIPE_PROCESS ?>") {
-            console.log("Tipe Process");
+            // console.log("Tipe Process");
             $(".checkout").hide();
             $(".idle").fadeOut().promise().done(function() {
                 $(".proc").fadeIn();
@@ -251,13 +295,13 @@
                 }
             }
         } else if (data.tipe == "<?= AhadPosWsClient::TIPE_IDLE ?>") {
-            console.log("Tipe Idle")
+            // console.log("Tipe Idle")
             $(".checkout").hide();
             $(".proc").fadeOut().promise().done(function() {
                 $(".idle").fadeIn();
             });
         } else if (data.tipe == "<?= AhadPosWsClient::TIPE_CHECKOUT ?>") {
-            console.log("Tipe Checkout")
+            // console.log("Tipe Checkout")
             $(".idle").hide();
             $(".proc").fadeOut().promise().done(function() {
                 $(".checkout").fadeIn();
@@ -308,7 +352,7 @@
     }
 
     function scrollToBottom() {
-        console.log("Scroll to bottom")
+        // console.log("Scroll to bottom")
         let tableContainer = $(".t_wrapper")
         tableContainer.animate({
             scrollTop: tableContainer.prop("scrollHeight")

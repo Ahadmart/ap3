@@ -78,7 +78,7 @@ class CustomerdisplayController extends Controller
             // Nothing to do
         } else {
             // Hapus file-file yang mungkin ada di bulan sebelumnya
-            array_map('unlink', glob($dir.'jadwalsholat*.json'));
+            array_map('unlink', glob($dir . 'jadwalsholat*.json'));
 
             // Ambil jadwal bulan berjalan ke internet
             $this->getJadwalSholat($periode, $latitude, $longitude, $offset, $file);
@@ -100,6 +100,7 @@ class CustomerdisplayController extends Controller
             'ws'       => $ws,
             'user'     => $user,
             'jadwal'   => $jadwalSebulan['data'][$i],
+            'brosurs'  => json_encode($this->getBrosurPromo()),
         ]);
     }
 
@@ -130,5 +131,16 @@ class CustomerdisplayController extends Controller
         curl_close($ch);
 
         return $r;
+    }
+
+    private function getBrosurPromo()
+    {
+        require_once __DIR__ . '/../BrosurpromoController.php';
+        $assetPath = BrosurpromoController::ASSETS_PATH;
+        $imgs      = [];
+        foreach (glob($assetPath . '*.*', GLOB_BRACE) as $filename) {
+            $imgs[] =  $this->createUrl($filename);
+        }
+        return $imgs;
     }
 }

@@ -4,25 +4,28 @@ require __DIR__ . '/../vendor/autoload.php';
 
 class AhadPosWsClient
 {
-    const TIPE_IDLE     = 10;
-    const TIPE_PROCESS  = 20;
-    const TIPE_CHECKOUT = 30;
+    const TIPE_IDLE          = 10;
+    const TIPE_PROCESS       = 20;
+    const TIPE_CHECKOUT      = 30;
+    const TIPE_BROSUR_UPDATE = 40;
 
+    public $global = false; // Global true jika untuk semua kasir
     private $client;
     private $coreFields;
 
     public function __construct()
     {
-        $this->coreFields = [
-            'timestamp' => date('Y-m-d H:i:s'),
-            'uId'       => Yii::app()->user->id,
-        ];
-        $configCD = Config::model()->find('nama=:nama', [':nama' => 'customerdisplay.wsport']);
-        $wsPort = $configCD->nilai;
+        $configCD     = Config::model()->find('nama=:nama', [':nama' => 'customerdisplay.wsport']);
+        $wsPort       = $configCD->nilai;
         $this->client = new WebSocket\Client('ws://localhost:' . $wsPort);
         $this->client
             ->addMiddleware(new WebSocket\Middleware\CloseHandler())
             ->addMiddleware(new WebSocket\Middleware\PingResponder());
+    }
+
+    public function setGlobal($value)
+    {
+        $this->global = $value;
     }
 
     /**
@@ -53,6 +56,15 @@ class AhadPosWsClient
      */
     public function sendJsonEncoded($data)
     {
+        $this->coreFields = [
+            'timestamp' => date('Y-m-d H:i:s'),
+        ];
+        if (!$this->global) {
+            $this->coreFields = [
+                'timestamp' => date('Y-m-d H:i:s'),
+                'uId'       => Yii::app()->user->id,
+            ];
+        }
         $data       = array_merge($this->coreFields, $data);
         $jsonString = json_encode($data);
         try {
