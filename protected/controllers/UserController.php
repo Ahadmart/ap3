@@ -30,7 +30,8 @@ class UserController extends Controller
     public function accessRules()
     {
         return array(
-            array('deny', // deny guest
+            array(
+                'deny', // deny guest
                 'users' => array('guest'),
             ),
         );
@@ -89,6 +90,13 @@ class UserController extends Controller
         if (isset($_POST['User'])) {
             //$model->unsetAttributes();
             //$model->setAttributes($_POST['User']);
+            if ($_POST['User']['theme_id'] != $model->theme_id) {
+                $clientWS = new AhadPosWsClient();
+                $data     = [
+                    'tipe' => AhadPosWsClient::TIPE_WINDOW_REFRESH,
+                ];
+                $clientWS->sendJsonEncoded($data);
+            }
             $model->attributes = $_POST['User'];
             if ($model->save(true, ['nama', 'nama_lengkap', 'password', 'theme_id', 'menu_id'])) {
                 $this->redirect(array('view', 'id' => $id));
@@ -215,5 +223,4 @@ class UserController extends Controller
             echo 'Remove Item Status: OK';
         }
     }
-
 }

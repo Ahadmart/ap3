@@ -2066,4 +2066,26 @@ class Penjualan extends CActiveRecord
         fclose($df);
         return ob_get_clean();
     }
+
+    public function getDetailArr()
+    {
+        $sql = "
+        SELECT 
+            barang.nama,
+            qty,
+            FORMAT(harga_jual + IFNULL(diskon, 0), 0, 'id_ID') harga_jual,
+            FORMAT(IFNULL(diskon, 0), 0, 'id_ID') diskon,
+            FORMAT(harga_jual, 0, 'id_ID') net,
+            FORMAT(qty * harga_jual, 0, 'id_ID') AS stotal
+        FROM
+            penjualan_detail d
+                JOIN
+            barang ON barang.id = d.barang_id
+        WHERE
+            penjualan_id = :id
+        ";
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValue(':id', $this->id);
+        return $command->queryAll();
+    }
 }
