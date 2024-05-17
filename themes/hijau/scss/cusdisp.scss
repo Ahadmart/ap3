@@ -5,7 +5,7 @@
 
 h1 {
     font-size: 2rem;
-    color: #fff;
+    color: #000;
 }
 .box {
     // border: 1px solid #fff;
@@ -13,10 +13,11 @@ h1 {
     overflow: scroll;
 }
 .kiri_atas {
-    background-color: #0172c2;
+    background-color: #d2e28b;
     padding: 1rem 2rem;
     overflow: hidden;
-    color: #fff;
+    color: #000;
+    border-bottom: medium solid #e51b23;
     // background: linear-gradient(to top, #0172c2 0%, #0089ea 30%, #fff 70%, #0089ea 100%);
 }
 .kanan_atas {
@@ -24,8 +25,9 @@ h1 {
     display: flex;
     align-items: center;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: #fff;
     overflow: hidden;
+    border-bottom: medium solid #e51b23;
     img {
         width: 149px;
         margin: auto;
@@ -33,7 +35,7 @@ h1 {
     }
 }
 .kiri_bawah {
-    background-color: rgba(255, 255, 255, 0.01);
+    background-color: #fff;
     overflow: hidden;
 }
 .kanan_bawah {
@@ -41,12 +43,13 @@ h1 {
     display: flex;
     // align-items: center;
     text-align: center;
-    background-color: #fff;
+    background-color: #088656;
     overflow: hidden;
 }
 #info_kasir {
     margin: auto;
     p {
+        color: #088656;
         margin-bottom: 0;
         font-size: 1.1rem;
     }
@@ -57,6 +60,7 @@ h1 {
 #info_cust {
     margin: auto;
     p {
+        color: #088656;
         margin-bottom: 0;
         font-size: 1.25rem;
     }
@@ -69,6 +73,7 @@ h1 {
 #info_checkout {
     margin: auto;
     p {
+        color: #088656;
         font-size: 1.7rem;
     }
 }
@@ -190,14 +195,14 @@ h1 {
         font-weight: 500;
         position: sticky;
         top: 0;
-        background-color: rgba(245, 245, 245, 0.86);
+        background-color: #e6e341;
     }
     tbody {
         tr:nth-of-type(n) {
             background-color: #fff;
         }
         tr:nth-of-type(2n) {
-            background-color: #e8f0fd;
+            background-color: #eef4d2;
         }
     }
     th {
@@ -234,6 +239,7 @@ h1 {
     height: 100px;
     padding: 1.25rem 0 20px 0;
     span {
+        color: #fff;
         width: 50%;
         // height: 50%;
         font-size: 1.1rem;
@@ -259,6 +265,7 @@ h1 {
     width: 70%;
     // padding: 1.25rem 0 20px 0;
     line-height: 2rem;
+    color: #fff;
     span {
         width: 50%;
         font-size: 1.1rem;
@@ -288,7 +295,7 @@ h1 {
 #time_board {
     // margin: auto;
     width: 100%;
-    color: #0172c2;
+    color: #fff;
     hr {
         border-color: #e0e0e0;
     }

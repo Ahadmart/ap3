@@ -117,8 +117,8 @@ h1 {
 
 .network_status {
     position: absolute;
-    bottom: 1rem;
-    right: 1rem;
+    bottom: 5px;
+    right: 5px;
     .sinyal {
         // display: block;
         // background: #000;
@@ -137,13 +137,13 @@ h1 {
         // }
         &.mati {
             margin: 0 auto;
-            width: 24px;
-            height: 24px;
+            width: 12px;
+            height: 12px;
             background-color: #f00;
             border-radius: 50%;
             box-shadow:
-                rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
-                inset #441313 0 -1px 9px,
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #441313 0 -1px 3px,
                 rgba(255, 0, 0, 0.5) 0 2px 12px;
             // -webkit-animation: blinkRed 0.5s infinite;
             // -moz-animation: blinkRed 0.5s infinite;
@@ -153,24 +153,24 @@ h1 {
         }
         &.nyala {
             margin: 0 auto;
-            width: 24px;
-            height: 24px;
+            width: 12px;
+            height: 12px;
             background-color: #abff00;
             border-radius: 50%;
             box-shadow:
-                rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
-                inset #304701 0 -1px 9px,
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #304701 0 -1px 3px,
                 #89ff00 0 2px 12px;
         }
         &.error {
             margin: 0 auto;
-            width: 24px;
-            height: 24px;
+            width: 12px;
+            height: 12px;
             background-color: #24e0ff;
             border-radius: 50%;
             box-shadow:
-                rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
-                inset #006 0 -1px 9px,
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #006 0 -1px 3px,
                 #3f8cff 0 2px 14px;
         }
     }
@@ -380,8 +380,8 @@ h1 {
     display: flex;
     > img {
         display: block;
-        max-width: 100%;
-        max-height: 80%;
+        max-width: 95%;
+        max-height: 95%;
         width: auto;
         height: auto;
         margin: auto;
