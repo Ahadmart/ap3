@@ -262,6 +262,9 @@
             var userId = data.uId;
             if (isValidUser(userId)) {
                 // console.log('User accepted!');
+                if (data.tipe == "<?= AhadPosWsClient::TIPE_WINDOW_REFRESH ?>"){
+                    location.reload(true);
+                }
                 placeVar(data)
             }
         }

@@ -4,10 +4,11 @@ require __DIR__ . '/../vendor/autoload.php';
 
 class AhadPosWsClient
 {
-    const TIPE_IDLE          = 10;
-    const TIPE_PROCESS       = 20;
-    const TIPE_CHECKOUT      = 30;
-    const TIPE_BROSUR_UPDATE = 40;
+    const TIPE_IDLE           = 10;
+    const TIPE_PROCESS        = 20;
+    const TIPE_CHECKOUT       = 30;
+    const TIPE_BROSUR_UPDATE  = 40;
+    const TIPE_WINDOW_REFRESH = 50;
 
     public $global = false; // Global true jika untuk semua kasir
     private $client;
