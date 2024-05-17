@@ -135,7 +135,7 @@ class CustomerdisplayController extends Controller
 
     private function getBrosurPromo()
     {
-        require_once __DIR__ . '/../BrosurpromoController.php';
+        require_once __DIR__ . '/BrosurpromoController.php';
         $assetPath = BrosurpromoController::ASSETS_PATH;
         $imgs      = [];
         foreach (glob($assetPath . '*.*', GLOB_BRACE) as $filename) {

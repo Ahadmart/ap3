@@ -43,7 +43,7 @@ class BrosurpromoController extends Controller
 
 	public function actionUploadBrosur()
 	{
-		require_once __DIR__ . '/../vendor/autoload.php';
+		require_once __DIR__ . '/../../vendor/autoload.php';
 		// echo ('Dari upload Brosur');
 		// echo '<pre>';
 		// print_r($_FILES);

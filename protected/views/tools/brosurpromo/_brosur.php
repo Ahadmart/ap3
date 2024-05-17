@@ -3,7 +3,7 @@ foreach ($imgs as $img) {
 ?>
 	<div class="brosur-card">
 		<div class="img">
-			<a href="<?= $assetsPath . $img['filename'] ?>"><img src="<?= $assetsPathTh . $img['filename'] ?>"></a>
+			<a href="<?= $this->createUrl($assetsPath . $img['filename']) ?>"><img src="<?= $this->createUrl($assetsPathTh . $img['filename']) ?>"></a>
 		</div>
 		<a class="tiny bigfont warning button tombol-hapus" data-filename="<?= $img['filename'] ?>"><i class="fa fa-times"></i></a>
 	</div>
