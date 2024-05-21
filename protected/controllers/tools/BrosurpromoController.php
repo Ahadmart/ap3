@@ -17,7 +17,7 @@ class BrosurpromoController extends Controller
 		}
 		return $imgs;
 	}
-	
+
 	/**
 	 * Method getBrosurPromo
 	 *
@@ -27,7 +27,7 @@ class BrosurpromoController extends Controller
 	{
 		$imgs = [];
 		foreach (glob(self::ASSETS_PATH . '*.*', GLOB_BRACE) as $filename) {
-				$imgs[] =  $this->createUrl($filename);
+			$imgs[] =  $this->createUrl($filename);
 		}
 		return $imgs;
 	}
@@ -79,13 +79,18 @@ class BrosurpromoController extends Controller
 			}
 		}
 		// echo '</pre>';
-        $clientWS = new AhadPosWsClient();
-		$clientWS->setGlobal(true);
-        $data     = [
-            'tipe' => AhadPosWsClient::TIPE_BROSUR_UPDATE,
-			'imgs' => $this->getBrosurPromo()
-        ];
-        $clientWS->sendJsonEncoded($data);
+
+		$config = Config::model()->find("nama='customerdisplay.pos.enable'");
+		$wsClientEnable = $config->nilai;
+		if ($wsClientEnable) {
+			$clientWS = new AhadPosWsClient();
+			$clientWS->setGlobal(true);
+			$data     = [
+				'tipe' => AhadPosWsClient::TIPE_BROSUR_UPDATE,
+				'imgs' => $this->getBrosurPromo()
+			];
+			$clientWS->sendJsonEncoded($data);
+		}
 	}
 
 	public function actionLoadBrosur()
@@ -114,13 +119,18 @@ class BrosurpromoController extends Controller
 				'sukses' => false,
 			];
 		}
-        $clientWS = new AhadPosWsClient();
-		$clientWS->setGlobal(true);
-        $data     = [
-            'tipe' => AhadPosWsClient::TIPE_BROSUR_UPDATE,
-			'imgs' => $this->getBrosurPromo()
-        ];
-        $clientWS->sendJsonEncoded($data);
+
+		$config = Config::model()->find("nama='customerdisplay.pos.enable'");
+		$wsClientEnable = $config->nilai;
+		if ($wsClientEnable) {
+			$clientWS = new AhadPosWsClient();
+			$clientWS->setGlobal(true);
+			$data     = [
+				'tipe' => AhadPosWsClient::TIPE_BROSUR_UPDATE,
+				'imgs' => $this->getBrosurPromo()
+			];
+			$clientWS->sendJsonEncoded($data);
+		}
 		$this->renderJSON($h);
 	}
 

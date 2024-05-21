@@ -168,18 +168,22 @@ class PosController extends Controller
             ]
         );
 
-        $clientWS = new AhadPosWsClient();
-        $data     = [
-            'tipe'   => AhadPosWsClient::TIPE_PROCESS,
-            'total'  => $model->total,
-            'profil' => [
-                'id'   => $model->profil_id,
-                'nama' => $model->profil->nama,
-                'mol'  => $this->memberOnline,
-            ],
-            'detail' => $model->getDetailArr(),
-        ];
-        $clientWS->sendJsonEncoded($data);
+        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS = new AhadPosWsClient();
+            $data     = [
+                'tipe'   => AhadPosWsClient::TIPE_PROCESS,
+                'total'  => $model->total,
+                'profil' => [
+                    'id'   => $model->profil_id,
+                    'nama' => $model->profil->nama,
+                    'mol'  => $this->memberOnline,
+                ],
+                'detail' => $model->getDetailArr(),
+            ];
+            $clientWS->sendJsonEncoded($data);
+        }
     }
 
     /**
@@ -225,11 +229,15 @@ class PosController extends Controller
             'model' => $model,
         ]);
 
-        $clientWS = new AhadPosWsClient();
-        $data     = [
-            'tipe' => AhadPosWsClient::TIPE_IDLE,
-        ];
-        $clientWS->sendMessage(json_encode($data));
+        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS = new AhadPosWsClient();
+            $data     = [
+                'tipe' => AhadPosWsClient::TIPE_IDLE,
+            ];
+            $clientWS->sendMessage(json_encode($data));
+        }
     }
 
     /**
@@ -387,15 +395,19 @@ class PosController extends Controller
         $totalJendral = number_format($total - $diskonNota - $koinMOL + $infaq + $tarikTunai, 0, ',', '.');
         echo $kembali;
 
-        $clientWS = new AhadPosWsClient();
-        $data     = [
-            'tipe'  => AhadPosWsClient::TIPE_PROCESS,
-            'total' => $totalJendral,
-        ];
-        if ($tarikTunai > 0) {
-            $data = array_merge($data, ['tariktunai' => number_format($tarikTunai, 0, ',', '.')]);
+        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS = new AhadPosWsClient();
+            $data     = [
+                'tipe'  => AhadPosWsClient::TIPE_PROCESS,
+                'total' => $totalJendral,
+            ];
+            if ($tarikTunai > 0) {
+                $data = array_merge($data, ['tariktunai' => number_format($tarikTunai, 0, ',', '.')]);
+            }
+            $clientWS->sendJsonEncoded($data);
         }
-        $clientWS->sendJsonEncoded($data);
     }
 
     public function renderQtyLinkEditable($data, $row)
@@ -503,11 +515,15 @@ class PosController extends Controller
             'model' => $model,
         ]);
 
-        $clientWS = new AhadPosWsClient();
-        $data     = [
-            'tipe' => AhadPosWsClient::TIPE_IDLE,
-        ];
-        $clientWS->sendJsonEncoded($data);
+        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS = new AhadPosWsClient();
+            $data     = [
+                'tipe' => AhadPosWsClient::TIPE_IDLE,
+            ];
+            $clientWS->sendJsonEncoded($data);
+        }
     }
 
     public function actionCekHarga()
@@ -577,22 +593,26 @@ class PosController extends Controller
             $totalBayar += $koinMOL;
         }
 
-        $clientWS       = new AhadPosWsClient();
-        $tarikTunaiAcc  = KasBank::model()->findByPk($_POST['pos']['tarik-tunai-acc']);
-        $tarikTunaiJml  = empty($_POST['pos']['tarik-tunai']) ? 0 : $_POST['pos']['tarik-tunai'];
-        $totalPenjualan = $pos->ambilTotal();
-        $data           = [
-            'tipe'        => AhadPosWsClient::TIPE_CHECKOUT,
-            'total'       => number_format($totalPenjualan + $tarikTunaiJml, 0, ',', '.'),
-            'bayar'       => $bayar,
-            'tarik_tunai' => [
-                'acc' => $tarikTunaiAcc->nama,
-                'jml' => number_format($tarikTunaiJml, 0, ',', '.'),
-            ],
-            'kembalian'   => number_format($totalBayar - ($totalPenjualan + $tarikTunaiJml), 0, ',', '.'),
-        ];
-        $clientWS->sendJsonEncoded($data);
-        // Kirim data checkout ke websocket :end
+        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS       = new AhadPosWsClient();
+            $tarikTunaiAcc  = KasBank::model()->findByPk($_POST['pos']['tarik-tunai-acc']);
+            $tarikTunaiJml  = empty($_POST['pos']['tarik-tunai']) ? 0 : $_POST['pos']['tarik-tunai'];
+            $totalPenjualan = $pos->ambilTotal();
+            $data           = [
+                'tipe'        => AhadPosWsClient::TIPE_CHECKOUT,
+                'total'       => number_format($totalPenjualan + $tarikTunaiJml, 0, ',', '.'),
+                'bayar'       => $bayar,
+                'tarik_tunai' => [
+                    'acc' => $tarikTunaiAcc->nama,
+                    'jml' => number_format($tarikTunaiJml, 0, ',', '.'),
+                ],
+                'kembalian'   => number_format($totalBayar - ($totalPenjualan + $tarikTunaiJml), 0, ',', '.'),
+            ];
+            $clientWS->sendJsonEncoded($data);
+            // Kirim data checkout ke websocket :end
+        }
 
         $this->renderJSON($return);
     }
