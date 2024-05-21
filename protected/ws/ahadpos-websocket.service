@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/php /home/data/www/ahad/ahadpos3/protected/ws/ws_server.php
-WorkingDirectory=/home/data/www/ahad/ahadpos3/protected/ws/
+ExecStart=/usr/bin/php /var/www/html/ahadpos3/protected/ws/ws_server.php
+WorkingDirectory=/var/www/html/ahadpos3/protected/ws/
 Restart=always
 
 [Install]
