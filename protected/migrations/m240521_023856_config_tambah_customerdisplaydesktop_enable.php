@@ -9,7 +9,7 @@ class m240521_023856_config_tambah_customerdisplaydesktop_enable extends CDbMigr
 			'config',
 			[
 				'nama'       => 'customerdisplay.pos.enable',
-				'nilai'      => '1',
+				'nilai'      => '0',
 				'deskripsi'  => 'Websocket Client di POS. 0:disable; 1:enable',
 				'updated_at' => $now,
 				'updated_by' => 1,
