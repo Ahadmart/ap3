@@ -227,9 +227,7 @@ class PosController extends Controller
 
         $clientWS = new AhadPosWsClient();
         $data     = [
-            'tipe'      => AhadPosWsClient::TIPE_IDLE,
-            'timestamp' => Date('Y-m-d H:i:s'),
-            'u_id'      => Yii::app()->user->id,
+            'tipe' => AhadPosWsClient::TIPE_IDLE,
         ];
         $clientWS->sendMessage(json_encode($data));
     }
@@ -565,7 +563,7 @@ class PosController extends Controller
             $acc     = KasBank::model()->findByPk($key);
             $bayar[] = [
                 'nama' => $acc->nama,
-                'jml'  => number_format($val, 0, ',', '.')
+                'jml'  => number_format($val, 0, ',', '.'),
             ];
             $totalBayar += $val;
         }
@@ -574,7 +572,7 @@ class PosController extends Controller
             $koinMOL = $_POST['pos']['koin-mol'];
             $bayar[] = [
                 'nama' => 'Koin',
-                'jml'  => number_format($koinMOL, 0, ',', '.')
+                'jml'  => number_format($koinMOL, 0, ',', '.'),
             ];
             $totalBayar += $koinMOL;
         }
@@ -589,9 +587,9 @@ class PosController extends Controller
             'bayar'       => $bayar,
             'tarik_tunai' => [
                 'acc' => $tarikTunaiAcc->nama,
-                'jml' => number_format($tarikTunaiJml, 0, ',', '.')
+                'jml' => number_format($tarikTunaiJml, 0, ',', '.'),
             ],
-            'kembalian' => number_format($totalBayar - ($totalPenjualan + $tarikTunaiJml), 0, ',', '.')
+            'kembalian'   => number_format($totalBayar - ($totalPenjualan + $tarikTunaiJml), 0, ',', '.'),
         ];
         $clientWS->sendJsonEncoded($data);
         // Kirim data checkout ke websocket :end
