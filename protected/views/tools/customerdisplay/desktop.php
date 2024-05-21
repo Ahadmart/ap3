@@ -9,7 +9,9 @@
 <div class="row" style="height: 25vh">
     <div class="medium-8 columns box kiri_atas">
         <div id="welcome" class="idle">
-            <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
+            <a href="<?php echo Yii::app()->baseUrl; ?>">
+                <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
+            </a>
             <h1>Selamat datang di <?= $namaToko ?></h1>
         </div>
         <div id="last_scan" class="proc">
@@ -262,7 +264,7 @@
             var userId = data.uId;
             if (isValidUser(userId)) {
                 // console.log('User accepted!');
-                if (data.tipe == "<?= AhadPosWsClient::TIPE_WINDOW_REFRESH ?>"){
+                if (data.tipe == "<?= AhadPosWsClient::TIPE_WINDOW_REFRESH ?>") {
                     location.reload(true);
                 }
                 placeVar(data)
