@@ -8,6 +8,7 @@ class AhadPosWsClient
     const TIPE_PROCESS        = 20;
     const TIPE_CHECKOUT       = 30;
     const TIPE_BROSUR_UPDATE  = 40;
+    const TIPE_LOGO_UPDATE    = 41;
     const TIPE_WINDOW_REFRESH = 50;
 
     public $global = false; // Global true jika untuk semua kasir

@@ -9,13 +9,25 @@ class BrosurpromoController extends Controller
 	protected function ambilBrosur()
 	{
 		$imgs = [];
-		foreach (glob(self::ASSETS_PATH . '*.*', GLOB_BRACE) as $filename) {
+		foreach (glob(self::ASSETS_PATH . 'brosur*.*', GLOB_BRACE) as $filename) {
 			$imgs[] = [
 				'filename' => basename($filename),
 				'realpath' => realpath($filename),
 			];
 		}
 		return $imgs;
+	}
+
+	protected function ambilLogo()
+	{
+		$logos = [];
+		foreach (glob(self::ASSETS_PATH . 'logo*.*', GLOB_BRACE) as $filename) {
+			$logos[] = [
+				'filename' => basename($filename),
+				'realpath' => realpath($filename),
+			];
+		}
+		return $logos;
 	}
 
 	/**
@@ -27,7 +39,16 @@ class BrosurpromoController extends Controller
 	{
 		$imgs = [];
 		foreach (glob(self::ASSETS_PATH . '*.*', GLOB_BRACE) as $filename) {
-			$imgs[] =  $this->createUrl($filename);
+			$imgs[] = $this->createUrl($filename);
+		}
+		return $imgs;
+	}
+
+	protected function getLogo()
+	{
+		$imgs = [];
+		foreach (glob(self::ASSETS_PATH . 'logo*.*', GLOB_BRACE) as $filename) {
+			$imgs[] = $this->createUrl($filename);
 		}
 		return $imgs;
 	}
@@ -38,6 +59,7 @@ class BrosurpromoController extends Controller
 			'assetsPath'   => self::ASSETS_PATH,
 			'assetsPathTh' => self::ASSETS_PATH_TH,
 			'imgs'         => $this->ambilBrosur(),
+			'logos'        => $this->ambilLogo(),
 		]);
 	}
 
@@ -80,17 +102,26 @@ class BrosurpromoController extends Controller
 		}
 		// echo '</pre>';
 
-		$config = Config::model()->find("nama='customerdisplay.pos.enable'");
+		$config         = Config::model()->find("nama='customerdisplay.pos.enable'");
 		$wsClientEnable = $config->nilai;
 		if ($wsClientEnable) {
 			$clientWS = new AhadPosWsClient();
 			$clientWS->setGlobal(true);
-			$data     = [
+			$data = [
 				'tipe' => AhadPosWsClient::TIPE_BROSUR_UPDATE,
-				'imgs' => $this->getBrosurPromo()
+				'imgs' => $this->getBrosurPromo(),
 			];
 			$clientWS->sendJsonEncoded($data);
 		}
+	}
+
+	public function actionLoadLogo()
+	{
+		$this->renderPartial('_logo', [
+			'assetsPath'   => self::ASSETS_PATH,
+			'assetsPathTh' => self::ASSETS_PATH_TH,
+			'imgs'         => $this->ambilLogo(),
+		]);
 	}
 
 	public function actionLoadBrosur()
@@ -102,7 +133,7 @@ class BrosurpromoController extends Controller
 		]);
 	}
 
-	public function actionHapus()
+	public function actionHapus($type)
 	{
 		if (isset($_POST['filename'])) {
 			$fileName = $_POST['filename'];
@@ -120,14 +151,14 @@ class BrosurpromoController extends Controller
 			];
 		}
 
-		$config = Config::model()->find("nama='customerdisplay.pos.enable'");
+		$config         = Config::model()->find("nama='customerdisplay.pos.enable'");
 		$wsClientEnable = $config->nilai;
 		if ($wsClientEnable) {
 			$clientWS = new AhadPosWsClient();
 			$clientWS->setGlobal(true);
-			$data     = [
-				'tipe' => AhadPosWsClient::TIPE_BROSUR_UPDATE,
-				'imgs' => $this->getBrosurPromo()
+			$data = [
+				'tipe' => $type,
+				'imgs' => $type == AhadPosWsClient::TIPE_BROSUR_UPDATE ? $this->getBrosurPromo() : $this->getLogo(),
 			];
 			$clientWS->sendJsonEncoded($data);
 		}
@@ -147,6 +178,51 @@ class BrosurpromoController extends Controller
 		} else {
 			// echo 'Unable to unlink: ' . $file . '. File does not exist!';
 			return 2;
+		}
+	}
+
+	public function actionUploadLogo()
+	{
+		require_once __DIR__ . '/../../vendor/autoload.php';
+		// echo ('Dari upload Logo');
+		// echo '<pre>';
+		// print_r($_FILES);
+		$fileUpload = $_FILES['gambar-logo'];
+		$fileLogo   = new CUploadedFile(
+			$fileUpload['name'],
+			$fileUpload['tmp_name'],
+			$fileUpload['type'],
+			$fileUpload['size'],
+			$fileUpload['error']
+		);
+		$fileName     = 'logo-customerdisplay';
+		$fullFilePath = realpath(self::ASSETS_PATH) . '/' . $fileName . '.' . $fileLogo->extensionName;
+
+		if (!is_dir(realpath(self::ASSETS_PATH))) {
+			mkdir(self::ASSETS_PATH);
+		}
+		if ($fileLogo->saveAs($fullFilePath)) {
+			$imagine   = new \Imagine\Gd\Imagine();
+			$image     = $imagine->open($fullFilePath);
+			$thumbnail = $image->thumbnail(new \Imagine\Image\Box(200, 200));
+			if (!is_dir(realpath(self::ASSETS_PATH_TH))) {
+				mkdir(self::ASSETS_PATH_TH);
+			}
+			$thumbnail->save(realpath(self::ASSETS_PATH_TH) . '/' . $fileName . '.' . $fileLogo->extensionName);
+		} else {
+			echo 'Gagal simpan ke: ' . $fullFilePath;
+		}
+
+		$config         = Config::model()->find("nama='customerdisplay.pos.enable'");
+		$wsClientEnable = $config->nilai;
+		if ($wsClientEnable) {
+			$clientWS = new AhadPosWsClient();
+			$clientWS->setGlobal(true);
+			$data = [
+				'tipe' => AhadPosWsClient::TIPE_LOGO_UPDATE,
+				'imgs' => $this->getLogo(),
+			];
+			$clientWS->sendJsonEncoded($data);
 		}
 	}
 

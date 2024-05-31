@@ -100,7 +100,9 @@ class CustomerdisplayController extends Controller
             'ws'       => $ws,
             'user'     => $user,
             'jadwal'   => $jadwalSebulan['data'][$i],
+            'logo'     => $this->getLogo(),
             'brosurs'  => json_encode($this->getBrosurPromo()),
+
         ]);
     }
 
@@ -133,12 +135,29 @@ class CustomerdisplayController extends Controller
         return $r;
     }
 
+    private function getLogo()
+    {
+        require_once __DIR__ . '/BrosurpromoController.php';
+        $assetPath = BrosurpromoController::ASSETS_PATH;
+        // Only one
+        $imgs      = [];
+        foreach (glob($assetPath . 'logo*.*', GLOB_BRACE) as $filename) {
+            $imgs[] =  $this->createUrl($filename);
+        }
+        if (isset($imgs[0])) {
+            if (file_exists(realpath($filename))) {
+                return $imgs[0];
+            }
+        }
+        return '';
+    }
+
     private function getBrosurPromo()
     {
         require_once __DIR__ . '/BrosurpromoController.php';
         $assetPath = BrosurpromoController::ASSETS_PATH;
         $imgs      = [];
-        foreach (glob($assetPath . '*.*', GLOB_BRACE) as $filename) {
+        foreach (glob($assetPath . 'brosur*.*', GLOB_BRACE) as $filename) {
             $imgs[] =  $this->createUrl($filename);
         }
         return $imgs;

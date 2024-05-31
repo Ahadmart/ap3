@@ -4,13 +4,17 @@
 // $this->breadcrumbs = array(
 //     'Customerdisplay',
 // );
+$logoSrc = Yii::app()->theme->baseUrl . '/img/logo.png';
+if (!empty($logo)) {
+    $logoSrc = $logo;
+}
 ?>
 
 <div class="row" style="height: 25vh">
     <div class="medium-8 columns box kiri_atas">
         <div id="welcome" class="idle">
             <a href="<?php echo Yii::app()->baseUrl; ?>">
-                <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
+                <img src="<?= $logoSrc ?>" alt="logo" />
             </a>
             <h1>Selamat datang di <?= $namaToko ?></h1>
         </div>
@@ -28,13 +32,13 @@
             <p>Selamat berbelanja di <?= $namaToko ?></p>
         </div>
         <div id="info_cust" class="proc">
-            <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
+            <img src="<?= $logoSrc ?>" alt="logo" />
             <p>Ahlan wa Sahlan!</p>
             <p>Silahkan input nomor</p>
             <p>member anda</p>
         </div>
         <div id="info_checkout" class="checkout">
-            <img src="<?php echo Yii::app()->theme->baseUrl; ?>/img/logo.png" alt="logo" />
+            <img src="<?= $logoSrc ?>" alt="logo" />
             <p>Terima kasih!</p>
         </div>
     </div>
@@ -44,9 +48,9 @@
         <div class="idle">
             <?php
             /*
-            <h4><?= $ws['ip'] ?></h4>
-            <p>User: <?= $user['namaLengkap'] ?> (<?= $user['id'] ?>)</p>
-            */
+<h4><?= $ws['ip'] ?></h4>
+<p>User: <?= $user['namaLengkap'] ?> (<?= $user['id'] ?>)</p>
+ */
             // var_dump($brosurs);
             ?>
         </div>
@@ -68,13 +72,13 @@
             <jadwal_sholat>
                 <p>Jadwal Sholat Hari Ini</p>
                 <?php
-                $waktu = $jadwal['timings'];
-                $wSubuh    = substr($waktu['Fajr'], 0, 5);
-                $wSyuruq   = substr($waktu['Sunrise'], 0, 5);
-                $wZhuhur   = substr($waktu['Dhuhr'], 0, 5);
-                $wAshar    = substr($waktu['Asr'], 0, 5);
-                $wMaghrib  = substr($waktu['Maghrib'], 0, 5);
-                $wIsya     = substr($waktu['Isha'], 0, 5);
+                $waktu    = $jadwal['timings'];
+                $wSubuh       = substr($waktu['Fajr'], 0, 5);
+                $wSyuruq      = substr($waktu['Sunrise'], 0, 5);
+                $wZhuhur      = substr($waktu['Dhuhr'], 0, 5);
+                $wAshar       = substr($waktu['Asr'], 0, 5);
+                $wMaghrib     = substr($waktu['Maghrib'], 0, 5);
+                $wIsya        = substr($waktu['Isha'], 0, 5);
                 ?>
                 <span class="nama">Subuh / الفجر</span><span class="waktu"><?= $wSubuh ?></span>
                 <span class="nama">Syuruq / الشروق</span><span class="waktu"><?= $wSyuruq ?></span>
@@ -260,6 +264,9 @@
             // console.log(data.imgs);
             window.brosur = data.imgs;
             changeBrosur();
+        } else
+        if (data.tipe == "<?= AhadPosWsClient::TIPE_LOGO_UPDATE ?>") {
+            location.reload(true);
         } else {
             var userId = data.uId;
             if (isValidUser(userId)) {

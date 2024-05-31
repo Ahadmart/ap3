@@ -28,6 +28,7 @@ h1 {
     overflow: hidden;
     img {
         width: 149px;
+        max-width: 159px;
         margin: auto;
         display: block;
     }
@@ -80,6 +81,7 @@ h1 {
     transform: translateY(-50%);
     img {
         margin-bottom: 1.25rem;
+        max-width: 159px;
     }
 }
 
