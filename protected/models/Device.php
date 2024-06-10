@@ -33,6 +33,8 @@ class Device extends CActiveRecord
     const TIPE_CSV_PRINTER     = 4;
     const TIPE_BROWSER_PRINTER = 5;
     const TIPE_JSON_FILE       = 7; // Samakan dengan ahad-dc
+    const TIPE_LABEL_ZPL       = 8;
+    const TIPE_ESC_P_9PIN      = 9;
 
     /**
      * @return string the associated database table name
@@ -176,7 +178,9 @@ class Device extends CActiveRecord
             Device::TIPE_PDF_PRINTER     => 'Printer - PDF',
             Device::TIPE_CSV_PRINTER     => 'Printer - CSV',
             Device::TIPE_BROWSER_PRINTER => 'Printer - Browser',
+            Device::TIPE_LABEL_ZPL       => 'Printer - Label (LPR)',
             Device::TIPE_JSON_FILE       => 'File - JSON',
+            // Device::TIPE_ESC_P_9PIN => 'Printer - DM 9PIN (LPR)'
         ];
     }
 
