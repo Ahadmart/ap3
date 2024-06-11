@@ -17,9 +17,9 @@
  */
 class LabelBarangCetak extends CActiveRecord
 {
-
     const LAYOUT_DEFAULT              = 10;
     const LAYOUT_DEFAULT_RRP_TERAKHIR = 20;
+    const LAYOUT_DEFAULT_HJ_TERAKHIR  = 30;
 
     public $barcode;
     public $namaBarang;
@@ -111,24 +111,26 @@ class LabelBarangCetak extends CActiveRecord
             'attributes'   => [
                 'namaBarang' => [
                     'asc'  => 'barang.nama',
-                    'desc' => 'barang.nama desc'
+                    'desc' => 'barang.nama desc',
                 ],
                 'barcode'    => [
                     'asc'  => 'barang.barcode',
-                    'desc' => 'barang.barcode desc'
+                    'desc' => 'barang.barcode desc',
                 ],
-                '*'
-            ]
+                '*',
+            ],
         ];
 
-        return new CActiveDataProvider($this,
-                [
-            'criteria'   => $criteria,
-            'sort'       => $sort,
-            'pagination' => [
-                'pageSize' => 50
+        return new CActiveDataProvider(
+            $this,
+            [
+                'criteria'   => $criteria,
+                'sort'       => $sort,
+                'pagination' => [
+                    'pageSize' => 50,
+                ],
             ]
-        ]);
+        );
     }
 
     /**
@@ -147,7 +149,7 @@ class LabelBarangCetak extends CActiveRecord
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
     }
@@ -162,7 +164,7 @@ class LabelBarangCetak extends CActiveRecord
             self::_tambahDetail($pembelianDetail);
             $transaction->commit();
             return [
-                'sukses' => true
+                'sukses' => true,
             ];
         } catch (Exception $ex) {
             $transaction->rollback();
@@ -171,7 +173,8 @@ class LabelBarangCetak extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ],
+            ];
         }
     }
 
@@ -186,13 +189,13 @@ class LabelBarangCetak extends CActiveRecord
     {
         $sql = 'SELECT * FROM label_barang_cetak WHERE barang_id=:barangId AND updated_by=:userId';
         $r   = Yii::app()->db->createCommand($sql)
-                ->bindValues(
-                        [
-                            ':barangId' => $barang->barang_id,
-                            ':userId'   => Yii::app()->user->id
-                        ]
-                )
-                ->queryRow();
+            ->bindValues(
+                [
+                    ':barangId' => $barang->barang_id,
+                    ':userId'   => Yii::app()->user->id,
+                ]
+            )
+            ->queryRow();
         if ($r === false) {
             $newLabel            = new LabelBarangCetak();
             $newLabel->barang_id = $barang->barang_id;
@@ -219,13 +222,13 @@ class LabelBarangCetak extends CActiveRecord
             if (!$wahid) {
                 $condition .= ',';
             }
-            $condition    .= $key;
+            $condition .= $key;
             $params[$key] = $item;
             $wahid        = false;
             $i++;
         }
         $condition .= ')';
-        $labels    = LabelBarangCetak::model()->findAll($condition, $params);
+        $labels = LabelBarangCetak::model()->findAll($condition, $params);
 
         $r = self::generateZPL($labels, $layoutId);
 
@@ -235,15 +238,15 @@ class LabelBarangCetak extends CActiveRecord
         return [
             'sukses'     => true,
             'labelCount' => $r['labelCount'],
-            'itemCount'  => $r['itemCount']
+            'itemCount'  => $r['itemCount'],
         ];
     }
 
     public static function generateZPL($labels, $layoutId)
     {
         switch ($layoutId) {
-            case self::LAYOUT_DEFAULT_RRP_TERAKHIR:
-                return self::generateZPLDefaultRRPTerakhir($labels);
+            case self::LAYOUT_DEFAULT_HJ_TERAKHIR:
+                return self::generateZPLDefaultHJTerakhir($labels);
                 break;
 
             default:
@@ -255,7 +258,7 @@ class LabelBarangCetak extends CActiveRecord
     public static function generateZPLDefault($labels)
     {
         /* 1 Label ada 2 kolom (kanan dan !kanan)
-          Print dimulai dari kanan
+        Print dimulai dari kanan
          */
         $command    = '';
         $itemCount  = 0;
@@ -266,8 +269,8 @@ class LabelBarangCetak extends CActiveRecord
             $nama         = substr(trim($label->barang->nama), 0, 28); // Maksimum 28 char, potong jika lebih panjang
             $digitBarcode = strlen($barcode);
             // Code 128 Barcode
-            $subsetC      = $digitBarcode % 2 === 0 ? '>;' : ''; // baca: Jika jumlah digit genap, maka pakai subsetC
-            $sizeBarcode  = $digitBarcode % 2 === 0 || $digitBarcode <= 8 ? '2' : '1'; // baca: Jika jumlah digit genap atau <= 8, maka pakai ukuran normal.
+            $subsetC     = $digitBarcode % 2 === 0 ? '>;' : ''; // baca: Jika jumlah digit genap, maka pakai subsetC
+            $sizeBarcode = $digitBarcode % 2 === 0 || $digitBarcode <= 8 ? '2' : '1'; // baca: Jika jumlah digit genap atau <= 8, maka pakai ukuran normal.
 
             for ($i = 0; $i < $label->qty; $i++) {
                 if ($kanan) {
@@ -308,14 +311,14 @@ class LabelBarangCetak extends CActiveRecord
         return [
             'command'    => $command,
             'labelCount' => $labelCount,
-            'itemCount'  => $itemCount
+            'itemCount'  => $itemCount,
         ];
     }
 
-    public static function generateZPLDefaultRRPTerakhir($labels)
+    public static function generateZPLDefaultHJTerakhir($labels)
     {
         /* 1 Label ada 2 kolom (kanan dan !kanan)
-          Print dimulai dari kanan
+        Print dimulai dari kanan
          */
         $command    = '';
         $itemCount  = 0;
@@ -325,10 +328,10 @@ class LabelBarangCetak extends CActiveRecord
             $barcode      = trim($label->barang->barcode);
             $nama         = substr(trim($label->barang->nama), 0, 28); // Maksimum 28 char, potong jika lebih panjang
             $digitBarcode = strlen($barcode);
-            $rrp          = $label->barang->getHargaJualRekomendasi();
+            $hj           = $label->barang->getHargaJual();
             // Code 128 Barcode
-            $subsetC      = $digitBarcode % 2 === 0 ? '>;' : ''; // baca: Jika jumlah digit genap, maka pakai subsetC
-            $sizeBarcode  = $digitBarcode % 2 === 0 || $digitBarcode <= 8 ? '2' : '1'; // baca: Jika jumlah digit genap atau <= 8, maka pakai ukuran normal.
+            $subsetC     = $digitBarcode % 2 === 0 ? '>;' : ''; // baca: Jika jumlah digit genap, maka pakai subsetC
+            $sizeBarcode = $digitBarcode % 2 === 0 || $digitBarcode <= 8 ? '2' : '1'; // baca: Jika jumlah digit genap atau <= 8, maka pakai ukuran normal.
 
             for ($i = 0; $i < $label->qty; $i++) {
                 if ($kanan) {
@@ -342,7 +345,7 @@ class LabelBarangCetak extends CActiveRecord
                     $command .= '^FT427,35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
                     $command .= '^FT427,55';
-                    $command .= '^FD' . $rrp . '^FS';
+                    $command .= '^FD' . $hj . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,31';
                     $command .= '^FT427,95^BCN,,Y,N,N';
                     $command .= '^A0N,20,20';
@@ -351,7 +354,7 @@ class LabelBarangCetak extends CActiveRecord
                     $command .= '^FT145,35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
                     $command .= '^FT145,55';
-                    $command .= '^FD' . $rrp . '^FS';
+                    $command .= '^FD' . $hj . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,31';
                     $command .= '^FT145,95^BCN,,Y,N,N';
                     $command .= '^A0N,20,20';
@@ -373,15 +376,15 @@ class LabelBarangCetak extends CActiveRecord
         return [
             'command'    => $command,
             'labelCount' => $labelCount,
-            'itemCount'  => $itemCount
+            'itemCount'  => $itemCount,
         ];
     }
 
     public static function listLayout()
     {
         return [
-            self::LAYOUT_DEFAULT              => 'Default (Dua Kolom)',
-            self::LAYOUT_DEFAULT_RRP_TERAKHIR => 'Default + RRP terakhir'
+            self::LAYOUT_DEFAULT             => 'Default (Dua Kolom)',
+            self::LAYOUT_DEFAULT_HJ_TERAKHIR => 'Default + HJ terakhir',
         ];
     }
 
@@ -395,7 +398,7 @@ class LabelBarangCetak extends CActiveRecord
             self::_insertBarang($barang);
             $transaction->commit();
             return [
-                'sukses' => true
+                'sukses' => true,
             ];
         } catch (Exception $ex) {
             $transaction->rollback();
@@ -404,7 +407,8 @@ class LabelBarangCetak extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ],
+            ];
         }
     }
 
@@ -412,13 +416,13 @@ class LabelBarangCetak extends CActiveRecord
     {
         $sql = 'SELECT * FROM label_barang_cetak WHERE barang_id=:barangId AND updated_by=:userId';
         $r   = Yii::app()->db->createCommand($sql)
-                ->bindValues(
-                        [
-                            ':barangId' => $barang->id,
-                            ':userId'   => Yii::app()->user->id
-                        ]
-                )
-                ->queryRow();
+            ->bindValues(
+                [
+                    ':barangId' => $barang->id,
+                    ':userId'   => Yii::app()->user->id,
+                ]
+            )
+            ->queryRow();
         if ($r === false) {
             $newLabel            = new LabelBarangCetak();
             $newLabel->barang_id = $barang->id;
@@ -430,5 +434,4 @@ class LabelBarangCetak extends CActiveRecord
             throw new Exception('Barang: ' . $barang->nama . ', sudah ada!', 500);
         }
     }
-
 }
