@@ -6,20 +6,23 @@
             'id'                    => 'so-detail-grid',
             'dataProvider'          => $modelDetail->search(),
             'rowCssClassExpression' => function ($row, $data) {
-                if ($data->bedaRaknya()) {
-                    return 'baru'; // Rak beda, diberi tanda beda warna di barisnya
-                }
+                // if ($data->bedaRaknya()) {
+                //     return 'baru'; // Rak beda, diberi tanda beda warna di barisnya
+                // }
+                return $data->set_inaktif == 1 ? 'inaktif' : '';
             },
             'columns'               => [
+                // [
+                //     'name'              => 'barcode',
+                //     'value'             => '$data->barang->barcode',
+                //     'headerHtmlOptions' => ['class' => 'hide-for-small-only'],
+                //     'htmlOptions'       => ['class' => 'hide-for-small-only'],
+                // ],
                 [
-                    'name'              => 'barcode',
-                    'value'             => '$data->barang->barcode',
-                    'headerHtmlOptions' => ['class' => 'hide-for-small-only'],
-                    'htmlOptions'       => ['class' => 'hide-for-small-only'],
-                ],
-                [
-                    'name'  => 'namaBarang',
-                    'value' => '$data->barang->nama',
+                    'name'   => 'namaBarang',
+                    'type'   => 'raw',
+                    'value'  => [$this, 'renderBarang'],
+                    'header' => 'Barang',
                 ],
                 // [
                 //     'value' => '$data->barang->rak->nama',

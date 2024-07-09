@@ -22,12 +22,12 @@
  */
 class StockOpname extends CActiveRecord
 {
-
     const STATUS_DRAFT = 0;
-    const STATUS_SO = 1;
+    const STATUS_SO    = 1;
 
     public $max; //untuk penomoran surat
     public $namaUpdatedBy;
+    public $namaBarang;
 
     /**
      * @return string the associated database table name
@@ -44,16 +44,16 @@ class StockOpname extends CActiveRecord
     {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('status', 'numerical', 'integerOnly' => true),
-            array('nomor, input_selisih', 'length', 'max' => 45),
-            array('rak_id, updated_by', 'length', 'max' => 10),
-            array('keterangan', 'length', 'max' => 500),
-            array('tanggal, created_at, updated_at, updated_by', 'safe'),
+        return [
+            ['status', 'numerical', 'integerOnly' => true],
+            ['nomor, input_selisih', 'length', 'max' => 45],
+            ['rak_id, updated_by', 'length', 'max' => 10],
+            ['keterangan', 'length', 'max' => 500],
+            ['tanggal, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, tanggal, nomor, rak_id, keterangan, status, updated_at, updated_by, created_at, namaUpdatedBy', 'safe', 'on' => 'search'),
-        );
+            ['id, tanggal, nomor, rak_id, keterangan, status, updated_at, updated_by, created_at, namaUpdatedBy', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -63,11 +63,11 @@ class StockOpname extends CActiveRecord
     {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
-        return array(
-            'rak' => array(self::BELONGS_TO, 'RakBarang', 'rak_id'),
-            'updatedBy' => array(self::BELONGS_TO, 'User', 'updated_by'),
-            'stockOpnameDetails' => array(self::HAS_MANY, 'StockOpnameDetail', 'stock_opname_id'),
-        );
+        return [
+            'rak'                => [self::BELONGS_TO, 'RakBarang', 'rak_id'],
+            'updatedBy'          => [self::BELONGS_TO, 'User', 'updated_by'],
+            'stockOpnameDetails' => [self::HAS_MANY, 'StockOpnameDetail', 'stock_opname_id'],
+        ];
     }
 
     /**
@@ -75,18 +75,18 @@ class StockOpname extends CActiveRecord
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'tanggal' => 'Tanggal',
-            'nomor' => 'Nomor',
-            'rak_id' => 'Rak',
-            'keterangan' => 'Keterangan',
-            'status' => 'Status',
-            'updated_at' => 'Updated At',
-            'updated_by' => 'Updated By',
-            'created_at' => 'Created At',
-            'namaUpdatedBy' => 'User'
-        );
+        return [
+            'id'            => 'ID',
+            'tanggal'       => 'Tanggal',
+            'nomor'         => 'Nomor',
+            'rak_id'        => 'Rak',
+            'keterangan'    => 'Keterangan',
+            'status'        => 'Status',
+            'updated_at'    => 'Updated At',
+            'updated_by'    => 'Updated By',
+            'created_at'    => 'Created At',
+            'namaUpdatedBy' => 'User',
+        ];
     }
 
     /**
@@ -127,18 +127,18 @@ class StockOpname extends CActiveRecord
 
         $sort = [
             'defaultOrder' => 't.status, tanggal desc',
-            'attributes' => [
+            'attributes'   => [
                 '*',
                 'namaUpdatedBy' => [
-                    'asc' => 'updatedBy.nama_lengkap',
-                    'desc' => 'updatedBy.nama_lengkap desc'
+                    'asc'  => 'updatedBy.nama_lengkap',
+                    'desc' => 'updatedBy.nama_lengkap desc',
                 ],
-            ]
+            ],
         ];
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort' => $sort
+            'sort'     => $sort,
         ]);
     }
 
@@ -155,7 +155,6 @@ class StockOpname extends CActiveRecord
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
             /*
@@ -164,7 +163,7 @@ class StockOpname extends CActiveRecord
              */
             $this->tanggal = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         // Jika disimpan melalui proses simpan so
         if ($this->scenario === 'simpanSo') {
@@ -172,7 +171,7 @@ class StockOpname extends CActiveRecord
             $this->status = StockOpname::STATUS_SO;
             // Dapat nomor dan tanggal baru
             $this->tanggal = date('Y-m-d H:i:s');
-            $this->nomor = $this->generateNomor6Seq();
+            $this->nomor   = $this->generateNomor6Seq();
         }
         return parent::beforeSave();
     }
@@ -180,7 +179,7 @@ class StockOpname extends CActiveRecord
     public function beforeValidate()
     {
         if (empty($this->rak_id)) {
-            $this->rak_id = NULL;
+            $this->rak_id = null;
         }
         return parent::beforeValidate();
     }
@@ -193,10 +192,10 @@ class StockOpname extends CActiveRecord
 
     public function listStatus()
     {
-        return array(
+        return [
             StockOpname::STATUS_DRAFT => 'Draft',
-            StockOpname::STATUS_SO => 'SO'
-        );
+            StockOpname::STATUS_SO    => 'SO',
+        ];
     }
 
     public function getNamaStatus()
@@ -207,10 +206,12 @@ class StockOpname extends CActiveRecord
 
     public function listRak()
     {
-        return CMap::mergeArray(array(
-                    'null' => '-'), CHtml::listData(RakBarang::model()->findAll(array(
-                                    'select' => 'id, nama',
-                                    'order' => 'nama')), 'id', 'nama'));
+        return CMap::mergeArray([
+            'null' => '-'
+        ], CHtml::listData(RakBarang::model()->findAll([
+            'select' => 'id, nama',
+            'order'  => 'nama'
+        ]), 'id', 'nama'));
     }
 
     public function getNamaRak()
@@ -229,9 +230,11 @@ class StockOpname extends CActiveRecord
     public function cariNomorTahunan()
     {
         $tahun = date('y');
-        $data = $this->find(array(
-            'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,2)='{$tahun}'")
+        $data  = $this->find(
+            [
+                'select'    => 'max(substring(nomor,9)*1) as max',
+                'condition' => "substring(nomor,5,2)='{$tahun}'"
+            ]
         );
 
         $value = is_null($data) ? 0 : $data->max;
@@ -244,11 +247,11 @@ class StockOpname extends CActiveRecord
      */
     public function generateNomor6Seq()
     {
-        $config = Config::model()->find("nama='toko.kode'");
-        $kodeCabang = $config->nilai;
-        $kodeDokumen = KodeDokumen::SO;
+        $config         = Config::model()->find("nama='toko.kode'");
+        $kodeCabang     = $config->nilai;
+        $kodeDokumen    = KodeDokumen::SO;
         $kodeTahunBulan = date('ym');
-        $sequence = substr('00000' . $this->cariNomorTahunan(), -6);
+        $sequence       = substr('00000' . $this->cariNomorTahunan(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
@@ -264,31 +267,38 @@ class StockOpname extends CActiveRecord
     public function simpanSo()
     {
         $this->scenario = 'simpanSo';
-        $transaction = $this->dbConnection->beginTransaction();
+        $transaction    = $this->dbConnection->beginTransaction();
         try {
             if ($this->save()) {
                 $details = StockOpnameDetail::model()->findAll('stock_opname_id=' . $this->id);
                 foreach ($details as $detail) {
                     InventoryBalance::model()->so($this, $detail);
-                    if (!is_null($this->rak_id)) {
-                        Barang::model()->updateByPk($detail->barang_id, array('rak_id' => $this->rak_id));
+                    if (!is_null($this->rak_id and is_null($detail->ganti_rak_id))) {
+                        Barang::model()->updateByPk($detail->barang_id, ['rak_id' => $this->rak_id]);
+                    }
+                    if (!is_null($detail->ganti_rak_id)) {
+                        Barang::model()->updateByPk($detail->barang_id, [
+                            'rak_id' => $detail->ganti_rak_id,
+                            'status' => $detail->set_inaktif == 1 ? Barang::STATUS_TIDAK_AKTIF : Barang::STATUS_AKTIF
+                        ]);
                     }
                 }
                 $transaction->commit();
-                return array(
-                    'sukses' => true
-                );
+                return [
+                    'sukses' => true,
+                ];
             } else {
-                throw new Exception("Gagal Simpan Stock Opname");
+                throw new Exception('Gagal Simpan Stock Opname');
             }
         } catch (Exception $ex) {
             $transaction->rollback();
-            return array(
+            return [
                 'sukses' => false,
-                'error' => array(
-                    'msg' => $ex->getMessage(),
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                ]
+            ];
         }
     }
 
@@ -298,9 +308,9 @@ class StockOpname extends CActiveRecord
      */
     public function tambahDetailSetNol()
     {
-        $sql = "
+        $sql = '
             INSERT INTO stock_opname_detail (stock_opname_id, barang_id, qty_tercatat, qty_sebenarnya, updated_by, created_at)
-            SELECT 
+            SELECT
                 :soId stock_opname_id,
                 barang_id,
                 SUM(qty) qty_tercatat,
@@ -310,7 +320,7 @@ class StockOpname extends CActiveRecord
             FROM
                 inventory_balance ib
                     JOIN
-                (SELECT 
+                (SELECT
                     t.id
                 FROM
                     barang t
@@ -321,14 +331,14 @@ class StockOpname extends CActiveRecord
                         AND sod.barang_id IS NULL) AS t_belum_so ON t_belum_so.id = ib.barang_id
             GROUP BY barang_id
             HAVING SUM(qty) != 0;
-                ";
+                ';
         $command = Yii::app()->db->createCommand($sql);
 
         $command->bindValues([
-            ':soId' => $this->id,
-            ':userId' => Yii::app()->user->id,
-            ':rakId' => $this->rak_id,
-            ':statusBarang' => Barang::STATUS_AKTIF
+            ':soId'         => $this->id,
+            ':userId'       => Yii::app()->user->id,
+            ':rakId'        => $this->rak_id,
+            ':statusBarang' => Barang::STATUS_AKTIF,
         ]);
 
         $rowAffected = $command->execute();
@@ -339,11 +349,12 @@ class StockOpname extends CActiveRecord
      * Set Inaktif (Tidak Aktif) untuk (semua) barang-barang yang belum di SO
      * @return int Jumlah baris yang terpengaruh
      */
-    public function setInAktifAll(){
-        $sql = "
+    public function setInAktifAll()
+    {
+        $sql = '
         UPDATE barang
                 JOIN
-            (SELECT 
+            (SELECT
                 t.id
             FROM
                 barang t
@@ -351,24 +362,23 @@ class StockOpname extends CActiveRecord
                 AND sod.stock_opname_id = :soId
             WHERE
                 t.rak_id = :rakId AND t.status = :statusBarangAktif
-                    AND sod.barang_id IS NULL) AS t_belum_so ON t_belum_so.id = barang.id 
-        SET 
+                    AND sod.barang_id IS NULL) AS t_belum_so ON t_belum_so.id = barang.id
+        SET
             barang.status = :statusBarangInAktif,
             barang.updated_by = :userId
-                ";
+                ';
 
         $command = Yii::app()->db->createCommand($sql);
 
         $command->bindValues([
-            ':soId' => $this->id,
-            ':userId' => Yii::app()->user->id,
-            ':rakId' => $this->rak_id,
-            ':statusBarangAktif' => Barang::STATUS_AKTIF,
-            ':statusBarangInAktif' => Barang::STATUS_TIDAK_AKTIF
+            ':soId'                => $this->id,
+            ':userId'              => Yii::app()->user->id,
+            ':rakId'               => $this->rak_id,
+            ':statusBarangAktif'   => Barang::STATUS_AKTIF,
+            ':statusBarangInAktif' => Barang::STATUS_TIDAK_AKTIF,
         ]);
 
         $rowAffected = $command->execute();
         return $rowAffected;
     }
-
 }
