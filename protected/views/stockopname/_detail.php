@@ -9,6 +9,7 @@
                 // if ($data->bedaRaknya()) {
                 //     return 'baru'; // Rak beda, diberi tanda beda warna di barisnya
                 // }
+                // Beda warna untuk barang diset non aktif
                 return $data->set_inaktif == 1 ? 'inaktif' : '';
             },
             'columns'               => [

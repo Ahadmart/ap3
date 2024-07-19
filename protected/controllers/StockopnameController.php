@@ -245,15 +245,19 @@ class StockopnameController extends Controller
                 $rakId = $_POST['rak'];
             }
 
-            $setInaktif = $_POST['setinaktif'] == 'true' ? true : false;
-
+            // $setInaktif = false;
+            if (isset($_POST['setinaktif'])) {
+                $setInaktif = $_POST['setinaktif'] == 'true' || $_POST['setinaktif'] == '1' ? true : false;
+            } else {
+                $setInaktif = false;
+            }
             $return = $this->tambahDetailPlus($id, $barang->id, $stok, $qty, $rakId, $setInaktif);
             // $return = [
             //     'barcode' => $barcode,
-            //     'stok'=> $stok,
+            //     'stok' => $stok,
             //     'qty' => $qty,
             //     'rakId' => $rakId,
-            //     'setInaktif' => $setInaktif
+            //     'setInaktif' => $setInaktif,
             // ];
         }
         $this->renderJSON($return);
@@ -312,7 +316,14 @@ class StockopnameController extends Controller
                 'sukses' => true,
             ];
         } else {
-            Yii::log('Error: ' . var_dump($detail->getErrors()));
+            $error  = json_encode($detail->getErrors());
+            $return = [
+                'sukses' => false,
+                'error'  => [
+                    'code' => 500,
+                    'msg'  => $error,
+                ],
+            ];
         }
         return $return;
     }
@@ -497,6 +508,7 @@ class StockopnameController extends Controller
 
         return $text;
     }
+
     public function renderBarangExBar($data, $row)
     {
         $text = $data->barang->nama;
@@ -507,5 +519,13 @@ class StockopnameController extends Controller
         }
 
         return $text;
+    }
+
+    public function renderFormInputManual($data, $row)
+    {
+        $this->renderPartial('_input_detail_manual_form', [
+            'data'    => $data,
+            'modelId' => Yii::app()->request->getParam('id'),
+        ]);
     }
 }

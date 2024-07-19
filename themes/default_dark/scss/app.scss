@@ -88,6 +88,9 @@ option {
     border-spacing: 0;
     border: 0;
 
+    label {
+        color: #222;
+    }
     input,
     select {
         margin-bottom: 0px;

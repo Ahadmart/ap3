@@ -43,7 +43,7 @@ class StockOpnameDetail extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            ['stock_opname_id, barang_id, qty_tercatat, qty_sebenarnya', 'required'],
+            ['stock_opname_id, barang_id, qty_tercatat, qty_sebenarnya', 'required', 'message' => '{attribute} harus diisi!'],
             ['qty_tercatat, qty_sebenarnya, set_inaktif', 'numerical', 'integerOnly' => true],
             ['stock_opname_id, barang_id, ganti_rak_id, updated_by', 'length', 'max' => 10],
             ['created_at, updated_at, updated_by, ganti_rak_id', 'safe'],
