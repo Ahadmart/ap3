@@ -96,7 +96,7 @@ class Akm extends Penjualan
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search()
+    public function search($merge = null)
     {
 // @todo Please modify the following code to remove attributes that should not be searched.
 
