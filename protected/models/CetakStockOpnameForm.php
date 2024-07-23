@@ -154,7 +154,7 @@ class CetakStockOpnameForm extends CFormModel
 
         $sql = "
             SELECT 
-                barang.barcode, barang.nama, t_stok.stok, hj.harga
+                barang.barcode, barang.nama, t_stok.stok, hj.harga, barang.status
             FROM
                 barang
                     JOIN
