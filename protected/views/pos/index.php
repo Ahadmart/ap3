@@ -18,5 +18,5 @@ $this->boxHeader['normal'] = 'Penjualan';
         function() {
             window.location.href = '<?= $this->createUrl('/pos/suspended') ?>';
         },
-        7000);
+        20000);
 </script>
