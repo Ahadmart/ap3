@@ -97,6 +97,7 @@ h1 {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    width: 93%;
     p {
         margin-bottom: 0;
         font-size: 1.25rem;
@@ -107,10 +108,27 @@ h1 {
         span:nth-of-type(1) {
             width: 6.5rem;
         }
+        .hj_dis > span,
+        .stotaldis > span {
+            text-decoration: underline;
+            display: inline;
+        }
+        .stotaldis {
+            color: #d32f2f;
+        }
     }
     p:nth-of-type(1) {
         margin-bottom: 1.25rem;
         font-size: 2rem;
+        font-weight: bold;
+        overflow: hidden;
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+        span:nth-of-type(1) {
+            display: inline;
+            font-size: 1.5rem;
+            font-weight: normal;
+        }
     }
     p:nth-of-type(3) {
         font-size: 1.5rem;
@@ -200,8 +218,7 @@ h1 {
 
 /* Tabel Penjualan Detail */
 .t_wrapper {
-    height: calc(100% - 100px);
-    // height: 100%;
+    height: calc(100% - 150px);
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -259,18 +276,27 @@ h1 {
     align-items: baseline;
     align-content: space-between;
     text-align: left;
-    height: 100px;
+    height: 150px;
     padding: 1.25rem 0 20px 0;
     span {
+        color: #fff;
+        border-bottom: 2px solid rgba(255,255,255,.5);
         width: 50%;
         // height: 50%;
-        font-size: 1.1rem;
+        font-size: 1.5rem;
+        padding-bottom: 1rem;
         &:nth-of-type(2n) {
             text-align: right;
+            right: 1rem;
         }
         &:nth-child(3),
         &:nth-child(4) {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            font-weight: bold;
+            border: none;
+            margin-top: 0.5rem;
+            position: absolute;
+            bottom: 1rem;
         }
     }
 }
@@ -287,6 +313,7 @@ h1 {
     width: 70%;
     // padding: 1.25rem 0 20px 0;
     line-height: 2rem;
+    color: #fff;
     span {
         width: 50%;
         font-size: 1.1rem;
@@ -298,18 +325,31 @@ h1 {
             text-align: right;
         }
         &.total {
-            font-size: 1.7rem;
+            border-bottom: 2px solid rgba(255,255,255,.5);
+            padding-bottom: 1rem;
+            font-size: 2rem;
+            font-weight: bold;
             margin-bottom: 1rem;
         }
         &.kembalian,
         &.payment_tt {
-            font-size: 1.5rem;
+            border-top: 2px solid rgba(255,255,255,.5);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            font-size: 1.55rem;
+            font-weight: bold;
+        }
+        &.kembalian {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
         }
     }
     p {
         width: 100%;
         text-align: center;
         margin-top: 1.5rem;
+        font-size: 1.25rem;
     }
 }
 
@@ -331,7 +371,7 @@ h1 {
             font-size: 2.5rem;
             font-weight: 700;
             line-height: 2.5rem;
-            @media only screen and (min-width: 1360px){
+            @media only screen and (min-width: 1360px) {
                 font-size: 3rem;
                 line-height: 3rem;
             }
@@ -359,7 +399,7 @@ h1 {
         font-size: 1rem;
         width: 80%;
         margin: auto;
-        @media only screen and (min-width: 1360px){
+        @media only screen and (min-width: 1360px) {
             font-size: 1.25rem;
             line-height: 2rem;
         }
