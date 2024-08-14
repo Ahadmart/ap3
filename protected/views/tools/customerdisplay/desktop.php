@@ -21,7 +21,7 @@ if (!empty($logo)) {
         <div id="last_scan" class="proc">
             <p>Nama Barang</p>
             <p><span>Harga</span><span>:</span><span class="hj"></span><span class="hj_dis"></span></p>
-            <p><span>Subtotal</span><span>:</span><span class="stotal"></span></p>
+            <p><span>Subtotal</span><span>:</span><span class="stotal"></span><span class="stotaldis"></span></p>
         </div>
     </div>
     <div class="medium-4 columns box kanan_atas">
@@ -127,12 +127,12 @@ if (!empty($logo)) {
 
     $(document).ready(function() {
         $(".idle").show();
-        // $(".idle").hide();
-        // $(".proc").show();
         $(".proc").hide();
-        // $(".checkout").show();
         $(".checkout").hide();
         $(".tarik_tunai").hide();
+        // $(".idle").hide();
+        // $(".proc").show();
+        // $(".checkout").show();
         changeBrosur();
         connectWebSocket();
         setInterval('updateTimeBoard()', 1000);
@@ -373,19 +373,22 @@ if (!empty($logo)) {
 
     function injectLastScan(item) {
         if (item) {
-            $("#last_scan p:nth-child(1)").html(item.qty + ' x ' + item.nama)
+            $("#last_scan p:nth-child(1)").html('<span class="scan-qty">' + item.qty + ' x</span> ' + item.nama)
             $(".hj").html(item.harga_jual)
             if (item.diskon && item.diskon > 0) {
-                $(".hj_dis").html('(' + item.diskon + ')')
+                $(".hj_dis").html('(<span>' + item.diskon + '</span>)')
+                $(".stotaldis").html('(<span>Hemat ' + item.stotaldiskon + '</span>)')
             } else {
                 $(".hj_dis").html("");
+                $(".stotaldis").html("");
             }
             $(".stotal").html(item.stotal)
         } else {
             $("#last_scan p:nth-child(1)").html("")
             $(".hj").html("")
-            $(".hj_dis").html("");
+            $(".hj_dis").html("")
             $(".stotal").html("")
+            $(".stotaldis").html("")
         }
     }
 
