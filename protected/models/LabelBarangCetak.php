@@ -260,6 +260,14 @@ class LabelBarangCetak extends CActiveRecord
         /* 1 Label ada 2 kolom (kanan dan !kanan)
         Print dimulai dari kanan
          */
+        $posisiR   = 427;
+        $posisi¬R  = 145;
+
+        $configLabelOffset = Config::model()->find("nama='labelbarang.default.offset'");
+        $labelOffset       = explode(',', $configLabelOffset->nilai);
+        $offsetR           = $labelOffset[1];
+        $offset¬R          = $labelOffset[0];
+
         $command    = '';
         $itemCount  = 0;
         $labelCount = 0;
@@ -281,18 +289,20 @@ class LabelBarangCetak extends CActiveRecord
                     $command .= '^XA'; // Init Printer
                     $command .= '^LH0';
 
-                    $command .= '^FT427,35';
+                    $command .= '~SD25'; // Tebal
+
+                    $command .= '^FT' . $posisiR + $offsetR . ',35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,50';
-                    $command .= '^FT427,95^BCN,,Y,N,N';
-                    $command .= '^A0N,20,20';
+                    $command .= '^FT' . $posisiR + $offsetR . ',95^BCN,,Y,N,N';
+                    $command .= '^A0N,20,25';
                     $command .= '^FD' . $subsetC . $barcode . '^FS';
                 } else {
-                    $command .= '^FT145,35';
+                    $command .= '^FT' . $posisi¬R + $offset¬R . ',35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,50';
-                    $command .= '^FT145,95^BCN,,Y,N,N';
-                    $command .= '^A0N,20,20';
+                    $command .= '^FT' . $posisi¬R + $offset¬R . ',95^BCN,,Y,N,N';
+                    $command .= '^A0N,20,25';
                     $command .= '^FD' . $subsetC . $barcode . '^FS';
                     $command .= '^PQ1,1,1,Y';
                     $command .= '^XZ';
@@ -320,6 +330,14 @@ class LabelBarangCetak extends CActiveRecord
         /* 1 Label ada 2 kolom (kanan dan !kanan)
         Print dimulai dari kanan
          */
+        $posisiR   = 427;
+        $posisi¬R  = 145;
+
+        $configLabelOffset = Config::model()->find("nama='labelbarang.default.offset'");
+        $labelOffset       = explode(',', $configLabelOffset->nilai);
+        $offsetR           = $labelOffset[1];
+        $offset¬R          = $labelOffset[0];
+
         $command    = '';
         $itemCount  = 0;
         $labelCount = 0;
@@ -342,22 +360,24 @@ class LabelBarangCetak extends CActiveRecord
                     $command .= '^XA'; // Init Printer
                     $command .= '^LH0';
 
-                    $command .= '^FT427,35';
+                    $command .= '~SD25'; // Tebal
+
+                    $command .= '^FT' . $posisiR + $offsetR . ',35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
-                    $command .= '^FT427,55';
-                    $command .= '^FD' . $hj . '^FS';
+                    $command .= '^FT' . $posisiR + $offsetR . ',55';
+                    $command .= '^CF0,20,25^FD' . $hj . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,31';
-                    $command .= '^FT427,95^BCN,,Y,N,N';
-                    $command .= '^A0N,20,20';
+                    $command .= '^FT' . $posisiR + $offsetR . ',95^BCN,,Y,N,N';
+                    $command .= '^A0N,20,25';
                     $command .= '^FD' . $subsetC . $barcode . '^FS';
                 } else {
-                    $command .= '^FT145,35';
+                    $command .= '^FT' . $posisi¬R + $offset¬R . ',35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
-                    $command .= '^FT145,55';
-                    $command .= '^FD' . $hj . '^FS';
+                    $command .= '^FT' . $posisi¬R + $offset¬R . ',55';
+                    $command .= '^CF0,20,25^FD' . $hj . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,31';
-                    $command .= '^FT145,95^BCN,,Y,N,N';
-                    $command .= '^A0N,20,20';
+                    $command .= '^FT' . $posisi¬R + $offset¬R . ',95^BCN,,Y,N,N';
+                    $command .= '^A0N,20,25';
                     $command .= '^FD' . $subsetC . $barcode . '^FS';
                     $command .= '^PQ1,1,1,Y';
                     $command .= '^XZ';
