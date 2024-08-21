@@ -19,7 +19,7 @@ class CetaklabelbarangController extends Controller
         }
         $labelBarang->updated_by = Yii::app()->user->id;
 
-        $barang = new Barang('search');
+        // $barang = new Barang('search');
 
         $barang = new Barang('search');
         $barang->unsetAttributes();
