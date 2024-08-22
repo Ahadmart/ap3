@@ -11,7 +11,7 @@ class m240821_133405_config_tambah_labelbarangoffset extends CDbMigration
 			[
 				'nama'       => 'labelbarang.default.offset',
 				'nilai'      => '0,0',
-				'deskripsi'  => 'Offset (px) label barang layout default (Kiri,Kanan)',
+				'deskripsi'  => 'Offset (dot) label barang layout default (Kiri,Kanan)',
 				'updated_at' => $now,
 				'updated_by' => 1,
 				'created_at' => $now,
