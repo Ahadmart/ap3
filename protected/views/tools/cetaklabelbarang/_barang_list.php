@@ -7,12 +7,12 @@ $this->widget('BGridView',
     'filter'        => $barang,
     'columns'       => ['barcode',
         'nama',
-        [
-            'header'            => 'RRP',
-            'value'             => '$data->hargaJualRekomendasi',
-            'headerHtmlOptions' => ['class' => 'rata-kanan'],
-            'htmlOptions'       => ['class' => 'rata-kanan']
-        ],
+        // [
+        //     'header'            => 'RRP',
+        //     'value'             => '$data->hargaJualRekomendasi',
+        //     'headerHtmlOptions' => ['class' => 'rata-kanan'],
+        //     'htmlOptions'       => ['class' => 'rata-kanan']
+        // ],
         [
             'header'            => 'Stok',
             'value'             => '$data->stok',
