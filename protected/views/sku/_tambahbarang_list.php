@@ -1,5 +1,6 @@
 <h4>Pilih Barang</h4>
 <?php
+
 $this->widget('BGridView', [
     'id'            => 'barang-grid',
     'dataProvider'  => $model->search(),
@@ -26,8 +27,9 @@ $this->widget('BGridView', [
             },
         ],
         [
-            'name' => 'satuan',
-            'value' => '$data->satuan->nama'
+            'name'   => 'satuan_id',
+            'value'  => '$data->satuan->nama',
+            'filter' => $model->filterSatuan(),
         ],
     ],
 ]);

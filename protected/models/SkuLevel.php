@@ -1,35 +1,33 @@
 <?php
 
 /**
- * This is the model class for table "sku_detail".
+ * This is the model class for table "sku_level".
  *
- * The followings are the available columns in table 'sku_detail':
+ * The followings are the available columns in table 'sku_level':
  * @property string $id
  * @property string $sku_id
- * @property string $barang_id
  * @property string $level
+ * @property string $satuan_id
+ * @property string $rasio_konversi
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
  *
  * The followings are the available model relations:
- * @property Barang $barang
  * @property Sku $sku
+ * @property SatuanBarang $satuan
  * @property User $updatedBy
  */
-class SkuDetail extends CActiveRecord
+class SkuLevel extends CActiveRecord
 {
-	public $barcode;
-	public $namaBarang;
 	public $namaSatuan;
-	public $satuanId;
 
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'sku_detail';
+		return 'sku_level';
 	}
 
 	/**
@@ -40,12 +38,12 @@ class SkuDetail extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return [
-			['sku_id, barang_id', 'required'],
-			['sku_id, barang_id, level, updated_by', 'length', 'max' => 10],
+			['sku_id, satuan_id', 'required'],
+			['sku_id, level, satuan_id, rasio_konversi, updated_by', 'length', 'max' => 10],
 			['created_at, updated_at, updated_by', 'safe'],
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			['id, sku_id, barang_id, level, updated_at, updated_by, created_at, barcode, namaBarang, namaSatuan, satuanId', 'safe', 'on' => 'search'],
+			['id, sku_id, level, satuan_id, rasio_konversi, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
 		];
 	}
 
@@ -57,9 +55,8 @@ class SkuDetail extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return [
-			'barang'    => [self::BELONGS_TO, 'Barang', 'barang_id'],
-			'satuan'    => [self::BELONGS_TO, 'SatuanBarang', ['satuan_id' => 'id'], 'through' => 'barang'],
 			'sku'       => [self::BELONGS_TO, 'Sku', 'sku_id'],
+			'satuan'    => [self::BELONGS_TO, 'SatuanBarang', 'satuan_id'],
 			'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
 		];
 	}
@@ -70,15 +67,14 @@ class SkuDetail extends CActiveRecord
 	public function attributeLabels()
 	{
 		return [
-			'id'         => 'ID',
-			'sku_id'     => 'Sku',
-			'barang_id'  => 'Barang',
-			'level'      => 'Level',
-			'updated_at' => 'Updated At',
-			'updated_by' => 'Updated By',
-			'created_at' => 'Created At',
-			'namaBarang' => 'Barang',
-			'namaSatuan' => 'Satuan',
+			'id'             => 'ID',
+			'sku_id'         => 'Sku',
+			'level'          => 'Level',
+			'satuan_id'      => 'Satuan',
+			'rasio_konversi' => 'Rasio Konversi',
+			'updated_at'     => 'Updated At',
+			'updated_by'     => 'Updated By',
+			'created_at'     => 'Created At',
 		];
 	}
 
@@ -100,32 +96,19 @@ class SkuDetail extends CActiveRecord
 
 		$criteria = new CDbCriteria;
 
-		$criteria->compare('id', $this->id, false);
-		$criteria->compare('sku_id', $this->sku_id, false);
-		$criteria->compare('barang_id', $this->barang_id, false);
-		$criteria->compare('level', $this->level, false);
+		$criteria->compare('id', $this->id, true);
+		$criteria->compare('sku_id', $this->sku_id, true);
+		$criteria->compare('level', $this->level, true);
+		$criteria->compare('satuan_id', $this->satuan_id, true);
+		$criteria->compare('rasio_konversi', $this->rasio_konversi, true);
 		$criteria->compare('updated_at', $this->updated_at, true);
 		$criteria->compare('updated_by', $this->updated_by, true);
 		$criteria->compare('created_at', $this->created_at, true);
 
-		$criteria->with = ['barang', 'satuan'];
-		$criteria->compare('barang.barcode', $this->barcode, true);
-		$criteria->compare('barang.nama', $this->namaBarang, true);
-		$criteria->compare('satuan.nama', $this->namaSatuan, true);
-		$criteria->compare('barang.satuan_id', $this->satuanId);
-
 		$sort = [
-			'defaultOrder' => 't.level desc',
+			'defaultOrder' => 'level desc',
 			'attributes'   => [
 				'*',
-				'barcode'    => [
-					'asc'  => 'barang.barcode',
-					'desc' => 'barang.barcode desc',
-				],
-				'namaBarang' => [
-					'asc'  => 'barang.nama',
-					'desc' => 'barang.nama desc',
-				],
 				'namaSatuan' => [
 					'asc'  => 'satuan.nama',
 					'desc' => 'satuan.nama desc',
@@ -143,7 +126,7 @@ class SkuDetail extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return SkuDetail the static model class
+	 * @return SkuLevel the static model class
 	 */
 	public static function model($className = __CLASS__)
 	{

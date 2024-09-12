@@ -1,8 +1,10 @@
 <?php
+$barang = new Barang();
+
 $this->widget('BGridView', [
     'id'           => 'sku-detail-grid',
     'dataProvider' => $modelDetail->search(),
-    'filter'       => $modelDetail,
+    'filter'       => null, // $modelDetail,
     'columns'      => [
         [
             'name'  => 'barcode',
@@ -14,7 +16,14 @@ $this->widget('BGridView', [
         ],
         [
             'name' => 'namaSatuan',
-            'value' => '$data->satuan->nama'
+            'value' => '$data->barang->satuan->nama',
+            'filter' => $barang->filterSatuan()
+        ],
+        [
+            'class' => 'BButtonColumn',
+            // 'template' => $penjualan->status == 0 ? '{delete}' : '',
+            'deleteButtonUrl' => 'Yii::app()->controller->createUrl("sku/hapusdetail", ["id"=>$data->primaryKey])',
+            // 'afterDelete' => 'function(link,success,data){ if(success) updateTotal();}',
         ],
     ],
 ]);
