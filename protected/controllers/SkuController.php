@@ -102,10 +102,17 @@ class SkuController extends Controller
             $skuLevel->attributes = $_GET['SkuLevel'];
         }
 
+        $levelMax = SkuLevel::model()->find([
+            'select'    => 'MAX(level) as maxLevel',
+            'condition' => 'sku_id = :skuId',
+            'params'    => [':skuId' => $id],
+        ])->maxLevel;
+
         $this->render('ubah', [
             'model'       => $model,
             'modelDetail' => $skuDetail,
             'modelLevel'  => $skuLevel,
+            'levelMax'    => $levelMax,
         ]);
     }
 
@@ -260,5 +267,31 @@ class SkuController extends Controller
             'levelSekarang'  => $levelSekarang,
             'satuanTerakhir' => $satuanTerakhir,
         ], false, true);
+    }
+
+    public function actionHapusLevel($id)
+    {
+        $skuLevel = SkuLevel::model()->findByPk($id);
+        // $skuLevel->delete();
+
+        $return = [
+            'sukses' => $skuLevel->delete(),
+        ];
+        $this->renderJSON($return);
+    }
+
+    public function renderRasioKonversi($data)
+    {
+        $skuLevel = SkuLevel::model()->find([
+            'condition' => 'sku_id = :skuId and level < :curLevel',
+            'params'    => [
+                ':skuId'    => $data->sku_id,
+                ':curLevel' => $data->level,
+            ],
+            'order'     => 'level DESC',
+        ]);
+        // Yii::log(print_r($skuLevel, true));
+        $namaSatuan = is_null($skuLevel) ? '' : $skuLevel->satuan->nama;
+        return $data->rasio_konversi . ' ' . $namaSatuan;
     }
 }

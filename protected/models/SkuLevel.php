@@ -21,6 +21,7 @@
 class SkuLevel extends CActiveRecord
 {
 	public $namaSatuan;
+	public $maxLevel; // Variabel untuk menyimpan level maximum di sku tertentu
 
 	/**
 	 * @return string the associated database table name

@@ -52,7 +52,10 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
                 ?>
             </div>
             <div class="row">
-                <?php $this->renderPartial('_ubah_level', ['modelLevel' => $modelLevel]); ?>
+                <?php $this->renderPartial('_ubah_level', [
+                    'modelLevel' => $modelLevel,
+                    'levelMax'   => $levelMax
+                ]); ?>
             </div>
         </div>
     </div>

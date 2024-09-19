@@ -2,21 +2,35 @@
 /* @var $this SkuController */
 /* @var $modelLevel SkuLevel */
 
-$this->widget('BGridView', array(
-    'id' => 'sku-level-grid',
+$this->widget('BGridView', [
+    'id'           => 'sku-level-grid',
     'dataProvider' => $modelLevel->search(),
     // 'filter' => $modelLevel,
-    'columns' => array(
+    'columns'      => [
         'level',
         [
-            'name'   => 'namaSatuan',
-            'value'  => '$data->satuan->nama',
+            'name'  => 'namaSatuan',
+            'value' => '$data->satuan->nama',
         ],
-        'rasio_konversi',
+        [
+
+            'name'  => 'rasio_konversi',
+            'type'  => 'raw',
+            'value' => [$this, 'renderRasioKonversi'],
+        ],
+        [
+            'class'           => 'BButtonColumn',
+            'deleteButtonUrl' => 'Yii::app()->controller->createUrl("hapuslevel", ["id"=>$data->primaryKey])',
+            'buttons'         => [
+                'delete' => [
+                    'visible' => '$data->level == ' . $levelMax,
+                ],
+            ],
+        ],
         /*
-        'updated_at',
-		'updated_by',
-		'created_at',
-		*/
-    ),
-));
+    'updated_at',
+    'updated_by',
+    'created_at',
+     */
+    ],
+]);
