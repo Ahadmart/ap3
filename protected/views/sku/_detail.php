@@ -5,7 +5,8 @@ $this->widget('BGridView', [
     'filter'       => $modelDetail,
     'columns'      => [
         [
-            'name'  => 'barcode',
+            // 'name'  => 'barcode',
+            'header' => 'Barcode',
             'value' => '$data->barang->barcode',
         ]
     ],
