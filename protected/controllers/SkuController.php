@@ -282,6 +282,8 @@ class SkuController extends Controller
 
     public function renderRasioKonversi($data)
     {
+        // Mencari sku level terakhir (terbesar)
+        // untuk diambil satuannya
         $skuLevel = SkuLevel::model()->find([
             'condition' => 'sku_id = :skuId and level < :curLevel',
             'params'    => [
@@ -292,6 +294,60 @@ class SkuController extends Controller
         ]);
         // Yii::log(print_r($skuLevel, true));
         $namaSatuan = is_null($skuLevel) ? '' : $skuLevel->satuan->nama;
-        return $data->rasio_konversi . ' ' . $namaSatuan;
+        $editable   = '<a href="#" class="editable-rasio" data-type="text" data-pk="' . $data->id .
+            '" data-url="' . $this->createUrl('updaterasio') . '">' . $data->rasio_konversi . '</a>';
+        if ($data->level == 1) {
+            return $data->rasio_konversi;
+        } else {
+            return $editable . ' ' . $namaSatuan;
+        }
+    }
+
+    public function renderNamaSatuan($data)
+    {
+        return '<a href="#" class="editable-satuan" data-type="select" data-pk="' . $data->id . '" data-url="' . $this->createUrl('updatesatuan') . '">' . $data->satuan->nama . '</a>';
+    }
+
+    public function actionUpdateRasio()
+    {
+        if (empty($_POST['pk']) && empty($_POST['value'])) {
+            throw new CHttpException(500, 'Request tidak lengkap');
+        }
+
+        $pk  = $_POST['pk'];
+        $val = empty($_POST['value']) ? 0 : $_POST['value'];
+        if ($val < 2) {
+            throw new CHttpException(500, 'Nilai rasio tidak valid');
+        }
+
+        $skuLevel                 = SkuLevel::model()->findByPk($pk);
+        $skuLevel->rasio_konversi = $val;
+
+        $return = ['sukses' => false];
+        if ($skuLevel->save()) {
+            $return = ['sukses' => true];
+        }
+
+        $this->renderJSON($return);
+    }
+
+    public function actionUpdateSatuan()
+    {
+        if (empty($_POST['pk']) && empty($_POST['value'])) {
+            throw new CHttpException(500, 'Request tidak lengkap');
+        }
+
+        $pk  = $_POST['pk'];
+        $val = $_POST['value'];
+
+        $skuLevel                 = SkuLevel::model()->findByPk($pk);
+        $skuLevel->satuan_id = $val;
+
+        $return = ['sukses' => false];
+        if ($skuLevel->save()) {
+            $return = ['sukses' => true];
+        }
+
+        $this->renderJSON($return);
     }
 }
