@@ -23,6 +23,7 @@ $this->widget('BGridView', [
             'type'  => 'raw',
             'value' => [$this, 'renderRasioKonversi'],
         ],
+        'jumlah_per_unit',
         [
             'class'           => 'BButtonColumn',
             'deleteButtonUrl' => 'Yii::app()->controller->createUrl("hapuslevel", ["id"=>$data->primaryKey])',

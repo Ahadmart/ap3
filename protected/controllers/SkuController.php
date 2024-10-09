@@ -340,7 +340,7 @@ class SkuController extends Controller
         $pk  = $_POST['pk'];
         $val = $_POST['value'];
 
-        $skuLevel                 = SkuLevel::model()->findByPk($pk);
+        $skuLevel            = SkuLevel::model()->findByPk($pk);
         $skuLevel->satuan_id = $val;
 
         $return = ['sukses' => false];
@@ -349,5 +349,41 @@ class SkuController extends Controller
         }
 
         $this->renderJSON($return);
+    }
+
+    public function renderQtyPerUnit($data)
+    {
+        // Mencari sku level terakhir (terbesar)
+        // untuk diambil satuannya
+        $skuLevel = null;
+        if (!is_null($data->skuLevel)) {
+            $skuLevel = SkuLevel::model()->find([
+                'condition' => 'sku_id = :skuId and level < :curLevel',
+                'params'    => [
+                    ':skuId'    => $data->sku_id,
+                    ':curLevel' => $data->skuLevel->level,
+                ],
+                'order'     => 'level DESC',
+            ]);
+        }
+        // Mencari sku level 1
+        // untuk diambil satuannya
+        $skuLevel1 = SkuLevel::model()->find([
+            'condition' => 'sku_id = :skuId and level = 1',
+            'params'    => [
+                ':skuId'    => $data->sku_id,
+            ],
+        ]);
+        // Yii::log('skuId: ' . $data->sku_id . '; ' . 'satuanId: ' . $data->barang->satuan_id);
+        // Yii::log('rasioKonversi: '. $skuLevel->rasio_konversi);
+        $namaSatuan = is_null($skuLevel) ? '' : $skuLevel->satuan->nama;
+        $r = '';
+        if (!is_null($data->skuLevel)) {
+            $r = $data->skuLevel->rasio_konversi . ' ' . $namaSatuan;
+            if ($data->skuLevel->level >= 3) {
+                $r .= ' (' . $data->skuLevel->jumlah_per_unit . ' ' . $skuLevel1->satuan->nama . ')';
+            }
+        }
+        return $r;
     }
 }

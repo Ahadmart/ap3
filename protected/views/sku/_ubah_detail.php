@@ -11,19 +11,47 @@ $this->widget('BGridView', [
             'value' => '$data->barang->barcode',
         ],
         [
-            'name' => 'namaBarang',
-            'value' => '$data->barang->nama'
+            'name'  => 'namaBarang',
+            'value' => '$data->barang->nama',
         ],
         [
-            'name' => 'namaSatuan',
+            'name'  => 'level',
+            'value' => '$data->skuLevel->level ?? ""',
+            'htmlOptions'       => ['class' => 'rata-tengah'],
+            'headerHtmlOptions' => ['class' => 'rata-tengah'],
+        ],
+        [
+            'name'  => 'namaSatuan',
             'value' => '$data->barang->satuan->nama',
-            'filter' => $barang->filterSatuan()
+            // 'filter' => $barang->filterSatuan()
         ],
         [
-            'class' => 'BButtonColumn',
-            // 'template' => $penjualan->status == 0 ? '{delete}' : '',
+
+            'name'  => 'Konversi',
+            'type'  => 'raw',
+            'value' => [$this, 'renderQtyPerUnit'],
+        ],
+        [
+            'header'            => 'HB',
+            'value'             => '$data->barang->hargaJual',
+            'htmlOptions'       => ['class' => 'rata-kanan'],
+            'headerHtmlOptions' => ['class' => 'rata-kanan'],
+        ],
+        [
+            'header'            => 'HJ',
+            'value'             => '$data->barang->hargaJual',
+            'htmlOptions'       => ['class' => 'rata-kanan'],
+            'headerHtmlOptions' => ['class' => 'rata-kanan'],
+        ],
+        [
+            'header'            => 'Stok',
+            'value'             => '$data->barang->stok',
+            'htmlOptions'       => ['class' => 'rata-kanan'],
+            'headerHtmlOptions' => ['style' => 'width:75px', 'class' => 'rata-kanan'],
+        ],
+        [
+            'class'           => 'BButtonColumn',
             'deleteButtonUrl' => 'Yii::app()->controller->createUrl("sku/hapusdetail", ["id"=>$data->primaryKey])',
-            // 'afterDelete' => 'function(link,success,data){ if(success) updateTotal();}',
         ],
     ],
 ]);

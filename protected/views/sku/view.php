@@ -20,12 +20,12 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
                     'nomor',
                     'nama',
                     // 'kategori_id',
-                    [
-                        'name'  => 'kategori.nama',
-                        'label' => 'Kategori',
-                    ],
-                    'struktur_id',
-                    'status',
+                    // [
+                    //     'name'  => 'kategori.nama',
+                    //     'label' => 'Kategori',
+                    // ],
+                    // 'struktur_id',
+                    // 'status',
                     /*
                     'updated_at',
                     'updated_by',
