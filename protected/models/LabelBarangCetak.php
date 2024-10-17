@@ -265,8 +265,8 @@ class LabelBarangCetak extends CActiveRecord
 
         $configLabelOffset = Config::model()->find("nama='labelbarang.default.offset'");
         $labelOffset       = explode(',', $configLabelOffset->nilai);
-        $offsetR           = $labelOffset[1];
-        $offset¬R          = $labelOffset[0];
+        $offsetR           = (int) $labelOffset[1];
+        $offset¬R          = (int) $labelOffset[0];
 
         $command    = '';
         $itemCount  = 0;
