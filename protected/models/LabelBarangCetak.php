@@ -335,8 +335,8 @@ class LabelBarangCetak extends CActiveRecord
 
         $configLabelOffset = Config::model()->find("nama='labelbarang.default.offset'");
         $labelOffset       = explode(',', $configLabelOffset->nilai);
-        $offsetR           = $labelOffset[1];
-        $offset¬R          = $labelOffset[0];
+        $offsetR           = (int) $labelOffset[1];
+        $offset¬R          = (int) $labelOffset[0];
 
         $command    = '';
         $itemCount  = 0;
@@ -362,21 +362,21 @@ class LabelBarangCetak extends CActiveRecord
 
                     $command .= '~SD25'; // Tebal
 
-                    $command .= '^FT' . $posisiR + $offsetR . ',35';
+                    $command .= '^FT' . ($posisiR + $offsetR) . ',35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
-                    $command .= '^FT' . $posisiR + $offsetR . ',55';
+                    $command .= '^FT' . ($posisiR + $offsetR) . ',55';
                     $command .= '^CF0,20,25^FD' . $hj . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,31';
-                    $command .= '^FT' . $posisiR + $offsetR . ',95^BCN,,Y,N,N';
+                    $command .= '^FT' . ($posisiR + $offsetR) . ',95^BCN,,Y,N,N';
                     $command .= '^A0N,20,25';
                     $command .= '^FD' . $subsetC . $barcode . '^FS';
                 } else {
-                    $command .= '^FT' . $posisi¬R + $offset¬R . ',35';
+                    $command .= '^FT' . ($posisi¬R + $offset¬R) . ',35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
-                    $command .= '^FT' . $posisi¬R + $offset¬R . ',55';
+                    $command .= '^FT' . ($posisi¬R + $offset¬R) . ',55';
                     $command .= '^CF0,20,25^FD' . $hj . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,31';
-                    $command .= '^FT' . $posisi¬R + $offset¬R . ',95^BCN,,Y,N,N';
+                    $command .= '^FT' . ($posisi¬R + $offset¬R) . ',95^BCN,,Y,N,N';
                     $command .= '^A0N,20,25';
                     $command .= '^FD' . $subsetC . $barcode . '^FS';
                     $command .= '^PQ1,1,1,Y';
