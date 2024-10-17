@@ -291,17 +291,17 @@ class LabelBarangCetak extends CActiveRecord
 
                     $command .= '~SD25'; // Tebal
 
-                    $command .= '^FT' . $posisiR + $offsetR . ',35';
+                    $command .= '^FT' . ($posisiR + $offsetR) . ',35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,50';
-                    $command .= '^FT' . $posisiR + $offsetR . ',95^BCN,,Y,N,N';
+                    $command .= '^FT' . ($posisiR + $offsetR) . ',95^BCN,,Y,N,N';
                     $command .= '^A0N,20,25';
                     $command .= '^FD' . $subsetC . $barcode . '^FS';
                 } else {
-                    $command .= '^FT' . $posisi¬R + $offset¬R . ',35';
+                    $command .= '^FT' . ($posisi¬R + $offset¬R) . ',35';
                     $command .= '^CF0,20,17^FD' . $nama . '^FS';
                     $command .= '^BY' . $sizeBarcode . ',3,50';
-                    $command .= '^FT' . $posisi¬R + $offset¬R . ',95^BCN,,Y,N,N';
+                    $command .= '^FT' . ($posisi¬R + $offset¬R) . ',95^BCN,,Y,N,N';
                     $command .= '^A0N,20,25';
                     $command .= '^FD' . $subsetC . $barcode . '^FS';
                     $command .= '^PQ1,1,1,Y';
