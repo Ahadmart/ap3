@@ -30,6 +30,9 @@ class KodeDokumen extends CActiveRecord
     const AKM = '10';
     const PO = '11'; // PURCHASE ORDER (PESANAN PEMBELIAN)
     const SALES_ORDER = '12'; // PESANAN PENJUALAN
+    const RENCANA_PO_TOKO = '14'; // AHAD-DC
+    const PENERIMAAN_PO = '15'; // AHAD-DC
+    const TRANSFER_STOK = '16'; // Transfer Stok antar barang di SKU
 
     /**
      * @return string the associated database table name
