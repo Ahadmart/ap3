@@ -75,15 +75,33 @@ class SkutransferController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if (isset($_POST['SkuTransfer'])) {
-			$model->attributes = $_POST['SkuTransfer'];
-			if ($model->save()) {
-				$this->redirect(['view', 'id' => $id]);
-			}
+		// if (isset($_POST['SkuTransfer'])) {
+		//     $model->attributes = $_POST['SkuTransfer'];
+		//     if ($model->save()) {
+		//         $this->redirect(['view', 'id' => $id]);
+		//     }
+		// }
+
+		$barangAsal = SkuDetail::model()->findAll('sku_id = :skuId', [':skuId' => $id]);
+		$barangAsal = new SkuDetail('search');
+		$barangAsal->unsetAttributes(); // clear any default values
+		if (isset($_GET['SkuDetail']) && isset($_GET['ajax']) && $_GET['ajax'] == 'barang-asal-grid') {
+			$barangAsal->attributes = $_GET['SkuDetail'];
 		}
+		$barangAsal->setAttribute('sku_id', '=' . $id);
+
+		$barangTujuan = SkuDetail::model()->findAll('sku_id = :skuId', [':skuId' => $id]);
+		$barangTujuan = new SkuDetail('search');
+		$barangTujuan->unsetAttributes(); // clear any default values
+		if (isset($_GET['SkuDetail']) && isset($_GET['ajax']) && $_GET['ajax'] == 'barang-tujuan-grid') {
+			$barangTujuan->attributes = $_GET['SkuDetail'];
+		}
+		$barangAsal->setAttribute('sku_id', '=' . $id);
 
 		$this->render('ubah', [
-			'model' => $model,
+			'model'        => $model,
+			'barangAsal'   => $barangAsal,
+			'barangTujuan' => $barangTujuan,
 		]);
 	}
 
@@ -189,33 +207,51 @@ class SkutransferController extends Controller
 		$return = [
 			'sukses' => false,
 		];
-		if (isset($_POST['nomor'])) {
-			$nomor = $_POST['nomor'];
-			$sku   = Sku::model()->find('nomor = :nomor', [
-				':nomor' => $nomor,
-			]);
+		/*
+        if (isset($_POST['nomor'])) {
+        $nomor = $_POST['nomor'];
+        $sku   = Sku::model()->find('nomor = :nomor', [
+        ':nomor' => $nomor,
+        ]);
 
-			if (is_null($sku)) {
-				$this->renderJSON(array_merge($return, ['error' => [
-					'code' => '500',
-					'msg'  => 'SKU tidak ditemukan',
-				]]));
-			}
+        if (is_null($sku)) {
+        $this->renderJSON(array_merge($return, ['error' => [
+        'code' => '500',
+        'msg'  => 'SKU tidak ditemukan',
+        ]]));
+        }
 
-			$return = [
-				'sukses' => true,
-				'skuId'  => $sku->id,
-				'nomor'  => $sku->nomor,
-				'nama'   => $sku->nama,
-			];
-		}
+        $return = [
+        'sukses' => true,
+        'skuId'  => $sku->id,
+        'nomor'  => $sku->nomor,
+        'nama'   => $sku->nama,
+        ];
+        }
+         */
 		if (isset($_POST['barcode'])) {
 			$barcode = $_POST['barcode'];
-			$barang = Barang::model()->find('barcode = :barcode', [
-				':barcode' => $barcode
+			$barang  = Barang::model()->find('barcode = :barcode', [
+				':barcode' => $barcode,
 			]);
 
 			if (is_null($barang)) {
+				// Barang tidak ditemukan, coba cari nomor SKU
+				$sku = Sku::model()->find('nomor = :nomor', [':nomor' => $barcode]);
+				if (is_null($sku)) {
+					$this->renderJSON(array_merge($return, ['error' => [
+						'code' => '500',
+						'msg'  => 'SKU/Barang tidak ditemukan',
+					]]));
+				} else {
+					$return = [
+						'sukses' => true,
+						'skuId'  => $sku->id,
+						'nomor'  => $sku->nomor,
+						'nama'   => $sku->nama,
+					];
+					$this->renderJSON($return);
+				}
 				$this->renderJSON(array_merge($return, ['error' => [
 					'code' => '500',
 					'msg'  => 'Barang tidak ditemukan',
@@ -223,12 +259,17 @@ class SkutransferController extends Controller
 			}
 
 			$skuDetail = SkuDetail::model()->find('barang_id = :barangId', [
-				':barangId' => $barang->id
+				':barangId' => $barang->id,
 			]);
 
+			if (is_null($skuDetail)) {
+				$this->renderJSON(array_merge($return, ['error' => [
+					'code' => '500',
+					'msg'  => 'SKU tidak ditemukan',
+				]]));
+			}
+
 			$sku = Sku::model()->findByPk($skuDetail->sku_id);
-
-
 
 			$return = [
 				'sukses' => true,
@@ -243,7 +284,7 @@ class SkutransferController extends Controller
 	public function actionCariBarang($term)
 	{
 		$arrTerm  = explode(' ', $term);
-		$wBarcode   = '(';
+		$wBarcode = '(';
 		$wNama    = '(';
 		$param    = [];
 		$firstRow = true;
@@ -265,7 +306,7 @@ class SkutransferController extends Controller
 		$q = new CDbCriteria();
 		$q->addCondition("{$wBarcode} OR {$wNama}");
 		$q->params = $param;
-		$barangs      = Barang::model()->findAll($q);
+		$barangs   = Barang::model()->findAll($q);
 
 		$r = [];
 		foreach ($barangs as $barang) {
@@ -275,6 +316,64 @@ class SkutransferController extends Controller
 			];
 		}
 
-		$this->renderJSON($r);
+		$wNomor   = '(';
+		$wNamaSKU = '(';
+		$param    = [];
+		$firstRow = true;
+		$i        = 1;
+		foreach ($arrTerm as $bTerm) {
+			if (!$firstRow) {
+				$wNomor .= ' AND ';
+				$wNamaSKU .= ' AND ';
+			}
+			$wNomor .= "nomor like :term{$i}";
+			$wNamaSKU .= "nama like :term{$i}";
+			$param[":term{$i}"] = "%{$bTerm}%";
+			$firstRow           = false;
+			$i++;
+		}
+		$wNomor .= ')';
+		$wNamaSKU .= ')';
+
+		$q = new CDbCriteria();
+		$q->addCondition("{$wNomor} OR {$wNamaSKU}");
+		$q->params = $param;
+		$skus      = Sku::model()->findAll($q);
+		$rSku      = [];
+		foreach ($skus as $sku) {
+			$rSku[] = [
+				'label' => '[SKU] ' . $sku->nama,
+				'value' => $sku->nomor,
+			];
+		}
+
+		$this->renderJSON(array_merge($rSku, $r));
+	}
+
+	public function renderLinkToUbah($data)
+	{
+		if (!isset($data->nomor)) {
+			$return = '<a href="' .
+				$this->createUrl('ubah', ['id' => $data->id]) . '">' .
+				date('d-m-Y H:i:s', strtotime($data->tanggal)) . '</a>';
+		} else {
+			$return = date('d-m-Y H:i:s', strtotime($data->tanggal));
+		}
+		return $return;
+	}
+
+	public function renderLinkToView($data)
+	{
+		$return = '';
+		if (isset($data->nomor)) {
+			$return = '<a href="' .
+				$this->createUrl('view', ['id' => $data->id]) . '">' .
+				$data->nomor . '</a>';
+		}
+		return $return;
+	}
+
+	public function actionPilihAsal($id){
+		
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 $this->widget('BGridView', [
-    'id'           => 'barang-asal-grid',
-    'dataProvider' => $barangAsal->search(),
+    'id'           => 'barang-tujuan-grid',
+    'dataProvider' => $barangTujuan->search(),
     'columns'      => [
         [
             'name'   => 'barcode',
@@ -29,7 +29,8 @@ $this->widget('BGridView', [
         [
             'header' => 'Pilih',
             'type'   => 'raw',
-            'value'  => 'CHtml::radioButton("selected_dari", false, array("value" => $data->id))',
+            'value'  => 'CHtml::radioButton("selected_ke", false, array("value" => $data->id))',
         ],
+
     ],
 ]);

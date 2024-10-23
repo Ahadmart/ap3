@@ -13,7 +13,18 @@ $this->boxHeader['normal'] = "Sku Transfer: {$model->sku->nama}";
 ?>
 <div class="row">
     <div class="large-6 columns">
-        <?php $this->renderPartial('_ubah_dari', ['model' => $model]); ?>
+        <h4>Dari Barang:</h4>
+        <?php $this->renderPartial('_ubah_dari', [
+            'model'      => $model,
+            'barangAsal' => $barangAsal,
+        ]); ?>
+    </div>
+    <div class="large-6 columns">
+        <h4>Ke Barang:</h4>
+        <?php $this->renderPartial('_ubah_ke', [
+            'model'      => $model,
+            'barangTujuan' => $barangTujuan,
+        ]); ?>
     </div>
 </div>
 <?php
@@ -49,3 +60,26 @@ $this->menu = [
     ],
 ];
 ?>
+
+<script>
+    $("body").on("click", "a.pilih.b-asal", function () {
+        // console.log($(this).attr("href"));
+        var skuTransferId = <?= $model->id ?>;
+        var dataurl = $(this).attr("href");
+
+        $("#barang-asal-grid").hide(500, function () {
+            var datakirim = {
+                'skuTransferId': skuTransferId
+            };
+
+            $.ajax({
+                data: datakirim,
+                url: dataurl,
+                type: "POST",
+                dataType: "json",
+                // success: updateFormDetail
+            });
+        });
+        return false;
+    });
+</script>

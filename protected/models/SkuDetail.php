@@ -74,6 +74,7 @@ class SkuDetail extends CActiveRecord
             'created_at' => 'Created At',
             'namaBarang' => 'Nama',
             'namaSatuan' => 'Satuan',
+            'namaRak'    => 'Rak',
             'skuLevel'   => 'Level'
         ];
     }
@@ -124,6 +125,10 @@ class SkuDetail extends CActiveRecord
                 'namaSatuan' => [
                     'asc'  => 'satuan.nama',
                     'desc' => 'satuan.nama desc',
+                ],
+                'namaRak' => [
+                    'asc'  => 'rak.nama',
+                    'desc' => 'rak.nama desc',
                 ],
                 'level' => [
                     'asc'  => 'sku_level.level',

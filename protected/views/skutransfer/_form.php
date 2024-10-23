@@ -21,7 +21,7 @@
 
 	<div class="row">
 		<div class="small-12 columns">
-			<label for="scan" class="required">Dari Barang <span class="required">*</span></label>
+			<label for="scan" class="required">SKU/Barang <span class="required">*</span></label>
 			<div class="row collapse">
 				<div class="small-3 large-2 columns">
 					<span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
@@ -30,7 +30,7 @@
 					<?php
 					$barcode = !is_null($model->sku) ? $model->sku->barang->barcode : ''
 					?>
-					<input id="scan" type="text" placeholder="Scan [B]arcode / Input nama" accesskey="b" <?php echo $model->isNewRecord ? '' : 'value="' . $barcode . '" autofocus="autofocus"' ?> />
+					<input id="scan" type="text" placeholder="Scan [B]arcode, Nomor SKU, atau Input Nama" accesskey="b" <?php echo $model->isNewRecord ? '' : 'value="' . $barcode . '" autofocus="autofocus"' ?> />
 				</div>
 				<div class="small-3 large-2 columns">
 					<a href="#" class="button postfix" id="tombol-scan-ok"><i class="fa fa-level-down fa-2x fa-rotate-90"></i></a>
@@ -112,12 +112,15 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
 				data: dataKirim,
 				success: function(data) {
 					if (data.sukses) {
-						var hasil = '<h5><small>' + data.nomor + ' </small>' + data.nama + "</h5>";
+						var hasil = '<h5>SKU: ' + data.nama + ' <small>' + data.nomor + ' </small></h5>';
 						$("#info-sku").html(hasil);
 						$("#info-sku").show();
 						$("#SkuTransfer_sku_id").val(data.skuId);
 						$("#SkuTransfer_keterangan").focus();
 					} else {
+						$("#info-sku").html('');
+						$("#info-sku").hide();
+						$("#scan").focus();
 						$.gritter.add({
 							title: 'Error ' + data.error.code,
 							text: data.error.msg,
