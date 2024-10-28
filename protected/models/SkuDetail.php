@@ -91,7 +91,7 @@ class SkuDetail extends CActiveRecord
      * @return CActiveDataProvider the data provider that can return the models
      * based on the search/filter conditions.
      */
-    public function search()
+    public function search($merge = null)
     {
         // @todo Please modify the following code to remove attributes that should not be searched.
 
@@ -102,7 +102,7 @@ class SkuDetail extends CActiveRecord
         $criteria->compare('barang_id', $this->barang_id, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
-        $criteria->compare('created_at', $this->created_at, true);
+        $criteria->compare('t.created_at', $this->created_at, true);
 
         $criteria->with = ['barang', 'barang.satuan'];
 
@@ -136,6 +136,12 @@ class SkuDetail extends CActiveRecord
                 ]
             ],
         ];
+        if ($merge !== null) {
+            $criteria->mergeWith($merge, false);
+        }
+        // echo 'Conditions: ' . $criteria->condition . '<br>';
+        // echo 'Params: ' . print_r($criteria->params, true) . '<br>';
+        // echo 'Order: ' . $criteria->order . '<br>';
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,

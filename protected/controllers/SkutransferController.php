@@ -373,7 +373,92 @@ class SkutransferController extends Controller
 		return $return;
 	}
 
-	public function actionPilihAsal($id){
-		
+	public function actionRenderTujuan()
+	{
+		$skuDetailId = Yii::app()->request->getPost('dariId');
+
+		$skuDetail = SkuDetail::model()->findByPk($skuDetailId);
+		$skuId     = $skuDetail->sku_id;
+		$level     = $skuDetail->skuLevel->level;
+
+		$criteria = new CDbCriteria();
+		// $criteria->join  = '
+		//     JOIN barang br ON br.id = t.barang_id
+		//     JOIN sku_level ON sku_level.satuan_id = br.satuan_id AND sku_level.level < :level
+		// ';
+		$criteria->condition = 't.sku_id = :sku_id AND sku_level.level < :level';
+		$criteria->params    = [':sku_id' => $skuId, ':level' => $level];
+
+		// $skuDetails = SkuDetail::model()->findAll($criteria);
+		// print_r($skuDetails);
+
+		$model = new SkuDetail('search');
+		$this->renderPartial('_ubah_ke', [
+			'barangTujuan' => $model,
+			'criteria'     => $criteria,
+		]);
+	}
+
+	public function actionKonversi()
+	{
+		$r = [
+			'sukses' => false,
+			'error'  => [
+				'code' => 500,
+				'msg'  => 'Request tidak lengkap',
+			],
+		];
+
+		$asalId   = Yii::app()->request->getPost('asalId');
+		$tujuanId = Yii::app()->request->getPost('tujuanId');
+
+		$asal = SkuDetail::model()->findByPk($asalId);
+		if (is_null($asal)) {
+			$err = [
+				'sukses' => false,
+				'error'  => [
+					'code' => 500,
+					'msg'  => 'Tidak ditemukan barang asal konversi',
+				],
+			];
+			$this->renderJSON($err);
+		}
+
+		$tujuan = SkuDetail::model()->findByPk($tujuanId);
+		if (is_null($tujuan)) {
+			$err = [
+				'sukses' => false,
+				'error'  => [
+					'code' => 500,
+					'msg'  => 'Tidak ditemukan barang tujuan konversi',
+				],
+			];
+			$this->renderJSON($err);
+		}
+
+		$levelAsal   = $asal->skuLevel->level;
+		$levelTujuan = $tujuan->skuLevel->level;
+
+		$rK = Yii::app()->db->createCommand()
+			->select('FLOOR(EXP(SUM(LOG(rasio_konversi)))) AS jumlah')
+			->from('sku_level')
+			->where('sku_id = :skuId AND level > :levelTujuan AND level <= :levelAsal', [
+				':skuId'       => $asal->sku_id,
+				':levelTujuan' => $levelTujuan,
+				':levelAsal'   => $levelAsal,
+			])
+			->queryScalar(); // to get a single value result
+
+		$r = [
+			// 'asal' => $asalId,
+			// 'tujuan' => $tujuanId,
+			// 'l1' => $levelAsal,
+			// 'l2' => $levelTujuan,
+			'sukses' => true,
+			'rasioKonversi' => $rK,
+			'satuanAsal'    => $asal->barang->satuan->nama,
+			'satuanTujuan'  => $tujuan->barang->satuan->nama,
+		];
+		$this->renderJSON($r);
 	}
 }
