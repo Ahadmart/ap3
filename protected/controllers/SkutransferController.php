@@ -439,26 +439,48 @@ class SkutransferController extends Controller
 		$levelAsal   = $asal->skuLevel->level;
 		$levelTujuan = $tujuan->skuLevel->level;
 
-		$rK = Yii::app()->db->createCommand()
-			->select('FLOOR(EXP(SUM(LOG(rasio_konversi)))) AS jumlah')
-			->from('sku_level')
-			->where('sku_id = :skuId AND level > :levelTujuan AND level <= :levelAsal', [
-				':skuId'       => $asal->sku_id,
-				':levelTujuan' => $levelTujuan,
-				':levelAsal'   => $levelAsal,
-			])
-			->queryScalar(); // to get a single value result
+		$rK = SkuLevel::kumulatifRasioKonversi($asal->sku_id, $levelAsal, $levelTujuan);
 
 		$r = [
-			// 'asal' => $asalId,
-			// 'tujuan' => $tujuanId,
+			'asal'          => $asalId,
+			'tujuan'        => $tujuanId,
 			// 'l1' => $levelAsal,
 			// 'l2' => $levelTujuan,
-			'sukses' => true,
+			'sukses'        => true,
 			'rasioKonversi' => $rK,
 			'satuanAsal'    => $asal->barang->satuan->nama,
 			'satuanTujuan'  => $tujuan->barang->satuan->nama,
 		];
 		$this->renderJSON($r);
+	}
+
+	public function actionTransfer($id)
+	{
+		$asalId   = Yii::app()->request->getPost('asalId');
+		$tujuanId = Yii::app()->request->getPost('tujuanId');
+		$qty      = Yii::app()->request->getPost('qty');
+
+		$skuDetailAsal   = SkuDetail::model()->findByPk($asalId);
+		$skuDetailTujuan = SkuDetail::model()->findByPk($tujuanId);
+
+		$detail                  = new SkuTransferDetail();
+		$detail->sku_transfer_id = $id;
+		$detail->from_barang_id  = $asalId;
+		$detail->from_satuan_id  = $skuDetailAsal->barang->satuan_id;
+		$detail->from_qty        = $qty;
+		$detail->to_barang_id    = $tujuanId;
+		$detail->to_satuan_id    = $skuDetailTujuan->barang->satuan_id;
+		$detail->to_qty          = $qty * SkuLevel::kumulatifRasioKonversi(
+			$skuDetailAsal->sku_id,
+			$skuDetailAsal->skuLevel->level,
+			$skuDetailTujuan->skuLevel->level
+		);
+
+		if (!$detail->save()) {
+			throw new Exception('Gagal simpan sku transfer detail', 500);
+		}
+
+		$model = $this->loadModel($id);
+		$r     = $model->simpan();
 	}
 }

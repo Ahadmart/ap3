@@ -167,4 +167,17 @@ class SkuLevel extends CActiveRecord
 
         return parent::beforeValidate();
     }
+
+    public static function kumulatifRasioKonversi($skuId, $levelAsal, $levelTujuan)
+    {
+        return Yii::app()->db->createCommand()
+            ->select('FLOOR(EXP(SUM(LOG(rasio_konversi)))) AS jumlah')
+            ->from('sku_level')
+            ->where('sku_id = :skuId AND level > :levelTujuan AND level <= :levelAsal', [
+                ':skuId'       => $skuId,
+                ':levelTujuan' => $levelTujuan,
+                ':levelAsal'   => $levelAsal,
+            ])
+            ->queryScalar();
+    }
 }

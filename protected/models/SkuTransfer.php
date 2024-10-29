@@ -142,7 +142,7 @@ class SkuTransfer extends CActiveRecord
         }
         $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
-        if ($this->scenario === 'transferStok') {
+        if ($this->scenario === 'simpanTransfer') {
             // Status diubah jadi transfer
             $this->status = self::STATUS_TRANSFER;
             // Dapat nomor dan tanggal
@@ -188,5 +188,22 @@ class SkuTransfer extends CActiveRecord
         $kodeTahunBulan = date('ym');
         $sequence       = substr('00000' . $this->cariNomorTahunan(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
+    }
+
+    public function simpan(){
+        $tr = $this->dbConnection->beginTransaction();
+        $this->scenario = 'simpanTransfer';
+        try {
+            $this->simpanTransfer();
+            $tr->commit();
+        } catch (Exception $e){
+            $tr->rollback();
+        }
+    }
+
+    public function simpanTransfer(){
+        if (!$this->save()){
+            throw new Exception('Gagal simpan transfer', 500);
+        }        
     }
 }

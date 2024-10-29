@@ -35,7 +35,7 @@ $this->boxHeader['normal'] = "Sku Transfer: {$model->sku->nama}";
                 <div class="medium-6 columns">
                     <div class="row collapse">
                         <div class="small-4 columns">
-                            <?= CHtml::numberField('qtyasal', '1',['disabled' => 'disabled']) ?>
+                            <?= CHtml::numberField('qtyasal', '1', ['disabled' => 'disabled']) ?>
                         </div>
                         <div class="small-1 columns">
                             <span class="postfix" id="satuanasal">pcs</span>
@@ -94,6 +94,8 @@ $this->menu = [
 
 <script>
     let kumulatifRasioKonversi = 1;
+    let asalId;
+    let tujuanId;
     <?php
     /*
 $('input[name="selected_dari"').on('change', function() {
@@ -127,8 +129,6 @@ console.log($("input[name='selected_ke']:checked").val())
         } else {
             // console.log("keId: " + keId[0])
             updateQtyTransfer();
-            $("#qtyasal").prop("disabled", false);
-            $("#t-transfer").prop("disabled", false);
 
         }
     }
@@ -152,21 +152,43 @@ console.log($("input[name='selected_ke']:checked").val())
                         kumulatifRasioKonversi = data.rasioKonversi;
                         isiData(data)
                     }
-
                 }
             });
         }
     }
 
     function isiData(data) {
-        $jml = $("#qtyasal").val() * kumulatifRasioKonversi;
-        $("#qtytujuan").val($jml);
+        asalId = data.asal;
+        tujuanId = data.tujuan;
+        jml = $("#qtyasal").val() * kumulatifRasioKonversi;
+        $("#qtytujuan").val(jml);
         $("#satuanasal").html(data.satuanAsal);
         $("#satuantujuan").html(data.satuanTujuan);
+        $("#qtyasal").prop("disabled", false);
+        $("#t-transfer").prop("disabled", false);
     }
 
     $("#qtyasal").on('input', function() {
-        $jml = $("#qtyasal").val() * kumulatifRasioKonversi;
-        $("#qtytujuan").val($jml);
+        jml = $("#qtyasal").val() * kumulatifRasioKonversi;
+        $("#qtytujuan").val(jml);
+    })
+
+    $("#t-transfer").on('click', function() {
+        var dataKirim = {
+            'asalId': asalId,
+            'tujuanId': tujuanId,
+            'qty': $("#qtyasal").val()
+        };
+        $.ajax({
+            type: "POST",
+            url: '<?php echo $this->createUrl('transfer', ['id' => $model->id]); ?>',
+            data: dataKirim,
+            dataType: "json",
+            success: function(data) {
+                if (data.sukses) {
+
+                }
+            }
+        });
     })
 </script>
