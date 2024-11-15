@@ -269,9 +269,12 @@ class PenjualanController extends Controller
         ];
         if (isset($_POST['tambah_barang']) && $_POST['tambah_barang']) {
             $penjualan = $this->loadModel($id);
-            $qty       = $_POST['qty'];
-            $barcode   = $_POST['barcode'];
-            $return    = $penjualan->transfer_mode ? $penjualan->transferBarang($barcode, $qty, true) : $penjualan->tambahBarang($barcode, $qty, true);
+            // Tambah barang hanya bisa jika status masih draft
+            if ($penjualan->status == Penjualan::STATUS_DRAFT) {
+                $qty       = $_POST['qty'];
+                $barcode   = $_POST['barcode'];
+                $return    = $penjualan->transfer_mode ? $penjualan->transferBarang($barcode, $qty, true) : $penjualan->tambahBarang($barcode, $qty, true);
+            }
         }
         $this->renderJSON($return);
     }
