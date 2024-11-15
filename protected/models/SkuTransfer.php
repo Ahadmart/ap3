@@ -201,9 +201,14 @@ class SkuTransfer extends CActiveRecord
         }
     }
 
-    public function simpanTransfer(){
+    private function simpanTransfer(){
         if (!$this->save()){
             throw new Exception('Gagal simpan transfer', 500);
-        }        
+        }
+        // Detail hanya 1 baris
+        $detail = SkuTransferDetail::model()->find('sku_transfer_id = :id', [':id' => $this->id]);     
+        $ib = new InventoryBalance();
+        $ib->bukaKemasan($detail);
+        
     }
 }

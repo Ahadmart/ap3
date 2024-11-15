@@ -46,6 +46,7 @@ class m241009_034615_create_table_sku_transfer extends CDbMigration
 				`updated_by` int(10) unsigned NOT NULL,
 				`created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
 				PRIMARY KEY (`id`),
+  				UNIQUE KEY `sku_transfer_id_UNIQUE` (`sku_transfer_id`),
 				KEY `fk_sku_transfer_detail_updatedby_idx` (`updated_by`),
 				KEY `fk_sku_transfer_detail_from_barang_idx` (`from_barang_id`),
 				KEY `fk_sku_transfer_detail_to_barang_idx` (`to_barang_id`),

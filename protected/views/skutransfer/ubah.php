@@ -10,6 +10,8 @@ $this->breadcrumbs = [
 
 $this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = "Sku Transfer: {$model->sku->nama}";
+
+$this->pageTitle = Yii::app()->name . ' - ' . $this->boxHeader['normal'];
 ?>
 <div class="row">
     <div class="large-6 columns">
