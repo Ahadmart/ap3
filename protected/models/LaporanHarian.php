@@ -1054,7 +1054,8 @@ class LaporanHarian extends CActiveRecord
                     profil_id,
                     IFNULL(kas_bank_id, 1) kas_bank_id,
                     CASE
-                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_penerimaan - IFNULL(t_selain_kas.jumlah, 0))
+                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_penerimaan - IFNULL(t_selain_kas.jumlah, 0))                      
+                        WHEN kas_bank_id != 1 AND jumlah_pembayaran > jumlah_penerimaan THEN SUM(jumlah_penerimaan)
                         ELSE SUM(jumlah_pembayaran)
                     END jumlah
             FROM
@@ -1113,7 +1114,8 @@ class LaporanHarian extends CActiveRecord
                     profil_id,
                     IFNULL(kas_bank_id, 1) kas_bank_id,
                     CASE
-                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_pengeluaran - IFNULL(t_selain_kas.jumlah, 0))
+                        WHEN kas_bank_id = 1 OR kas_bank_id IS NULL THEN SUM(jumlah_pengeluaran - IFNULL(t_selain_kas.jumlah, 0))                      
+                        WHEN kas_bank_id != 1 AND jumlah_pembayaran > jumlah_pengeluaran THEN SUM(jumlah_pengeluaran)
                         ELSE SUM(jumlah_pembayaran)
                     END jumlah
             FROM
