@@ -26,6 +26,8 @@ class SkuTransfer extends CActiveRecord
     const STATUS_DRAFT    = 0;
     const STATUS_TRANSFER = 1;
 
+    public $max; // Untuk mencari untuk nomor surat;
+
     /**
      * @return string the associated database table name
      */
@@ -193,20 +195,28 @@ class SkuTransfer extends CActiveRecord
     public function simpan(){
         $tr = $this->dbConnection->beginTransaction();
         $this->scenario = 'simpanTransfer';
+        Yii::log('simpan()');
         try {
+            Yii::log('$this->simpanTransfer()');
             $this->simpanTransfer();
             $tr->commit();
         } catch (Exception $e){
             $tr->rollback();
+            throw $e;
         }
     }
 
     private function simpanTransfer(){
+        // Yii::log('simpanTransfer() 1');
         if (!$this->save()){
+            Yii::log('Gagal simpan transfer');
             throw new Exception('Gagal simpan transfer', 500);
         }
+        // Yii::log('simpanTransfer() 2');
         // Detail hanya 1 baris
         $detail = SkuTransferDetail::model()->find('sku_transfer_id = :id', [':id' => $this->id]);     
+
+        // Yii::log('simpan | detail: ' . var_export($detail, true));
         $ib = new InventoryBalance();
         $ib->bukaKemasan($detail);
         

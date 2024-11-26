@@ -354,8 +354,8 @@ class SkutransferController extends Controller
     {
         if (!isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('ubah', ['id' => $data->id]) . '">' .
-            date('d-m-Y H:i:s', strtotime($data->tanggal)) . '</a>';
+                $this->createUrl('ubah', ['id' => $data->id]) . '">' .
+                date('d-m-Y H:i:s', strtotime($data->tanggal)) . '</a>';
         } else {
             $return = date('d-m-Y H:i:s', strtotime($data->tanggal));
         }
@@ -367,8 +367,8 @@ class SkutransferController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('view', ['id' => $data->id]) . '">' .
-            $data->nomor . '</a>';
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->nomor . '</a>';
         }
         return $return;
     }
@@ -462,22 +462,22 @@ class SkutransferController extends Controller
 
         $skuDetailAsal   = SkuDetail::model()->findByPk($asalId);
         $skuDetailTujuan = SkuDetail::model()->findByPk($tujuanId);
-		
-		// Insert on duplicate update
+
+        // Insert on duplicate update
         $detail = SkuTransferDetail::model()->find('sku_transfer_id = :id', [':id' => $id]) ?? new SkuTransferDetail();
 
-		$detail->sku_transfer_id = $id;
-        $detail->from_barang_id  = $asalId;
+        $detail->sku_transfer_id = $id;
+        $detail->from_barang_id  = $skuDetailAsal->barang_id;
         $detail->from_satuan_id  = $skuDetailAsal->barang->satuan_id;
         $detail->from_qty        = $qty;
-        $detail->to_barang_id    = $tujuanId;
+        $detail->to_barang_id    = $skuDetailTujuan->barang_id;
         $detail->to_satuan_id    = $skuDetailTujuan->barang->satuan_id;
         $detail->to_qty          = $qty * SkuLevel::kumulatifRasioKonversi(
             $skuDetailAsal->sku_id,
             $skuDetailAsal->skuLevel->level,
             $skuDetailTujuan->skuLevel->level
         );
-
+        Yii::log('detail: ' . var_export($detail, true));
         if (!$detail->save()) {
             throw new Exception('Gagal simpan sku transfer detail', 500);
         }

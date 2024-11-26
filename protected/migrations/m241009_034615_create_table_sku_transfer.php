@@ -12,11 +12,11 @@ class m241009_034615_create_table_sku_transfer extends CDbMigration
 			[
 				"
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`sku_id` int(10) unsigned NOT NULL,
 				`tanggal` datetime NOT NULL,
 				`nomor` varchar(45) DEFAULT NULL,
 				`referensi` varchar(45) DEFAULT NULL,
 				`tanggal_referensi` date DEFAULT NULL,
-				`sku_id` int(10) unsigned DEFAULT NULL,
 				`keterangan` varchar(500) DEFAULT NULL,
 				`status` tinyint(3) unsigned NOT NULL DEFAULT 0 COMMENT '0=draft; 1=transfer',
 				`updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -25,6 +25,8 @@ class m241009_034615_create_table_sku_transfer extends CDbMigration
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `nomor` (`nomor`),
 				KEY `fk_sku_transfer_updatedby_idx` (`updated_by`),
+				KEY `fk_sku_transfer_sku_idx` (`sku_id`),
+				CONSTRAINT `fk_sku_transfer_sku` FOREIGN KEY (`sku_id`) REFERENCES `sku` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 				CONSTRAINT `fk_sku_transfer_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION",
 			],
 			$tableOptions
@@ -46,7 +48,7 @@ class m241009_034615_create_table_sku_transfer extends CDbMigration
 				`updated_by` int(10) unsigned NOT NULL,
 				`created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
 				PRIMARY KEY (`id`),
-  				UNIQUE KEY `sku_transfer_id_UNIQUE` (`sku_transfer_id`),
+				UNIQUE KEY `sku_transfer_id_UNIQUE` (`sku_transfer_id`),
 				KEY `fk_sku_transfer_detail_updatedby_idx` (`updated_by`),
 				KEY `fk_sku_transfer_detail_from_barang_idx` (`from_barang_id`),
 				KEY `fk_sku_transfer_detail_to_barang_idx` (`to_barang_id`),

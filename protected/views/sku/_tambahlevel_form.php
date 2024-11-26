@@ -44,7 +44,7 @@
                     } else {
                         echo $form->textField($model, 'rasio_konversi', ['accesskey' => 'r']);
                     }
-?>
+                    ?>
                 </div>
                 <div class="small-3 columns">
                     <span class="postfix"><b><span id="satuan-dibawah"><?= $satuanTerakhir ?></span></b></span>

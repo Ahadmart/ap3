@@ -794,6 +794,9 @@ class InventoryBalance extends CActiveRecord
 
             case InventoryBalance::ASAL_RETURBELI:
                 return ReturPembelian::model()->find('nomor=:nomor', [':nomor' => $this->nomor_dokumen]);
+
+            case InventoryBalance::ASAL_SKU_TRANSFER:
+                return SkuTransfer::model()->find('nomor=:nomor', [':nomor' => $this->nomor_dokumen]);
         }
     }
 
@@ -854,10 +857,19 @@ class InventoryBalance extends CActiveRecord
         return true;
     }
 
-    public function bukaKemasan($transferDetail) {
+    public function bukaKemasan($transferDetail)
+    {
         $inventoryTerpakai = $this->kurangiKemasan($transferDetail);
-        foreach ($inventoryTerpakai as $layer){
+        $qtyTotal = 0;
+        $hargaBeliSubTotal = 0;
+        foreach ($inventoryTerpakai as $layer) {
+            $qtyTotal += $layer['qtyTerpakai'];
+            $hargaBeliSubTotal += $layer['qtyTerpakai'] * $layer['hargaBeli'];
+        }
+        $hargaBeliRerata = $hargaBeliSubTotal / $qtyTotal;
 
+        foreach ($inventoryTerpakai as $layer) {
+            $this->tambahHasilBongkaran($transferDetail, $layer, $hargaBeliRerata);
         }
         // $this->tambahHasilBongkaran($transferDetail);
     }
@@ -888,6 +900,7 @@ class InventoryBalance extends CActiveRecord
         $curLayer          = $layer;
         $sisa              = $transferDetail->from_qty;
 
+        // Yii::log('Inventories: ' . var_export($inventories));
         foreach ($inventories as $inventory) {
             $curLayer--;
             $qtyTerpakai = 0;
@@ -946,14 +959,15 @@ class InventoryBalance extends CActiveRecord
         return $inventoryTerpakai;
     }
 
-    public function tambahHasilBongkaran($transferDetail, $pembelianDetailId, $hargaBeli, $qty) {
-        $this->asal = self::ASAL_SKU_TRANSFER;
-        $this->nomor_dokumen = $transferDetail->skuTransfer->nomor;
-        $this->pembelian_detail_id = $pembelianDetailId;
-        $this->barang_id = $transferDetail->to_barang_id;
-        $this->harga_beli = $hargaBeli;
-        $this->qty_awal = $qty;
-        $this->qty = $qty;
+    public function tambahHasilBongkaran($transferDetail, $layerInventory, $hargaBeli)
+    {
+        $this->asal                = self::ASAL_SKU_TRANSFER;
+        $this->nomor_dokumen       = $transferDetail->skuTransfer->nomor;
+        $this->pembelian_detail_id = $layerInventory['pembelianDetailId'];
+        $this->barang_id           = $transferDetail->to_barang_id;
+        $this->harga_beli          = $hargaBeli;
+        $this->qty_awal            = $transferDetail->to_qty;
+        $this->qty                 = $transferDetail->to_qty;
 
         $layerTerakhir = $this->layerTerakhir($transferDetail->to_barang_id);
         if (!is_null($layerTerakhir)) {
@@ -976,6 +990,5 @@ class InventoryBalance extends CActiveRecord
         } else {
             throw new Exception('Gagal simpan layer inventory');
         }
-
     }
 }

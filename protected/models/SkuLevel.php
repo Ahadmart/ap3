@@ -150,14 +150,15 @@ class SkuLevel extends CActiveRecord
 
     public function beforeValidate()
     {
-        $jumlahPerUnit = 1;
+        $jumlahPerUnit = $this->rasio_konversi;
         if ($this->level >= 3) {
-            for ($i = $this->level; $i >= 1; $i--) {
+            for ($i = $this->level - 1; $i >= 1; $i--) {
                 $skuLevel = SkuLevel::model()->find('sku_id = :skuId AND level = :level', [
                     ':skuId' => $this->sku_id,
                     ':level' => $i,
                 ]);
-                Yii::log('Level: ' . $i . '; skuId: ' . $this->sku_id);
+                // Yii::log('Level: ' . $i . '; skuId: ' . $this->sku_id);
+                // Yii::log(var_export($skuLevel, true));
                 $jumlahPerUnit *= $skuLevel->rasio_konversi;
             }
         } else {

@@ -243,8 +243,12 @@ class SkuController extends Controller
 
         if (isset($_POST['SkuLevel'])) {
             $skuLevel->attributes = $_POST['SkuLevel'];
+            // Yii::log("Sku Level: " . var_export($skuLevel, true));
+
             if ($skuLevel->save()) {
                 $this->redirect(['ubah', 'id' => $id]);
+            } else {
+                throw new CHttpException(500, 'Gagal simpan sku level: ' . serialize($skuLevel->getErrors()));
             }
         }
 
