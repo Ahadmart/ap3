@@ -34,8 +34,21 @@ class SkutransferController extends Controller
      */
     public function actionView($id)
     {
+        $this->layout = '//layouts/box_kecil';
+        
+        $detailModel = new SkuTransferDetail('search');
+        $detailModel->unsetAttributes(); // clear any default values
+        if (isset($_GET['SkuTransferDetail'])) {
+            $detailModel->attributes = $_GET['SkuTransferDetail'];
+        }
+        $detailModel->setAttribute('sku_transfer_id', $id);
+
+        $skuTransferDetail = SkuTransferDetail::model()->findAll('sku_transfer_id = :id', ['id' => $id]);
+
         $this->render('view', [
-            'model' => $this->loadModel($id),
+            'model'             => $this->loadModel($id),
+            'detailModel'       => $detailModel,
+            'skuTransferDetail' => $skuTransferDetail,
         ]);
     }
 

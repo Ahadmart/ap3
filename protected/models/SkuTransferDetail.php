@@ -61,10 +61,10 @@ class SkuTransferDetail extends CActiveRecord
         // class name for the relations automatically generated below.
         return [
             'fromBarang'  => [self::BELONGS_TO, 'Barang', 'from_barang_id'],
-            'fromSatuan'  => [self::BELONGS_TO, 'BarangSatuan', 'from_satuan_id'],
+            'fromSatuan'  => [self::BELONGS_TO, 'SatuanBarang', 'from_satuan_id'],
             'skuTransfer' => [self::BELONGS_TO, 'SkuTransfer', 'sku_transfer_id'],
             'toBarang'    => [self::BELONGS_TO, 'Barang', 'to_barang_id'],
-            'toSatuan'    => [self::BELONGS_TO, 'BarangSatuan', 'to_satuan_id'],
+            'toSatuan'    => [self::BELONGS_TO, 'SatuanBarang', 'to_satuan_id'],
             'updatedBy'   => [self::BELONGS_TO, 'User', 'updated_by'],
         ];
     }
