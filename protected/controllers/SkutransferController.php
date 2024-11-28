@@ -35,7 +35,7 @@ class SkutransferController extends Controller
     public function actionView($id)
     {
         $this->layout = '//layouts/box_kecil';
-        
+
         $detailModel = new SkuTransferDetail('search');
         $detailModel->unsetAttributes(); // clear any default values
         if (isset($_GET['SkuTransferDetail'])) {
@@ -101,7 +101,7 @@ class SkutransferController extends Controller
         if (isset($_GET['SkuDetail']) && isset($_GET['ajax']) && $_GET['ajax'] == 'barang-asal-grid') {
             $barangAsal->attributes = $_GET['SkuDetail'];
         }
-        $barangAsal->setAttribute('sku_id', '=' . $id);
+        $barangAsal->setAttribute('sku_id', '=' . $model->sku_id);
 
         $barangTujuan = SkuDetail::model()->findAll('sku_id = :skuId', [':skuId' => $id]);
         $barangTujuan = new SkuDetail('search');
@@ -109,7 +109,7 @@ class SkutransferController extends Controller
         if (isset($_GET['SkuDetail']) && isset($_GET['ajax']) && $_GET['ajax'] == 'barang-tujuan-grid') {
             $barangTujuan->attributes = $_GET['SkuDetail'];
         }
-        $barangAsal->setAttribute('sku_id', '=' . $id);
+        $barangTujuan->setAttribute('sku_id', '=' . $model->sku_id);
 
         $this->render('ubah', [
             'model'        => $model,
@@ -496,6 +496,9 @@ class SkutransferController extends Controller
         }
 
         $model = $this->loadModel($id);
-        $r     = $model->simpan();
+        $r     = $model->transfer();
+        if ($r['sukses']) {
+            $this->redirect(['index']);
+        }
     }
 }

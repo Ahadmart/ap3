@@ -860,16 +860,17 @@ class InventoryBalance extends CActiveRecord
     public function bukaKemasan($transferDetail)
     {
         $inventoryTerpakai = $this->kurangiKemasan($transferDetail);
-        $qtyTotal = 0;
+        $qtyTotal          = 0;
         $hargaBeliSubTotal = 0;
         foreach ($inventoryTerpakai as $layer) {
             $qtyTotal += $layer['qtyTerpakai'];
             $hargaBeliSubTotal += $layer['qtyTerpakai'] * $layer['hargaBeli'];
         }
-        $hargaBeliRerata = $hargaBeliSubTotal / $qtyTotal;
 
+        $fromHargaBeliRerata = $hargaBeliSubTotal / $qtyTotal;
+        $toHargaBeliSatuan   = $fromHargaBeliRerata / ($transferDetail->to_qty / $transferDetail->from_qty);
         foreach ($inventoryTerpakai as $layer) {
-            $this->tambahHasilBongkaran($transferDetail, $layer, $hargaBeliRerata);
+            $this->tambahHasilBongkaran($transferDetail, $layer, $toHargaBeliSatuan);
         }
         // $this->tambahHasilBongkaran($transferDetail);
     }

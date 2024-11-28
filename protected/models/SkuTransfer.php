@@ -156,8 +156,15 @@ class SkuTransfer extends CActiveRecord
 
     public function beforeValidate()
     {
-        $this->tanggal_referensi = empty($this->tanggal_referensi) ? NULL : date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d');
+        $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : NULL;
         return parent::beforeValidate();
+    }
+
+    public function afterFind()
+    {
+        // $this->tanggal = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
+        $this->tanggal_referensi = !is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
+        return parent::afterFind();
     }
 
     /**
@@ -192,21 +199,29 @@ class SkuTransfer extends CActiveRecord
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
-    public function simpan(){
-        $tr = $this->dbConnection->beginTransaction();
+    public function transfer()
+    {
         $this->scenario = 'simpanTransfer';
+        $tr = $this->dbConnection->beginTransaction();
         Yii::log('simpan()');
+        $r = [
+            'sukses' => false
+        ];
         try {
             Yii::log('$this->simpanTransfer()');
             $this->simpanTransfer();
             $tr->commit();
-        } catch (Exception $e){
+            return [
+                'sukses' => true
+            ];
+        } catch (Exception $e) {
             $tr->rollback();
             throw $e;
         }
     }
 
-    private function simpanTransfer(){
+    private function simpanTransfer()
+    {
         // Yii::log('simpanTransfer() 1');
         if (!$this->save()){
             Yii::log('Gagal simpan transfer');
@@ -214,11 +229,10 @@ class SkuTransfer extends CActiveRecord
         }
         // Yii::log('simpanTransfer() 2');
         // Detail hanya 1 baris
-        $detail = SkuTransferDetail::model()->find('sku_transfer_id = :id', [':id' => $this->id]);     
+        $detail = SkuTransferDetail::model()->find('sku_transfer_id = :id', [':id' => $this->id]);
 
         // Yii::log('simpan | detail: ' . var_export($detail, true));
         $ib = new InventoryBalance();
         $ib->bukaKemasan($detail);
-        
     }
 }
