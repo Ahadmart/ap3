@@ -218,7 +218,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         enableEditable();
     });
 
-    $(".forminputmanual").submit(function(e) {
+    $(document).on("submit", ".forminputmanual", function(e) {
         e.preventDefault();
         $.ajax({
             url: $(this).attr('action'),
