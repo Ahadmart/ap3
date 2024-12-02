@@ -120,8 +120,13 @@ class SkuTransfer extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $sort = [
+            'defaultOrder' => 't.status, t.tanggal desc',
+        ];
+
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
+            'sort'     => $sort,
         ]);
     }
 
@@ -156,13 +161,13 @@ class SkuTransfer extends CActiveRecord
 
     public function beforeValidate()
     {
-        $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : NULL;
+        $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : null;
         return parent::beforeValidate();
     }
 
     public function afterFind()
     {
-        // $this->tanggal = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
+        $this->tanggal           = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
         $this->tanggal_referensi = !is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
         return parent::afterFind();
     }
@@ -177,7 +182,7 @@ class SkuTransfer extends CActiveRecord
         $data  = $this->find(
             [
                 'select'    => 'max(substring(nomor,9)*1) as max',
-                'condition' => "substring(nomor,5,2)='{$tahun}'"
+                'condition' => "substring(nomor,5,2)='{$tahun}'",
             ]
         );
 
@@ -202,17 +207,17 @@ class SkuTransfer extends CActiveRecord
     public function transfer()
     {
         $this->scenario = 'simpanTransfer';
-        $tr = $this->dbConnection->beginTransaction();
+        $tr             = $this->dbConnection->beginTransaction();
         Yii::log('simpan()');
         $r = [
-            'sukses' => false
+            'sukses' => false,
         ];
         try {
             Yii::log('$this->simpanTransfer()');
             $this->simpanTransfer();
             $tr->commit();
             return [
-                'sukses' => true
+                'sukses' => true,
             ];
         } catch (Exception $e) {
             $tr->rollback();
@@ -223,7 +228,7 @@ class SkuTransfer extends CActiveRecord
     private function simpanTransfer()
     {
         // Yii::log('simpanTransfer() 1');
-        if (!$this->save()){
+        if (!$this->save()) {
             Yii::log('Gagal simpan transfer');
             throw new Exception('Gagal simpan transfer', 500);
         }

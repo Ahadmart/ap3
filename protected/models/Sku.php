@@ -114,8 +114,13 @@ class Sku extends CActiveRecord
 		$criteria->compare('updated_by', $this->updated_by, true);
 		$criteria->compare('created_at', $this->created_at, true);
 
+		$sort = [
+			'defaultOrder' => 't.nama',
+		];
+
 		return new CActiveDataProvider($this, [
 			'criteria' => $criteria,
+			'sort'     => $sort,
 		]);
 	}
 
