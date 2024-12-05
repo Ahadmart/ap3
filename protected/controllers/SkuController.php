@@ -329,6 +329,7 @@ class SkuController extends Controller
 
         $return = ['sukses' => false];
         if ($skuLevel->save()) {
+            Skulevel::syncJPUAtas($skuLevel->sku_id, $skuLevel->level + 1);
             $return = ['sukses' => true];
         }
 

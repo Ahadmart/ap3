@@ -181,4 +181,33 @@ class SkuLevel extends CActiveRecord
             ])
             ->queryScalar();
     }
+
+    /**
+     * Method syncJPUAtas
+     * Menghitung ulang Jumlah Per Unit untuk level di atas $startLevel
+     * @param int $skuId sku ID
+     * @param int $startLevel Level mulai hitung ulang
+     *
+     * @return void
+     */
+    public static function syncJPUAtas($skuId, $startLevel)
+    {
+        if ($startLevel < 3) {
+            // Nothing to do
+            return true;
+        }
+
+        $skuLevels = SkuLevel::model()->findAll('sku_id=:id AND level >= :level', [
+            ':id'    => $skuId,
+            ':level' => $startLevel,
+        ]);
+        if (!empty($skuLevels)) {
+            foreach ($skuLevels as $level) {
+                $level->validate();
+                if (!$level->hasErrors()) {
+                    $level->save(false);
+                }
+            }
+        }
+    }
 }

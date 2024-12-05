@@ -15,14 +15,14 @@ $this->widget('BGridView', [
 	'dataProvider' => $model->search(),
 	'filter'       => $model,
 	'columns'      => [
-		array(
-			'class' => 'BDataColumn',
-			'name' => 'nomor',
-			'header' => '<span class="ak">N</span>omor',
+		[
+			'class'     => 'BDataColumn',
+			'name'      => 'nomor',
+			'header'    => '<span class="ak">N</span>omor',
 			'accesskey' => 'n',
-			'type' => 'raw',
-			'value' => array($this, 'renderLinkToView')
-		),
+			'type'      => 'raw',
+			'value'     => [$this, 'renderLinkToView'],
+		],
 		[
 			'class'     => 'BDataColumn',
 			'name'      => 'tanggal',
@@ -33,7 +33,7 @@ $this->widget('BGridView', [
 		],
 		'referensi',
 		'tanggal_referensi',
-		'sku_id',
+		// 'sku_id',
 		/*
         'keterangan',
         'status',
