@@ -188,7 +188,7 @@ console.log($("input[name='selected_ke']:checked").val())
             dataType: "json",
             success: function(data) {
                 if (data.sukses) {
-
+                    window.location.replace("<?php echo $this->createUrl('index'); ?>");
                 }
             }
         });

@@ -85,6 +85,12 @@ class SkutransferController extends Controller
     {
         $model = $this->loadModel($id);
 
+
+        // Jika sudah disimpan (status bukan draft) maka tidak bisa diubah lagi
+        if ($model->status != SkuTransfer::STATUS_DRAFT) {
+            $this->redirect(['view', 'id' => $id]);
+        }
+
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
@@ -497,8 +503,6 @@ class SkutransferController extends Controller
 
         $model = $this->loadModel($id);
         $r     = $model->transfer();
-        if ($r['sukses']) {
-            $this->redirect(['index']);
-        }
+        $this->renderJSON($r);
     }
 }

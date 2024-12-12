@@ -49,10 +49,6 @@ $this->menu = [
         'itemOptions'    => ['class' => 'has-form hide-for-small-only'],
         'label'          => false,
         'items'          => [
-            ['label' => '<i class="fa fa-pencil"></i> <span class="ak">U</span>bah', 'url' => $this->createUrl('ubah', ['id' => $model->id]), 'linkOptions' => [
-                'class'     => 'button',
-                'accesskey' => 'u',
-            ]],
             ['label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', ['id' => $model->id]), 'linkOptions' => [
                 'class'     => 'alert button',
                 'accesskey' => 'h',
@@ -70,9 +66,6 @@ $this->menu = [
         'itemOptions'    => ['class' => 'has-form show-for-small-only'],
         'label'          => false,
         'items'          => [
-            ['label' => '<i class="fa fa-pencil"></i>', 'url' => $this->createUrl('ubah', ['id' => $model->id]), 'linkOptions' => [
-                'class' => 'button',
-            ]],
             ['label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', ['id' => $model->id]), 'linkOptions' => [
                 'class'   => 'alert button',
                 'submit'  => ['hapus', 'id' => $model->id],
