@@ -131,7 +131,7 @@ class ReportKartuStokForm extends CFormModel
             JOIN profil ON profil.id = `retur`.profil_id 
             UNION SELECT 
                     hpp.id,
-                    :kodePenjualan tipe,
+                    :kodePenjualan kode,
                     hpp.qty,
                     hpp.harga_beli,
                     penjualan.nomor,
@@ -146,7 +146,7 @@ class ReportKartuStokForm extends CFormModel
             JOIN profil ON profil.id = penjualan.profil_id 
             UNION SELECT 
                 rd.id, 
-                :kodeReturPenjualan tipe, 
+                :kodeReturPenjualan kode, 
                 rd.qty, 
                 0 harga_beli, 
                 retur.nomor, 
@@ -167,14 +167,34 @@ class ReportKartuStokForm extends CFormModel
                 AND ib.barang_id = :barangId
             JOIN retur_pembelian retur ON rd.retur_pembelian_id = retur.id AND retur.status = :batalReturPembelian
                 AND DATE_FORMAT(retur.updated_at, '%Y-%m-%d') BETWEEN :dari AND :sampai
-            JOIN profil ON profil.id = `retur`.profil_id) t1
+            JOIN profil ON profil.id = `retur`.profil_id
+            UNION SELECT 
+                st.id,
+                    :kodeTransferStok kode,
+                    CASE
+                        WHEN from_barang_id = :barangId THEN -from_qty
+                        WHEN to_barang_id = :barangId THEN to_qty
+                        ELSE 0
+                    END qty,
+                    0 harga_beli,
+                    st.nomor,
+                    st.tanggal,
+                    'Internal' nama
+            FROM
+                sku_transfer_detail std
+            JOIN sku_transfer st ON st.id = std.sku_transfer_id
+                AND st.status != :draftTransferStok 
+                AND DATE_FORMAT(st.tanggal, '%Y-%m-%d') BETWEEN :dari AND :sampai
+            WHERE
+                from_barang_id = :barangId
+                    OR to_barang_id = :barangId) t1
             ORDER BY tanggal            
                 ";
         $sql = " 
             CREATE TEMPORARY TABLE IF NOT EXISTS 
             {$tempTableName} (
-              `local_id` int(10) UNSIGNED DEFAULT NULL,
-              `tipe` varchar(45) DEFAULT NULL,
+              `id` int(10) UNSIGNED DEFAULT NULL,
+              `kode` varchar(45) DEFAULT NULL,
               `qty` int(11) DEFAULT NULL,
               `harga_beli` decimal(18,2) DEFAULT NULL,
               `nomor` varchar(45) DEFAULT NULL,
@@ -195,6 +215,7 @@ class ReportKartuStokForm extends CFormModel
             ':kodeReturPembelianBatal' => KodeDokumen::RETUR_PEMBELIAN,
             ':kodePenjualan' => KodeDokumen::PENJUALAN,
             ':kodeReturPenjualan' => KodeDokumen::RETUR_PENJUALAN,
+            ':kodeTransferStok' => KodeDokumen::TRANSFER_STOK,
             ':dari' => $dari,
             ':sampai' => $sampai,
             ':draftSo' => StockOpname::STATUS_DRAFT,
@@ -205,6 +226,7 @@ class ReportKartuStokForm extends CFormModel
             ':draftReturPenjualan' => ReturPenjualan::STATUS_DRAFT,
             ':returBeliPiutang' => ReturPembelian::STATUS_PIUTANG,
             ':returBeliLunas' => ReturPembelian::STATUS_LUNAS,
+            ':draftTransferStok' => SkuTransfer::STATUS_DRAFT,
         ]);
 
         $com = Yii::app()->db->createCommand()

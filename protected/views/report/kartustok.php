@@ -68,7 +68,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                             }
                         }
                         /* Jika SO lihat tanda nya */
-                        if ($barisReport['kode'] == KodeDokumen::SO) {
+                        if ($barisReport['kode'] == KodeDokumen::SO || $barisReport['kode'] == KodeDokumen::TRANSFER_STOK) {
                             if ($barisReport['qty'] > 0) {
                                 $in = $barisReport['qty'];
                             } else {

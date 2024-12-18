@@ -146,7 +146,8 @@ class KodeDokumen extends CActiveRecord
             self::RETUR_PEMBELIAN => 'Retur Pembelian',
             self::PENJUALAN => 'Penjualan',
             self::RETUR_PENJUALAN => 'Retur Penjualan',
-            self::SO => 'Stock Opname'
+            self::SO => 'Stock Opname',
+            self::TRANSFER_STOK => 'Transfer Stok',
         ];
     }
 
