@@ -25,7 +25,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
     </div>
 
     <?php
-    if (!empty($report['detail'])) :
+    if (!is_null($report)) :
     ?>
         <div class="small-12 large-8 columns">
             <h6><?= $model->namaBarang ?> <small><?= $model->barcode ?></small></h6>
