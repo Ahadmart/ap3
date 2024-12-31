@@ -42,16 +42,19 @@
 	<?php echo $form->error($model, 'struktur_id', ['class' => 'error']); ?>
 	</div>
 	</div>
+	*/
+	?>
 
 	<div class="row">
 	<div class="small-12 columns">
 	<?php echo $form->labelEx($model, 'kategori_id'); ?>
-	<?php echo $form->textField($model, 'kategori_id', ['size' => 10, 'maxlength' => 10]); ?>
+	<?php 
+            echo $form->dropDownList($model, 'kategori_id', CHtml::listData(KategoriBarang::model()->findAll(['order' => 'nama']), 'id', 'nama'), [
+                'empty' => 'Pilih satu..',
+            ]); ?>
 	<?php echo $form->error($model, 'kategori_id', ['class' => 'error']); ?>
 	</div>
 	</div>
-	*/
-	?>
 
 	<div class="row">
 		<div class="small-12 columns">

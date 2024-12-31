@@ -12,7 +12,7 @@ $this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
 ?>
 
-<div id="tambahbarang-list" class="medium reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
+<div id="tambahbarang-list" class="mediu m reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 <div id="tambahlevel-form" class="medium reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 
 <div class="row">
@@ -23,19 +23,13 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
     </div>
     <div class="medium-6 large-8 columns">
         <div class="panel">
-            <!-- <a class="right tiny bigfont button">Tambah barang</a> -->
-            <div class="row">
-                <?=
-                CHtml::link('Tambah Barang', '#', [
-                    'class'          => 'right tiny bigfont button',
-                    'data-reveal-id' => 'tambahbarang-list',
-                    'id'             => 'tombol-tambahbarang',
-                ])
-                ?>
-            </div>
-            <div class="row">
-                <?php $this->renderPartial('_ubah_detail', ['modelDetail' => $modelDetail]); ?>
-            </div>
+            <?php
+            $this->renderPartial('_struktur', [
+                'sku'           => $model,
+                'lv1'           => $lv1,
+                'strukturDummy' => $strukturDummy,
+            ]);
+            ?>
         </div>
     </div>
 </div>
@@ -59,6 +53,24 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
             </div>
         </div>
     </div>
+
+    <div class="medium-6 large-8 columns">
+        <div class="panel">
+            <!-- <a class="right tiny bigfont button">Tambah barang</a> -->
+            <div class="row">
+                <?=
+                CHtml::link('Tambah Barang', '#', [
+                    'class'          => 'right tiny bigfont button',
+                    'data-reveal-id' => 'tambahbarang-list',
+                    'id'             => 'tombol-tambahbarang',
+                ])
+                ?>
+            </div>
+            <div class="row">
+                <?php $this->renderPartial('_ubah_detail', ['modelDetail' => $modelDetail]); ?>
+            </div>
+        </div>
+
 </div>
 <script>
     $("#tombol-tambahbarang").click(function() {
@@ -141,7 +153,8 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
-        'itemOptions' => ['class' => 'has-form hide-for-small-only'], 'label' => false,
+        'itemOptions' => ['class' => 'has-form hide-for-small-only'],
+        'label' => false,
         'items'       => [
             ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class'     => 'button',
@@ -155,7 +168,8 @@ $this->menu = [
         'submenuOptions' => ['class' => 'button-group']
     ],
     [
-        'itemOptions' => ['class' => 'has-form show-for-small-only'], 'label' => false,
+        'itemOptions' => ['class' => 'has-form show-for-small-only'],
+        'label' => false,
         'items'       => [
             ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class' => 'button',

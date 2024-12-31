@@ -20,17 +20,21 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
                     'nomor',
                     'nama',
                     // 'kategori_id',
-                    // [
-                    //     'name'  => 'kategori.nama',
-                    //     'label' => 'Kategori',
-                    // ],
+                    [
+                        'name'  => 'kategori.nama',
+                        'label' => 'Kategori',
+                    ],
+                    [
+                        'name'  => 'namaStruktur',
+                        'label' => 'Struktur',
+                    ],
                     // 'struktur_id',
                     // 'status',
                     /*
-                    'updated_at',
-                    'updated_by',
-                    'created_at',
-                    */
+    'updated_at',
+    'updated_by',
+    'created_at',
+     */
                 ],
             ]); ?>
         </div>
@@ -47,7 +51,8 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
-        'itemOptions'    => ['class' => 'has-form hide-for-small-only'], 'label' => false,
+        'itemOptions'    => ['class' => 'has-form hide-for-small-only'],
+        'label' => false,
         'items'          => [
             ['label' => '<i class="fa fa-pencil"></i> <span class="ak">U</span>bah', 'url' => $this->createUrl('ubah', ['id' => $model->id]), 'linkOptions' => [
                 'class'     => 'button',
@@ -67,7 +72,8 @@ $this->menu = [
         'submenuOptions' => ['class' => 'button-group'],
     ],
     [
-        'itemOptions'    => ['class' => 'has-form show-for-small-only'], 'label' => false,
+        'itemOptions'    => ['class' => 'has-form show-for-small-only'],
+        'label' => false,
         'items'          => [
             ['label' => '<i class="fa fa-pencil"></i>', 'url' => $this->createUrl('ubah', ['id' => $model->id]), 'linkOptions' => [
                 'class' => 'button',
