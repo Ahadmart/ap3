@@ -91,6 +91,7 @@ class SkuController extends Controller
         if (isset($_POST['Sku'])) {
             $model->attributes = $_POST['Sku'];
             if ($model->save()) {
+                $model->sesuaikanSettingDetail();
                 $this->redirect(['view', 'id' => $id]);
             }
         }

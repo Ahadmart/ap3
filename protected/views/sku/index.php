@@ -27,8 +27,17 @@ $this->boxHeader['normal'] = 'SKU';
 					'type'      => 'raw',
 					'value'     => [$this, 'renderLinkToView'],
 				],
-				'kategori_id',
-				'struktur_id',
+                [
+                    'name'   => 'kategori_id',
+                    'value'  => '$data->kategori == null ? "NULL" : $data->kategori->nama',
+                    'filter' => $model->filterKategori(),
+                ],
+                [
+                    'name'  => 'strukturFullPath',
+                    'value' => '$data->namaStruktur',
+                ],
+				// 'kategori_id',
+				// 'struktur_id',
 				[
 					'name'   => 'status',
 					'value'  => '$data->namaStatus',

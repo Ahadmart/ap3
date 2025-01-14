@@ -25,6 +25,8 @@ class Sku extends CActiveRecord
     const STATUS_TIDAK_AKTIF = 0;
     const STATUS_AKTIF       = 1;
 
+    public $strukturFullPath;
+
     /**
      * @return string the associated database table name
      */
@@ -49,7 +51,7 @@ class Sku extends CActiveRecord
             ['created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, nomor, nama, struktur_id, kategori_id, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, nomor, nama, struktur_id, kategori_id, status, updated_at, updated_by, created_at, strukturFullPath', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -74,15 +76,16 @@ class Sku extends CActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'          => 'ID',
-            'nomor'       => 'Nomor',
-            'nama'        => 'Nama',
-            'struktur_id' => 'Struktur',
-            'kategori_id' => 'Kategori',
-            'status'      => 'Status',
-            'updated_at'  => 'Updated At',
-            'updated_by'  => 'Updated By',
-            'created_at'  => 'Created At',
+            'id'               => 'ID',
+            'nomor'            => 'Nomor',
+            'nama'             => 'Nama',
+            'struktur_id'      => 'Struktur',
+            'kategori_id'      => 'Kategori',
+            'status'           => 'Status',
+            'updated_at'       => 'Updated At',
+            'updated_by'       => 'Updated By',
+            'created_at'       => 'Created At',
+            'strukturFullPath' => 'Struktur',
         ];
     }
 
@@ -113,6 +116,22 @@ class Sku extends CActiveRecord
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
+
+        $criteria->compare("(
+            SELECT
+                CONCAT(lv1.nama, ' > ', lv2.nama, ' > ', lv3.nama)
+            FROM
+                sku
+                    JOIN
+                barang_struktur lv3 ON lv3.id = sku.struktur_id
+                    JOIN
+                barang_struktur lv2 ON lv2.id = lv3.parent_id
+                    JOIN
+                barang_struktur lv1 ON lv1.id = lv2.parent_id
+            WHERE
+                sku.id = t.id
+            )
+                ", $this->strukturFullPath, true);
 
         $sort = [
             'defaultOrder' => 't.nama',
@@ -175,5 +194,41 @@ class Sku extends CActiveRecord
     {
         $struktur = StrukturBarang::model()->findByPk($this->struktur_id);
         return is_null($struktur) ? "" : $struktur->getFullPath();
+    }
+
+    public function filterKategori()
+    {
+        return CHtml::listData(KategoriBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
+    }
+
+    public function sesuaikanSettingDetail()
+    {
+        $tr = $this->dbConnection->beginTransaction();
+
+        try {
+            $details = SkuDetail::model()->findAll('sku_id=:id', [':id' => $this->id]);
+            // Yii::log(var_export($details, true));
+            foreach ($details as $detail) {
+                $barang = Barang::model()->findByPk($detail->barang_id);
+                // Yii::log(var_export($barang, true));
+                if ($barang != null) {
+                    $barang->kategori_id = $this->kategori_id;
+                    $barang->struktur_id = $this->struktur_id;
+                    if (!$barang->save()) {
+                        // Yii::log(var_export($barang->getErrors(), true));
+                        throw new Exception('Gagal update kategori dan struktur barang #' . $barang->id);
+                    }
+                } else {
+                    throw new Exception('Barang #' . $detail->barang_id . ' tidak ditemukan');
+                }
+            }
+            $tr->commit();
+            return [
+                'sukses' => true,
+            ];
+        } catch (Exception $e) {
+            $tr->rollback();
+            throw $e;
+        }
     }
 }

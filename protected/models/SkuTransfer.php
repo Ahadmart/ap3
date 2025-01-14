@@ -208,7 +208,7 @@ class SkuTransfer extends CActiveRecord
     {
         $this->scenario = 'simpanTransfer';
         $tr             = $this->dbConnection->beginTransaction();
-        Yii::log('simpan()');
+        // Yii::log('simpan()');
         $r = [
             'sukses' => false,
         ];
@@ -229,7 +229,7 @@ class SkuTransfer extends CActiveRecord
     {
         // Yii::log('simpanTransfer() 1');
         if (!$this->save()) {
-            Yii::log('Gagal simpan transfer');
+            // Yii::log('Gagal simpan transfer');
             throw new Exception('Gagal simpan transfer', 500);
         }
         // Yii::log('simpanTransfer() 2');
