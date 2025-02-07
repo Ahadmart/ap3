@@ -320,7 +320,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                     // alert(data.listBarang);
                     $("#daftar-barang-sku").html(generateTablePilihBarang(data));
                     $("#pilih-barang-sku").foundation('reveal', 'open');
-                    $("a.pilih").first().focus();
+                    setTimeout(function() {
+                        $("#daftar-barang-sku a.pilih").first().focus();
+                    }, 300);
                 } else if (data.sukses) {
                     $("#tombol-admin-mode").removeClass('geleng');
                     $("#tombol-admin-mode").removeClass('alert');
@@ -342,7 +344,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     }
 
     function generateTablePilihBarang(data) {
-        tableBody='';
+        tableBody = '';
         data.listBarang.forEach(item => {
             tableBody += `<tr>
                     <td>${item.barcode}</td>
@@ -350,7 +352,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                     <td class="rata-kanan">${item.hj}</td>
                     <td class="rata-kanan">${item.stok}</td>
                     <td style="text-align:center">
-                        <a class="pilih" title="Pilih" href="">Pilih</a>
+                        <a class="pilih" title="Pilih" href="${item.barcode}"><i class="fa fa-check"></i> Pilih</a>
                         </td>
                   </tr>`;
         });
