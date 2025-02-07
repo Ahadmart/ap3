@@ -407,7 +407,8 @@ class Penjualan extends CActiveRecord
 
             /* Jika barang tidak ada */
             if (is_null($barang)) {
-                throw new Exception('Barang tidak ditemukan', 500);
+                // http custom code
+                throw new Exception('Barang tidak ditemukan', 514);
             }
             if ($barang->status == Barang::STATUS_TIDAK_AKTIF && $barang->stok <= 0) {
                 throw new Exception('Barang Tidak Aktif dan Tidak Ada Stok', 500);

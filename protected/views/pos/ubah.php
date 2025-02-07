@@ -184,6 +184,22 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 </div>
 <div style="display: none" id="total-belanja-h"><?php echo $model->ambilTotal(); ?>
 </div>
+<div id="pilih-barang-sku" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h4>Pilih Barang</h4>
+    <table class="tabel-index">
+        <thead>
+            <tr>
+                <th>Barcode</th>
+                <th>Nama</th>
+                <th>Harga Jual</th>
+                <th>Stok</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="daftar-barang-sku"></tbody>
+    </table>
+    <a class="close-reveal-modal">&#215;</a>
+</div>
 <?php
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
@@ -300,7 +316,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             url: dataUrl,
             data: dataKirim,
             success: function(data) {
-                if (data.sukses) {
+                if (data.listBarang) {
+                    // alert(data.listBarang);
+                    $("#daftar-barang-sku").html(generateTablePilihBarang(data));
+                    $("#pilih-barang-sku").foundation('reveal', 'open');
+                    $("a.pilih").first().focus();
+                } else if (data.sukses) {
                     $("#tombol-admin-mode").removeClass('geleng');
                     $("#tombol-admin-mode").removeClass('alert');
                     $.fn.yiiGridView.update('penjualan-detail-grid');
@@ -318,6 +339,23 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                 $("#scan").autocomplete("disable");
             }
         });
+    }
+
+    function generateTablePilihBarang(data) {
+        tableBody='';
+        data.listBarang.forEach(item => {
+            tableBody += `<tr>
+                    <td>${item.barcode}</td>
+                    <td>${item.nama}</td>
+                    <td class="rata-kanan">${item.hj}</td>
+                    <td class="rata-kanan">${item.stok}</td>
+                    <td style="text-align:center">
+                        <a class="pilih" title="Pilih" href="">Pilih</a>
+                        </td>
+                  </tr>`;
+        });
+
+        return tableBody;
     }
 
     $(function() {
@@ -661,7 +699,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
-        'itemOptions'    => ['class' => 'has-form hide-for-small-only'], 'label' => false,
+        'itemOptions'    => ['class' => 'has-form hide-for-small-only'],
+        'label' => false,
         'items'          => [
             ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class'     => 'button',
@@ -675,7 +714,8 @@ $this->menu = [
         'submenuOptions' => ['class' => 'button-group'],
     ],
     [
-        'itemOptions'    => ['class' => 'has-form show-for-small-only'], 'label' => false,
+        'itemOptions'    => ['class' => 'has-form show-for-small-only'],
+        'label' => false,
         'items'          => [
             ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class' => 'button',
