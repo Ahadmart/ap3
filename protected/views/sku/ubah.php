@@ -20,21 +20,6 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
         <div class="panel">
             <?php $this->renderPartial('_form', ['model' => $model]); ?>
         </div>
-    </div>
-    <div class="medium-6 large-8 columns">
-        <div class="panel">
-            <?php
-            $this->renderPartial('_struktur', [
-                'sku'           => $model,
-                'lv1'           => $lv1,
-                'strukturDummy' => $strukturDummy,
-            ]);
-            ?>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="medium-6 large-4 columns">
         <div class="panel">
             <div class="row">
                 <?=
@@ -53,7 +38,6 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
             </div>
         </div>
     </div>
-
     <div class="medium-6 large-8 columns">
         <div class="panel">
             <!-- <a class="right tiny bigfont button">Tambah barang</a> -->
@@ -70,6 +54,22 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
                 <?php $this->renderPartial('_ubah_detail', ['modelDetail' => $modelDetail]); ?>
             </div>
         </div>
+        <div class="panel">
+            <?php
+            $this->renderPartial('_struktur', [
+                'sku'           => $model,
+                'lv1'           => $lv1,
+                'strukturDummy' => $strukturDummy,
+            ]);
+            ?>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="medium-6 large-4 columns">
+    </div>
+
+    <div class="medium-6 large-8 columns">
 
 </div>
 <script>
