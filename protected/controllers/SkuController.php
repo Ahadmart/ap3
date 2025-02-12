@@ -236,6 +236,21 @@ class SkuController extends Controller
                 ],
             ];
         }
+        $sku = $this->loadModel($id);
+        if (empty($sku->kategori_id)) {
+            // Yii::log('Kategori empty');
+            $barang = Barang::model()->findByPk($barangId);
+            $sku->kategori_id = $barang->kategori_id;
+        }
+        if (empty($sku->struktur_id)) {
+            // Yii::log('Struktur empty');
+            if (!isset($barang)) {
+                $barang = Barang::model()->findByPk($barangId);
+            }
+            $sku->struktur_id = $barang->struktur_id;
+        }
+        $sku->save();
+        
         $r = ['sukses' => true];
         $this->renderJSON($r);
     }
@@ -432,7 +447,7 @@ class SkuController extends Controller
                 break;
         }
     }
-    
+
     public function actionUpdateStruktur($id)
     {
         $r = [
