@@ -98,6 +98,28 @@ table {
         &:nth-of-type(2n) {
             background: #17191a;
         }
+        td {
+            color: #f8f4ec;
+        }
+    }
+}
+
+table {
+    background: #1e2021;
+    thead {
+        background: #17191a;
+        tr {
+            th {
+                color: #f8f4ec;
+            }
+        }
+    }
+    tr {
+        &.even,
+        &.alt,
+        &:nth-of-type(2n) {
+            background: #17191a;
+        }
         th {
             color: #fff;
         }

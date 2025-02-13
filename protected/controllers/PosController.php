@@ -168,7 +168,7 @@ class PosController extends Controller
             ]
         );
 
-        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
         $wsClientEnable = $config->nilai;
         if ($wsClientEnable) {
             $clientWS = new AhadPosWsClient();
@@ -229,7 +229,7 @@ class PosController extends Controller
             'model' => $model,
         ]);
 
-        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
         $wsClientEnable = $config->nilai;
         if ($wsClientEnable) {
             $clientWS = new AhadPosWsClient();
@@ -372,10 +372,42 @@ class PosController extends Controller
             if ($penjualan->status == Penjualan::STATUS_DRAFT) {
                 $barcode = $_POST['barcode'];
                 $return  = $penjualan->tambahBarang($barcode, 1);
+                if ($return['sukses'] == false && $return['error']['code'] == 514) {
+                    // Barang tidak ditemukan, coba cari sku
+                    $sku = Sku::model()->find('nomor=:nomor', [':nomor' => $barcode]);
+                    if (is_null($sku)) {
+                        $return = [
+                            'sukses' => false,
+                            'error'  => [
+                                'msg'  => 'Barang/SKU tidak ditemukan',
+                                'code' => 514,
+                            ],
+                        ];
+                    } else {
+                        $skuDetail = SkuDetail::model()->findAll('sku_id=:skuId', [':skuId' => $sku->id]);
+                        if (!empty($skuDetail)) {
+                            $listBarang = [];
+                            foreach ($skuDetail as $item) {
+                                $barang       = Barang::model()->findByPk($item->barang_id);
+                                $listBarang[] = [
+                                    'id'      => $barang->id,
+                                    'barcode' => $barang->barcode,
+                                    'nama'    => $barang->nama,
+                                    'hj'      => $barang->hargaJual,
+                                    'stok'    => $barang->stok,
+                                ];
+                            }
+                            $return = [
+                                'listBarang' => $listBarang,
+                            ];
+                        }
+                    }
+                }
             }
             //            $barang = Barang::model()->find("barcode = '" . $barcode . "'");
             //            $return['error']['msg'] = $penjualan->cekDiskon($barang->id);
         }
+        // Yii::log(var_export($return, true));
         $this->renderJSON($return);
     }
 
@@ -395,7 +427,7 @@ class PosController extends Controller
         $totalJendral = number_format($total - $diskonNota - $koinMOL + $infaq + $tarikTunai, 0, ',', '.');
         echo $kembali;
 
-        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
         $wsClientEnable = $config->nilai;
         if ($wsClientEnable) {
             $clientWS = new AhadPosWsClient();
@@ -515,7 +547,7 @@ class PosController extends Controller
             'model' => $model,
         ]);
 
-        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
         $wsClientEnable = $config->nilai;
         if ($wsClientEnable) {
             $clientWS = new AhadPosWsClient();
@@ -593,7 +625,7 @@ class PosController extends Controller
             $totalBayar += $koinMOL;
         }
 
-        $config = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
         $wsClientEnable = $config->nilai;
         if ($wsClientEnable) {
             $clientWS       = new AhadPosWsClient();

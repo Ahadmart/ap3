@@ -291,6 +291,7 @@ class BarangController extends Controller
 
     public function renderInventoryDocumentLinkToView($data)
     {
+        // Yii::log(var_export($data, true));
         $inventoryBalance = InventoryBalance::model()->findByPk($data->id);
         $namaController   = $inventoryBalance->namaAsalController();
         $model            = $inventoryBalance->modelAsal();

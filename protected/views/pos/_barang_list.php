@@ -72,6 +72,7 @@ $this->widget('BGridView', array(
             $("#transaksi").show(0, function () {
                 $("#scan").val(barcode);
                 kirimBarcode();
+                $("#pilih-barang-sku").foundation('reveal', 'close');
             });
 
         });
