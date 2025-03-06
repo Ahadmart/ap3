@@ -33,15 +33,14 @@ $this->widget('BGridView', [
 		],
 		'referensi',
 		'tanggal_referensi',
-		// 'sku_id',
 		'keterangan',
-		// 'status',
-		// 'updated_at',
-		// 'updated_by',
-		// 'created_at',
-
 		[
-			'class' => 'BButtonColumn',
+			'class'   => 'BButtonColumn',
+			'buttons' => [
+				'delete' => [
+					'visible' => '$data->status == ' . SkuTransfer::STATUS_DRAFT,
+				],
+			],
 		],
 	],
 ]);
