@@ -30,7 +30,7 @@ $this->widget('BGridView', [
         ],
         [
             'header'            => 'HB',
-            'value'             => '$data->barang->hargaJual',
+            'value'             => '$data->barang->hargaBeli',
             'htmlOptions'       => ['class' => 'rata-kanan'],
             'headerHtmlOptions' => ['class' => 'rata-kanan'],
         ],
