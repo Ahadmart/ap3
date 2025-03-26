@@ -250,7 +250,7 @@ class SkuController extends Controller
             $sku->struktur_id = $barang->struktur_id;
         }
         $sku->save();
-        
+
         $r = ['sukses' => true];
         $this->renderJSON($r);
     }
@@ -467,6 +467,51 @@ class SkuController extends Controller
                     'sukses' => false,
                     'msg'    => "Gagal update Struktur!"
                 ];
+            }
+        }
+        $this->renderJSON($r);
+    }
+
+    public function renderHJEdit($data)
+    {
+        // return $data->barang->hargaJual.' <a href="tambahHJ/'.$data->barang_id.'"><i class="fa fa-edit"></i></a>';
+        // return '<a href="tambahHJ/'.$data->barang_id.'"><i class="fa fa-edit"></i></a> '.$data->barang->hargaJual;
+        // return '<a href="tambahHJ/'.$data->barang_id.'">'.$data->barang->hargaJual.'</i></a>';
+        // return '<a href="tambahHJ/' . $data->barang_id . '"><i class="fa fa-edit"></i></a>';
+
+        return CHtml::link('<i class="fa fa-edit"></i>', $this->createUrl('tambahhj', ['id' => $data->barang_id]), [
+            // 'class'          => 'right tiny bigfont button',
+            'data-reveal-id' => 'tambahhj-form',
+            'class'             => 'tombol-tambahhj',
+        ]);
+    }
+
+    public function actionTambahHj($id)
+    {
+        // echo $id;
+        $barang = Barang::model()->findByPk($id);
+
+        $hargaJual = new HargaJual('search');
+        $hargaJual->unsetAttributes();
+        $hargaJual->setAttribute('barang_id', '=' . $id);
+
+        $this->renderPartial(
+            '_harga_jual',
+            [
+                'barang' => $barang,
+                'hargaJual' => $hargaJual
+            ]
+        );
+    }
+
+    public function actionUpdateHj()
+    {
+        $r = ['sukses' => false];
+        if (!empty($_POST['barang-id']) && !empty($_POST['hj'])) {
+            $id = $_POST['barang-id'];
+            $hargaJual = $_POST['hj'];
+            if (HargaJual::model()->updateHargaJualTrx($id, $hargaJual)) {
+                $r['sukses'] = true;
             }
         }
         $this->renderJSON($r);

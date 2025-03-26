@@ -12,8 +12,9 @@ $this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
 ?>
 
-<div id="tambahbarang-list" class="mediu m reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
+<div id="tambahbarang-list" class="medium reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 <div id="tambahlevel-form" class="medium reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
+<div id="tambahhj-form" class="medium reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog"></div>
 
 <div class="row">
     <div class="medium-6 large-4 columns">
@@ -72,6 +73,10 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
     <div class="medium-6 large-8 columns">
 
 </div>
+<?php
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+?>
 <script>
     $("#tombol-tambahbarang").click(function() {
         $('#tambahbarang-list').foundation('reveal', 'open', {
@@ -116,6 +121,19 @@ $this->boxHeader['normal'] = "SKU: ({$model->nomor}) {$model->nama}";
             },
             error: function() {
                 alert('Gagal membuka form tambah level!');
+            }
+        });
+    });
+    $(".tombol-tambahhj").click(function() {
+        var url = $(this).attr('href')
+        console.log("Ini Urlnya" +url);
+        $('#tambahhj-form').foundation('reveal', 'open', {
+            url: $(this).attr('href'),
+            // success: function(data) {
+
+            // },
+            error: function() {
+                alert('Gagal mengambil data barang!');
             }
         });
     });

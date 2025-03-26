@@ -44,6 +44,10 @@ $this->widget('BGridView', [
             'headerHtmlOptions' => ['class' => 'rata-kanan'],
         ],
         [
+            'value' => [$this, 'renderHJEdit'],
+            'type' => 'raw'
+        ],
+        [
             'header'            => 'Stok',
             'value'             => '$data->barang->stok',
             'htmlOptions'       => ['class' => 'rata-kanan'],
