@@ -233,7 +233,7 @@
 
             $(document).ready(function ()
             {
-                $("#arabictime").html(writeIslamicDate());
+                $("#arabictime").html(writeIslamicDate(-2));
                 setInterval('updateClock()', 1000);
             });
         </script>

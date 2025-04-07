@@ -25,7 +25,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
     </div>
 
     <?php
-    if (!empty($report['detail'])) :
+    if (!is_null($report)) :
     ?>
         <div class="small-12 large-8 columns">
             <h6><?= $model->namaBarang ?> <small><?= $model->barcode ?></small></h6>
@@ -68,7 +68,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                             }
                         }
                         /* Jika SO lihat tanda nya */
-                        if ($barisReport['kode'] == KodeDokumen::SO) {
+                        if ($barisReport['kode'] == KodeDokumen::SO || $barisReport['kode'] == KodeDokumen::TRANSFER_STOK) {
                             if ($barisReport['qty'] > 0) {
                                 $in = $barisReport['qty'];
                             } else {
@@ -102,7 +102,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-database fa-lg"></i> Laporan Kartu
                     ?>
                     <tr>
                         <td></td>
-                        <td colspan="3" style="font-weight: bold">Total / Balance</td>
+                        <td colspan="4" style="font-weight: bold">Total / Balance</td>
                         <td class="rata-kanan" style="font-weight: bold">
                             <?= number_format($totalIn, 0, ',', '.') ?>
                         </td>

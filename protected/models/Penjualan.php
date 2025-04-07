@@ -407,10 +407,11 @@ class Penjualan extends CActiveRecord
 
             /* Jika barang tidak ada */
             if (is_null($barang)) {
-                throw new Exception('Barang tidak ditemukan', 500);
+                // http custom code
+                throw new Exception('Barang tidak ditemukan', 514);
             }
-            if ($barang->status == Barang::STATUS_TIDAK_AKTIF) {
-                throw new Exception('Barang Tidak Aktif', 500);
+            if ($barang->status == Barang::STATUS_TIDAK_AKTIF && $barang->stok <= 0) {
+                throw new Exception('Barang Tidak Aktif dan Tidak Ada Stok', 500);
             }
             $this->tambahBarangProc($barang, $qty);
 
@@ -441,7 +442,16 @@ class Penjualan extends CActiveRecord
      */
     public function tambahBarangDetail($barang, $qty)
     {
-        $sisa            = $qty;
+        $sisa = $qty;
+        /*
+         * Jika ini barang non aktif, maka cek stok realtime
+         * Barang non aktif tidak boleh minus
+         */
+        // Yii::log("Barang: {$barang->barcode}, qty: {$qty}, stok: {$barang->stok}");
+        if ($barang->status == Barang::STATUS_TIDAK_AKTIF && (int) $qty > (int) $barang->stok) {
+            throw new Exception('Stok barang non aktif tidak cukup. Stok: ' . $barang->stok, 500);
+        }
+
         $hargaJualNormal = HargaJual::model()->terkini($barang->id);
         // Yii::log("Tambah barang detail; barangID: ".$barang->id, "info");
         /*
@@ -2056,5 +2066,28 @@ class Penjualan extends CActiveRecord
         }
         fclose($df);
         return ob_get_clean();
+    }
+
+    public function getDetailArr()
+    {
+        $sql = "
+        SELECT 
+            barang.nama,
+            qty,
+            FORMAT(harga_jual + IFNULL(diskon, 0), 0, 'id_ID') harga_jual,
+            FORMAT(IFNULL(diskon, 0), 0, 'id_ID') diskon,
+            FORMAT(harga_jual, 0, 'id_ID') net,
+            FORMAT(qty * harga_jual, 0, 'id_ID') AS stotal,
+            FORMAT(IFNULL(diskon, 0) * qty, 0, 'id_ID') AS stotaldiskon
+        FROM
+            penjualan_detail d
+                JOIN
+            barang ON barang.id = d.barang_id
+        WHERE
+            penjualan_id = :id
+        ";
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValue(':id', $this->id);
+        return $command->queryAll();
     }
 }

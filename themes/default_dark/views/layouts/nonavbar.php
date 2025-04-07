@@ -15,6 +15,7 @@
         <link rel="stylesheet" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css">
         <?php
         Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/app.css');
+        Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/cusdisp.css');
         ?>
         <link rel="apple-touch-icon" sizes="57x57" href="<?php echo Yii::app()->theme->baseUrl; ?>/img/fav/apple-touch-icon-57x57.png">
         <link rel="apple-touch-icon" sizes="60x60" href="<?php echo Yii::app()->theme->baseUrl; ?>/img/fav/apple-touch-icon-60x60.png">
@@ -51,46 +52,8 @@
         <?php echo $content; ?>
         
         <script src="<?php echo Yii::app()->theme->baseUrl; ?>/js/foundation.min.js"></script>
-        <script src="<?php echo Yii::app()->theme->baseUrl; ?>/js/hijricalendar-kuwaiti.js"></script>
         <script>
-            $(document).foundation();
-            function updateClock()
-            {
-                var currentTime = new Date();
-                var currentDate = currentTime.getDate();
-                var month = currentTime.getMonth() + 1;
-                currentMonth = month < 10 ? '0' + month : '' + month;
-                var currentYear = currentTime.getFullYear();
-                var currentHours = currentTime.getHours();
-                var currentMinutes = currentTime.getMinutes();
-                var currentSeconds = currentTime.getSeconds();
-
-                // Pad the minutes and seconds with leading zeros, if required
-                currentMinutes = (currentMinutes < 10 ? "0" : "") + currentMinutes;
-                currentSeconds = (currentSeconds < 10 ? "0" : "") + currentSeconds;
-
-                // Choose either "AM" or "PM" as appropriate
-                var timeOfDay = (currentHours < 12) ? "AM" : "PM";
-
-                // Convert the hours component to 12-hour format if needed
-                // currentHours = (currentHours > 12) ? currentHours - 12 : currentHours;
-
-                // Convert an hours component of "0" to "12"
-                currentHours = (currentHours == 0) ? 12 : currentHours;
-                currentHours = (currentHours < 10 ? "0" : "") + currentHours;
-
-                // Compose the string for display
-                var currentDateString = currentDate + "-" + currentMonth + "-" + currentYear;
-                var currentTimeString = currentDateString + " " + currentHours + ":" + currentMinutes + ":" + currentSeconds + " ";// + timeOfDay;
-
-                $("#clock").html(currentTimeString);
-            }
-
-            $(document).ready(function ()
-            {
-                $("#arabictime").html(writeIslamicDate());
-                setInterval('updateClock()', 1000);
-            });
+            $(document).foundation();          
         </script>
         <?php
         /*

@@ -4,78 +4,87 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-editable.css');
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/responsive-tables.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/responsive-tables.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 ?>
 
 <div class="row">
     <div class="small-12 columns">
         <?php
-        $this->widget('BGridView', array(
-            'id' => 'barang-grid',
-            'dataProvider' => $barangBelumSO->search(),
-            'filter' => $barangBelumSO,
+        $this->widget('BGridView', [
+            'id'            => 'barang-grid',
+            'dataProvider'  => $barangBelumSO->search(),
+            'filter'        => $barangBelumSO,
             'parentModelId' => $model->id,
             'itemsCssClass' => 'tabel-index responsive',
-            'columns' => array(
-                array(
-                    'class' => 'BDataColumn',
-                    'name' => 'barcode',
-                    'header' => '<span class="ak">B</span>arcode',
+            'columns'       => [
+                [
+                    'class'     => 'BDataColumn',
+                    'name'      => 'barcode',
+                    'header'    => '<span class="ak">B</span>arcode',
                     'accesskey' => 'b',
-                ),
-                array(
-                    'class' => 'BDataColumn',
-                    'name' => 'nama',
-                    'header' => '<span class="ak">N</span>ama',
+                ],
+                [
+                    'class'     => 'BDataColumn',
+                    'name'      => 'nama',
+                    'header'    => '<span class="ak">N</span>ama',
                     'accesskey' => 'n',
+                    'type'      => 'raw',
+                ],
+                [
+                    'name'              => 'Stok',
+                    'header'            => 'Qty Tercatat',
+                    'value'             => '$data->stok',
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'filter'            => false,
+                ],
+                [
+                    'header'            => 'Qty Retur Beli',
+                    'value'             => '$data->qtyReturBeliPosted',
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'filter'            => false,
+                ],
+                [
+                    'header' => 'Input',
                     'type' => 'raw',
-                ),
-                array(
-                    'name' => 'Stok',
-                    'header' => 'Qty Tercatat',
-                    'value' => '$data->stok',
-                    'htmlOptions' => array('class' => 'rata-kanan'),
-                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                    'filter' => false
-                ),
-                array(
-                    'header' => 'Qty Retur Beli',
-                    'value' => '$data->qtyReturBeliPosted',
-                    'htmlOptions' => array('class' => 'rata-kanan'),
-                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                    'filter' => false,
-                ),
-                array(
-                    'header' => '<span class="ak">Q</span>ty Asli',
-                    'type' => 'raw',
-                    'value' => array($this, 'renderQtyLinkEditable'),
-                    'headerHtmlOptions' => array('class' => 'rata-kanan'),
-                    'htmlOptions' => array('class' => 'rata-kanan'),
-                ),
-                array(
+                    'value' => [$this, 'renderFormInputManual']
+                ]
+                /*
+                [
+                    'header'            => '<span class="ak">Q</span>ty Asli',
+                    'type'              => 'raw',
+                    'value'             => [$this, 'renderQtyLinkEditable'],
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                ],
+                [
                     //'header' => 'Set 0 (nol)',
-                    'type' => 'raw',
-                    'value' => array($this, 'renderTombolSetNol'),
-                    'headerHtmlOptions' => array('class' => 'rata-tengah'),
-                    'htmlOptions' => array('class' => 'rata-tengah'),
-                    'header' => 'Set 0 (nol)<br /><a id="tombol-setnol-all" href="#" class="delete">All <i class="fa fa-check-square"><i></a>'
-                ),
-                array(
+                    'type'              => 'raw',
+                    'value'             => [$this, 'renderTombolSetNol'],
+                    'headerHtmlOptions' => ['class' => 'rata-tengah'],
+                    'htmlOptions'       => ['class' => 'rata-tengah'],
+                    'header'            => 'Set 0 (nol)<br /><a id="tombol-setnol-all" href="#" class="delete">All <i class="fa fa-check-square"><i></a>',
+                ],
+                [
                     // 'header' => 'Set inaktif',
-                    'type' => 'raw',
-                    'value' => array($this, 'renderTombolSetInAktif'),
-                    'headerHtmlOptions' => array('class' => 'rata-tengah'),
-                    'htmlOptions' => array('class' => 'rata-tengah'),
-                    'header' => 'Set inaktif<br /><a id="tombol-inaktif-all" href="#" class="delete">All <i class="fa fa-check-square"><i></a>'
-                ),
-                array(
-                    'header' => 'Pindah Rak',
-                    'type' => 'raw',
-                    'value' => array($this, 'renderGantiRakLinkEditable'),
-                    'headerHtmlOptions' => array('class' => 'rata-tengah'),
-                    'htmlOptions' => array('class' => 'rata-tengah'),
-                ),
-            )
-        ));
+                    'type'              => 'raw',
+                    'value'             => [$this, 'renderTombolSetInAktif'],
+                    'headerHtmlOptions' => ['class' => 'rata-tengah'],
+                    'htmlOptions'       => ['class' => 'rata-tengah'],
+                    'header'            => 'Set inaktif<br /><a id="tombol-inaktif-all" href="#" class="delete">All <i class="fa fa-check-square"><i></a>',
+                ],
+                [
+                    'header'            => 'Pindah Rak',
+                    'type'              => 'raw',
+                    'value'             => [$this, 'renderGantiRakLinkEditable'],
+                    'headerHtmlOptions' => ['class' => 'rata-tengah'],
+                    'htmlOptions'       => ['class' => 'rata-tengah'],
+                ],
+                */
+            ],
+        ]);
         ?>
     </div>
 </div>
@@ -83,7 +92,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
 <script>
     $(function() {
         $(document).on('click', ".tombol-setnol", function() {
-            dataUrl = '<?php echo $this->createUrl('setnol', array('id' => $model->id)); ?>';
+            dataUrl = '<?php echo $this->createUrl('setnol', ['id' => $model->id]); ?>';
             dataKirim = {
                 barangid: $(this).data('barangid')
             };
@@ -103,7 +112,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             return false;
         });
         $(document).on('click', ".tombol-setinaktif", function() {
-            dataUrl = '<?php echo $this->createUrl('setinaktif', array('id' => $model->id)); ?>';
+            dataUrl = '<?php echo $this->createUrl('setinaktif', ['id' => $model->id]); ?>';
             dataKirim = {
                 barangid: $(this).data('barangid')
             };
@@ -123,7 +132,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
         });
         $(document).on('click', "#tombol-setnol-all", function() {
             $("#barang-grid").addClass("grid-loading");
-            dataUrl = '<?php echo $this->createUrl('setnolall', array('id' => $model->id)); ?>';
+            dataUrl = '<?php echo $this->createUrl('setnolall', ['id' => $model->id]); ?>';
             $.ajax({
                 //type: 'POST',
                 url: dataUrl,
@@ -140,7 +149,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
         });
         $(document).on('click', "#tombol-inaktif-all", function() {
             $("#barang-grid").addClass("grid-loading");
-            dataUrl = '<?php echo $this->createUrl('setinaktifall', array('id' => $model->id)); ?>';
+            dataUrl = '<?php echo $this->createUrl('setinaktifall', ['id' => $model->id]); ?>';
             $.ajax({
                 //type: 'POST',
                 url: dataUrl,
@@ -182,8 +191,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
             },
             source: [
                 <?php
-                $listRak = CHtml::listData(RakBarang::model()->findAll(array('select' => 'id,nama', 'order' => 'nama')), 'id', 'nama');
-                $firstRow = TRUE;
+                $listRak  = CHtml::listData(RakBarang::model()->findAll(['select' => 'id,nama', 'order' => 'nama']), 'id', 'nama');
+                $firstRow = true;
                 foreach ($listRak as $key => $value) :
                 ?>
                     <?php
@@ -208,4 +217,28 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/r
     $(document).ajaxComplete(function() {
         enableEditable();
     });
+
+    $(document).on("submit", ".forminputmanual", function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            type: 'POST',
+            success: function(r) {
+                if (r.sukses) {
+                    $("#barang-grid").yiiGridView('update');
+                    $("#so-detail-grid").yiiGridView('update');
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + r.error.code,
+                        text: r.error.msg,
+                        time: 5000,
+                    })
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('An error occurred: ' + error);
+            }
+        })
+    })
 </script>

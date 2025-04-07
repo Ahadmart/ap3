@@ -1,0 +1,93 @@
+name: Acceptance
+
+on: [push, pull_request]
+
+jobs:
+
+  test:
+    strategy:
+      matrix:
+        php-versions: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+    runs-on: ubuntu-latest
+    name: Unit test
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+        coverage: none
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Get composer cache directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-composer-
+    - name: Install dependencies
+      run: composer install --prefer-dist
+    - name: Test
+      run: vendor/bin/phpunit
+
+  cs-check:
+    runs-on: ubuntu-latest
+    name: Code standard
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: "8.3"
+        coverage: none
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Get composer cache directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-composer-
+    - name: Install dependencies
+      run: composer install --prefer-dist
+    - name: Code standard
+      run: vendor/bin/phpcs --standard=PSR1,PSR12 --encoding=UTF-8 --report=full --colors src tests
+
+  coverage:
+    runs-on: ubuntu-latest
+    name: Code coverage
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: "8.3"
+        coverage: xdebug
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Get composer cache directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-composer-
+    - name: Install dependencies
+      run: composer install --prefer-dist
+    - name: Code coverage build
+      run: XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+    - name: Code coverage upload
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: vendor/bin/php-coveralls -v

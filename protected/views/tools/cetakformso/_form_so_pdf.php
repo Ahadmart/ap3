@@ -52,10 +52,10 @@
         $i = 1;
         foreach ($data as $barang) :
         ?>
-            <tr class="<?php //echo $i % 2 === 0 ? '' : 'alt'; ?>">
+            <tr class="<?= $barang['status'] == 0 ? 'alt':'' ?>">
                 <td class="rata-kanan"><?= $i; ?></td>
                 <td><?= $barang['barcode']; ?></td>
-                <td><?= $barang['nama']; ?></td>
+                <td><?= $barang['status'] == 0 ? '█':'' ?> <?= $barang['nama']; ?> <?= $barang['status'] == 0 ? '█':'' ?></td>
                 <td class="rata-kanan"><?= number_format($barang['harga'], 0, ',', '.') ?></td>
                 <td class="rata-kanan"><?= $barang['stok']; ?></td>
                 <?php

@@ -11,7 +11,12 @@ $this->boxHeader['small'] = 'Penjualan';
 $this->boxHeader['normal'] = 'Penjualan';
 ?>
 <script>
-    $(function () {
+    $(function() {
         $("#tombol-new").focus();
     });
+    setTimeout(
+        function() {
+            window.location.href = '<?= $this->createUrl('/pos/suspended') ?>';
+        },
+        20000);
 </script>

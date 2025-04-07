@@ -2,7 +2,6 @@
 
 class UserController extends Controller
 {
-
     public $layout = '//layouts/box_kecil';
 
     /**
@@ -16,10 +15,10 @@ class UserController extends Controller
      */
     public function filters()
     {
-        return array(
+        return [
             'accessControl', // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
-        );
+        ];
     }
 
     /**
@@ -29,11 +28,12 @@ class UserController extends Controller
      */
     public function accessRules()
     {
-        return array(
-            array('deny', // deny guest
-                'users' => array('guest'),
-            ),
-        );
+        return [
+            [
+                'deny', // deny guest
+                'users' => ['guest'],
+            ],
+        ];
     }
 
     /**
@@ -42,9 +42,9 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
-        $this->render('view', array(
+        $this->render('view', [
             'model' => $this->loadModel($id),
-        ));
+        ]);
     }
 
     /**
@@ -53,7 +53,6 @@ class UserController extends Controller
      */
     public function actionTambah()
     {
-
         require_once __DIR__ . '/../vendors/password_compat/password.php';
         $model = new User;
 
@@ -63,13 +62,13 @@ class UserController extends Controller
         if (isset($_POST['User'])) {
             $model->attributes = $_POST['User'];
             if ($model->save()) {
-                $this->redirect(array('view', 'id' => $model->id));
+                $this->redirect(['view', 'id' => $model->id]);
             }
         }
 
-        $this->render('tambah', array(
+        $this->render('tambah', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -79,7 +78,6 @@ class UserController extends Controller
      */
     public function actionUbah($id)
     {
-
         require_once __DIR__ . '/../vendors/password_compat/password.php';
         $model = $this->loadModel($id);
 
@@ -89,15 +87,26 @@ class UserController extends Controller
         if (isset($_POST['User'])) {
             //$model->unsetAttributes();
             //$model->setAttributes($_POST['User']);
+            if ($_POST['User']['theme_id'] != $model->theme_id) {
+                $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
+                $wsClientEnable = $config->nilai;
+                if ($wsClientEnable) {
+                    $clientWS = new AhadPosWsClient();
+                    $data     = [
+                        'tipe' => AhadPosWsClient::TIPE_WINDOW_REFRESH,
+                    ];
+                    $clientWS->sendJsonEncoded($data);
+                }
+            }
             $model->attributes = $_POST['User'];
             if ($model->save(true, ['nama', 'nama_lengkap', 'password', 'theme_id', 'menu_id'])) {
-                $this->redirect(array('view', 'id' => $id));
+                $this->redirect(['view', 'id' => $id]);
             }
         }
 
-        $this->render('ubah', array(
+        $this->render('ubah', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -110,8 +119,9 @@ class UserController extends Controller
         $this->loadModel($id)->delete();
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax']))
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+        if (!isset($_GET['ajax'])) {
+            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
+        }
     }
 
     /**
@@ -120,14 +130,15 @@ class UserController extends Controller
     public function actionIndex()
     {
         $this->layout = '//layouts/box';
-        $model = new User('search');
-        $model->unsetAttributes();  // clear any default values
-        if (isset($_GET['User']))
+        $model        = new User('search');
+        $model->unsetAttributes(); // clear any default values
+        if (isset($_GET['User'])) {
             $model->attributes = $_GET['User'];
+        }
 
-        $this->render('index', array(
+        $this->render('index', [
             'model' => $model,
-        ));
+        ]);
     }
 
     /**
@@ -140,8 +151,10 @@ class UserController extends Controller
     public function loadModel($id)
     {
         $model = User::model()->findByPk($id);
-        if ($model === null)
+        if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
+        }
+
         return $model;
     }
 
@@ -159,7 +172,7 @@ class UserController extends Controller
 
     public function renderLinkToAssignment($data)
     {
-        $string = '';
+        $string       = '';
         $assignedList = AuthAssignment::model()->assignedList($data->id);
         if (empty($assignedList)) {
             $string = '<span class="not-set">(not set)</span>';
@@ -182,11 +195,11 @@ class UserController extends Controller
 
         $user = User::model()->findByPk($userid);
 
-        $this->render('assignment', array(
-            'user' => $user,
-            'model' => $model,
-            'authItem' => AuthItem::model()->listNotAssignedItem($userid)
-        ));
+        $this->render('assignment', [
+            'user'     => $user,
+            'model'    => $model,
+            'authItem' => AuthItem::model()->listNotAssignedItem($userid),
+        ]);
     }
 
     /*
@@ -215,5 +228,4 @@ class UserController extends Controller
             echo 'Remove Item Status: OK';
         }
     }
-
 }

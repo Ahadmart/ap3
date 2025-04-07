@@ -167,6 +167,23 @@ class PosController extends Controller
                 'poins'                => $poins,
             ]
         );
+
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS = new AhadPosWsClient();
+            $data     = [
+                'tipe'   => AhadPosWsClient::TIPE_PROCESS,
+                'total'  => $model->total,
+                'profil' => [
+                    'id'   => $model->profil_id,
+                    'nama' => $model->profil->nama,
+                    'mol'  => $this->memberOnline,
+                ],
+                'detail' => $model->getDetailArr(),
+            ];
+            $clientWS->sendJsonEncoded($data);
+        }
     }
 
     /**
@@ -211,6 +228,16 @@ class PosController extends Controller
         $this->render('//pos/index', [
             'model' => $model,
         ]);
+
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS = new AhadPosWsClient();
+            $data     = [
+                'tipe' => AhadPosWsClient::TIPE_IDLE,
+            ];
+            $clientWS->sendMessage(json_encode($data));
+        }
     }
 
     /**
@@ -345,10 +372,42 @@ class PosController extends Controller
             if ($penjualan->status == Penjualan::STATUS_DRAFT) {
                 $barcode = $_POST['barcode'];
                 $return  = $penjualan->tambahBarang($barcode, 1);
+                if ($return['sukses'] == false && $return['error']['code'] == 514) {
+                    // Barang tidak ditemukan, coba cari sku
+                    $sku = Sku::model()->find('nomor=:nomor', [':nomor' => $barcode]);
+                    if (is_null($sku)) {
+                        $return = [
+                            'sukses' => false,
+                            'error'  => [
+                                'msg'  => 'Barang/SKU tidak ditemukan',
+                                'code' => 514,
+                            ],
+                        ];
+                    } else {
+                        $skuDetail = SkuDetail::model()->findAll('sku_id=:skuId', [':skuId' => $sku->id]);
+                        if (!empty($skuDetail)) {
+                            $listBarang = [];
+                            foreach ($skuDetail as $item) {
+                                $barang       = Barang::model()->findByPk($item->barang_id);
+                                $listBarang[] = [
+                                    'id'      => $barang->id,
+                                    'barcode' => $barang->barcode,
+                                    'nama'    => $barang->nama,
+                                    'hj'      => $barang->hargaJual,
+                                    'stok'    => $barang->stok,
+                                ];
+                            }
+                            $return = [
+                                'listBarang' => $listBarang,
+                            ];
+                        }
+                    }
+                }
             }
             //            $barang = Barang::model()->find("barcode = '" . $barcode . "'");
             //            $return['error']['msg'] = $penjualan->cekDiskon($barang->id);
         }
+        // Yii::log(var_export($return, true));
         $this->renderJSON($return);
     }
 
@@ -358,13 +417,29 @@ class PosController extends Controller
         echo ($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq']) < 0 ? '&nbsp' :
         number_format($_POST['bayar'] - $_POST['total'] + $_POST['diskonNota'] - $_POST['infaq'], 0, ',', '.');
          */
-        $bayar      = empty($_POST['bayar']) ? 0 : $_POST['bayar'];
-        $total      = empty($_POST['total']) || $_POST['total'] == 'NaN' ? 0 : $_POST['total'];
-        $diskonNota = empty($_POST['diskonNota']) ? 0 : $_POST['diskonNota'];
-        $koinMOL    = empty($_POST['koinMOL']) ? 0 : $_POST['koinMOL'];
-        $infaq      = empty($_POST['infaq']) ? 0 : $_POST['infaq'];
-        $tarikTunai = empty($_POST['tarikTunai']) ? 0 : $_POST['tarikTunai'];
-        echo number_format($bayar - $total + $diskonNota + $koinMOL - $infaq - $tarikTunai, 0, ',', '.');
+        $bayar        = empty($_POST['bayar']) ? 0 : $_POST['bayar'];
+        $total        = empty($_POST['total']) || $_POST['total'] == 'NaN' ? 0 : $_POST['total'];
+        $diskonNota   = empty($_POST['diskonNota']) ? 0 : $_POST['diskonNota'];
+        $koinMOL      = empty($_POST['koinMOL']) ? 0 : $_POST['koinMOL'];
+        $infaq        = empty($_POST['infaq']) ? 0 : $_POST['infaq'];
+        $tarikTunai   = empty($_POST['tarikTunai']) ? 0 : $_POST['tarikTunai'];
+        $kembali      = number_format($bayar - $total + $diskonNota + $koinMOL - $infaq - $tarikTunai, 0, ',', '.');
+        $totalJendral = number_format($total - $diskonNota - $koinMOL + $infaq + $tarikTunai, 0, ',', '.');
+        echo $kembali;
+
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS = new AhadPosWsClient();
+            $data     = [
+                'tipe'  => AhadPosWsClient::TIPE_PROCESS,
+                'total' => $totalJendral,
+            ];
+            if ($tarikTunai > 0) {
+                $data = array_merge($data, ['tariktunai' => number_format($tarikTunai, 0, ',', '.')]);
+            }
+            $clientWS->sendJsonEncoded($data);
+        }
     }
 
     public function renderQtyLinkEditable($data, $row)
@@ -444,7 +519,14 @@ class PosController extends Controller
 
                     $return = ['sukses' => true];
                 } else {
-                    throw new Exception('Tidak ada otorisasi Admin', 500);
+                    // throw new Exception('Tidak ada otorisasi Admin', 401);
+                    $return = [
+                        'sukses' => false,
+                        'error'  => [
+                            'code' => '401',
+                            'msg'  => 'Hapus detail harus dengan otorisasi Admin',
+                        ],
+                    ];
                 }
             }
         }
@@ -464,6 +546,16 @@ class PosController extends Controller
         $this->render('suspended', [
             'model' => $model,
         ]);
+
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS = new AhadPosWsClient();
+            $data     = [
+                'tipe' => AhadPosWsClient::TIPE_IDLE,
+            ];
+            $clientWS->sendJsonEncoded($data);
+        }
     }
 
     public function actionCekHarga()
@@ -511,6 +603,49 @@ class PosController extends Controller
                 }
             }
         }
+
+        // Kirim data checkout ke websocket :start
+        $bayar      = [];
+        $totalBayar = 0;
+        foreach ($_POST['pos']['bayar'] as $key => $val) {
+            $acc     = KasBank::model()->findByPk($key);
+            $bayar[] = [
+                'nama' => $acc->nama,
+                'jml'  => number_format($val, 0, ',', '.'),
+            ];
+            $totalBayar += $val;
+        }
+        $koinMOL = 0;
+        if (!empty($_POST['pos']['koin-mol'])) {
+            $koinMOL = $_POST['pos']['koin-mol'];
+            $bayar[] = [
+                'nama' => 'Koin',
+                'jml'  => number_format($koinMOL, 0, ',', '.'),
+            ];
+            $totalBayar += $koinMOL;
+        }
+
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS       = new AhadPosWsClient();
+            $tarikTunaiAcc  = KasBank::model()->findByPk($_POST['pos']['tarik-tunai-acc']);
+            $tarikTunaiJml  = empty($_POST['pos']['tarik-tunai']) ? 0 : $_POST['pos']['tarik-tunai'];
+            $totalPenjualan = $pos->ambilTotal();
+            $data           = [
+                'tipe'        => AhadPosWsClient::TIPE_CHECKOUT,
+                'total'       => number_format($totalPenjualan + $tarikTunaiJml, 0, ',', '.'),
+                'bayar'       => $bayar,
+                'tarik_tunai' => [
+                    'acc' => $tarikTunaiAcc->nama,
+                    'jml' => number_format($tarikTunaiJml, 0, ',', '.'),
+                ],
+                'kembalian'   => number_format($totalBayar - ($totalPenjualan + $tarikTunaiJml), 0, ',', '.'),
+            ];
+            $clientWS->sendJsonEncoded($data);
+            // Kirim data checkout ke websocket :end
+        }
+
         $this->renderJSON($return);
     }
 

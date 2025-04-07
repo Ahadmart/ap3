@@ -54,6 +54,7 @@
 <div id="input-qty" style="display: none">
     <div class="small-12 medium-6 large-4 columns">
         <form>
+            <label for="qty">&nbsp;</label>
             <div class="row collapse">
                 <div class="small-4 columns">
                     <span class="prefix huruf"><b>Q</b>ty Asli</span>
@@ -65,8 +66,24 @@
                     <a id="tombol-ok-tambah" href="" class="button postfix">Tambah</a>
                 </div>
             </div>
+
         </form>
         <a href="#" class="tiny bigfont button gantiinput">Ganti Input</a> menjadi Selisih
+    </div>
+    <div class="small-6 large-4 columns">
+
+        <?= CHtml::label('Pindahkan barang ke rak:', 'rak-dropdown') ?>
+        <?= CHtml::dropDownList('rak-dropdown', null, CHtml::listData(
+            RakBarang::model()->findAll(array('order' => 'nama')),
+            'id',
+            'nama'
+        ), ['empty' => 'Tidak dipindahkan']); ?>
+
+    </div>
+    <div class="small-6 large-4 columns">
+        <label>&nbsp;</label>
+        <?= CHtml::checkBox('set_inaktif', false, ['']) ?>
+        <?= CHtml::label('Non aktifkan barang', 'set_inaktif') ?>
     </div>
 </div>
 <div id="input-selisih" style="display: none">
@@ -110,6 +127,8 @@
         $("#input-selisih").hide();
         $("#input-barang").show();
         $("#namabarang").val('');
+        $("#set_inaktif").prop('checked', false);
+        $("#rak-dropdown").prop('selectedIndex', 0);
         $("#scan").val('');
         $("#scan").focus();
     }
@@ -221,11 +240,15 @@
 
     $("#tombol-ok-tambah").click(function() {
         var barcode = $("#scan").val();
-        var qty = $("#qty").val()
+        var qty = $("#qty").val();
+        var rak = $("#rak-dropdown").val();
+        var setinaktif = $("#set_inaktif").is(":checked");
         var datakirim = {
             'tambah': true,
             'barcode': barcode,
-            'qty': qty
+            'qty': qty,
+            'rak': rak,
+            'setinaktif': setinaktif
         };
         var dataurl = "<?php echo $this->createUrl('tambahdetail', array('id' => $model->id)) ?>";
 

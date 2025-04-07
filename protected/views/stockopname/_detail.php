@@ -3,19 +3,31 @@
     $this->widget(
         'BGridView',
         [
-            'id'           => 'so-detail-grid',
-            'dataProvider' => $modelDetail->search(),
-            'columns'      => [
+            'id'                    => 'so-detail-grid',
+            'dataProvider'          => $modelDetail->search(),
+            'rowCssClassExpression' => function ($row, $data) {
+                // if ($data->bedaRaknya()) {
+                //     return 'baru'; // Rak beda, diberi tanda beda warna di barisnya
+                // }
+                // Beda warna untuk barang diset non aktif
+                return $data->set_inaktif == 1 ? 'inaktif' : '';
+            },
+            'columns'               => [
+                // [
+                //     'name'              => 'barcode',
+                //     'value'             => '$data->barang->barcode',
+                //     'headerHtmlOptions' => ['class' => 'hide-for-small-only'],
+                //     'htmlOptions'       => ['class' => 'hide-for-small-only'],
+                // ],
                 [
-                    'name'              => 'barcode',
-                    'value'             => '$data->barang->barcode',
-                    'headerHtmlOptions' => ['class' => 'hide-for-small-only'],
-                    'htmlOptions'       => ['class' => 'hide-for-small-only'],
+                    'name'   => 'namaBarang',
+                    'type'   => 'raw',
+                    'value'  => [$this, 'renderBarang'],
+                    'header' => 'Barang',
                 ],
-                [
-                    'name'  => 'namaBarang',
-                    'value' => '$data->barang->nama',
-                ],
+                // [
+                //     'value' => '$data->barang->rak->nama',
+                // ],
                 [
                     'name'              => 'qty_tercatat',
                     'headerHtmlOptions' => ['style' => 'width:75px;', 'class' => 'rata-kanan'],

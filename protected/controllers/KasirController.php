@@ -51,7 +51,12 @@ class KasirController extends Controller
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
+
         if (isset($_POST['Kasir'])) {
+            $kasirBuka = Kasir::sedangBuka($_POST['Kasir']['user_id']);
+            if (!is_null($kasirBuka)) {
+                throw new CHttpException(500, 'Tidak bisa buka kasir! Kasir "' . $kasirBuka->user->nama_lengkap . '" sudah buka di ' . $kasirBuka->device->nama);
+            }
             $model->attributes = $_POST['Kasir'];
             if ($model->save()) {
                 $this->redirect('index');

@@ -20,8 +20,8 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
             <?php
         }
         ?>
-        <span class="secondary label">Customer</span><span class="label"><?php echo $model->profil->nama; ?></span>
-        <span class="secondary label">Total</span><span class="label" id="total-penjualan"><?php echo $model->total; ?></span>
+        <span class="secondary label">Customer</span><span class="label"><?php echo $model->profil->nama; ?></span><br />
+        <span class="secondary label label-total">Total</span><span class="label label-total" id="total-penjualan"><?php echo $model->total; ?></span>
     </div>
     <div class="large-5 columns">
         <ul class="button-group right">

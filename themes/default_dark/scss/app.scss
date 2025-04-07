@@ -82,12 +82,62 @@ option {
     @include animasi(tada 1s infinite);
 }
 
+table {
+    background: #1e2021;
+    thead {
+        background: #17191a;
+        tr {
+            th {
+                color: #f8f4ec;
+            }
+        }
+    }
+    tr {
+        &.even,
+        &.alt,
+        &:nth-of-type(2n) {
+            background: #17191a;
+        }
+        td {
+            color: #f8f4ec;
+        }
+    }
+}
+
+table {
+    background: #1e2021;
+    thead {
+        background: #17191a;
+        tr {
+            th {
+                color: #f8f4ec;
+            }
+        }
+    }
+    tr {
+        &.even,
+        &.alt,
+        &:nth-of-type(2n) {
+            background: #17191a;
+        }
+        th {
+            color: #fff;
+        }
+        td {
+            color: #f8f4ec;
+        }
+    }
+}
+
 .tabel-index {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     border: 0;
 
+    label {
+        color: #222;
+    }
     input,
     select {
         margin-bottom: 0px;
@@ -101,7 +151,9 @@ option {
         font-size: 0.825em;
     }
 
-    tr.baru {
+    tr.baru,
+    tr.manual,
+    tr.inaktif {
         background-color: #f57c00;
         font-weight: bold;
 
@@ -306,6 +358,12 @@ a.button.micro.bigfont {
     }
 }
 
+span.prefix, span.postfix {
+    background: #282b2c;
+    color: #fff;
+    border-color: #444c4e;
+}
+
 div.error {
     display: block;
     padding: 0.33333rem 0.5rem 0.5rem;
@@ -497,6 +555,18 @@ label {
         margin-bottom: 3px;
         font-family: "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
     }
+    .label-total {
+        font-size: 1.3rem;
+    }
+}
+
+.label-total {
+    font-size: 1rem;
+}
+
+.label.secondary {
+    background-color: rgb(40, 43, 44);
+    color: rgb(235, 229, 221);
 }
 
 .top-bar-section {
@@ -525,7 +595,11 @@ input[type="time"],
 input[type="url"],
 input[type="color"],
 textarea {
-    color: $warna-text;
+    // color: $warna-text;
+    color: #f8f4ec;
+    background-color: #17191a;
+    border-color: #444c4e;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px inset;
 }
 
 input[type="text"]:focus,
@@ -544,16 +618,62 @@ input[type="url"]:focus,
 input[type="color"]:focus,
 textarea:focus {
     //glow effect on focus
+    background-color: #17191a;
     box-shadow: 0px 0px 15px $toska;
     border: 1px solid $toska;
 }
 
-tr {
-    transition: background-color 0.5s ease;
-
-    &.pilih {
-        background-color: $toska !important;
-    }
+input:not([type])[disabled],
+input:not([type])[readonly],
+fieldset[disabled] input:not([type]),
+input[type="text"][disabled],
+input[type="text"][readonly],
+fieldset[disabled] input[type="text"],
+input[type="password"][disabled],
+input[type="password"][readonly],
+fieldset[disabled] input[type="password"],
+input[type="date"][disabled],
+input[type="date"][readonly],
+fieldset[disabled] input[type="date"],
+input[type="datetime"][disabled],
+input[type="datetime"][readonly],
+fieldset[disabled] input[type="datetime"],
+input[type="datetime-local"][disabled],
+input[type="datetime-local"][readonly],
+fieldset[disabled] input[type="datetime-local"],
+input[type="month"][disabled],
+input[type="month"][readonly],
+fieldset[disabled] input[type="month"],
+input[type="week"][disabled],
+input[type="week"][readonly],
+fieldset[disabled] input[type="week"],
+input[type="email"][disabled],
+input[type="email"][readonly],
+fieldset[disabled] input[type="email"],
+input[type="number"][disabled],
+input[type="number"][readonly],
+fieldset[disabled] input[type="number"],
+input[type="search"][disabled],
+input[type="search"][readonly],
+fieldset[disabled] input[type="search"],
+input[type="tel"][disabled],
+input[type="tel"][readonly],
+fieldset[disabled] input[type="tel"],
+input[type="time"][disabled],
+input[type="time"][readonly],
+fieldset[disabled] input[type="time"],
+input[type="url"][disabled],
+input[type="url"][readonly],
+fieldset[disabled] input[type="url"],
+input[type="color"][disabled],
+input[type="color"][readonly],
+fieldset[disabled] input[type="color"],
+textarea[disabled],
+textarea[readonly],
+fieldset[disabled] textarea {
+    color: #aaa;
+    background-color: #313131;
+    cursor: default;
 }
 
 .alert-box.warning {
@@ -565,6 +685,21 @@ select {
     -moz-appearance: none;
     text-indent: 0.01px;
     text-overflow: "";
+    color: #f8f4ec;
+    background-color: #1f2124;
+    border-color: #575e61;
+    background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgdmVyc2lvbj0iMS4xIgogICB4PSIxMnB4IgogICB5PSIwcHgiCiAgIHdpZHRoPSIyNHB4IgogICBoZWlnaHQ9IjNweCIKICAgdmlld0JveD0iMCAwIDYgMyIKICAgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgNiAzIgogICB4bWw6c3BhY2U9InByZXNlcnZlIgogICBpZD0ic3ZnMSIKICAgc29kaXBvZGk6ZG9jbmFtZT0iaW1hZ2Uuc3ZnIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjMuMiAoMDkxZTIwZWYwZiwgMjAyMy0xMS0yNSwgY3VzdG9tKSIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcwogICAgIGlkPSJkZWZzMSIgLz48c29kaXBvZGk6bmFtZWR2aWV3CiAgICAgaWQ9Im5hbWVkdmlldzEiCiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGJvcmRlcmNvbG9yPSIjNjY2NjY2IgogICAgIGJvcmRlcm9wYWNpdHk9IjEuMCIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIgogICAgIGlua3NjYXBlOnpvb209IjMyLjM3NSIKICAgICBpbmtzY2FwZTpjeD0iMTIiCiAgICAgaW5rc2NhcGU6Y3k9IjEuNTEzNTEzNSIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjE5MjAiCiAgICAgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iMTA0OCIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9InN2ZzEiIC8+PHBvbHlnb24KICAgICBwb2ludHM9IjUuOTkyLDAgMi45OTIsMyAtMC4wMDgsMCAiCiAgICAgaWQ9InBvbHlnb24xIgogICAgIHN0eWxlPSJmaWxsOiNmZmZmZmYiIC8+PC9zdmc+Cg==");
+    &:focus {
+        color: #f8f4ec;
+        background-color: #1f2124;
+        border-color: #575e61;
+    }
+}
+
+.select2-container--default .select2-selection--multiple,
+.select2-results {
+    color: #f8f4ec;
+    background-color: #1f2124;
 }
 
 .grid-loading {
@@ -651,7 +786,8 @@ select {
 }
 
 .select2-results__options {
-    color: $warna-text;
+    // color: $warna-text;
+    color: #f8f4ec;
 }
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
@@ -669,7 +805,7 @@ select {
 input[type="checkbox"] + label,
 input[type="radio"] + label {
     vertical-align: middle;
-    margin-top: -0.5rem;
+    // margin-top: -0.5rem;
 }
 
 pre {

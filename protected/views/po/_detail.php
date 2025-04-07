@@ -13,7 +13,7 @@ endif;
         'id'           => 'po-detail-grid',
         'dataProvider' => $PODetail->search(),
         //'filter' => $PODetail,
-        'summaryText'  => '{start}-{end} dari {count}, Total: ' . $po->total,
+        'summaryText'  => '{start}-{end} dari {count}, Total: <span class="label-total">' . $po->total . '</span>',
         'columns'      => [
             'barcode',
             'nama',

@@ -135,7 +135,7 @@ option {
     td {
         font-size: 0.825em;
     }
-    tr.baru {
+    tr.baru, tr.manual, tr.inaktif  {
         background-color: #f57c00;
         font-weight: bold;
         td {
@@ -498,6 +498,13 @@ label {
         font-size: 0.85rem;
         margin-bottom: 3px;
     }
+    .label-total{
+        font-size: 1.3rem;
+    }
+}
+
+.label-total{
+    font-size: 1rem;
 }
 
 .top-bar-section {

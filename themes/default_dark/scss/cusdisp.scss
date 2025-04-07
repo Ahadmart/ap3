@@ -1,0 +1,439 @@
+/* 
+    Created on : 28 Maret 2024, 11:29 AM
+    Author     : abumuhammad
+*/
+
+$biru: #0b62a4;
+$biru-muda: #7a92a3;
+$hijau: #4da74d;
+$toska: #00bcd4;
+$oranye: #edc240;
+$merah: #b71c1c;
+$violet: #9440ed;
+$warna-text: #212121;
+$warning-color: #f57c00;
+
+h1 {
+    font-size: 2rem;
+}
+.box {
+    // border: 1px solid #fff;
+    height: 100%;
+    overflow: scroll;
+}
+.kiri_atas {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 1rem 2rem;
+    overflow: hidden;
+}
+.kanan_atas {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    img {
+        width: 149px;
+        max-width: 159px;
+        margin: auto;
+        display: block;
+    }
+}
+.kiri_bawah {
+    background-color: rgba(255, 255, 255, 0.01);
+    overflow: hidden;
+}
+.kanan_bawah {
+    // padding: 1rem;
+    display: flex;
+    // align-items: center;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+#info_kasir {
+    margin: auto;
+    p {
+        margin-bottom: 0;
+        font-size: 1.1rem;
+    }
+    p:nth-of-type(2) {
+        margin-bottom: 1.25rem;
+    }
+}
+#info_cust {
+    margin: auto;
+    p {
+        margin-bottom: 0;
+        font-size: 1.25rem;
+    }
+    p:nth-of-type(1) {
+        margin-top: 0.5rem;
+        font-size: 1.5rem;
+    }
+}
+
+#info_checkout {
+    margin: auto;
+    p {
+        font-size: 1.7rem;
+    }
+}
+
+#welcome {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    img {
+        margin-bottom: 1.25rem;
+        max-width: 159px;
+    }
+}
+
+#last_scan {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 93%;
+    p {
+        margin-bottom: 0;
+        font-size: 1.25rem;
+        span {
+            padding: 0 5px;
+            display: inline-block;
+        }
+        span:nth-of-type(1) {
+            width: 6.5rem;
+        }
+        .hj_dis > span,
+        .stotaldis > span {
+            text-decoration: underline;
+            display: inline;
+        }
+        .stotaldis {
+            color: #d32f2f;
+        }
+    }
+    p:nth-of-type(1) {
+        margin-bottom: 1.25rem;
+        font-size: 2rem;
+        font-weight: bold;
+        overflow: hidden;
+        text-wrap: nowrap;
+        text-overflow: ellipsis;
+        span:nth-of-type(1) {
+            display: inline;
+            font-size: 1.5rem;
+            font-weight: normal;
+        }
+    }
+    p:nth-of-type(3) {
+        font-size: 1.5rem;
+    }
+}
+
+.network_status {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    .sinyal {
+        // display: block;
+        // background: #000;
+        // border-radius: 50%;
+        // height: 14px;
+        // width: 14px;
+        // margin: 0;
+        // &.mati {
+        //     background: radial-gradient(circle at 10px 3px, #e31a1c, #000);
+        // }
+        // &.nyala {
+        //     background: radial-gradient(circle at 10px 3px, #65c728, #000);
+        // }
+        // &.error {
+        //     background: radial-gradient(circle at 10px 3px, #0079d8, #000);
+        // }
+        &.mati {
+            margin: 0 auto;
+            width: 12px;
+            height: 12px;
+            background-color: #f00;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #441313 0 -1px 3px,
+                rgba(255, 0, 0, 0.5) 0 2px 12px;
+            // -webkit-animation: blinkRed 0.5s infinite;
+            // -moz-animation: blinkRed 0.5s infinite;
+            // -ms-animation: blinkRed 0.5s infinite;
+            // -o-animation: blinkRed 0.5s infinite;
+            animation: merahKedip 0.5s infinite;
+        }
+        &.nyala {
+            margin: 0 auto;
+            width: 12px;
+            height: 12px;
+            background-color: #abff00;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #304701 0 -1px 3px,
+                #89ff00 0 2px 12px;
+        }
+        &.error {
+            margin: 0 auto;
+            width: 12px;
+            height: 12px;
+            background-color: #24e0ff;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #006 0 -1px 3px,
+                #3f8cff 0 2px 14px;
+        }
+    }
+}
+@keyframes merahKedip {
+    from {
+        background-color: #f00;
+    }
+    50% {
+        background-color: #a00;
+        box-shadow:
+            rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
+            inset #441313 0 -1px 9px,
+            rgba(255, 0, 0, 0.5) 0 2px 0;
+    }
+    to {
+        background-color: #f00;
+    }
+}
+
+#detail_tr {
+    width: 100%;
+    padding-top: 1rem;
+}
+
+/* Tabel Penjualan Detail */
+.t_wrapper {
+    height: calc(100% - 150px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.t_detail {
+    // height: 200px;
+    // border: 2px solid black;
+    border: none;
+    overflow: auto;
+    width: 100%;
+    margin-bottom: 0;
+    // height: calc(100% - 60px);
+    thead {
+        font-weight: 500;
+        position: sticky;
+        top: 0;
+        background-color: rgba(19, 37, 49, 0.85);
+    }
+    tbody {
+        tr:nth-of-type(n) {
+            background-color: rgba(5, 22, 49, 0.85);
+        }
+        tr:nth-of-type(2n) {
+            background-color: rgba(12, 28, 41, 0.7);
+        }
+    }
+    th {
+        border-bottom: 1px solid #e8e8e8;
+        text-align: left;
+        color: #e0e0e0;
+    }
+    td {
+        color: #ffeb3b;
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-shadow:
+            2px 6px 5px rgba(0, 0, 0, 0.2),
+            0px -4px 30px rgba(255, 255, 255, 0.4);
+        text-align: right;
+        &:nth-child(1) {
+            text-align: left;
+        }
+    }
+}
+
+// tbody tr {
+// border-bottom: 2px solid #e8e8e8;
+// }
+/* Eo Tabel Penjualan Detail */
+
+#total_container {
+    display: flex;
+    direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    align-content: space-between;
+    text-align: left;
+    height: 150px;
+    padding: 1.25rem 0 20px 0;
+    span {
+        color: #fff;
+        border-bottom: 2px solid rgba(255,255,255,.5);
+        width: 50%;
+        // height: 50%;
+        font-size: 1.5rem;
+        padding-bottom: 1rem;
+        &:nth-of-type(2n) {
+            text-align: right;
+            right: 1rem;
+        }
+        &:nth-child(3),
+        &:nth-child(4) {
+            font-size: 2.5rem;
+            font-weight: bold;
+            border: none;
+            margin-top: 0.5rem;
+            position: absolute;
+            bottom: 1rem;
+        }
+    }
+}
+
+#payment {
+    margin: auto;
+    display: flex;
+    direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    // align-content:
+    text-align: left;
+    // height: 40%;
+    width: 70%;
+    // padding: 1.25rem 0 20px 0;
+    line-height: 2rem;
+    color: #fff;
+    span {
+        width: 50%;
+        font-size: 1.1rem;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        &:nth-of-type(2n) {
+            text-align: right;
+        }
+        &.total {
+            border-bottom: 2px solid rgba(255,255,255,.5);
+            padding-bottom: 1rem;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        &.kembalian,
+        &.payment_tt {
+            border-top: 2px solid rgba(255,255,255,.5);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            font-size: 1.55rem;
+            font-weight: bold;
+        }
+        &.kembalian {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
+        }
+    }
+    p {
+        width: 100%;
+        text-align: center;
+        margin-top: 1.5rem;
+        font-size: 1.25rem;
+    }
+}
+
+#time_board {
+    // margin: auto;
+    width: 100%;
+    color: #e0e0e0;
+    hr {
+        border-color: #e0e0e0;
+    }
+    p {
+        margin: 0;
+        font-size: 2rem;
+        &:nth-child(4) {
+            font-size: 1rem;
+        }
+        &:nth-child(5) {
+            margin-top: 1rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 2.5rem;
+            @media only screen and (min-width: 1360px) {
+                font-size: 3rem;
+                line-height: 3rem;
+            }
+        }
+        &:nth-child(6) {
+            font-size: 1.4rem;
+        }
+    }
+    #waktu {
+        font-size: 3rem;
+        font-weight: 700;
+        #separator {
+            padding: 0 2px;
+            animation: blinker 2s linear infinite;
+        }
+    }
+    jadwal_sholat {
+        padding-top: 1rem;
+        display: flex;
+        direction: row;
+        flex-wrap: wrap;
+        align-items: baseline;
+        text-align: right;
+        line-height: 1.5rem;
+        font-size: 1rem;
+        width: 80%;
+        margin: auto;
+        @media only screen and (min-width: 1360px) {
+            font-size: 1.25rem;
+            line-height: 2rem;
+        }
+        & > p {
+            font-size: 1rem;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        span {
+            padding-right: 10px;
+            width: 50%;
+            &:nth-of-type(2n) {
+                // padding-left:20px;
+                text-align: center;
+            }
+        }
+    }
+}
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}
+
+#brosur-container {
+    height: 100%;
+    display: flex;
+    > img {
+        display: block;
+        max-width: 95%;
+        max-height: 95%;
+        width: auto;
+        height: auto;
+        margin: auto;
+    }
+}

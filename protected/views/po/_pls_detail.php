@@ -57,6 +57,12 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jqu
                     'htmlOptions'       => ['class' => 'rata-kanan'],
                 ],
                 [
+                    'name'              => 'qty_butuh',
+                    'filter'            => false,
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                ],
+                [
                     'name'              => 'saran_order',
                     'filter'            => false,
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],

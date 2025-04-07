@@ -404,7 +404,7 @@ class Po extends CActiveRecord
     {
         $sql = '
         SELECT
-            barcode, nama, harga_beli harga, qty_order qty, stok
+            barcode, nama, harga_beli harga, qty_order qty, stok, saran_order
         FROM
             po_detail
         WHERE
@@ -414,6 +414,69 @@ class Po extends CActiveRecord
         $report = Yii::app()->db->createCommand($sql)->bindValue(':poId', $this->id)->queryAll();
 
         return $this->array2csv($report);
+    }
+
+    /**
+     * Export PO ke JSON
+     * @return text json parameter analia pls dan detail po
+     */
+    public function toJson()
+    {
+        $info  = [];
+        $param = [];
+        $data  = [];
+
+        $info = [
+            't'   => 'PO',
+            'no'  => $this->nomor,
+            'tgl' => $this->tanggal,
+            // 'pubkey' => ''
+        ];
+
+        $sqlParam = '
+        SELECT
+            `range` AS h,
+            `order_period` AS op,
+            `lead_time` AS lt,
+            `ssd`,
+            `rak_id` AS rId,
+            `struktur_lv1` AS l1Id,
+            `struktur_lv2` AS l2Id,
+            `struktur_lv3` AS l3Id,
+            rak.nama r,
+            lv1.nama l1,
+            lv2.nama l2,
+            lv3.nama l3
+        FROM
+            po_analisapls_param t
+                LEFT JOIN
+            barang_rak rak ON rak.id = t.rak_id
+                LEFT JOIN
+            barang_struktur lv1 ON lv1.id = t.struktur_lv1
+                LEFT JOIN
+            barang_struktur lv2 ON lv2.id = t.struktur_lv2
+                LEFT JOIN
+            barang_struktur lv3 ON lv3.id = t.struktur_lv3
+        WHERE
+            po_id = :poId
+        ';
+        $param = Yii::app()->db->createCommand($sqlParam)->bindValue(':poId', $this->id)->queryRow();
+
+        $sql = '
+        SELECT
+            barcode AS b, nama AS n, harga_beli h, qty_order qo, stok AS s, saran_order AS so
+        FROM
+            po_detail
+        WHERE
+            po_id = :poId
+        ';
+        $data = Yii::app()->db->createCommand($sql)->bindValue(':poId', $this->id)->queryAll();
+
+        return json_encode([
+            'info'  => $info,
+            'param' => $param,
+            'data'  => $data,
+        ]);
     }
 
     public function analisaPLS($hariPenjualan, $orderPeriod, $leadTime, $ssd, $profilId, $rakId, $strukLv1, $strukLv2, $strukLv3, $semuaBarang)
@@ -532,23 +595,46 @@ class Po extends CActiveRecord
                     JOIN
                 barang ON barang.id = po_detail.barang_id
             SET
-                `saran_order` = CASE
-                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`)) > 0 THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - IF(`stok` < 0, 0, `stok`))
-                        ELSE 0
-                        END,
-                `qty_order` = CASE
-                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`)) > 0 THEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - IF(`stok` < 0, 0, `stok`))
-                        ELSE 0
-                        END,
+                `qty_butuh` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`),
+                `saran_order` = 
+                CASE
+                    WHEN `stok` < `po_detail`.`restock_min` THEN
+                    CASE
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < IF(`stok` < 0, 0, `stok`) THEN
+                        `po_detail`.`restock_min` - IF(`stok` < 0, 0, `stok`)
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < `po_detail`.`restock_min` THEN
+                        `po_detail`.`restock_min` - IF(`stok` < 0, 0, `stok`)
+                        ELSE
+                        CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) - IF(`stok` < 0, 0, `stok`)
+                    END
+                    ELSE
+                    CASE
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < `po_detail`.`restock_min` THEN
+                        0
+                        WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < IF(`stok` < 0, 0, `stok`) THEN
+                        0
+                        ELSE
+                        CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) - IF(`stok` < 0, 0, `stok`)
+                    END
+                END,
+                `qty_order` = 
+                CASE
+                    WHEN `stok` < `po_detail`.`restock_min` AND CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < IF(`stok` < 0, 0, `stok`) THEN
+                        `po_detail`.`restock_min` - IF(`stok` < 0, 0, `stok`)
+                    WHEN `stok` < `po_detail`.`restock_min` AND CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < `po_detail`.`restock_min` THEN
+                        `po_detail`.`restock_min` - IF(`stok` < 0, 0, `stok`)
+                    WHEN `stok` < `po_detail`.`restock_min` THEN
+                        CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) - IF(`stok` < 0, 0, `stok`)
+                    WHEN CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < `po_detail`.`restock_min` OR CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) < IF(`stok` < 0, 0, `stok`) THEN
+                        0
+                    ELSE
+                        CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * `variant_coefficient`) - IF(`stok` < 0, 0, `stok`)
+                END,
                 `po_detail`.`harga_jual` = bhj.harga,
                 `po_detail`.`harga_beli` = belid.harga_beli
             WHERE
                 po_id = :poId
                 ';
-        /*
-        `saran_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient - `stok`),
-         `qty_order` = CEIL(`ads` * (:orderPeriod + :leadTime + :ssd) * variant_coefficient + IFNULL(po_detail.restock_min, 0) - `stok`),
-         */
 
         try {
             $command = Yii::app()->db->createCommand($sql);
@@ -573,14 +659,68 @@ class Po extends CActiveRecord
         }
     }
 
+    static function hitungSaranOrderPerBarang($detailId)
+    {
+        $sql = '
+        UPDATE po_detail
+        JOIN barang ON barang.id = po_detail.barang_id
+        JOIN po_analisapls_param param ON param.po_id = po_detail.po_id
+        SET saran_order = 
+            CASE
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` AND CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`) THEN
+                `po_detail`.`restock_min` - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` AND CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < `po_detail`.`restock_min` THEN
+                `po_detail`.`restock_min` - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` THEN
+                CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < `po_detail`.`restock_min` OR CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`) THEN
+                0
+                ELSE
+                CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+            END,
+            `qty_order` =
+            CASE
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` AND CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`) THEN
+                `po_detail`.`restock_min` - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` AND CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < `po_detail`.`restock_min` THEN
+                `po_detail`.`restock_min` - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN `po_detail`.`stok` < `po_detail`.`restock_min` THEN
+                CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+                WHEN CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < `po_detail`.`restock_min` OR CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) < IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`) THEN
+                0
+                ELSE
+                CEIL(`po_detail`.`ads` * (`param`.`order_period` + `param`.`lead_time` + `param`.`ssd`) * `barang`.`variant_coefficient`) - IF(`po_detail`.`stok` < 0, 0, `po_detail`.`stok`)
+            END
+        WHERE `po_detail`.`id` = :poDetailId;
+        ';
+        try {
+            $command = Yii::app()->db->createCommand($sql);
+            $hasil   = $command->execute([
+                ':poDetailId'        => $detailId,
+            ]);
+            return [
+                'sukses' => true,
+                'data'   => $hasil,
+            ];
+        } catch (Exception $ex) {
+            return [
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+                ],
+            ];
+        }
+    }
+
     public function tambahBarangTanpaPenjualan($strukLv1, $strukLv2, $strukLv3)
     {
         $strukturList = [];
         if ($strukLv3 > 0) {
             $strukturList[] = $strukLv3;
-        } else if ($strukLv2 > 0) {
+        } elseif ($strukLv2 > 0) {
             $strukturList = StrukturBarang::listChildStruk($strukLv2);
-        } else if ($strukLv1 > 0) {
+        } elseif ($strukLv1 > 0) {
             $strukturListLv2 = StrukturBarang::listChildStruk($strukLv1);
             foreach ($strukturListLv2 as $strukturIdLv2) {
                 $strukturList = array_merge($strukturList, StrukturBarang::listChildStruk($strukturIdLv2));

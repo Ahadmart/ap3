@@ -13,8 +13,8 @@ $this->boxHeader['normal'] = "Sales Order: {$model->nomor}";
 ?>
 <div class="row">
     <div class="large-7 columns header">
-        <span class="secondary label">Customer</span><span class="label"><?= $model->profil->nama; ?></span>
-        <span class="secondary label">Total</span><span class="label" id="total-pesanan"><?= $model->total; ?></span>
+        <span class="secondary label">Customer</span><span class="label"><?= $model->profil->nama; ?></span><br />
+        <span class="secondary label label-total">Total</span><span class="label label-total" id="total-pesanan"><?= $model->total; ?></span>
     </div>
     <div class="large-5 columns">
         <ul class="button-group right">

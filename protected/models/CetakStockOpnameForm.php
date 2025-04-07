@@ -117,7 +117,7 @@ class CetakStockOpnameForm extends CFormModel
             WHERE
                 barang.rak_id = :rakId
             ";
-        if ($this->kategoriId > 0) {
+        if (ctype_digit($this->kategoriId) && $this->kategoriId > 0) {
             $where .= " AND kategori_id = :kategoriId";
         }
         if ($this->kecualiStokNol != 0) {
@@ -154,7 +154,7 @@ class CetakStockOpnameForm extends CFormModel
 
         $sql = "
             SELECT 
-                barang.barcode, barang.nama, t_stok.stok, hj.harga
+                barang.barcode, barang.nama, t_stok.stok, hj.harga, barang.status
             FROM
                 barang
                     JOIN
@@ -177,7 +177,7 @@ class CetakStockOpnameForm extends CFormModel
 
         $command = Yii::app()->db->createCommand($sql);
         $command->bindValue(':rakId', $this->rakId);
-        if ($this->kategoriId > 0) {
+        if (ctype_digit($this->kategoriId)  && $this->kategoriId > 0) {
             $command->bindValue(':kategoriId', $this->kategoriId);
         }
         if ($this->aktifSaja != 0) {
@@ -186,6 +186,7 @@ class CetakStockOpnameForm extends CFormModel
         if (!empty($this->filterNama) || $this->filterNama != ''){
             $command->bindValue(':filterNama', "%{$this->filterNama}%");
         }
+        // Yii::log($command->getText());
         return $command->queryAll();
     }
 

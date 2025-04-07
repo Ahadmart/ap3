@@ -106,9 +106,9 @@ class ReportPlsForm extends CFormModel
         if ($this->strukLv3 > 0) {
             $strukturList[] = $this->strukLv3;
             // echo ',this->strukId: ' . $this->strukLv3;
-        } else if ($this->strukLv2 > 0) {
+        } elseif ($this->strukLv2 > 0) {
             $strukturList = $this->listChildStruk($this->strukLv2);
-        } else if ($this->strukLv1 > 0) {
+        } elseif ($this->strukLv1 > 0) {
             $strukturListLv2 = $this->listChildStruk($this->strukLv1);
             foreach ($strukturListLv2 as $strukturIdLv2) {
                 $strukturList = array_merge($strukturList, $this->listChildStruk($strukturIdLv2));
@@ -131,15 +131,15 @@ class ReportPlsForm extends CFormModel
     {
         $whereStruk = '';
         if (!empty($strukId)) {
-            $whereStruk = "
+            $whereStruk = '
                 JOIN
             barang ON barang.id = penjualan_detail.barang_id
                 AND barang.struktur_id = :strukId
-        ";
+        ';
         }
 
         $command = Yii::app()->db->createCommand();
-        $command->select("
+        $command->select('
             t_jualan.*,
             barang.barcode,
             barang.nama,
@@ -147,7 +147,7 @@ class ReportPlsForm extends CFormModel
             t_jualan.qty / :range ads,
             t_stok.qty stok,
             t_stok.qty / (t_jualan.qty / :range) sisa_hari
-                ");
+                ');
         $command->from("
             (SELECT
                 barang_id, SUM(qty) qty
@@ -161,17 +161,17 @@ class ReportPlsForm extends CFormModel
                 penjualan.created_at BETWEEN DATE_SUB(NOW(), INTERVAL :range DAY) AND NOW()
             GROUP BY barang_id) AS t_jualan
                 ");
-        $command->join("
+        $command->join('
             (SELECT
                 barang_id, SUM(qty) qty
             FROM
                 inventory_balance
             GROUP BY barang_id) AS t_stok
-                ", "t_stok.barang_id = t_jualan.barang_id");
-        $command->join("barang", "t_jualan.barang_id = barang.id");
-        #$command->where("t_stok.qty / (t_jualan.qty / :range) <= :orderPeriod");
-        $command->where("(t_jualan.qty / :range) * :orderPeriod + barang.restock_min > t_stok.qty");
-        $command->order("(t_jualan.qty / :range) * :orderPeriod + barang.restock_min " . $this->listNamaSortBy()[$this->sortBy]);
+                ', 't_stok.barang_id = t_jualan.barang_id');
+        $command->join('barang', 't_jualan.barang_id = barang.id');
+        //$command->where("t_stok.qty / (t_jualan.qty / :range) <= :orderPeriod");
+        $command->where('(t_jualan.qty / :range) * (:orderPeriod + :leadTime + :ssd) + barang.restock_min > t_stok.qty');
+        $command->order('(t_jualan.qty / :range) * (:orderPeriod + :leadTime + :ssd) + barang.restock_min ' . $this->listNamaSortBy()[$this->sortBy]);
 
         if (!empty($this->profilId)) {
             $command->join('supplier_barang sb', 'sb.barang_id = t_jualan.barang_id');
@@ -179,24 +179,26 @@ class ReportPlsForm extends CFormModel
         }
 
         if (!empty($this->rakId)) {
-            $command->andWhere("barang.rak_id = " . $this->rakId);
+            $command->andWhere('barang.rak_id = ' . $this->rakId);
         }
 
-        $command->andWhere("barang.status = :statusBarang");
+        $command->andWhere('barang.status = :statusBarang');
 
-        $command->bindValue(":statusDraft", Penjualan::STATUS_DRAFT);
-        $command->bindValue(":range", $this->jumlahHari);
-        $command->bindValue(":orderPeriod", $this->orderPeriod);
-        $command->bindValue(":statusBarang", Barang::STATUS_AKTIF);
+        $command->bindValue(':statusDraft', Penjualan::STATUS_DRAFT);
+        $command->bindValue(':range', $this->jumlahHari);
+        $command->bindValue(':orderPeriod', $this->orderPeriod);
+        $command->bindValue(':leadTime', $this->leadTime);
+        $command->bindValue(':ssd', $this->ssd);
+        $command->bindValue(':statusBarang', Barang::STATUS_AKTIF);
 
         if (!empty($this->profilId)) {
-            $command->bindValue(":profilId", $this->profilId);
+            $command->bindValue(':profilId', $this->profilId);
         }
         if (!empty($this->rakId)) {
-            $command->bindValue(":rakId", $this->rakId);
+            $command->bindValue(':rakId', $this->rakId);
         }
         if (!empty($strukId)) {
-            $command->bindValue(":strukId", $strukId);
+            $command->bindValue(':strukId', $strukId);
         }
 
         // echo $command->getText();

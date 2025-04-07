@@ -113,7 +113,7 @@ option {
             }
         }
     }
-    tr.baru {
+    tr.baru, tr.manual, tr.inaktif  {
         background-color: $warning-color;
         font-weight: bold;
         td {
@@ -473,6 +473,13 @@ label {
         font-size: 0.85rem;
         margin-bottom: 3px;
     }
+    .label-total{
+        font-size: 1.3rem;
+    }
+}
+
+.label-total{
+    font-size: 1rem;
 }
 
 .top-bar-section {

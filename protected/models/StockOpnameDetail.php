@@ -9,6 +9,8 @@
  * @property string $barang_id
  * @property integer $qty_tercatat
  * @property integer $qty_sebenarnya
+ * @property integer $set_inaktif
+ * @property string $ganti_rak_id
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
@@ -41,13 +43,13 @@ class StockOpnameDetail extends CActiveRecord
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return [
-            ['stock_opname_id, barang_id, qty_tercatat, qty_sebenarnya', 'required'],
-            ['qty_tercatat, qty_sebenarnya', 'numerical', 'integerOnly' => true],
-            ['stock_opname_id, barang_id, updated_by', 'length', 'max' => 10],
-            ['created_at, updated_at, updated_by', 'safe'],
+            ['stock_opname_id, barang_id, qty_tercatat, qty_sebenarnya', 'required', 'message' => '{attribute} harus diisi!'],
+            ['qty_tercatat, qty_sebenarnya, set_inaktif', 'numerical', 'integerOnly' => true],
+            ['stock_opname_id, barang_id, ganti_rak_id, updated_by', 'length', 'max' => 10],
+            ['created_at, updated_at, updated_by, ganti_rak_id', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, stock_opname_id, barang_id, qty_tercatat, qty_sebenarnya, updated_at, updated_by, created_at, barcode, namaBarang', 'safe', 'on' => 'search'],
+            ['id, stock_opname_id, barang_id, qty_tercatat, qty_sebenarnya, set_inaktif, ganti_rak_id, updated_at, updated_by, created_at, barcode, namaBarang', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -61,6 +63,7 @@ class StockOpnameDetail extends CActiveRecord
         return [
             'inventoryBalances' => [self::HAS_MANY, 'InventoryBalance', 'stock_opname_detail_id'],
             'barang'            => [self::BELONGS_TO, 'Barang', 'barang_id'],
+            'gantiRak'          => array(self::BELONGS_TO, 'BarangRak', 'ganti_rak_id'),
             'stockOpname'       => [self::BELONGS_TO, 'StockOpname', 'stock_opname_id'],
             'updatedBy'         => [self::BELONGS_TO, 'User', 'updated_by'],
         ];
@@ -77,11 +80,13 @@ class StockOpnameDetail extends CActiveRecord
             'barang_id'       => 'Barang',
             'qty_tercatat'    => 'Qty',
             'qty_sebenarnya'  => 'Qty Asli',
+            'set_inaktif'     => 'Set Inaktif',
+            'ganti_rak_id'    => 'Ganti Rak',
             'updated_at'      => 'Updated At',
             'updated_by'      => 'Updated By',
             'created_at'      => 'Created At',
             'barcode'         => 'Barcode',
-            'namaBarang'      => 'Nama'
+            'namaBarang'      => 'Nama',
         ];
     }
 
@@ -108,13 +113,15 @@ class StockOpnameDetail extends CActiveRecord
         $criteria->compare('barang_id', $this->barang_id, true);
         $criteria->compare('qty_tercatat', $this->qty_tercatat);
         $criteria->compare('qty_sebenarnya', $this->qty_sebenarnya);
+        $criteria->compare('set_inaktif', $this->set_inaktif);
+        $criteria->compare('ganti_rak_id', $this->ganti_rak_id, true);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
         $criteria->with = ['barang'];
-        $criteria->compare('barang.barcode', $this->barcode);
-        $criteria->compare('barang.nama', $this->namaBarang);
+        $criteria->compare('barang.barcode', $this->barcode, true);
+        $criteria->compare('barang.nama', $this->namaBarang, true);
 
         $sort = [
             'defaultOrder' => 't.id desc',
@@ -122,20 +129,22 @@ class StockOpnameDetail extends CActiveRecord
                 '*',
                 'barcode'    => [
                     'asc'  => 'barang.barcode',
-                    'desc' => 'barang.barcode desc'
+                    'desc' => 'barang.barcode desc',
                 ],
                 'namaBarang' => [
                     'asc'  => 'barang.nama',
-                    'desc' => 'barang.nama desc'
-                ]
-            ]
+                    'desc' => 'barang.nama desc',
+                ],
+            ],
         ];
 
-        return new CActiveDataProvider($this,
-                [
-            'criteria' => $criteria,
-            'sort'     => $sort
-        ]);
+        return new CActiveDataProvider(
+            $this,
+            [
+                'criteria' => $criteria,
+                'sort'     => $sort,
+            ]
+        );
     }
 
     /**
@@ -180,8 +189,10 @@ class StockOpnameDetail extends CActiveRecord
 
     private function _sudahAda()
     {
-        $soDetail = StockOpnameDetail::model()->find('barang_id=:barangId AND stock_opname_id=:soId',
-                [':barangId' => $this->barang_id, ':soId' => $this->stock_opname_id]);
+        $soDetail = StockOpnameDetail::model()->find(
+            'barang_id=:barangId AND stock_opname_id=:soId',
+            [':barangId' => $this->barang_id, ':soId' => $this->stock_opname_id]
+        );
         return is_null($soDetail) ? false : $soDetail;
     }
 
@@ -194,10 +205,10 @@ class StockOpnameDetail extends CActiveRecord
     public function qtyYangSudahSo($soId, $barangId)
     {
         $detail = Yii::app()->db->createCommand()
-                ->select('sum(qty_sebenarnya) total')
-                ->from(StockOpnameDetail::model()->tableName() . ' detail')
-                ->where('stock_opname_id=:soId AND barang_id=:barangId', [':soId' => $soId, ':barangId' => $barangId])
-                ->queryRow();
+            ->select('sum(qty_sebenarnya) total')
+            ->from(StockOpnameDetail::model()->tableName() . ' detail')
+            ->where('stock_opname_id=:soId AND barang_id=:barangId', [':soId' => $soId, ':barangId' => $barangId])
+            ->queryRow();
         return $detail ? $detail['total'] : 0;
     }
 
@@ -206,4 +217,9 @@ class StockOpnameDetail extends CActiveRecord
         return $this->qty_sebenarnya - $this->qty_tercatat;
     }
 
+    public function bedaRaknya()
+    {
+        $so = StockOpname::model()->findByPk($this->stock_opname_id);
+        return $so->rak_id != $this->barang->rak_id;
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 // Bisa Edit Qty jika masih draft
-if ($pembelian->status == Pembelian::STATUS_DRAFT):
+if ($pembelian->status == Pembelian::STATUS_DRAFT) :
     Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.poshytip.js', CClientScript::POS_HEAD);
     Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery-editable-poshytip.min.js', CClientScript::POS_HEAD);
     Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-editable.css');
@@ -22,7 +22,7 @@ endif;
                 return 'hj-berubah';
             }
         },
-        'summaryText' => '{start}-{end} dari {count}, Total: ' . $pembelian->total,
+        'summaryText' => '{start}-{end} dari {count}, Total: <span class="label-total">' . $pembelian->total . '</span>',
         'columns'     => [
             [
                 'name'  => 'barcode',
@@ -36,7 +36,7 @@ endif;
                 'name'  => 'qty',
                 'value' => function ($data) {
                     return '<a href="#" class="editable-qty" data-type="text" data-pk="' . $data->id . '" data-url="' . Yii::app()->controller->createUrl('updateqty') . '">' .
-                            $data->qty . '</a>';
+                        $data->qty . '</a>';
                 },
                 'type'              => 'raw',
                 'headerHtmlOptions' => ['style' => 'width:75px', 'class' => 'rata-kanan'],
@@ -93,7 +93,7 @@ endif;
         $(".editable-qty").editable({
             mode: "inline",
             inputclass: "input-editable-qty",
-            success: function (response, newValue) {
+            success: function(response, newValue) {
                 if (response.sukses) {
                     $.fn.yiiGridView.update("pembelian-detail-grid");
                     updateTotal();
@@ -101,36 +101,38 @@ endif;
             }
         });
         $(".editable-rak").editable({
-        mode: "inline",
-                //inputclass: "input-editable-qty",
-                success: function (response, newValue) {
-                    if (response.sukses) {
-                        $.fn.yiiGridView.update("pembelian-detail-grid");
+            mode: "inline",
+            //inputclass: "input-editable-qty",
+            success: function(response, newValue) {
+                if (response.sukses) {
+                    $.fn.yiiGridView.update("pembelian-detail-grid");
+                }
+            },
+            source: [
+                <?php
+                $listRak  = CHtml::listData(RakBarang::model()->findAll(['select' => 'id,nama', 'order' => 'nama']), 'id', 'nama');
+                $firstRow = true;
+                foreach ($listRak as $key => $value) :
+                ?>
+                    <?php
+                    if (!$firstRow) {
+                        echo ',';
                     }
-                },
-                source: [
-<?php
-$listRak  = CHtml::listData(RakBarang::model()->findAll(['select' => 'id,nama', 'order' => 'nama']), 'id', 'nama');
-$firstRow = true;
-foreach ($listRak as $key => $value):
-    ?>
-    <?php
-    if (!$firstRow) {
-        echo ',';
-    }
-    $firstRow = false;
-    ?>
-                    {value : <?php echo $key; ?>, text : "<?php echo $value; ?>"}
-    <?php
-endforeach;
-?>
-                ]
+                    $firstRow = false;
+                    ?> {
+                        value: <?php echo $key; ?>,
+                        text: "<?php echo $value; ?>"
+                    }
+                <?php
+                endforeach;
+                ?>
+            ]
         });
     }
-    $(function () {
+    $(function() {
         enableEditable();
     });
-    $(document).ajaxComplete(function () {
+    $(document).ajaxComplete(function() {
         enableEditable();
     });
 </script>

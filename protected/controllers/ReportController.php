@@ -1054,6 +1054,7 @@ class ReportController extends Controller
             $model->sortBy     = ReportKartuStokForm::SORT_BY_TANGGAL_ASC;
             if ($model->validate()) {
                 $report = $model->reportKartuStok();
+                // Yii::log("Report Kartu Stok\n". var_export($report, true));
             }
         }
 

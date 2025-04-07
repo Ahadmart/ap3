@@ -131,7 +131,7 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             </div>
             <div class="small-4 large-5 columns">
                 <?php
-                echo CHtml::dropDownList('account', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
+                echo CHtml::dropDownList('account-tariktunai', 1, CHtml::listData(KasBank::model()->kecualiKas()->findAll(), 'id', 'nama'), [
                     'accesskey' => 'a',
                     'class'     => 'account',
                 ]); ?>
@@ -183,6 +183,22 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     <a href="" class="warning bigfont tiny button" id="tombol-batal">Batal</a>
 </div>
 <div style="display: none" id="total-belanja-h"><?php echo $model->ambilTotal(); ?>
+</div>
+<div id="pilih-barang-sku" class="reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h4>Pilih Barang</h4>
+    <table class="tabel-index">
+        <thead>
+            <tr>
+                <th>Barcode</th>
+                <th>Nama</th>
+                <th>Harga Jual</th>
+                <th>Stok</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="daftar-barang-sku"></tbody>
+    </table>
+    <a class="close-reveal-modal">&#215;</a>
 </div>
 <?php
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
@@ -300,7 +316,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             url: dataUrl,
             data: dataKirim,
             success: function(data) {
-                if (data.sukses) {
+                if (data.listBarang) {
+                    // alert(data.listBarang);
+                    $("#daftar-barang-sku").html(generateTablePilihBarang(data));
+                    $("#pilih-barang-sku").foundation('reveal', 'open');
+                    setTimeout(function() {
+                        $("#daftar-barang-sku a.pilih").first().focus();
+                    }, 300);
+                } else if (data.sukses) {
                     $("#tombol-admin-mode").removeClass('geleng');
                     $("#tombol-admin-mode").removeClass('alert');
                     $.fn.yiiGridView.update('penjualan-detail-grid');
@@ -318,6 +341,23 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                 $("#scan").autocomplete("disable");
             }
         });
+    }
+
+    function generateTablePilihBarang(data) {
+        tableBody = '';
+        data.listBarang.forEach(item => {
+            tableBody += `<tr>
+                    <td>${item.barcode}</td>
+                    <td>${item.nama}</td>
+                    <td class="rata-kanan">${item.hj}</td>
+                    <td class="rata-kanan">${item.stok}</td>
+                    <td style="text-align:center">
+                        <a class="pilih" title="Pilih" href="${item.barcode}"><i class="fa fa-check"></i> Pilih</a>
+                        </td>
+                  </tr>`;
+        });
+
+        return tableBody;
     }
 
     $(function() {
@@ -586,6 +626,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             });
             return false;
         }
+        $(".uang-dibayar").unbind('keyup')
         $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
         var dataUrl =
             '<?php echo $this->createUrl('simpan', ['id' => $model->id]); ?>';
@@ -660,7 +701,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
-        'itemOptions'    => ['class' => 'has-form hide-for-small-only'], 'label' => false,
+        'itemOptions'    => ['class' => 'has-form hide-for-small-only'],
+        'label' => false,
         'items'          => [
             ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class'     => 'button',
@@ -674,7 +716,8 @@ $this->menu = [
         'submenuOptions' => ['class' => 'button-group'],
     ],
     [
-        'itemOptions'    => ['class' => 'has-form show-for-small-only'], 'label' => false,
+        'itemOptions'    => ['class' => 'has-form show-for-small-only'],
+        'label' => false,
         'items'          => [
             ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class' => 'button',

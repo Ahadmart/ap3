@@ -2,7 +2,6 @@
 
 class StockopnameController extends Controller
 {
-
     /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
@@ -237,10 +236,29 @@ class StockopnameController extends Controller
             $stok    = $barang->getStok();
             if (isset($_POST['qty'])) {
                 $qty = $_POST['qty'];
-            } else if (isset($_POST['selisih'])) {
+            } elseif (isset($_POST['selisih'])) {
                 $qty = $stok + $_POST['selisih'];
             }
-            $return = $this->tambahDetail($id, $barang->id, $stok, $qty);
+
+            $rakId = null;
+            if (!empty($_POST['rak'])) {
+                $rakId = $_POST['rak'];
+            }
+
+            // $setInaktif = false;
+            if (isset($_POST['setinaktif'])) {
+                $setInaktif = $_POST['setinaktif'] == 'true' || $_POST['setinaktif'] == '1' ? true : false;
+            } else {
+                $setInaktif = false;
+            }
+            $return = $this->tambahDetailPlus($id, $barang->id, $stok, $qty, $rakId, $setInaktif);
+            // $return = [
+            //     'barcode' => $barcode,
+            //     'stok' => $stok,
+            //     'qty' => $qty,
+            //     'rakId' => $rakId,
+            //     'setInaktif' => $setInaktif,
+            // ];
         }
         $this->renderJSON($return);
     }
@@ -266,6 +284,45 @@ class StockopnameController extends Controller
         if ($detail->save()) {
             $return = [
                 'sukses' => true,
+            ];
+        }
+        return $return;
+    }
+
+    /**
+     * Tambah detail + rak dan status SO
+     * @param int $soId
+     * @param int $barangId
+     * @param int $qtyTercatat
+     * @param int $qtySebenarnya
+     * @param int $rakId
+     * @param boolean $setInaktif
+     * @return array true jika berhasil
+     */
+    public function tambahDetailPlus($soId, $barangId, $qtyTercatat, $qtySebenarnya, $rakId, $setInaktif)
+    {
+        $return = [
+            'sukses' => false,
+        ];
+        $detail                  = new StockOpnameDetail;
+        $detail->stock_opname_id = $soId;
+        $detail->barang_id       = $barangId;
+        $detail->qty_tercatat    = is_null($qtyTercatat) ? 0 : $qtyTercatat;
+        $detail->qty_sebenarnya  = $qtySebenarnya;
+        $detail->ganti_rak_id    = $rakId;
+        $detail->set_inaktif     = $setInaktif === true ? 1 : 0;
+        if ($detail->save()) {
+            $return = [
+                'sukses' => true,
+            ];
+        } else {
+            $error  = json_encode($detail->getErrors());
+            $return = [
+                'sukses' => false,
+                'error'  => [
+                    'code' => 500,
+                    'msg'  => $error,
+                ],
             ];
         }
         return $return;
@@ -436,5 +493,39 @@ class StockopnameController extends Controller
             }
         }
         $this->renderJSON($r);
+    }
+
+    public function renderBarang($data, $row)
+    {
+        $text = $data->barang->barcode
+            . '<br />'
+            . $data->barang->nama;
+        if (!is_null($data->ganti_rak_id)) {
+            $rak = RakBarang::model()->findByPk($data->ganti_rak_id);
+            $text .= '<br />'
+                . '<i class="fa fa-level-up fa-rotate-90"></i> ' . $rak->nama;
+        }
+
+        return $text;
+    }
+
+    public function renderBarangExBar($data, $row)
+    {
+        $text = $data->barang->nama;
+        if (!is_null($data->ganti_rak_id)) {
+            $rak = RakBarang::model()->findByPk($data->ganti_rak_id);
+            $text .= '<br />'
+                . '<i class="fa fa-level-up fa-rotate-90"></i> ' . $rak->nama;
+        }
+
+        return $text;
+    }
+
+    public function renderFormInputManual($data, $row)
+    {
+        $this->renderPartial('_input_detail_manual_form', [
+            'data'    => $data,
+            'modelId' => Yii::app()->request->getParam('id'),
+        ]);
     }
 }
