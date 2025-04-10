@@ -27,6 +27,8 @@ class SkuTransfer extends CActiveRecord
     const STATUS_TRANSFER = 1;
 
     public $max; // Untuk mencari untuk nomor surat;
+    public $skuNomor;
+    public $skuNama;
 
     /**
      * @return string the associated database table name
@@ -52,7 +54,7 @@ class SkuTransfer extends CActiveRecord
             ['tanggal, tanggal_referensi, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, sku_id, tanggal, nomor, referensi, tanggal_referensi, keterangan, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, sku_id, tanggal, nomor, referensi, tanggal_referensi, keterangan, status, updated_at, updated_by, created_at, skuNomor, skuNama', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -87,6 +89,8 @@ class SkuTransfer extends CActiveRecord
             'updated_at'        => 'Updated At',
             'updated_by'        => 'Updated By',
             'created_at'        => 'Created At',
+            'skuNomor'          => 'Nomor SKU',
+            'skuNama'           => 'Nama SKU',
         ];
     }
 
@@ -120,8 +124,23 @@ class SkuTransfer extends CActiveRecord
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $criteria->with = ['sku'];
+        $criteria->compare('sku.nomor', $this->skuNomor, true);
+        $criteria->compare('sku.nama', $this->skuNama, true);
+
         $sort = [
             'defaultOrder' => 't.status, t.tanggal desc',
+            'attributes'   => [
+                'skuNomor' => [
+                    'asc'  => 'sku.nomor',
+                    'desc' => 'sku.nomor desc',
+                ],
+                'skuNama'  => [
+                    'asc'  => 'sku.nama',
+                    'desc' => 'sku.nama desc',
+                ],
+                '*',
+            ],
         ];
 
         return new CActiveDataProvider($this, [
@@ -161,14 +180,14 @@ class SkuTransfer extends CActiveRecord
 
     public function beforeValidate()
     {
-        $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : null;
+        $this->tanggal_referensi = ! empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : null;
         return parent::beforeValidate();
     }
 
     public function afterFind()
     {
-        $this->tanggal           = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
-        $this->tanggal_referensi = !is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
+        $this->tanggal           = ! is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
+        $this->tanggal_referensi = ! is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
         return parent::afterFind();
     }
 
@@ -228,7 +247,7 @@ class SkuTransfer extends CActiveRecord
     private function simpanTransfer()
     {
         // Yii::log('simpanTransfer() 1');
-        if (!$this->save()) {
+        if (! $this->save()) {
             // Yii::log('Gagal simpan transfer');
             throw new Exception('Gagal simpan transfer', 500);
         }

@@ -11,10 +11,10 @@ $this->boxHeader['small']  = 'View';
 $this->boxHeader['normal'] = 'Sku Transfer: ' . $model->nomor;
 ?>
 <div class="row">
-    <div class="small-12 columns header">  
+    <div class="small-12 columns header">
         <span class="secondary label">Tanggal</span><span class="label"><?= $model->tanggal; ?></span>
+        <span class="secondary label">SKU</span><span class="label"><?php echo empty($model->sku->nomor) ? '-' : $model->sku->nomor; ?></span><span class="success label"><?php echo empty($model->sku->nama) ? '-' : $model->sku->nama; ?></span>
         <span class="secondary label">Reff</span><span class="label"><?php echo empty($model->referensi) ? '-' : $model->referensi; ?></span><span class="success label"><?php echo empty($model->tanggal_referensi) ? '-' : $model->tanggal_referensi; ?></span>
-  
         <?php /* $this->widget('BDetailView', [
             'data'       => $model,
             'attributes' => [
@@ -29,7 +29,7 @@ $this->boxHeader['normal'] = 'Sku Transfer: ' . $model->nomor;
                 'updated_by',
                 'created_at',
             ],
-        ]); */?>
+        ]); */ ?>
     </div>
 </div>
 <br />

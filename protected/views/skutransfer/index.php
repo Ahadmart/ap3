@@ -31,6 +31,14 @@ $this->widget('BGridView', [
 			'type'      => 'raw',
 			'value'     => [$this, 'renderLinkToUbah'],
 		],
+		[
+			'name'  => 'skuNomor',
+			'value' => '$data->sku->nomor',
+		],
+		[
+			'name'  => 'skuNama',
+			'value' => '$data->sku->nama',
+		],
 		'referensi',
 		'tanggal_referensi',
 		'keterangan',
