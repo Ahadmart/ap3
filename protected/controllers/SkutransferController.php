@@ -8,7 +8,7 @@ class SkutransferController extends Controller
     public function filters()
     {
         return [
-            'accessControl', // perform access control for CRUD operations
+            'accessControl',     // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
         ];
     }
@@ -85,7 +85,6 @@ class SkutransferController extends Controller
     {
         $model = $this->loadModel($id);
 
-
         // Jika sudah disimpan (status bukan draft) maka tidak bisa diubah lagi
         if ($model->status != SkuTransfer::STATUS_DRAFT) {
             $this->redirect(['view', 'id' => $id]);
@@ -134,7 +133,7 @@ class SkutransferController extends Controller
         $this->loadModel($id)->delete();
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax'])) {
+        if (! isset($_GET['ajax'])) {
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
         }
     }
@@ -192,7 +191,7 @@ class SkutransferController extends Controller
         $firstRow = true;
         $i        = 1;
         foreach ($arrTerm as $bTerm) {
-            if (!$firstRow) {
+            if (! $firstRow) {
                 $wNomor .= ' AND ';
                 $wNama .= ' AND ';
             }
@@ -309,7 +308,7 @@ class SkutransferController extends Controller
         $firstRow = true;
         $i        = 1;
         foreach ($arrTerm as $bTerm) {
-            if (!$firstRow) {
+            if (! $firstRow) {
                 $wBarcode .= ' AND ';
                 $wNama .= ' AND ';
             }
@@ -341,7 +340,7 @@ class SkutransferController extends Controller
         $firstRow = true;
         $i        = 1;
         foreach ($arrTerm as $bTerm) {
-            if (!$firstRow) {
+            if (! $firstRow) {
                 $wNomor .= ' AND ';
                 $wNamaSKU .= ' AND ';
             }
@@ -371,7 +370,7 @@ class SkutransferController extends Controller
 
     public function renderLinkToUbah($data)
     {
-        if (!isset($data->nomor)) {
+        if (! isset($data->nomor)) {
             $return = '<a href="' .
                 $this->createUrl('ubah', ['id' => $data->id]) . '">' .
                 date('d-m-Y H:i:s', strtotime($data->tanggal)) . '</a>';
@@ -405,7 +404,8 @@ class SkutransferController extends Controller
         //     JOIN barang br ON br.id = t.barang_id
         //     JOIN sku_level ON sku_level.satuan_id = br.satuan_id AND sku_level.level < :level
         // ';
-        $criteria->condition = 't.sku_id = :sku_id AND sku_level.level < :level';
+        // $criteria->condition = 't.sku_id = :sku_id AND sku_level.level < :level';
+        $criteria->condition = 't.sku_id = :sku_id AND sku_level.level != :level';
         $criteria->params    = [':sku_id' => $skuId, ':level' => $level];
 
         // $skuDetails = SkuDetail::model()->findAll($criteria);
@@ -475,34 +475,62 @@ class SkutransferController extends Controller
 
     public function actionTransfer($id)
     {
-        $asalId   = Yii::app()->request->getPost('asalId');
-        $tujuanId = Yii::app()->request->getPost('tujuanId');
-        $qty      = Yii::app()->request->getPost('qty');
+        try {
+            //code...
 
-        $skuDetailAsal   = SkuDetail::model()->findByPk($asalId);
-        $skuDetailTujuan = SkuDetail::model()->findByPk($tujuanId);
+            $asalId   = Yii::app()->request->getPost('asalId');
+            $tujuanId = Yii::app()->request->getPost('tujuanId');
+            $qty      = Yii::app()->request->getPost('qty');
 
-        // Insert on duplicate update
-        $detail = SkuTransferDetail::model()->find('sku_transfer_id = :id', [':id' => $id]) ?? new SkuTransferDetail();
+            $skuDetailAsal   = SkuDetail::model()->findByPk($asalId);
+            $skuDetailTujuan = SkuDetail::model()->findByPk($tujuanId);
 
-        $detail->sku_transfer_id = $id;
-        $detail->from_barang_id  = $skuDetailAsal->barang_id;
-        $detail->from_satuan_id  = $skuDetailAsal->barang->satuan_id;
-        $detail->from_qty        = $qty;
-        $detail->to_barang_id    = $skuDetailTujuan->barang_id;
-        $detail->to_satuan_id    = $skuDetailTujuan->barang->satuan_id;
-        $detail->to_qty          = $qty * SkuLevel::kumulatifRasioKonversi(
-            $skuDetailAsal->sku_id,
-            $skuDetailAsal->skuLevel->level,
-            $skuDetailTujuan->skuLevel->level
-        );
-        Yii::log('detail: ' . var_export($detail, true));
-        if (!$detail->save()) {
-            throw new Exception('Gagal simpan sku transfer detail', 500);
+            // Insert on duplicate update
+            $detail = SkuTransferDetail::model()->find('sku_transfer_id = :id', [':id' => $id]) ?? new SkuTransferDetail();
+
+            $pecahanFrom = Pecahan::buatPecahan($qty);
+            $KRK         = SkuLevel::kumulatifRasioKonversi(
+                $skuDetailAsal->sku_id,
+                $skuDetailAsal->skuLevel->level,
+                $skuDetailTujuan->skuLevel->level
+            );
+            // Yii::log("qty: {$qty}; KRK: {$KRK}");
+            $pecahanKRK = Pecahan::buatPecahan($KRK);
+            $hasil      = $pecahanFrom->multiply($pecahanKRK);
+            // Yii::log('Pecahan From: ' . $pecahanFrom->toString() . '; Pecahan KRK: ' . $pecahanKRK->toString() . '; Hasil toQty: ' . $hasil->toString());
+            if (filter_var($hasil->toString(), FILTER_VALIDATE_INT) === false) {
+                throw new Exception("Qty barang tujuan tidak bulat", 500);
+            }
+
+            $detail->sku_transfer_id = $id;
+            $detail->from_barang_id  = $skuDetailAsal->barang_id;
+            $detail->from_satuan_id  = $skuDetailAsal->barang->satuan_id;
+            $detail->from_qty        = $qty;
+            $detail->to_barang_id    = $skuDetailTujuan->barang_id;
+            $detail->to_satuan_id    = $skuDetailTujuan->barang->satuan_id;
+            // $detail->to_qty          = $qty * SkuLevel::kumulatifRasioKonversi(
+            //     $skuDetailAsal->sku_id,
+            //     $skuDetailAsal->skuLevel->level,
+            //     $skuDetailTujuan->skuLevel->level
+            // );
+            $detail->to_qty = (int) $hasil->toString();
+
+            Yii::log('detail: ' . var_export($detail, true));
+            if (! $detail->save()) {
+                throw new Exception('Gagal simpan sku transfer detail', 500);
+            }
+
+            $model = $this->loadModel($id);
+            $r     = $model->transfer();
+            $this->renderJSON($r);
+        } catch (Exception $ex) {
+            $this->renderJSON([
+                'sukses' => false,
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
+                    'code' => $ex->getCode(),
+                ],
+            ]);
         }
-
-        $model = $this->loadModel($id);
-        $r     = $model->transfer();
-        $this->renderJSON($r);
     }
 }

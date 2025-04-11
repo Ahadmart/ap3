@@ -104,7 +104,57 @@ $this->menu = [
     ],
 ];
 ?>
+<?php
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+?>
+<script>
+    class Pecahan {
+        constructor(pembilang, penyebut = 1) {
+            if (penyebut === 0) {
+                throw new Error('Penyebut tidak boleh 0')
+            }
 
+            const fpb = Pecahan.#fpb(pembilang, penyebut)
+            pembilang /= fpb;
+            penyebut /= fpb;
+
+            if (penyebut < 0) {
+                pembilang = -pembilang;
+                penyebut = -penyebut;
+            }
+            this.pembilang = pembilang;
+            this.penyebut = penyebut;
+        }
+
+        static #fpb(a, b) {
+            a = Math.abs(a);
+            b = Math.abs(b);
+            while (b !== 0) {
+                [a, b] = [b, a % b]
+            }
+            return a
+        }
+
+        toString() {
+            return this.penyebut === 1 ? `${this.pembilang}` : `${this.pembilang}/${this.penyebut}`;
+        }
+
+        static buatPecahan(text) {
+            text = String(text).trim();
+            if (text.includes('/')) {
+                const [pembilang, penyebut] = text.split('/')
+                return new Pecahan(parseInt(pembilang), parseInt(penyebut))
+            } else {
+                return new Pecahan(parseInt(text), 1)
+            }
+        }
+
+        multiply(pecahan) {
+            return new Pecahan(this.pembilang * pecahan.pembilang, this.penyebut * pecahan.penyebut);
+        }
+    }
+</script>
 <script>
     let kumulatifRasioKonversi = 1;
     let asalId;
@@ -173,8 +223,12 @@ console.log($("input[name='selected_ke']:checked").val())
     function isiData(data) {
         asalId = data.asal;
         tujuanId = data.tujuan;
-        jml = $("#qtyasal").val() * kumulatifRasioKonversi;
-        $("#qtytujuan").val(jml);
+        pecahanAsal = Pecahan.buatPecahan($("#qtyasal").val())
+        pecahanKRK = Pecahan.buatPecahan(kumulatifRasioKonversi);
+        // jml = $("#qtyasal").val() * kumulatifRasioKonversi;
+        // asal = new Pecahan($("#qtyasal").val());
+        hasil = pecahanAsal.multiply(pecahanKRK);
+        $("#qtytujuan").val(hasil.toString());
         $("#satuanasal").html(data.satuanAsal);
         $("#satuantujuan").html(data.satuanTujuan);
         $("#qtyasal").prop("disabled", false);
@@ -182,8 +236,12 @@ console.log($("input[name='selected_ke']:checked").val())
     }
 
     $("#qtyasal").on('input', function() {
-        jml = $("#qtyasal").val() * kumulatifRasioKonversi;
-        $("#qtytujuan").val(jml);
+        pecahanAsal = Pecahan.buatPecahan($("#qtyasal").val())
+        console.log('Pecahan Asal: '+ pecahanAsal.toString())
+        pecahanKRK = Pecahan.buatPecahan(kumulatifRasioKonversi);
+        console.log('Pecahan KRK: '+ pecahanKRK.toString())
+        hasil = pecahanAsal.multiply(pecahanKRK);
+        $("#qtytujuan").val(hasil.toString());
     })
 
     $("#t-transfer").on('click', function() {
@@ -200,6 +258,14 @@ console.log($("input[name='selected_ke']:checked").val())
             success: function(data) {
                 if (data.sukses) {
                     window.location.replace("<?php echo $this->createUrl('index'); ?>");
+                } else {
+
+                    $.gritter.add({
+                            title: 'Error ' + data.error.code,
+                            text: data.error.msg,
+                            time: 3000,
+                            //class_name: 'gritter-center'
+                        });
                 }
             }
         });
