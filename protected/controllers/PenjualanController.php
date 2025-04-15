@@ -162,6 +162,7 @@ class PenjualanController extends Controller
     {
         $model = $this->loadModel($id);
         if ($model->status == Penjualan::STATUS_DRAFT) {
+            PenjualanHelper::simpanHapus($id);
             PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
             PenjualanMultiHarga::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
             PenjualanDetail::model()->deleteAll('penjualan_id=:id', [':id' => $id]);
@@ -333,6 +334,7 @@ class PenjualanController extends Controller
     public function actionHapusDetail($id)
     {
         $detail = PenjualanDetail::model()->findByPk($id);
+        PenjualanHelper::simpanHapusDetail($detail);
         PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $detail->id);
         if (!$detail->delete()) {
             throw new Exception('Gagal hapus detail penjualan');

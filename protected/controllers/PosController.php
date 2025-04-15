@@ -198,7 +198,7 @@ class PosController extends Controller
             if ($model->status == Penjualan::STATUS_DRAFT) {
                 PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
                 PenjualanMultiHarga::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
-                $this->simpanHapus($id);
+                PenjualanHelper::simpanHapus($id);
                 PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
                 $model->delete();
             }
@@ -513,7 +513,8 @@ class PosController extends Controller
                         ]
                     );
                     foreach ($details as $d) {
-                        $this->simpanHapusDetail($d); // Simpan barang yang dihapus ke tabel "lain"
+                        PenjualanHelper::simpanHapusDetail($d); // Simpan barang yang dihapus ke tabel "lain"
+
                     }
                     $penjualan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
 
@@ -887,42 +888,6 @@ class PosController extends Controller
             $return          = $penjualan->updateHargaManual($penjualanDetail, $hargaManual);
         }
         $this->renderJSON($return);
-    }
-
-    /**
-     * Menyimpan barang yang dihapus ke tabel penjualan_detail_h
-     * @param ActiveRecord $detail Penjualan Detail
-     * @param int $jenis Jenis Hapus (per barang, atau per nota), default per barang
-     */
-    public function simpanHapusDetail($detail, $jenis = PenjualanDetailHapus::JENIS_PER_BARANG)
-    {
-        $userAdmin = User::model()->findByPk(Yii::app()->user->getState('kasirOtorisasiUserId'));
-
-        $penjualanHapus                  = new PenjualanDetailHapus;
-        $penjualanHapus->barang_id       = $detail->barang_id;
-        $penjualanHapus->barang_barcode  = $detail->barang->barcode;
-        $penjualanHapus->barang_nama     = $detail->barang->nama;
-        $penjualanHapus->harga_beli      = InventoryBalance::model()->getHargaBeliAwal($detail->barang_id);
-        $penjualanHapus->harga_jual      = $detail->harga_jual;
-        $penjualanHapus->user_kasir_id   = $detail->updated_by;
-        $penjualanHapus->user_kasir_nama = $detail->updatedBy->nama;
-        $penjualanHapus->user_admin_id   = $userAdmin->id;
-        $penjualanHapus->user_admin_nama = $userAdmin->nama;
-        $penjualanHapus->penjualan_id    = $detail->penjualan_id;
-        $penjualanHapus->jenis           = $jenis;
-        $penjualanHapus->save();
-    }
-
-    /**
-     * Menyimpan semua detail yang ada di penjualan yang akan dihapus
-     * @param int $penjualanId ID Penjualan
-     */
-    public function simpanHapus($penjualanId)
-    {
-        $details = PenjualanDetail::model()->findAll('penjualan_id = :penjualanId', [':penjualanId' => $penjualanId]);
-        foreach ($details as $detail) {
-            $this->simpanHapusDetail($detail, PenjualanDetailHapus::JENIS_PER_NOTA);
-        }
     }
 
     /**
