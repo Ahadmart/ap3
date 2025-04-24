@@ -55,7 +55,7 @@ class PosController extends Controller
                 ':userId' => Yii::app()->user->id,
             ],
         ]);
-        if (!is_null($suspendedSale)) {
+        if (! is_null($suspendedSale)) {
             $this->redirect(['ubah', 'id' => $suspendedSale->id]);
         }
 
@@ -132,7 +132,7 @@ class PosController extends Controller
 
         $memberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
         $poins    = null;
-        if (!is_null($memberOL)) {
+        if (! is_null($memberOL)) {
             $clientAPI          = new AhadMembershipClient();
             $r                  = json_decode($clientAPI->view($memberOL->nomor_member));
             $this->memberOnline = $r->data->profil;
@@ -196,9 +196,29 @@ class PosController extends Controller
         if ($this->isOtorisasiAdmin($id)) {
             $model = $this->loadModel($id);
             if ($model->status == Penjualan::STATUS_DRAFT) {
+                $configHapusNota = Config::model()->find("nama='pos.alasanhapusnota'");
+
+                $alasan = trim(Yii::app()->request->getPost('alasan'));
+                if (empty($alasan) && $configHapusNota->nilai == 1) {
+                    $hapusAlasanMessages = [
+                        "Silakan isi alasan terlebih dahulu sebelum menghapus data.",
+                        "Data tidak dapat dihapus sebelum alasan diisi.",
+                        "Mohon lengkapi alasan penghapusan terlebih dahulu.",
+                        "Penghapusan tidak bisa dilanjutkan tanpa alasan yang jelas.",
+                        "Alasan perlu diisi dulu agar data bisa dihapus.",
+                    ];
+
+                    $this->renderJSON([
+                        'sukses' => false,
+                        'error'  => [
+                            'code' => '500',
+                            'msg'  => $hapusAlasanMessages[array_rand($hapusAlasanMessages)],
+                        ],
+                    ]);
+                }
                 PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
                 PenjualanMultiHarga::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
-                PenjualanHelper::simpanHapus($id);
+                PenjualanHelper::simpanHapus($id, $alasan);
                 PenjualanDetail::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
                 $model->delete();
             }
@@ -385,7 +405,7 @@ class PosController extends Controller
                         ];
                     } else {
                         $skuDetail = SkuDetail::model()->findAll('sku_id=:skuId', [':skuId' => $sku->id]);
-                        if (!empty($skuDetail)) {
+                        if (! empty($skuDetail)) {
                             $listBarang = [];
                             foreach ($skuDetail as $item) {
                                 $barang       = Barang::model()->findByPk($item->barang_id);
@@ -503,22 +523,31 @@ class PosController extends Controller
             } else {
                 /* qty=0 / hapus barang, hanya bisa jika ada otorisasi Admin */
                 if ($this->isOtorisasiAdmin($detail->penjualan_id)) {
-                    $barang    = Barang::model()->findByPk($detail->barang_id);
-                    $penjualan = Penjualan::model()->findByPk($detail->penjualan_id);
-                    $details   = PenjualanDetail::model()->findAll(
-                        'barang_id=:barangId AND penjualan_id=:penjualanId',
-                        [
-                            ':barangId'    => $detail->barang_id,
-                            ':penjualanId' => $detail->penjualan_id,
-                        ]
-                    );
-                    foreach ($details as $d) {
-                        PenjualanHelper::simpanHapusDetail($d); // Simpan barang yang dihapus ke tabel "lain"
+                    $configHapusDetail = Config::model()->find("nama='pos.alasanhapusdetail'");
+                    if ($configHapusDetail->nilai == 1) {
+                        $return = [
+                            'sukses'     => true,
+                            'konfirmasi' => true,
+                            'barangId'   => $detail->barang_id,
+                        ];
+                    } else if ($configHapusDetail->nilai == 0) {
+                        $barang    = Barang::model()->findByPk($detail->barang_id);
+                        $penjualan = Penjualan::model()->findByPk($detail->penjualan_id);
+                        $details   = PenjualanDetail::model()->findAll(
+                            'barang_id=:barangId AND penjualan_id=:penjualanId',
+                            [
+                                ':barangId'    => $detail->barang_id,
+                                ':penjualanId' => $detail->penjualan_id,
+                            ]
+                        );
+                        foreach ($details as $d) {
+                            PenjualanHelper::simpanHapusDetail($d); // Simpan barang yang dihapus ke tabel "lain"
 
+                        }
+                        $penjualan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
+
+                        $return = ['sukses' => true];
                     }
-                    $penjualan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
-
-                    $return = ['sukses' => true];
                 } else {
                     // throw new Exception('Tidak ada otorisasi Admin', 401);
                     $return = [
@@ -532,6 +561,46 @@ class PosController extends Controller
             }
         }
         $this->renderJSON($return);
+    }
+
+    public function actionHapusDetail()
+    {
+        $barangId    = Yii::app()->request->getPost('barangId');
+        $penjualanId = Yii::app()->request->getPost('penjualanId');
+        $alasan      = trim(Yii::app()->request->getPost('alasan'));
+        if (empty($alasan)) {
+            $hapusAlasanMessages = [
+                "Alasan belum diisi, silakan lengkapi.",
+                "Mohon isi alasan penghapusan.",
+                "Alasan kosong, hapus dibatalkan.",
+                "Tidak bisa dihapus, alasan belum diisi.",
+                "Silakan isi alasan terlebih dahulu.",
+            ];
+            $this->renderJSON([
+                'sukses' => false,
+                'error'  => [
+                    'code' => 500,
+                    'msg'  => $hapusAlasanMessages[array_rand($hapusAlasanMessages)],
+                ],
+            ]);
+        }
+
+        if ($this->isOtorisasiAdmin($penjualanId)) {
+            $barang    = Barang::model()->findByPk($barangId);
+            $penjualan = Penjualan::model()->findByPk($penjualanId);
+            $details   = PenjualanDetail::model()->findAll(
+                'barang_id=:barangId AND penjualan_id=:penjualanId',
+                [
+                    ':barangId'    => $barangId,
+                    ':penjualanId' => $penjualanId,
+                ]
+            );
+            foreach ($details as $d) {
+                PenjualanHelper::simpanHapusDetail($d, $alasan); // Simpan barang yang dihapus ke tabel "lain"
+
+            }
+            $penjualan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
+        }
     }
 
     public function actionSuspended()
@@ -617,7 +686,7 @@ class PosController extends Controller
             $totalBayar += $val;
         }
         $koinMOL = 0;
-        if (!empty($_POST['pos']['koin-mol'])) {
+        if (! empty($_POST['pos']['koin-mol'])) {
             $koinMOL = $_POST['pos']['koin-mol'];
             $bayar[] = [
                 'nama' => 'Koin',
@@ -654,7 +723,7 @@ class PosController extends Controller
     {
         $kasir   = $this->posAktif();
         $printId = $kasir->device->default_printer_id;
-        if (!is_null($printId)) {
+        if (! is_null($printId)) {
             $this->redirect(['penjualan/printstruk', 'id' => $id, 'printId' => $printId]);
         }
     }
@@ -681,7 +750,7 @@ class PosController extends Controller
             } else {
                 $customer = Profil::model()->find('nomor=:nomor', [':nomor' => $_POST['nomor']]);
             }
-            if (!is_null($customer)) {
+            if (! is_null($customer)) {
                 $penjualan = $this->loadModel($id);
 
                 /* Simpan profil ID ke penjualan
@@ -718,7 +787,7 @@ class PosController extends Controller
             ],
         ];
 
-        if (isset($_POST['nomor']) && !empty($_POST['nomor'])) {
+        if (isset($_POST['nomor']) && ! empty($_POST['nomor'])) {
             $clientAPI = new AhadMembershipClient();
             $profil    = json_decode($clientAPI->view($_POST['nomor']), true);
             if ($profil['statusCode'] == 200) {
@@ -740,7 +809,7 @@ class PosController extends Controller
                 $penjualanMOL->level_nama   = $profil['data']['profil']['levelNama'];
                 $penjualanMOL->total_poin   = $profil['data']['profil']['poin'];
                 $penjualanMOL->total_koin   = $profil['data']['profil']['koin'];
-                if (!$penjualanMOL->save()) {
+                if (! $penjualanMOL->save()) {
                     throw new Exception('Gagal simpan penjualan_member_online: ' . var_export($penjualanMOL->getErrors(), true));
                 }
             }
@@ -751,7 +820,7 @@ class PosController extends Controller
             $penjualan = $this->loadModel($id);
             $penjualan->gantiCustomer($customer);
             $penjualanMOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
-            if (!is_null($penjualanMOL)) {
+            if (! is_null($penjualanMOL)) {
                 $penjualanMOL->delete();
             }
             $return = [
@@ -826,7 +895,7 @@ class PosController extends Controller
                     'msg'  => 'Invalid User Name',
                 ],
             ];
-        } elseif (!$user->validatePassword($pwd)) {
+        } elseif (! $user->validatePassword($pwd)) {
             return [
                 'sukses' => false,
                 'error'  => [

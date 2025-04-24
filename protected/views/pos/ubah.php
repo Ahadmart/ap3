@@ -11,7 +11,18 @@ $this->breadcrumbs = [
 $this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 ?>
-
+<?php // Dialogn form konfirmasi untuk batal / hapus nota 
+?>
+<div id="batal-form" class="small reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Konfirmasi Batal</h2>
+    <label>Alasan batal:
+        <input type="text" id="alasan-batal">
+    </label>
+    <div class="text-right">
+        <a href="#" class="small bigfont tiny button alert" id="batal-submit">OK</a>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
+</div>
 <div class="medium-7 large-7 columns" style="/*height: 100%; overflow: scroll*/">
     <div class="row collapse">
         <div class="small-2 medium-1 columns">
@@ -672,6 +683,63 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     });
 
     $("#tombol-batal").click(function() {
+        $('#batal-form').one('opened.fndtn.reveal', function() {
+            $('#alasan-batal').val('').focus();
+        });
+        $('#batal-form').foundation('reveal', 'open');
+        $('#alasan-batal').val('').focus(); // Reset and focus input
+
+        return false;
+    });
+
+    $("#batal-submit").click(function() {
+        <?php
+        $configHapusNota = Config::model()->find("nama='pos.alasanhapusnota'");
+        if ($configHapusNota->nilai == 1) {
+        ?>
+            var alasan = $("#alasan-batal").val().trim();
+            if (alasan === "") {
+                alert("Silakan isi alasan pembatalan.");
+                return;
+            }
+        <?php
+        } else {
+        ?>
+            var alasan = $("#alasan-batal").val().trim();
+        <?php
+        }
+        ?>
+
+
+        var dataUrl = '<?php echo $this->createUrl('hapus', ['id' => $model->id]); ?>';
+
+        $.ajax({
+            type: 'POST',
+            url: dataUrl,
+            data: {
+                alasan: alasan
+            }, // Kirim alasan ke server
+            success: function(data) {
+                if (data.sukses) {
+                    window.location.href = "<?php echo $this->createUrl('index'); ?>";
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 3000,
+                    });
+                    $("#tombol-admin-mode").addClass('geleng alert');
+                }
+                $("#scan").val("").focus();
+            }
+        });
+
+        $("#batal-form").foundation('reveal', 'close'); // Tutup modal setelah klik OK
+        return false;
+    });
+
+    <?php /*
+    $("#tombol-batal").click(function() {
         dataUrl =
             '<?php echo $this->createUrl('hapus', ['id' => $model->id]); ?>';
         $.ajax({
@@ -696,6 +764,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         });
         return false;
     });
+    */
+    ?>
 </script>
 <?php
 $this->menu = [

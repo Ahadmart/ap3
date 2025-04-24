@@ -6,7 +6,7 @@ class PenjualanHelper
      * @param PenjualanDetail $detail
      * @param int $jenis
      */
-    public static function simpanHapusDetail($detail, $jenis = PenjualanDetailHapus::JENIS_PER_BARANG)
+    public static function simpanHapusDetail($detail, $alasan = '', $jenis = PenjualanDetailHapus::JENIS_PER_BARANG)
     {
         $userAdmin = User::model()->findByPk(Yii::app()->user->getState('kasirOtorisasiUserId'));
 
@@ -27,6 +27,7 @@ class PenjualanHelper
         $penjualanHapus->user_admin_nama = $userAdmin->nama;
         $penjualanHapus->penjualan_id    = $detail->penjualan_id;
         $penjualanHapus->jenis           = $jenis;
+        $penjualanHapus->alasan          = $alasan;
         $penjualanHapus->save();
     }
 
@@ -34,11 +35,11 @@ class PenjualanHelper
      * Menyimpan semua detail yang ada di penjualan yang akan dihapus
      * @param int $penjualanId
      */
-    public static function simpanHapus($penjualanId)
+    public static function simpanHapus($penjualanId, $alasan = '')
     {
         $details = PenjualanDetail::model()->findAll('penjualan_id = :penjualanId', [':penjualanId' => $penjualanId]);
         foreach ($details as $detail) {
-            self::simpanHapusDetail($detail, PenjualanDetailHapus::JENIS_PER_NOTA);
+            self::simpanHapusDetail($detail, $alasan, PenjualanDetailHapus::JENIS_PER_NOTA);
         }
     }
 }
