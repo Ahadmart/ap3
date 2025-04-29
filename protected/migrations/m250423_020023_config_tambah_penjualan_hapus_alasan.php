@@ -10,6 +10,28 @@ class m250423_020023_config_tambah_penjualan_hapus_alasan extends CDbMigration
 		$this->insert(
 			'config',
 			[
+				'nama'       => 'penjualan.alasanhapusnota',
+				'nilai'      => '1',
+				'deskripsi'  => 'Hapus nota harus dengan alasan. 0:disable; 1:enable',
+				'updated_at' => $now,
+				'updated_by' => 1,
+				'created_at' => $now,
+			]
+		);
+		$this->insert(
+			'config',
+			[
+				'nama'       => 'penjualan.alasanhapusdetail',
+				'nilai'      => '1',
+				'deskripsi'  => 'Hapus detail harus dengan alasan. 0:disable; 1:enable',
+				'updated_at' => $now,
+				'updated_by' => 1,
+				'created_at' => $now,
+			]
+		);
+		$this->insert(
+			'config',
+			[
 				'nama'       => 'pos.alasanhapusnota',
 				'nilai'      => '1',
 				'deskripsi'  => 'Hapus nota harus dengan alasan. 0:disable; 1:enable',
