@@ -122,6 +122,11 @@ $this->widget('BGridView', array(
     </div>
 </div>
 <script>
+    $("#alasan-hapus").keyup(function(e) {
+        if (e.keyCode === 13) {
+            $("#hapus-submit").click();
+        }
+    });
     function enableEditable() {
         $(".editable-qty").editable({
             mode: "inline",

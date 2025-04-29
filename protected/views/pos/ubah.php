@@ -692,6 +692,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         return false;
     });
 
+    $("#alasan-batal").keyup(function(e) {
+        if (e.keyCode === 13) {
+            $("#batal-submit").click();
+        }
+    });
+
     $("#batal-submit").click(function() {
         <?php
         $configHapusNota = Config::model()->find("nama='pos.alasanhapusnota'");
