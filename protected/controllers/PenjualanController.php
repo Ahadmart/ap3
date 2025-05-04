@@ -16,7 +16,7 @@ class PenjualanController extends Controller
     public function filters()
     {
         return [
-            'accessControl', // perform access control for CRUD operations
+            'accessControl',     // perform access control for CRUD operations
             'postOnly + delete', // we only allow deletion via POST request
         ];
     }
@@ -145,11 +145,16 @@ class PenjualanController extends Controller
         $tipePrinterInvoiceRrp = [Device::TIPE_LPR, Device::TIPE_PDF_PRINTER, Device::TIPE_TEXT_PRINTER];
         $printerInvoiceRrp     = Device::model()->listDevices($tipePrinterInvoiceRrp);
 
+        $configHapusNota   = Config::model()->find("nama='penjualan.alasanhapusnota'");
+        $configHapusDetail = Config::model()->find("nama='penjualan.alasanhapusdetail'");
+
         $this->render('ubah', [
-            'model'             => $model,
-            'penjualanDetail'   => $penjualanDetail,
-            'barang'            => $barang,
-            'printerInvoiceRrp' => $printerInvoiceRrp,
+            'model'                 => $model,
+            'penjualanDetail'       => $penjualanDetail,
+            'barang'                => $barang,
+            'printerInvoiceRrp'     => $printerInvoiceRrp,
+            'konfirmasiHapusNota'   => $configHapusNota->nilai,
+            'konfirmasiHapusDetail' => $configHapusDetail->nilai,
         ]);
     }
 
@@ -162,18 +167,39 @@ class PenjualanController extends Controller
     {
         $model = $this->loadModel($id);
         if ($model->status == Penjualan::STATUS_DRAFT) {
-            PenjualanHelper::simpanHapus($id);
+            $configHapusNota = Config::model()->find("nama='penjualan.alasanhapusnota'");
+
+            $alasan = trim(Yii::app()->request->getPost('alasan'));
+            if (empty($alasan) && $configHapusNota->nilai == 1) {
+                $hapusAlasanMessages = [
+                    "Silakan isi alasan terlebih dahulu sebelum menghapus data.",
+                    "Data tidak dapat dihapus sebelum alasan diisi.",
+                    "Mohon lengkapi alasan penghapusan terlebih dahulu.",
+                    "Penghapusan tidak bisa dilanjutkan tanpa alasan yang jelas.",
+                    "Alasan perlu diisi dulu agar data bisa dihapus.",
+                ];
+
+                $this->renderJSON([
+                    'sukses' => false,
+                    'error'  => [
+                        'code' => '500',
+                        'msg'  => $hapusAlasanMessages[array_rand($hapusAlasanMessages)],
+                    ],
+                ]);
+            }
+            PenjualanHelper::simpanHapus($id, $alasan);
             PenjualanDiskon::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
             PenjualanMultiHarga::model()->deleteAll('penjualan_id=:penjualanId', ['penjualanId' => $id]);
             PenjualanDetail::model()->deleteAll('penjualan_id=:id', [':id' => $id]);
             PenjualanMemberOnline::model()->deleteAll('penjualan_id=:id', [':id' => $id]);
             $model->delete();
+            $this->renderJSON(['sukses' => true]);
         }
 
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if (!isset($_GET['ajax'])) {
-            $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
-        }
+        // if (!isset($_GET['ajax'])) {
+        //     $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : ['index']);
+        // }
     }
 
     /**
@@ -216,12 +242,15 @@ class PenjualanController extends Controller
         // Yii::log(print_r($model->getDbCriteria(), true));
         // Yii::log(print_r($model->getAttributes(), true));
 
+        $configHapusNota = Config::model()->find("nama='penjualan.alasanhapusnota'");
+
         $this->render('index', [
             'model'             => $model,
             'merge'             => $hideOpenTxnCr,
             'hideDetailOpenTxn' => $hideTotalMarginOpenTxn,
             'pesan1'            => $pesan1,
             'pesan2'            => $pesan2,
+            'konfirmasiHapus'   => $configHapusNota->nilai,
         ]);
     }
 
@@ -272,9 +301,9 @@ class PenjualanController extends Controller
             $penjualan = $this->loadModel($id);
             // Tambah barang hanya bisa jika status masih draft
             if ($penjualan->status == Penjualan::STATUS_DRAFT) {
-                $qty       = $_POST['qty'];
-                $barcode   = $_POST['barcode'];
-                $return    = $penjualan->transfer_mode ? $penjualan->transferBarang($barcode, $qty, true) : $penjualan->tambahBarang($barcode, $qty, true);
+                $qty     = $_POST['qty'];
+                $barcode = $_POST['barcode'];
+                $return  = $penjualan->transfer_mode ? $penjualan->transferBarang($barcode, $qty, true) : $penjualan->tambahBarang($barcode, $qty, true);
             }
         }
         $this->renderJSON($return);
@@ -290,8 +319,8 @@ class PenjualanController extends Controller
         $return = '';
         if (isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('view', ['id' => $data->id]) . '">' .
-            $data->nomor . '</a>';
+                $this->createUrl('view', ['id' => $data->id]) . '">' .
+                $data->nomor . '</a>';
         }
         return $return;
     }
@@ -303,10 +332,10 @@ class PenjualanController extends Controller
      */
     public function renderLinkToUbah($data)
     {
-        if (!isset($data->nomor)) {
+        if (! isset($data->nomor)) {
             $return = '<a href="' .
-            $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
-            $data->tanggal . '</a>';
+                $this->createUrl('ubah', ['id' => $data->id, 'uid' => $data->updated_by]) . '">' .
+                $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -333,12 +362,56 @@ class PenjualanController extends Controller
 
     public function actionHapusDetail($id)
     {
-        $detail = PenjualanDetail::model()->findByPk($id);
-        PenjualanHelper::simpanHapusDetail($detail);
-        PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $detail->id);
-        if (!$detail->delete()) {
+        $return            = ['sukses' => false];
+        $detail            = PenjualanDetail::model()->findByPk($id);
+        $configHapusDetail = Config::model()->find("nama='penjualan.alasanhapusdetail'");
+        if ($configHapusDetail->nilai == 1) {
+            $return = [
+                'sukses'     => true,
+                'konfirmasi' => true,
+                'id'         => $id,
+            ];
+        } else if ($configHapusDetail->nilai == 0) {
+
+            PenjualanHelper::simpanHapusDetail($detail);
+            PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $detail->id);
+            if (! $detail->delete()) {
+                throw new Exception('Gagal hapus detail penjualan');
+            }
+            $return = [
+                'sukses' => true,
+            ];
+        }
+        $this->renderJSON($return);
+    }
+
+    public function actionHapusDetailKonfirmasi()
+    {
+        $detailId = Yii::app()->request->getPost('id');
+        $alasan   = trim(Yii::app()->request->getPost('alasan'));
+        if (empty($alasan)) {
+            $hapusAlasanMessages = [
+                "Alasan belum diisi, silakan lengkapi.",
+                "Mohon isi alasan penghapusan.",
+                "Alasan kosong, hapus dibatalkan.",
+                "Tidak bisa dihapus, alasan belum diisi.",
+                "Silakan isi alasan terlebih dahulu.",
+            ];
+            $this->renderJSON([
+                'sukses' => false,
+                'error'  => [
+                    'code' => 500,
+                    'msg'  => $hapusAlasanMessages[array_rand($hapusAlasanMessages)],
+                ],
+            ]);
+        }
+        $detail = PenjualanDetail::model()->findByPk($detailId);
+        PenjualanHelper::simpanHapusDetail($detail, $alasan);
+        PenjualanDiskon::model()->deleteAll('penjualan_detail_id=' . $detailId);
+        if (! $detail->delete()) {
             throw new Exception('Gagal hapus detail penjualan');
         }
+        $this->renderJSON(['sukses' => true]);
     }
 
     /**
@@ -382,7 +455,7 @@ class PenjualanController extends Controller
         $barisPertama = true;
         $text         = '';
         foreach ($hpp as $hargaBeli) {
-            if (!$barisPertama) {
+            if (! $barisPertama) {
                 $text .= '<br />';
             }
             $text .= number_format($hargaBeli->harga_beli, 0, ',', '.') . ' x ' . $hargaBeli->qty;
@@ -460,7 +533,7 @@ class PenjualanController extends Controller
         // Throw exception jika ada barang tanpa struktur
         if ($strukturHarusAda) {
             $tanpaStruktur = $model->ambilDetailTanpaStruktur();
-            if (!empty($tanpaStruktur)) {
+            if (! empty($tanpaStruktur)) {
                 $t = '';
                 foreach ($tanpaStruktur as $detail) {
                     $t .= ' | ' . $detail->barang->nama . '(' . $detail->barang->barcode . ') | ';
@@ -617,7 +690,7 @@ class PenjualanController extends Controller
                 ->bindValue(':nomor', $nomor)
                 ->queryRow();
             $profil = Profil::model()->find('nama=:nama', ['nama' => trim($penjualanPos2['namaCustomer'])]);
-            if (!is_null($profil)) {
+            if (! is_null($profil)) {
                 $penjualan            = new Penjualan;
                 $penjualan->profil_id = $profil->id;
                 if ($penjualan->save()) {
@@ -658,7 +731,7 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_STRUK);
                     break;
-                    /*
+                /*
                     case Device::TIPE_PDF_PRINTER:
                     $this->exportPdf($id);
                     break;
@@ -684,7 +757,7 @@ class PenjualanController extends Controller
                 case Device::TIPE_LPR:
                     $this->printLpr($id, $device, self::PRINT_NOTA);
                     break;
-                    /*
+                /*
                     case Device::TIPE_PDF_PRINTER:
                     $this->exportPdf($id);
                     break;

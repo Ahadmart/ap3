@@ -2,22 +2,33 @@
 /* @var $this PenjualanController */
 /* @var $model Penjualan */
 
-$this->breadcrumbs = array(
-    'Penjualan' => array('index'),
-    $model->id => array('view', 'id' => $model->id),
+$this->breadcrumbs = [
+    'Penjualan' => ['index'],
+    $model->id  => ['view', 'id' => $model->id],
     'Ubah',
-);
+];
 
-$this->boxHeader['small'] = 'Ubah';
+$this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjualan';
 ?>
+<div id="hapus-form" class="small reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Konfirmasi Hapus</h2>
+    <label>Alasan penghapusan:
+        <input type="text" id="alasan-hapus">
+    </label>
+    <div class="text-right">
+        <a href="#" class="small bigfont tiny button alert" id="hapus-submit">OK</a>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
+</div>
+
 <div class="row">
     <div class="large-7 columns header">
         <?php
         if ($model->transfer_mode) {
-            ?>
+        ?>
             <span class="warning label">Transfer Mode</span>
-            <?php
+        <?php
         }
         ?>
         <span class="secondary label">Customer</span><span class="label"><?php echo $model->profil->nama; ?></span><br />
@@ -30,30 +41,34 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
                 <ul id="printinvoice" data-dropdown-content class="f-dropdown" aria-hidden="true">
                     <?php
                     foreach ($printerInvoiceRrp as $printer) {
-                        ?>
+                    ?>
                         <li>
-                            <a href="<?php echo $this->createUrl('printdraftinvoice', array('id' => $model->id, 'printId' => $printer['id'])) ?>">
+                            <a href="<?php echo $this->createUrl('printdraftinvoice', ['id' => $model->id, 'printId' => $printer['id']]) ?>">
                                 <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
                         </li>
-                        <?php
+                    <?php
                     }
                     ?>
                 </ul>
             </li>
             <li>
                 <?php
-                echo CHtml::ajaxLink('<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Penjualan', $this->createUrl('simpanpenjualan', array('id' => $model->id)), array(
-                    'data' => "simpan=true",
-                    'type' => 'POST',
-                    'success' => 'function(data) {
+                echo CHtml::ajaxLink(
+                    '<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Penjualan',
+                    $this->createUrl('simpanpenjualan', ['id' => $model->id]),
+                    [
+                        'data'    => 'simpan=true',
+                        'type'    => 'POST',
+                        'success' => 'function(data) {
                             if (data.sukses) {
                                 location.reload();;
                             }
-                        }'
-                        ), array(
-                    'class' => 'tiny bigfont button',
-                    'accesskey' => 's'
-                        )
+                        }',
+                    ],
+                    [
+                        'class'     => 'tiny bigfont button',
+                        'accesskey' => 's',
+                    ]
                 );
                 ?>
             </li>
@@ -62,62 +77,141 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
 </div>
 <div class="row">
     <?php
-    $this->renderPartial('_input_detail', array(
+    $this->renderPartial('_input_detail', [
         'penjualan' => $model,
-    ));
+    ]);
     ?>
 </div>
 <div class="row" id="penjualan-detail">
     <?php
-    $this->renderPartial('_detail', array(
-        'penjualan' => $model,
-        'penjualanDetail' => $penjualanDetail
-    ));
+    $this->renderPartial('_detail', [
+        'penjualan'             => $model,
+        'penjualanDetail'       => $penjualanDetail,
+        'konfirmasiHapusDetail' => $konfirmasiHapusDetail,
+    ]);
     ?>
 </div>
 <div class="row" id="barang-list" style="display:none">
     <?php
-    $this->renderPartial('_barang_list', array(
+    $this->renderPartial('_barang_list', [
         'barang' => $barang,
-    ));
+    ]);
     ?>
 </div>
 <?php
-$this->menu = array(
-    array('itemOptions' => array('class' => 'divider'), 'label' => false),
-    array('itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
-                    'accesskey' => 't'
-                )),
-            array('label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
-                    'class' => 'alert button',
+$this->menu = [
+    ['itemOptions' => ['class' => 'divider'], 'label' => false],
+    [
+        'itemOptions'    => ['class' => 'has-form hide-for-small-only'],
+        'label'          => false,
+        'items'          => [
+            ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
+                'class'     => 'button',
+                'accesskey' => 't',
+            ]],
+            [
+                'label'       => '<i class="fa fa-times"></i> <span class="ak">H</span>apus',
+                'url'         => $this->createUrl('hapus', ['id' => $model->id]),
+                'linkOptions' => [
+                    'class'     => 'alert button tombol-hapus-nota',
                     'accesskey' => 'h',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
-                )),
-            array('label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                    'accesskey' => 'i'
-                ))
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    ),
-    array('itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
-        'items' => array(
-            array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
-                    'class' => 'button',
-                )),
-            array('label' => '<i class="fa fa-times"></i>', 'url' => $this->createUrl('hapus', array('id' => $model->id)), 'linkOptions' => array(
-                    'class' => 'alert button',
-                    'submit' => array('hapus', 'id' => $model->id),
-                    'confirm' => 'Anda yakin?'
-                )),
-            array('label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => array(
-                    'class' => 'success button',
-                ))
-        ),
-        'submenuOptions' => array('class' => 'button-group')
-    )
-);
+                    // 'submit'    => ['hapus', 'id' => $model->id],
+                    'confirm'   => $konfirmasiHapusNota ? null : 'Anda yakin?',
+                ],
+            ],
+            ['label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => [
+                'class'     => 'success button',
+                'accesskey' => 'i',
+            ]],
+        ],
+        'submenuOptions' => ['class' => 'button-group'],
+    ],
+    [
+        'itemOptions'    => ['class' => 'has-form show-for-small-only'],
+        'label'          => false,
+        'items'          => [
+            ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
+                'class' => 'button',
+            ]],
+            [
+                'label'          => '<i class="fa fa-times"></i>',
+                'url'         => $this->createUrl('hapus', ['id' => $model->id]),
+                'linkOptions' => [
+                    'class'   => 'alert button tombol-hapus-nota',
+                    // 'submit'  => ['hapus', 'id' => $model->id],
+                    'confirm' => $konfirmasiHapusNota ? null : 'Anda yakin?',
+                ]
+            ],
+            ['label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => [
+                'class' => 'success button',
+            ]],
+        ],
+        'submenuOptions' => ['class' => 'button-group'],
+    ],
+];
+?>
+
+<script>
+    <?php if ($konfirmasiHapusNota) {
+    ?>
+        var deleteUrl = null;
+
+        $(document).on('click', '.tombol-hapus-nota', function(e) {
+            e.preventDefault();
+            $('#hapus-form').one('opened.fndtn.reveal', function() {
+                $('#alasan-hapus').val('').focus();
+            });
+
+            deleteUrl = $(this).attr('href'); // simpan URL
+            $("#alasan-hapus").val('').focus(); // reset and focus input
+            $("#hapus-form").foundation('reveal', 'open');
+        });
+
+
+        $("#alasan-hapus").keydown(function(e) {
+            if (e.keyCode === 13) {
+                $("#hapus-submit").click();
+            }
+        });
+
+        // Saat submit di modal diklik, kirim AJAX
+        $("#hapus-submit").click(function() {
+            var alasan = $("#alasan-hapus").val().trim();
+            // if (alasan === "") {
+            //     alert("Silakan isi alasan penghapusan.");
+            //     return;
+            // }
+
+            if (!deleteUrl) {
+                alert("URL penghapusan tidak ditemukan.");
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: deleteUrl,
+                data: {
+                    alasan: alasan
+                },
+                success: function(data) {
+                    if (data.sukses) {
+                        window.location.href = "<?= $this->createUrl('index') ?>"
+                    } else {
+                        $.gritter.add({
+                            title: 'Error ' + data.error.code,
+                            text: data.error.msg,
+                            time: 3000,
+                        });
+                    }
+                }
+            });
+
+            $("#hapus-form").foundation('reveal', 'close');
+            deleteUrl = null;
+            return false;
+        });
+    <?php
+    }
+    ?>;
+    // Saat tombol hapus diklik, tampilkan dialog
+</script>
