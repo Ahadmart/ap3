@@ -134,13 +134,13 @@ $this->menu = [
                 'class' => 'button',
             ]],
             [
-                'label'          => '<i class="fa fa-times"></i>',
+                'label'       => '<i class="fa fa-times"></i>',
                 'url'         => $this->createUrl('hapus', ['id' => $model->id]),
                 'linkOptions' => [
                     'class'   => 'alert button tombol-hapus-nota',
                     // 'submit'  => ['hapus', 'id' => $model->id],
                     'confirm' => $konfirmasiHapusNota ? null : 'Anda yakin?',
-                ]
+                ],
             ],
             ['label' => '<i class="fa fa-asterisk"></i>', 'url' => $this->createUrl('index'), 'linkOptions' => [
                 'class' => 'success button',
@@ -152,50 +152,31 @@ $this->menu = [
 ?>
 
 <script>
-    <?php if ($konfirmasiHapusNota) {
-    ?>
-        var deleteUrl = null;
+    var deleteUrl = null;
 
-        $(document).on('click', '.tombol-hapus-nota', function(e) {
-            e.preventDefault();
+    $(document).on('click', '.tombol-hapus-nota', function(e) {
+
+        deleteUrl = $(this).attr('href'); // simpan URL
+        e.preventDefault();
+
+        <?php
+        if ($konfirmasiHapusNota) {
+        ?>
             $('#hapus-form').one('opened.fndtn.reveal', function() {
                 $('#alasan-hapus').val('').focus();
             });
 
-            deleteUrl = $(this).attr('href'); // simpan URL
             $("#alasan-hapus").val('').focus(); // reset and focus input
             $("#hapus-form").foundation('reveal', 'open');
-        });
-
-
-        $("#alasan-hapus").keydown(function(e) {
-            if (e.keyCode === 13) {
-                $("#hapus-submit").click();
-            }
-        });
-
-        // Saat submit di modal diklik, kirim AJAX
-        $("#hapus-submit").click(function() {
-            var alasan = $("#alasan-hapus").val().trim();
-            // if (alasan === "") {
-            //     alert("Silakan isi alasan penghapusan.");
-            //     return;
-            // }
-
-            if (!deleteUrl) {
-                alert("URL penghapusan tidak ditemukan.");
-                return;
-            }
-
+        <?php
+        } else {
+        ?>
             $.ajax({
-                type: 'POST',
+                type: 'GET',
                 url: deleteUrl,
-                data: {
-                    alasan: alasan
-                },
                 success: function(data) {
                     if (data.sukses) {
-                        window.location.href = "<?= $this->createUrl('index') ?>"
+                        window.location.href = "<?php echo $this->createUrl('index') ?>"
                     } else {
                         $.gritter.add({
                             title: 'Error ' + data.error.code,
@@ -205,13 +186,53 @@ $this->menu = [
                     }
                 }
             });
+        <?php
+        }
+        ?>
+    });
 
-            $("#hapus-form").foundation('reveal', 'close');
-            deleteUrl = null;
-            return false;
+
+    $("#alasan-hapus").keydown(function(e) {
+        if (e.keyCode === 13) {
+            $("#hapus-submit").click();
+        }
+    });
+
+    // Saat submit di modal diklik, kirim AJAX
+    $("#hapus-submit").click(function() {
+        var alasan = $("#alasan-hapus").val().trim();
+        // if (alasan === "") {
+        //     alert("Silakan isi alasan penghapusan.");
+        //     return;
+        // }
+
+        if (!deleteUrl) {
+            alert("URL penghapusan tidak ditemukan.");
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: deleteUrl,
+            data: {
+                alasan: alasan
+            },
+            success: function(data) {
+                if (data.sukses) {
+                    window.location.href = "<?php echo $this->createUrl('index') ?>"
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 3000,
+                    });
+                }
+            }
         });
-    <?php
-    }
-    ?>;
+
+        $("#hapus-form").foundation('reveal', 'close');
+        deleteUrl = null;
+        return false;
+    });
     // Saat tombol hapus diklik, tampilkan dialog
 </script>
