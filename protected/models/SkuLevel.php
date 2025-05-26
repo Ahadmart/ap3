@@ -171,9 +171,10 @@ class SkuLevel extends CActiveRecord
 
     public static function kumulatifRasioKonversi($skuId, $levelAsal, $levelTujuan)
     {
+        Yii::log("lvl Asal: {$levelAsal}; lvl Tujuan: {$levelTujuan}");
         if ($levelAsal < $levelTujuan) {
             $kumulatif = Yii::app()->db->createCommand()
-                ->select('FLOOR(EXP(SUM(LOG(rasio_konversi)))) AS jumlah')
+                ->select('FLOOR(EXP(SUM(LOG(rasio_konversi + 1e-9)))) AS jumlah')
                 ->from('sku_level')
                 ->where('sku_id = :skuId AND level > :levelAsal AND level <= :levelTujuan', [
                     ':skuId'       => $skuId,
@@ -185,7 +186,7 @@ class SkuLevel extends CActiveRecord
             return $pecahan->toString();
         }
         return Yii::app()->db->createCommand()
-            ->select('FLOOR(EXP(SUM(LOG(rasio_konversi)))) AS jumlah')
+            ->select('FLOOR(EXP(SUM(LOG(rasio_konversi + 1e-9)))) AS jumlah')
             ->from('sku_level')
             ->where('sku_id = :skuId AND level > :levelTujuan AND level <= :levelAsal', [
                 ':skuId'       => $skuId,
