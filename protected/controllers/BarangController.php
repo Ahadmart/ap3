@@ -322,11 +322,18 @@ class BarangController extends Controller
     {
         $barangId   = $id;
         $attributes = $_POST['HargaJualMulti'];
-        if (HargaJualMulti::updateHargaTrx($barangId, $attributes)) {
-            echo 'Sukses';
-        } else {
-            echo 'Fail';
+        if ($attributes['qty'] < 3) {
+            $this->renderJSON([
+                'sukses' => false,
+                'msg'    => 'Qty < 3',
+            ]);
         }
+        if (HargaJualMulti::updateHargaTrx($barangId, $attributes)) {
+            $r = ['sukses' => true];
+        } else {
+            $r = ['sukses' => false];
+        }
+        $this->renderJSON($r);
     }
 
     public function actionListHargaJualMulti($id)
