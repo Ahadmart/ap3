@@ -121,12 +121,28 @@ $this->widget('BGridView', array(
         <a class="close-reveal-modal">&#215;</a>
     </div>
 </div>
+<div id="alasandiskon-form" class="small reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Konfirmasi Diskon</h2>
+    <label>Alasan diskon:
+        <input type="text" id="alasandiskon" placeholder="Masukkan catatan singkat untuk supervisor">
+    </label>
+    <div class="text-right">
+        <a href="#" class="small bigfont tiny button alert" id="alasandiskon-submit">OK</a>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
+</div>
 <script>
     $("#alasan-hapus").keyup(function(e) {
         if (e.keyCode === 13) {
             $("#hapus-submit").click();
         }
     });
+    $("#alasandiskon").keyup(function(e) {
+        if (e.keyCode === 13) {
+            $("#alasandiskon-submit").click();
+        }
+    });
+
     function enableEditable() {
         $(".editable-qty").editable({
             mode: "inline",
@@ -224,6 +240,52 @@ $this->widget('BGridView', array(
             inputclass: "input-editable-harga",
             success: function(response, newValue) {
                 if (response.sukses) {
+                    if (response.konfirmasi) {
+                        // Show modal
+                        $('#alasandiskon-form').one('opened.fndtn.reveal', function() {
+                            $('#alasandiskon').val('').focus();
+                        });
+                        $('#alasandiskon-form').foundation('reveal', 'open');
+                        $('#alasandiskon').val('').focus(); // Reset and focus input
+
+                        // Set one-time click event for OK button
+                        $('#alasandiskon-submit').off('click').on('click', function(e) {
+                            e.preventDefault();
+                            var alasan = $('#alasandiskon').val();
+                            var dataKirim = {
+                                detailId: response.detailId,
+                                penjualanId: <?= $penjualan->id ?>,
+                                harga: newValue,
+                                alasan: alasan
+                            };
+
+                            $.ajax({
+                                url: '<?= $this->createUrl('konfirmasiupdateharga') ?>',
+                                type: 'POST',
+                                data: dataKirim,
+                                success: function(res) {
+                                    console.log("Alasan terkirim:", res);
+                                    if (res.sukses === false) {
+                                        $.gritter.add({
+                                            title: 'Error ' + res.error.code,
+                                            text: res.error.msg,
+                                            time: 3000,
+                                        });
+                                    }
+                                    // Optional: update grid/UI
+                                    $.fn.yiiGridView.update("penjualan-detail-grid");
+                                    updateTotal();
+                                },
+                                error: function() {
+                                    alert("Gagal mengirim alasan.");
+                                }
+                            });
+
+                            $('#alasandiskon-form').foundation('reveal', 'close');
+                        });
+
+                        return; // Skip the rest if waiting for input
+                    }
                     $.fn.yiiGridView.update("penjualan-detail-grid");
                     updateTotal();
                 }

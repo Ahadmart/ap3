@@ -156,7 +156,8 @@ class Penjualan extends CActiveRecord
                     'asc'  => 'profil.nama',
                     'desc' => 'profil.nama desc',
                 ],
-                'nomorHutangPiutang', [
+                'nomorHutangPiutang',
+                [
                     'asc'  => 'hutangPiutang.nomor',
                     'desc' => 'hutangPiutang.nomor desc',
                 ],
@@ -805,7 +806,7 @@ class Penjualan extends CActiveRecord
      * @param int $tipeDiskonId
      * @throws Exception
      */
-    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [])
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [], $alasan = '')
     {
         $detail                         = new PenjualanDetail;
         $detail->penjualan_id           = $this->id;
@@ -820,14 +821,14 @@ class Penjualan extends CActiveRecord
             throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$barangId}, qty:{$qty}", 500);
         }
         if ($diskon > 0) {
-            $this->insertDiskon($detail, $tipeDiskonId);
+            $this->insertDiskon($detail, $tipeDiskonId, $alasan);
         }
         if (!empty($multiHJ)) {
             $this->insertMultiHJ($detail, $multiHJ);
         }
     }
 
-    public function insertDiskon($penjualanDetail, $tipeDiskonId)
+    public function insertDiskon($penjualanDetail, $tipeDiskonId, $alasan = '')
     {
         $trxDiskon                      = new PenjualanDiskon;
         $trxDiskon->penjualan_detail_id = $penjualanDetail->id;
@@ -835,6 +836,9 @@ class Penjualan extends CActiveRecord
         $trxDiskon->harga               = $penjualanDetail->harga_jual;
         $trxDiskon->harga_normal        = $penjualanDetail->harga_jual + $penjualanDetail->diskon;
         $trxDiskon->tipe_diskon_id      = $tipeDiskonId;
+        if (!empty($alasan)) {
+            $trxDiskon->alasan = $alasan;
+        }
         if (!$trxDiskon->save()) {
             throw new Exception("Gagal simpan diskon detail: penjualanDetailId:{$penjualanDetail->id}", 500);
         }
@@ -1891,19 +1895,19 @@ class Penjualan extends CActiveRecord
      * @param ActiveRecord $penjualanDetail
      * @param int $hargaManual harga yang diinput
      */
-    public function updateHargaManual($penjualanDetail, $hargaManual)
+    public function updateHargaManual($penjualanDetail, $hargaManual, $alasan = '')
     {
         $transaction = $this->dbConnection->beginTransaction();
         try {
             $barangId  = $penjualanDetail->barang_id;
             $qty       = $penjualanDetail->qty;
             $hargaJual = $hargaManual;
-            $diskon    = $penjualanDetail->harga_jual - $hargaManual;
+            $barang    = Barang::model()->findByPk($barangId);
+            $diskon    = $barang->getHargaJualRaw() - $hargaManual;
 
-            $barang = Barang::model()->findByPk($barangId);
             $this->cleanBarang($barang);
 
-            $this->insertBarang($barangId, $qty, $hargaJual, $diskon, DiskonBarang::TIPE_MANUAL);
+            $this->insertBarang($barangId, $qty, $hargaJual, $diskon, DiskonBarang::TIPE_MANUAL, [], $alasan);
             $transaction->commit();
             return [
                 'sukses' => true,

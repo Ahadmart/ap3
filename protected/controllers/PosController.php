@@ -55,7 +55,7 @@ class PosController extends Controller
                 ':userId' => Yii::app()->user->id,
             ],
         ]);
-        if (! is_null($suspendedSale)) {
+        if (!is_null($suspendedSale)) {
             $this->redirect(['ubah', 'id' => $suspendedSale->id]);
         }
 
@@ -132,7 +132,7 @@ class PosController extends Controller
 
         $memberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
         $poins    = null;
-        if (! is_null($memberOL)) {
+        if (!is_null($memberOL)) {
             $clientAPI          = new AhadMembershipClient();
             $r                  = json_decode($clientAPI->view($memberOL->nomor_member));
             $this->memberOnline = $r->data->profil;
@@ -201,11 +201,11 @@ class PosController extends Controller
                 $alasan = trim(Yii::app()->request->getPost('alasan'));
                 if (empty($alasan) && $configHapusNota->nilai == 1) {
                     $hapusAlasanMessages = [
-                        "Silakan isi alasan terlebih dahulu sebelum menghapus data.",
-                        "Data tidak dapat dihapus sebelum alasan diisi.",
-                        "Mohon lengkapi alasan penghapusan terlebih dahulu.",
-                        "Penghapusan tidak bisa dilanjutkan tanpa alasan yang jelas.",
-                        "Alasan perlu diisi dulu agar data bisa dihapus.",
+                        'Silakan isi alasan terlebih dahulu sebelum menghapus data.',
+                        'Data tidak dapat dihapus sebelum alasan diisi.',
+                        'Mohon lengkapi alasan penghapusan terlebih dahulu.',
+                        'Penghapusan tidak bisa dilanjutkan tanpa alasan yang jelas.',
+                        'Alasan perlu diisi dulu agar data bisa dihapus.',
                     ];
 
                     $this->renderJSON([
@@ -405,7 +405,7 @@ class PosController extends Controller
                         ];
                     } else {
                         $skuDetail = SkuDetail::model()->findAll('sku_id=:skuId', [':skuId' => $sku->id]);
-                        if (! empty($skuDetail)) {
+                        if (!empty($skuDetail)) {
                             $listBarang = [];
                             foreach ($skuDetail as $item) {
                                 $barang       = Barang::model()->findByPk($item->barang_id);
@@ -530,7 +530,7 @@ class PosController extends Controller
                             'konfirmasi' => true,
                             'barangId'   => $detail->barang_id,
                         ];
-                    } else if ($configHapusDetail->nilai == 0) {
+                    } elseif ($configHapusDetail->nilai == 0) {
                         $barang    = Barang::model()->findByPk($detail->barang_id);
                         $penjualan = Penjualan::model()->findByPk($detail->penjualan_id);
                         $details   = PenjualanDetail::model()->findAll(
@@ -542,7 +542,6 @@ class PosController extends Controller
                         );
                         foreach ($details as $d) {
                             PenjualanHelper::simpanHapusDetail($d); // Simpan barang yang dihapus ke tabel "lain"
-
                         }
                         $penjualan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
 
@@ -570,11 +569,11 @@ class PosController extends Controller
         $alasan      = trim(Yii::app()->request->getPost('alasan'));
         if (empty($alasan)) {
             $hapusAlasanMessages = [
-                "Alasan belum diisi, silakan lengkapi.",
-                "Mohon isi alasan penghapusan.",
-                "Alasan kosong, hapus dibatalkan.",
-                "Tidak bisa dihapus, alasan belum diisi.",
-                "Silakan isi alasan terlebih dahulu.",
+                'Alasan belum diisi, silakan lengkapi.',
+                'Mohon isi alasan penghapusan.',
+                'Alasan kosong, hapus dibatalkan.',
+                'Tidak bisa dihapus, alasan belum diisi.',
+                'Silakan isi alasan terlebih dahulu.',
             ];
             $this->renderJSON([
                 'sukses' => false,
@@ -597,7 +596,6 @@ class PosController extends Controller
             );
             foreach ($details as $d) {
                 PenjualanHelper::simpanHapusDetail($d, $alasan); // Simpan barang yang dihapus ke tabel "lain"
-
             }
             $penjualan->cleanBarang($barang); // Bersihkan barang dari penjualan "ini"
         }
@@ -686,7 +684,7 @@ class PosController extends Controller
             $totalBayar += $val;
         }
         $koinMOL = 0;
-        if (! empty($_POST['pos']['koin-mol'])) {
+        if (!empty($_POST['pos']['koin-mol'])) {
             $koinMOL = $_POST['pos']['koin-mol'];
             $bayar[] = [
                 'nama' => 'Koin',
@@ -723,7 +721,7 @@ class PosController extends Controller
     {
         $kasir   = $this->posAktif();
         $printId = $kasir->device->default_printer_id;
-        if (! is_null($printId)) {
+        if (!is_null($printId)) {
             $this->redirect(['penjualan/printstruk', 'id' => $id, 'printId' => $printId]);
         }
     }
@@ -750,7 +748,7 @@ class PosController extends Controller
             } else {
                 $customer = Profil::model()->find('nomor=:nomor', [':nomor' => $_POST['nomor']]);
             }
-            if (! is_null($customer)) {
+            if (!is_null($customer)) {
                 $penjualan = $this->loadModel($id);
 
                 /* Simpan profil ID ke penjualan
@@ -787,7 +785,7 @@ class PosController extends Controller
             ],
         ];
 
-        if (isset($_POST['nomor']) && ! empty($_POST['nomor'])) {
+        if (isset($_POST['nomor']) && !empty($_POST['nomor'])) {
             $clientAPI = new AhadMembershipClient();
             $profil    = json_decode($clientAPI->view($_POST['nomor']), true);
             if ($profil['statusCode'] == 200) {
@@ -809,7 +807,7 @@ class PosController extends Controller
                 $penjualanMOL->level_nama   = $profil['data']['profil']['levelNama'];
                 $penjualanMOL->total_poin   = $profil['data']['profil']['poin'];
                 $penjualanMOL->total_koin   = $profil['data']['profil']['koin'];
-                if (! $penjualanMOL->save()) {
+                if (!$penjualanMOL->save()) {
                     throw new Exception('Gagal simpan penjualan_member_online: ' . var_export($penjualanMOL->getErrors(), true));
                 }
             }
@@ -820,7 +818,7 @@ class PosController extends Controller
             $penjualan = $this->loadModel($id);
             $penjualan->gantiCustomer($customer);
             $penjualanMOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
-            if (! is_null($penjualanMOL)) {
+            if (!is_null($penjualanMOL)) {
                 $penjualanMOL->delete();
             }
             $return = [
@@ -895,7 +893,7 @@ class PosController extends Controller
                     'msg'  => 'Invalid User Name',
                 ],
             ];
-        } elseif (! $user->validatePassword($pwd)) {
+        } elseif (!$user->validatePassword($pwd)) {
             return [
                 'sukses' => false,
                 'error'  => [
@@ -953,10 +951,53 @@ class PosController extends Controller
             $pk              = $_POST['pk'];
             $hargaManual     = $_POST['value'];
             $penjualanDetail = PenjualanDetail::model()->findByPk($pk);
-            $penjualan       = Penjualan::model()->findByPk($penjualanDetail->penjualan_id);
-            $return          = $penjualan->updateHargaManual($penjualanDetail, $hargaManual);
+            if ($this->isOtorisasiAdmin($penjualanDetail->penjualan_id)) {
+                $configAlasanDiskonAdmin = Config::model()->find("nama='pos.alasandiskonadmin'");
+                if ($configAlasanDiskonAdmin->nilai == 1) {
+                    $return = [
+                        'sukses'     => true,
+                        'konfirmasi' => true,
+                        'detailId'   => $pk,
+                    ];
+                } else {
+                    // $penjualanDetail = PenjualanDetail::model()->findByPk($pk);
+                    $penjualan = Penjualan::model()->findByPk($penjualanDetail->penjualan_id);
+                    $return    = $penjualan->updateHargaManual($penjualanDetail, $hargaManual);
+                }
+            }
         }
         $this->renderJSON($return);
+    }
+
+    public function actionKonfirmasiUpdateHarga()
+    {
+        $detailId    = Yii::app()->request->getPost('detailId');
+        $penjualanId = Yii::app()->request->getPost('penjualanId');
+        $hargaManual = Yii::app()->request->getPost('harga');
+        $alasan      = trim(Yii::app()->request->getPost('alasan'));
+        if (empty($alasan)) {
+            $errorMessages = [
+                'Silakan isi alasan perubahan harga.',
+                'Harap jelaskan alasan diskon atau penyesuaian harga.',
+                'Alasan tidak boleh kosong - diperlukan untuk audit.',
+                'Perubahan harga memerlukan alasan yang jelas.',
+                'Alasan dibutuhkan untuk melanjutkan proses.',
+            ];
+            $this->renderJSON([
+                'sukses' => false,
+                'error'  => [
+                    'code' => 500,
+                    'msg'  => $errorMessages[array_rand($errorMessages)],
+                ],
+            ]);
+        }
+
+        if ($this->isOtorisasiAdmin($penjualanId)) {
+            $penjualanDetail = PenjualanDetail::model()->findByPk($detailId);
+            $penjualan       = Penjualan::model()->findByPk($penjualanId);
+            $return          = $penjualan->updateHargaManual($penjualanDetail, $hargaManual, $alasan);
+            $this->renderJSON($return);
+        }
     }
 
     /**
