@@ -322,10 +322,10 @@ class BarangController extends Controller
     {
         $barangId   = $id;
         $attributes = $_POST['HargaJualMulti'];
-        if ($attributes['qty'] < 3) {
+        if ($attributes['qty'] < 3 && $attributes['harga'] > 0) {
             $this->renderJSON([
                 'sukses' => false,
-                'msg'    => 'Qty < 3',
+                'msg'    => 'Qty tidak boleh < 3',
             ]);
         }
         if (HargaJualMulti::updateHargaTrx($barangId, $attributes)) {
