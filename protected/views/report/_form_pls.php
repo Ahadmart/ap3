@@ -21,16 +21,30 @@ echo $form->hiddenField($model, 'profilId');
 <div class="row">
     <div class="small-12 medium-4 large-2 columns">
         <?php
-        echo $form->labelEx($model, 'jumlahHari');
+        echo $form->labelEx($model, 'jumlahHari', ['data-tooltip', 'title' => "Lakukan Analisa penjualan barang selama beberapa hari yang lalu"]);
         echo $form->numberField($model, 'jumlahHari', ['value' => empty($model->jumlahHari) ? '30' : $model->jumlahHari]);
         echo $form->error($model, 'jumlahHari', ['class' => 'error']);
         ?>
     </div>
     <div class="small-12 medium-4 large-2 columns">
         <?php
-        echo $form->labelEx($model, 'orderPeriod');
+        echo $form->labelEx($model, 'orderPeriod', ['data-tooltip', 'title' => "Hitung jumlah stok yang musti dipesan untuk ketersediaan jangka waktu ini"]);
         echo $form->numberField($model, 'orderPeriod', ['value' => empty($model->orderPeriod) ? '7' : $model->orderPeriod]);
         echo $form->error($model, 'orderPeriod', ['class' => 'error']);
+        ?>
+    </div>
+    <div class="small-12 medium-4 large-2 columns">
+        <?php
+        echo CHtml::activeLabelEx($model, 'leadTime', ['data-tooltip', 'title' => "Jarak antara order, sampai ordernya sampai"]);
+        echo CHtml::activeTextField($model, 'leadTime', ['value' => empty($model->leadTime) ? '0' : $model->leadTime, 'data-tooltip', 'class' => 'has-tip', 'title' => "Jarak antara order, sampai ordernya sampai"]);
+        echo $form->error($model, 'orderPeriod', ['class' => 'error']);
+        ?>
+    </div>
+    <div class="small-12 medium-4 large-2 columns">
+        <?php
+        echo CHtml::activeLabelEx($model, 'ssd', ['data-tooltip', 'title' => "Stok jaga-jaga"]);
+        echo CHtml::activeTextField($model, 'ssd', ['value' => empty($model->ssd) ? '0' : $model->ssd, 'data-tooltip', 'class' => 'has-tip', 'title' => "Stok jaga-jaga"]);
+        echo $form->error($model, 'ssd', ['class' => 'error']);
         ?>
     </div>
     <div class="medium-6 large-3 columns">
