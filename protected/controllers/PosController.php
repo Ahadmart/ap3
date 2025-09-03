@@ -1312,7 +1312,7 @@ class PosController extends Controller
 
     public function actionOnlyIfQRIS($id)
     {
-        $namaQrisE2Pay = 'QRIS-D'; // Samakan dengan nama di Kas Bank
+        $namaQrisE2Pay = 'QRIS-AUTO'; // Samakan dengan nama di Kas Bank
         $pakaiQris     = false;
         $kasBank       = KasBank::model()->find('nama=:nama', ['nama' => $namaQrisE2Pay]);
         $jumlahQris    = 0;
