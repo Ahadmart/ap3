@@ -2,6 +2,14 @@
     Created on : 24 April 2024, 16:57 AM
     Author     : abumuhammad
 */
+$primary-color: #0874bc;
+$secondary-color: #0da1df;
+$alert-color: #f55c57;
+$success-color: #5bab54;
+$warning-color: #ffcc9f;
+$info-color: #e8f0fd;
+
+$warna-text: #6b8ed0;
 
 body {
     color: #0d2c6f;
@@ -413,5 +421,56 @@ h1 {
         width: auto;
         height: auto;
         margin: auto;
+    }
+}
+
+.check-animate {
+    color: $success-color;
+    font-size: 80px !important;
+    animation: pop 0.6s ease-out forwards;
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#qrcode-wrapper {
+    h1, h4 {
+        color: $primary-color;
+    }
+    svg {
+        height: 5rem;
+    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    & > div {
+        text-align: center;
+    }
+    #qrislogo {
+        color: $warna-text;
+    }
+    #qrcode {
+        display: inline-block;
+        background-color: #fff;
+        padding: 10px;
+        img {
+            max-width: 100%;
+            height: auto;
+        }
     }
 }

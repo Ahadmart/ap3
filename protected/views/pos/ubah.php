@@ -11,7 +11,7 @@ $this->breadcrumbs = [
 $this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 ?>
-<?php // Dialogn form konfirmasi untuk batal / hapus nota 
+<?php // Dialog form konfirmasi untuk batal / hapus nota
 ?>
 <div id="batal-form" class="small reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
     <h2 id="modalTitle">Konfirmasi Batal</h2>
@@ -69,6 +69,14 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             'barang' => $barang,
         ]);
         ?>
+    </div>
+    <?php // <div id="wsoutput" style="color: #fff"></div> 
+    ?>
+    <div id="qrcode-wrapper" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+        <div id="qrislogo"><?= file_get_contents(Yii::getPathOfAlias('webroot') . '/assets/qrislogo.svg'); ?></div>
+        <div id="qrcode-jml"></div>
+        <div id="qrcode"></div>
+        <h4 id="ket">Scan QR untuk bayar</h4>
     </div>
 </div>
 <div class="medium-3 large-3 columns sidebar kanan">
@@ -211,13 +219,22 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     </table>
     <a class="close-reveal-modal">&#215;</a>
 </div>
+
+<div class="network_status">
+    <figure class="sinyal mati"></figure>
+</div>
 <?php
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwithdelay.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/qrcode.min.js', CClientScript::POS_HEAD);
 ?>
 <script>
+    $(document).ready(function() {
+        connectWebSocket();
+    })
+
     function totalUangDibayar() {
         var inputUangDibayar = $("input.uang-dibayar"); //$('input[name^=kasbank]');
         var uangDibayar = 0;
@@ -433,7 +450,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         }
     }).autocomplete("instance")._renderItem = function(ul, item) {
         return $("<li style='clear:both'>")
-            .append(item.status == <?= Barang::STATUS_AKTIF ?> ?
+            .append(item.status == <?php echo Barang::STATUS_AKTIF ?> ?
                 "<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-harga'>" + item.harga +
                 "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item
                 .stok + "</stok></a>" :
@@ -461,7 +478,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                     if ($showTarikTunai) {
                     ?>
                         if (data.total >=
-                            <?= $tarikTunaiBelanjaMin ?>
+                            <?php echo $tarikTunaiBelanjaMin ?>
                         ) {
                             $(".input-tarik-tunai").show(500);
                         } else {
@@ -637,6 +654,43 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             });
             return false;
         }
+        <?php /* Jika ditemukan akun E2PAY QRIS, request qr-code, tampilkan dan tunggu hingga dibayar atau dicancel */ ?>
+        console.log("ACCOUNT: " + JSON.stringify(bayar));
+        $.ajax({
+            type: 'POST',
+            url: "<?php echo $this->createUrl('onlyifqris', ['id' => $model->id]) ?>",
+            data: {
+                'bayar': JSON.stringify(bayar)
+            },
+            success: function(data) {
+                if (data.qris) {
+                    // console.log(data.qrcode + ' === ' + data.jumlah)
+                    $("#qrcode-wrapper").foundation('reveal', 'open');
+                    $("#qrcode-jml").html('<h1>' + data.jumlah + '</h1>');
+                    $("#ket").text("Scan QR untuk bayar");
+                    $("#qrcode").css('background', '#fff').html('');
+                    qr = new QRCode(document.getElementById("qrcode"), {
+                        text: data.qrcode,
+                        width: 300,
+                        height: 300,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+
+                    // Flag to indicate we're waiting for QRIS payment
+                    window.qrisWaiting = true;
+                    window.dataBayar = bayar; // store for later
+                } else {
+                    lanjutSimpan(bayar)
+                }
+            }
+        })
+
+        return false;
+    });
+
+    function lanjutSimpan(bayar) {
         $(".uang-dibayar").unbind('keyup')
         $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
         var dataUrl =
@@ -645,12 +699,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         var dataKirim = {
             'pos[account]': $("#account").val(),
             'pos[jenistr]': $("#jenisbayar").val(),
-            'pos[uang]': $("#uang-dibayar").val(),
+            'pos[uang]': $("#uang-dibayar").length ? $("#uang-dibayar").val() : 0,
             'pos[bayar]': bayar,
-            'pos[infaq]': $("#infaq").val(),
-            'pos[diskon-nota]': $("#diskon-nota").val(),
-            'pos[tarik-tunai]': $("#tarik-tunai").val(),
-            'pos[tarik-tunai-acc]': $("#tarik-tunai").parent().parent().find(".account").val(),
+            'pos[infaq]': $("#infaq").length ? $("#infaq").val() : 0,
+            'pos[diskon-nota]': $("#diskon-nota").length ? $("#diskon-nota").val() : 0,
+            'pos[tarik-tunai]': $("#tarik-tunai").length ? $("#tarik-tunai").val() : 0,
+            'pos[tarik-tunai-acc]': $("#tarik-tunai").parent().parent().find(".account").length ? $("#tarik-tunai").parent().parent().find(".account").val() : 2,
             'pos[koin-mol]': cashBack,
         };
         console.log(dataUrl);
@@ -679,8 +733,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                 $("#scan").focus();
             }
         });
-        return false;
-    });
+    }
 
     $("#tombol-batal").click(function() {
         $('#batal-form').one('opened.fndtn.reveal', function() {
@@ -772,13 +825,103 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
     });
     */
     ?>
+
+    let websocket;
+    const url = 'ws://<?php echo $ws['ip'] ?>:<?php echo $ws['port'] ?>';
+
+    function connectWebSocket() {
+        websocket = new WebSocket(url);
+
+        websocket.onopen = function() {
+            $(".sinyal").removeClass("mati error").addClass("nyala");
+            console.log('WebSocket connection established.');
+        };
+
+        websocket.onclose = function(event) {
+            $(".sinyal").removeClass("nyala error").addClass("mati");
+            console.log('WebSocket connection closed.');
+            $(".proc").fadeOut().promise().done(function() {
+                $(".checkout").hide();
+                $(".idle").fadeIn();
+            });
+
+            // Try to reconnect after a delay
+            setTimeout(function() {
+                console.log('Attempting to reconnect...');
+                connectWebSocket();
+            }, 3000);
+        };
+
+        websocket.onerror = function(error) {
+            $(".sinyal").removeClass("nyala mati").addClass("error");
+            console.error('WebSocket error:', error);
+        };
+
+        // Handle incoming messages
+        websocket.onmessage = function(event) {
+            showMessage(event.data);
+        };
+    }
+
+    function showMessage(pesan) {
+        var output = $("#wsoutput");
+        output.html(pesan + "<br />");
+        try {
+            var parsed = JSON.parse(pesan);
+            // output.html(pesan);
+            parseMessage(parsed);
+
+        } catch (e) {
+            console.log("Message not JSON")
+            output.html('Kemungkinan Error: ' + e);
+        }
+    }
+
+    function isValidUser(id) {
+        return id == <?php echo Yii::app()->user->id ?>;
+    }
+
+    function parseMessage(data) {
+        // console.log('User: ' + parsed.uId)
+        if (data.tipe == "<?php echo AhadPosWsClient::TIPE_QRIS_PAID ?>") {
+            console.log(data);
+            if (window.qrisWaiting) {
+                if (data.penjualanId == <?php echo $model->id ?>) {
+                    // $("#qrcode").html("Pembayaran diterima");
+                    window.qrisWaiting = false;
+                    $("#qrcode").slideUp(1000, function() {
+                        $(this)
+                            .css("background", "transparent")
+                            .html('<i class="fa fa-check-circle check-animate" aria-hidden="true"></i>')
+                            .slideDown();
+                        $("#ket").text("Pembayaran diterima");
+                        setTimeout(function() {
+                            lanjutSimpan(window.dataBayar);
+                        }, 1000);
+                    });
+                } else {
+                    <?php // $("#qrcode").html("Pembayaran diterima untuk" + data.penjualanId);
+                    ?>
+                }
+            }
+
+        }
+    }
+    $(document).on('close.fndtn.reveal', '[data-reveal]', function() {
+        alert('closed!!!');
+    });
+
+    // $(document).on('close.fndtn.reveal', '#qrcode-wrapper', function() {
+    //     console.log("modal closed");
+    //     var modal = $(this);
+    // });
 </script>
 <?php
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
         'itemOptions'    => ['class' => 'has-form hide-for-small-only'],
-        'label' => false,
+        'label'          => false,
         'items'          => [
             ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class'     => 'button',
@@ -793,7 +936,7 @@ $this->menu = [
     ],
     [
         'itemOptions'    => ['class' => 'has-form show-for-small-only'],
-        'label' => false,
+        'label'          => false,
         'items'          => [
             ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class' => 'button',
@@ -805,3 +948,4 @@ $this->menu = [
         'submenuOptions' => ['class' => 'button-group'],
     ],
 ];
+?>

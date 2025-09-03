@@ -4,19 +4,26 @@
 // $this->breadcrumbs = array(
 //     'Customerdisplay',
 // );
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/qrcode.min.js', CClientScript::POS_HEAD);
+
 $logoSrc = Yii::app()->theme->baseUrl . '/img/logo.png';
 if (!empty($logo)) {
     $logoSrc = $logo;
 }
 ?>
-
+<div id="qrcode-wrapper" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <div id="qrislogo"><?php echo file_get_contents(Yii::getPathOfAlias('webroot') . '/assets/qrislogo.svg'); ?></div>
+    <div id="qrcode-jml"></div>
+    <div id="qrcode"></div>
+    <h4 id="ket">Scan QR untuk bayar</h4>
+</div>
 <div class="row" style="height: 25vh">
     <div class="medium-8 columns box kiri_atas">
         <div id="welcome" class="idle">
             <a href="<?php echo Yii::app()->baseUrl; ?>">
-                <img src="<?= $logoSrc ?>" alt="logo" />
+                <img src="<?php echo $logoSrc ?>" alt="logo" />
             </a>
-            <h1>Selamat datang di <?= $namaToko ?></h1>
+            <h1>Selamat datang di <?php echo $namaToko ?></h1>
         </div>
         <div id="last_scan" class="proc">
             <p>Nama Barang</p>
@@ -27,18 +34,18 @@ if (!empty($logo)) {
     <div class="medium-4 columns box kanan_atas">
         <div id="info_kasir" class="idle">
             <p>Anda sedang dilayani oleh</p>
-            <p><?= "{$user['namaLengkap']}" //[#{$user['id']}]"
+            <p><?php echo "{$user['namaLengkap']}" //[#{$user['id']}]"
                 ?></p>
-            <p>Selamat berbelanja di <?= $namaToko ?></p>
+            <p>Selamat berbelanja di <?php echo $namaToko ?></p>
         </div>
         <div id="info_cust" class="proc">
-            <img src="<?= $logoSrc ?>" alt="logo" />
+            <img src="<?php echo $logoSrc ?>" alt="logo" />
             <p>Ahlan wa Sahlan!</p>
             <p>Silahkan input nomor</p>
             <p>member anda</p>
         </div>
         <div id="info_checkout" class="checkout">
-            <img src="<?= $logoSrc ?>" alt="logo" />
+            <img src="<?php echo $logoSrc ?>" alt="logo" />
             <p>Terima kasih!</p>
         </div>
     </div>
@@ -73,19 +80,19 @@ if (!empty($logo)) {
                 <p>Jadwal Sholat Hari Ini</p>
                 <?php
                 $waktu    = $jadwal['timings'];
-                $wSubuh       = substr($waktu['Fajr'], 0, 5);
-                $wSyuruq      = substr($waktu['Sunrise'], 0, 5);
-                $wZhuhur      = substr($waktu['Dhuhr'], 0, 5);
-                $wAshar       = substr($waktu['Asr'], 0, 5);
-                $wMaghrib     = substr($waktu['Maghrib'], 0, 5);
-                $wIsya        = substr($waktu['Isha'], 0, 5);
+                $wSubuh           = substr($waktu['Fajr'], 0, 5);
+                $wSyuruq          = substr($waktu['Sunrise'], 0, 5);
+                $wZhuhur          = substr($waktu['Dhuhr'], 0, 5);
+                $wAshar           = substr($waktu['Asr'], 0, 5);
+                $wMaghrib         = substr($waktu['Maghrib'], 0, 5);
+                $wIsya            = substr($waktu['Isha'], 0, 5);
                 ?>
-                <span class="nama">Subuh / الفجر</span><span class="waktu"><?= $wSubuh ?></span>
-                <span class="nama">Syuruq / الشروق</span><span class="waktu"><?= $wSyuruq ?></span>
-                <span class="nama">Zuhur / الظُهر</span><span class="waktu"><?= $wZhuhur ?></span>
-                <span class="nama">'Ashar / العصر</span><span class="waktu"><?= $wAshar ?></span>
-                <span class="nama">Maghrib / المغرب</span><span class="waktu"><?= $wMaghrib ?></span>
-                <span class="nama">Isya' / العِشاء</span><span class="waktu"><?= $wIsya ?></span>
+                <span class="nama">Subuh / الفجر</span><span class="waktu"><?php echo $wSubuh ?></span>
+                <span class="nama">Syuruq / الشروق</span><span class="waktu"><?php echo $wSyuruq ?></span>
+                <span class="nama">Zuhur / الظُهر</span><span class="waktu"><?php echo $wZhuhur ?></span>
+                <span class="nama">'Ashar / العصر</span><span class="waktu"><?php echo $wAshar ?></span>
+                <span class="nama">Maghrib / المغرب</span><span class="waktu"><?php echo $wMaghrib ?></span>
+                <span class="nama">Isya' / العِشاء</span><span class="waktu"><?php echo $wIsya ?></span>
             </jadwal_sholat>
         </div>
         <div id="detail_tr" class="proc">
@@ -121,7 +128,7 @@ if (!empty($logo)) {
     </div>
 </div>
 <script>
-    var brosur = <?= $brosurs ?>;
+    var brosur = <?php echo $brosurs ?>;
     var curBrosur = 0;
     var brosurIntervalID;
 
@@ -195,12 +202,12 @@ if (!empty($logo)) {
         $("#time_board>#tanggal").html(currentDateString);
 
         let waktuSholat = {
-            'Subuh': '<?= $wSubuh ?>',
-            'Syuruq': '<?= $wSyuruq ?>',
-            'Zhuhur': '<?= $wZhuhur ?>',
-            'Ashar': '<?= $wAshar ?>',
-            'Maghrib': '<?= $wMaghrib ?>',
-            'Isya': '<?= $wIsya ?>'
+            'Subuh': '<?php echo $wSubuh ?>',
+            'Syuruq': '<?php echo $wSyuruq ?>',
+            'Zhuhur': '<?php echo $wZhuhur ?>',
+            'Ashar': '<?php echo $wAshar ?>',
+            'Maghrib': '<?php echo $wMaghrib ?>',
+            'Isya': '<?php echo $wIsya ?>'
         };
         let saatIni = currentHours + ':' + currentMinutes
         let waktuSelanjutnya = null
@@ -216,7 +223,7 @@ if (!empty($logo)) {
         var selisih = null
         if (waktuSelanjutnya == null) {
             // Berarti sekarang sudah lewat Isya'
-            waktuSelanjutnya = '<?= $wSubuh ?>'
+            waktuSelanjutnya = '<?php echo $wSubuh ?>'
             sholatSelanjutnya = 'Subuh'
             selisih = minsToStr(strToMins('24:00') - strToMins(saatIni) + strToMins(waktuSelanjutnya))
         } else {
@@ -249,30 +256,33 @@ if (!empty($logo)) {
             parseMessage(parsed);
 
         } catch (e) {
-            console.log("Message not JSON")
+            console.log("Message not JSON: " + pesan)
             output.html('Kemungkinan Error: ' + e);
         }
     }
 
     function isValidUser(id) {
-        return id == <?= $user['id'] ?>;
+        return id == <?php echo $user['id'] ?>;
     }
 
     function parseMessage(data) {
         // console.log('User: ' + parsed.uId)
-        if (data.tipe == "<?= AhadPosWsClient::TIPE_BROSUR_UPDATE ?>") {
+        if (data.tipe == "<?php echo AhadPosWsClient::TIPE_BROSUR_UPDATE ?>") {
             // console.log(data.imgs);
             window.brosur = data.imgs;
             changeBrosur();
         } else
-        if (data.tipe == "<?= AhadPosWsClient::TIPE_LOGO_UPDATE ?>") {
+        if (data.tipe == "<?php echo AhadPosWsClient::TIPE_LOGO_UPDATE ?>") {
             location.reload(true);
         } else {
             var userId = data.uId;
             if (isValidUser(userId)) {
                 // console.log('User accepted!');
-                if (data.tipe == "<?= AhadPosWsClient::TIPE_WINDOW_REFRESH ?>") {
+                if (data.tipe == "<?php echo AhadPosWsClient::TIPE_WINDOW_REFRESH ?>") {
                     location.reload(true);
+                }
+                if (window.qrisWaiting != true) {
+                    $("#qrcode-wrapper").foundation('reveal', 'close');
                 }
                 placeVar(data)
             }
@@ -280,7 +290,7 @@ if (!empty($logo)) {
     }
 
     function placeVar(data) {
-        if (data.tipe == "<?= AhadPosWsClient::TIPE_PROCESS ?>") {
+        if (data.tipe == "<?php echo AhadPosWsClient::TIPE_PROCESS ?>") {
             // console.log("Tipe Process");
             $(".checkout").hide();
             $(".idle").fadeOut().promise().done(function() {
@@ -306,19 +316,44 @@ if (!empty($logo)) {
                     injectCustomerUmum();
                 }
             }
-        } else if (data.tipe == "<?= AhadPosWsClient::TIPE_IDLE ?>") {
+        } else if (data.tipe == "<?php echo AhadPosWsClient::TIPE_IDLE ?>") {
             // console.log("Tipe Idle")
             $(".checkout").hide();
             $(".proc").fadeOut().promise().done(function() {
                 $(".idle").fadeIn();
             });
-        } else if (data.tipe == "<?= AhadPosWsClient::TIPE_CHECKOUT ?>") {
+        } else if (data.tipe == "<?php echo AhadPosWsClient::TIPE_CHECKOUT ?>") {
             // console.log("Tipe Checkout")
             $(".idle").hide();
             $(".proc").fadeOut().promise().done(function() {
                 $(".checkout").fadeIn();
             });
             injectPayment(data)
+        } else if (data.tipe == "<?php echo AhadPosWsClient::TIPE_QRIS_SHOW ?>") {
+
+            $("#qrcode-wrapper").foundation('reveal', 'open');
+            $("#qrcode-jml").html('<h1>' + data.jumlah + '</h1>');
+            $("#ket").text("Scan QR untuk bayar");
+            $("#qrcode").css('background', '#fff').html('');
+            qr = new QRCode(document.getElementById("qrcode"), {
+                text: data.qrcode,
+                width: 300,
+                height: 300,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+            // Flag to indicate we're waiting for QRIS payment
+            window.qrisWaiting = true;
+        } else if (data.tipe == "<?php echo AhadPosWsClient::TIPE_QRIS_PAID ?>") {
+            window.qrisWaiting = false;
+            $("#qrcode").slideUp(1000, function() {
+                $(this)
+                    .css("background", "transparent")
+                    .html('<i class="fa fa-check-circle check-animate" aria-hidden="true"></i>')
+                    .slideDown();
+                $("#ket").text("Pembayaran diterima");
+            });
         }
     }
 
@@ -418,7 +453,7 @@ if (!empty($logo)) {
     }
 
     let websocket;
-    const url = 'ws://<?= $ws['ip'] ?>:<?= $ws['port'] ?>';
+    const url = 'ws://<?php echo $ws['ip'] ?>:<?php echo $ws['port'] ?>';
 
     function connectWebSocket() {
         websocket = new WebSocket(url);

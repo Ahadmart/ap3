@@ -23,7 +23,7 @@ html {
 }
 body {
     color: #222222;
-    background: #dddcd6 url(../img/bg-b.jpg) repeat-y center fixed;
+    background: #dddcd6 url(../img/bg-b.jpg) repeat repeat center fixed;
     padding: 0;
     margin: 0;
     font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
@@ -89,7 +89,9 @@ a {
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
+    text-shadow:
+        rgba(0, 0, 0, 0.2) 2px 6px 5px,
+        rgba(255, 255, 255, 0.4) 0 -4px 30px;
 }
 #total-belanja {
     font-size: 3.5rem;
@@ -97,7 +99,9 @@ a {
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
+    text-shadow:
+        rgba(0, 0, 0, 0.2) 2px 6px 5px,
+        rgba(255, 255, 255, 0.4) 0 -4px 30px;
 }
 #surcharge {
     font-size: 2rem;
@@ -113,7 +117,9 @@ a {
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
+    text-shadow:
+        rgba(0, 0, 0, 0.2) 2px 6px 5px,
+        rgba(255, 255, 255, 0.4) 0 -4px 30px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     margin-bottom: 15px;
     &.negatif {
@@ -185,7 +191,9 @@ a {
     font-family: "Open Sans";
     font-size: 0.875rem;
     font-weight: 700;
-    text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
+    text-shadow:
+        2px 6px 5px rgba(0, 0, 0, 0.2),
+        0px -4px 30px rgba(255, 255, 255, 0.4);
     &.barcode {
         font-size: 0.7rem;
         font-weight: 700;
@@ -447,4 +455,114 @@ aside > .row {
 a.prefix {
     color: #afd8f8;
     border-color: #ffffff36;
+}
+
+.network_status {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    .sinyal {
+        &.mati {
+            margin: 0 auto;
+            width: 12px;
+            height: 12px;
+            background-color: #f00;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #441313 0 -1px 3px,
+                rgba(255, 0, 0, 0.5) 0 2px 12px;
+            animation: merahKedip 0.5s infinite;
+        }
+        &.nyala {
+            margin: 0 auto;
+            width: 12px;
+            height: 12px;
+            background-color: #abff00;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #304701 0 -1px 3px,
+                #89ff00 0 2px 12px;
+        }
+        &.error {
+            margin: 0 auto;
+            width: 12px;
+            height: 12px;
+            background-color: #24e0ff;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #006 0 -1px 3px,
+                #3f8cff 0 2px 14px;
+        }
+    }
+}
+@keyframes merahKedip {
+    from {
+        background-color: #f00;
+    }
+    50% {
+        background-color: #a00;
+        box-shadow:
+            rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
+            inset #441313 0 -1px 9px,
+            rgba(255, 0, 0, 0.5) 0 2px 0;
+    }
+    to {
+        background-color: #f00;
+    }
+}
+
+.check-animate {
+    color: $hijau;
+    font-size: 80px !important;
+    animation: pop 0.6s ease-out forwards;
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#qrcode-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border-top: 2px solid #ffffff75;
+    border-left: 2px solid #ffffff75;
+    box-shadow: 5px 5px 12px #00000035;
+    border-radius: 15px;
+    overflow: hidden;
+    svg {
+        height: 5rem;
+    }
+    & > div {
+        text-align: center;
+    }
+    #qrislogo {
+        color: $biru;
+    }
+    #qrcode {
+        display: inline-block;
+        background-color: #fff;
+        padding: 10px;
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    }
 }

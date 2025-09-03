@@ -3,6 +3,13 @@
     Author     : abumuhammad
 */
 
+$primary-color: #ff5722;
+$secondary-color: #37474f;
+$alert-color: #d32f2f;
+$success-color: #11a861;
+$warning-color: #ffcf63;
+$info-color: #455a64;
+
 h1 {
     font-size: 2rem;
     color: #fff;
@@ -429,5 +436,59 @@ h1 {
         width: auto;
         height: auto;
         margin: auto;
+    }
+}
+
+.check-animate {
+    color: $success-color;
+    font-size: 80px !important;
+    animation: pop 0.6s ease-out forwards;
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#qrcode-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: transparent;
+    backdrop-filter: blur(7px);
+    h1, h4{
+        color: #fff;
+    }
+    svg {
+        height: 5rem;
+    }
+    & > div {
+        text-align: center;
+    }
+    #qrislogo {
+        color: $primary-color;
+        filter: drop-shadow(2px 6px 5px rgba(0, 0, 0, 0.2)) drop-shadow(0 -4px 30px rgba(255, 255, 255, 0.4));
+    }
+    #qrcode {
+        display: inline-block;
+        background-color: #fff;
+        padding: 10px;
+        img {
+            max-width: 100%;
+            height: auto;
+        }
     }
 }
