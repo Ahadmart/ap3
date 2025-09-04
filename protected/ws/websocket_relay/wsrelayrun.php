@@ -18,9 +18,9 @@ $dotenv->load();
 $sentralUrl = $_ENV['WS_SERVER_CENTRAL_URL'];
 $tokoUrl = $_ENV['WS_SERVER_STORE_URL'];
 
-echo 'Koneksi dari cabang: ' . $cabang . PHP_EOL;
-echo 'Ke sentral: ' . $sentralUrl . PHP_EOL;
-echo 'Ke toko: ' . $tokoUrl . PHP_EOL;
+echo "Koneksi dari cabang: {$cabang}\n";
+echo "Ke sentral: {$sentralUrl}\n";
+echo "Ke toko: {$tokoUrl}\n";
 
 
 $relay = new WebSocketRelay(
