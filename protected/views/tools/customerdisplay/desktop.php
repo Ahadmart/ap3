@@ -154,9 +154,9 @@ if (!empty($logo)) {
             $("#brosur-container>img").attr('src', '');
         }
         if (jmlBrosur > 0) {
-            $("#brosur-container img").attr('src', brosur[curBrosur]);
+            $("#brosur-container>img").attr('src', brosur[curBrosur]);
             brosurIntervalID = setInterval(function() {
-                $("#brosur-container img").attr('src', brosur[curBrosur]);
+                $("#brosur-container>img").attr('src', brosur[curBrosur]);
                 curBrosur++
                 if (curBrosur >= jmlBrosur) {
                     curBrosur = 0
@@ -256,8 +256,10 @@ if (!empty($logo)) {
             parseMessage(parsed);
 
         } catch (e) {
-            console.log("Message not JSON: " + pesan)
-            output.html('Kemungkinan Error: ' + e);
+            console.log("Error: " + e)
+            console.log("Pesan: " + pesan)
+            // console.log("Parsed: " + parsed)
+            // output.html('Kemungkinan Error: ' + e);
         }
     }
 
@@ -268,7 +270,6 @@ if (!empty($logo)) {
     function parseMessage(data) {
         // console.log('User: ' + parsed.uId)
         if (data.tipe == "<?php echo AhadPosWsClient::TIPE_BROSUR_UPDATE ?>") {
-            // console.log(data.imgs);
             window.brosur = data.imgs;
             changeBrosur();
         } else
@@ -280,9 +281,6 @@ if (!empty($logo)) {
                 // console.log('User accepted!');
                 if (data.tipe == "<?php echo AhadPosWsClient::TIPE_WINDOW_REFRESH ?>") {
                     location.reload(true);
-                }
-                if (window.qrisWaiting != true) {
-                    $("#qrcode-wrapper").foundation('reveal', 'close');
                 }
                 placeVar(data)
             }
@@ -318,6 +316,8 @@ if (!empty($logo)) {
             }
         } else if (data.tipe == "<?php echo AhadPosWsClient::TIPE_IDLE ?>") {
             // console.log("Tipe Idle")
+            // console.log('Qris dialog close');
+            $('#qrcode-wrapper').foundation('reveal', 'close');
             $(".checkout").hide();
             $(".proc").fadeOut().promise().done(function() {
                 $(".idle").fadeIn();
@@ -331,18 +331,25 @@ if (!empty($logo)) {
             injectPayment(data)
         } else if (data.tipe == "<?php echo AhadPosWsClient::TIPE_QRIS_SHOW ?>") {
 
-            $("#qrcode-wrapper").foundation('reveal', 'open');
-            $("#qrcode-jml").html('<h1>' + data.jumlah + '</h1>');
-            $("#ket").text("Scan QR untuk bayar");
-            $("#qrcode").css('background', '#fff').html('');
-            qr = new QRCode(document.getElementById("qrcode"), {
-                text: data.qrcode,
-                width: 300,
-                height: 300,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
+            // console.log('Qris dialog close');
+            $('#qrcode-wrapper').foundation('reveal', 'close');
+            // console.log('jumlah: ' + data.jumlah)
+            setTimeout(function() {
+                // console.log('Qris dialog open');
+                $('#qrcode-wrapper').foundation('reveal', 'open');
+                $("#qrcode-jml").html('<h1>' + data.jumlah + '</h1>');
+                $("#ket").text("Scan QR untuk bayar");
+                $("#qrcode").css('background', '#fff').empty();
+                qr = new QRCode(document.getElementById("qrcode"), {
+                    text: data.qrcode,
+                    width: 300,
+                    height: 300,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.M
+                });
+
+            }, 500)
             // Flag to indicate we're waiting for QRIS payment
             window.qrisWaiting = true;
         } else if (data.tipe == "<?php echo AhadPosWsClient::TIPE_QRIS_PAID ?>") {
