@@ -1,6 +1,8 @@
 [Unit]
-Description=Ahadpos Customer Display WebSocket Server
-After=network.target
+Description=Ahadpos WebSocket Relay Service
+Requires=ahadpos-websocket.service
+After=ahadpos-websocket.service network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
