@@ -681,6 +681,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/qrcode.m
             },
             success: function(data) {
                 if (data.qris) {
+                    if (data.online){
                     // console.log(data.qrcode + ' === ' + data.jumlah)
                     $("#qrcode-wrapper").foundation('reveal', 'open');
                     $("#qrcode-jml").html('<h1>' + data.jumlah + '</h1>');
@@ -698,6 +699,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/qrcode.m
                     // Flag to indicate we're waiting for QRIS payment
                     window.qrisWaiting = true;
                     window.dataBayar = bayar; // store for later
+                } else {
+                    $("#qrcode-wrapper").foundation('reveal', 'open');
+                    $("#qrcode-jml").html('<h1>Offline</h1>');
+                    $("#ket").text("QRIS sementara belum dapat dipakai");
+                    // $("#qrcode").css('background', '#fff').html('');
+                }
                 } else {
                     lanjutSimpan(bayar)
                 }

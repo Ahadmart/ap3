@@ -1326,42 +1326,64 @@ class PosController extends Controller
                 }
             }
             if ($pakaiQris) {
-                $model      = $this->loadModel($id);
-                $configKode = Config::model()->find('nama=:nama', ['nama' => 'toko.kode']);
-                $cabang     = $configKode->nilai;
-                $ref        = $cabang . '-' . Yii::app()->user->id . '-' . $id;
+                require __DIR__ . '/../vendor/autoload.php';
+                $dotenv = Dotenv\Dotenv::createImmutable(Yii::getPathOfAlias('application'));
+                $dotenv->load();
+                $wsRelayStatusFile = $_ENV['WS_RELAY_STATUS_FILE'];
 
-                $profil           = Profil::model()->find('id=:id', ['id' => $model->profil_id]);
-                $customer['nama'] = $profil->nama;
+                $status = [];
+                $online = false;
 
-                $memberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
-                if (!is_null($memberOL)) {
-                    $clientAPI           = new AhadMembershipClient();
-                    $r                   = json_decode($clientAPI->view($memberOL->nomor_member));
-                    $customer['nama']    = $r->data->profil->namaLengkap;
-                    $customer['contact'] = $r->data->profil->kodeNegara . $r->data->profil->nomorTelp;
+                if (file_exists($wsRelayStatusFile)) {
+                    $status = json_decode(file_get_contents($wsRelayStatusFile), true);
+                    // Yii::log(print_r($status, true));
+                } else {
+                    Yii::log("File {$$wsRelayStatusFile} not exists");
                 }
-                $e2PayRequest = new E2PayRequest($ref, $jumlahQris, $customer);
-                $r            = json_decode($e2PayRequest->bayar());
-                Yii::log(var_export($r, true));
 
-                $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
-                $wsClientEnable = $config->nilai;
-                if ($wsClientEnable) {
-                    $clientWS = new AhadPosWsClient();
-                    $data     = [
-                        'tipe'   => AhadPosWsClient::TIPE_QRIS_SHOW,
-                        'qrcode' => $r->TxnData->RequestData->QRCode,
-                        'jumlah' => number_format($r->TxnAmount, 0, ',', '.')
-                    ];
-                    $clientWS->sendJsonEncoded($data);
+                if (!empty($status) && $status['source']) {
+                    // ws Relay connected to source
+                    $online = true;
+                    $model      = $this->loadModel($id);
+                    $configKode = Config::model()->find('nama=:nama', ['nama' => 'toko.kode']);
+                    $cabang     = $configKode->nilai;
+                    $ref        = $cabang . '-' . Yii::app()->user->id . '-' . $id;
+
+                    $profil           = Profil::model()->find('id=:id', ['id' => $model->profil_id]);
+                    $customer['nama'] = $profil->nama;
+
+                    $memberOL = PenjualanMemberOnline::model()->find('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+                    if (!is_null($memberOL)) {
+                        $clientAPI           = new AhadMembershipClient();
+                        $r                   = json_decode($clientAPI->view($memberOL->nomor_member));
+                        $customer['nama']    = $r->data->profil->namaLengkap;
+                        $customer['contact'] = $r->data->profil->kodeNegara . $r->data->profil->nomorTelp;
+                    }
+                    $e2PayRequest = new E2PayRequest($ref, $jumlahQris, $customer);
+                    $r            = json_decode($e2PayRequest->bayar());
+                    Yii::log(var_export($r, true));
+
+                    $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
+                    $wsClientEnable = $config->nilai;
+                    if ($wsClientEnable) {
+                        $clientWS = new AhadPosWsClient();
+                        $data     = [
+                            'tipe'   => AhadPosWsClient::TIPE_QRIS_SHOW,
+                            'qrcode' => $r->TxnData->RequestData->QRCode,
+                            'jumlah' => number_format($r->TxnAmount, 0, ',', '.')
+                        ];
+                        $clientWS->sendJsonEncoded($data);
+                    }
+                } else {
+                    // ws Relay not connected to source
                 }
             }
         }
         $this->renderJSON([
             'qris'   => $pakaiQris,
-            'qrcode' => $pakaiQris ? $r->TxnData->RequestData->QRCode : '',
-            'jumlah' => $pakaiQris ? number_format($r->TxnAmount, 0, ',', '.') : '',
+            'online' => $online,
+            'qrcode' => $pakaiQris ? ($r->TxnData->RequestData->QRCode ?? 0) : '',
+            'jumlah' => $pakaiQris ? number_format($r->TxnAmount ?? 0, 0, ',', '.') : '',
         ]);
     }
 }
