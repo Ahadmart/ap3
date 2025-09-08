@@ -1381,7 +1381,7 @@ class PosController extends Controller
         }
         $this->renderJSON([
             'qris'   => $pakaiQris,
-            'online' => $online,
+            'online' => $online ?? false,
             'qrcode' => $pakaiQris ? ($r->TxnData->RequestData->QRCode ?? 0) : '',
             'jumlah' => $pakaiQris ? number_format($r->TxnAmount ?? 0, 0, ',', '.') : '',
         ]);
