@@ -1,0 +1,233 @@
+/* 
+    Created on : Jan 3, 2014, 10:32:29 AM
+    Author     : abumuhammad
+*/
+
+$biru: #0b62a4;
+$biru-muda: #7A92A3;
+$hijau: #4da74d;
+$toska: #afd8f8;
+$oranye: #edc240;
+$merah: #cb4b4b;
+$violet: #9440ed;
+
+@mixin animasi($param){
+    -webkit-animation: $param;
+    -moz-animation: $param;
+    -ms-animation: $param;
+    animation: $param;
+}
+body{
+    color: #eee;
+    background: #dddcd6 url(../img/bg.png);
+    padding: 0;
+    margin: 0;
+    font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1;
+    position: relative;
+    cursor: default;
+}
+
+.delete{
+    color: $merah;
+}
+
+// Tambahin garis di bawah 
+nav.top-bar{
+    box-shadow: 1px 1px #4e4e4e;
+}
+
+// Font Override
+nav .top-bar-section ul li > a{
+    font-family: "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;	
+}
+h1, h2, h3, h4, h5, h6{
+    font-family: "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;		
+}
+// eo font override
+select{
+    color: rgba(0, 0, 0, 0.74902);
+}
+option{
+    &.option-head{
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+}
+/*------------------*/
+
+#content{
+    margin: 0px 0px 30px;
+    padding-top: 15px;
+}
+.getar{
+    @include animasi(tada 1s infinite);
+}
+
+.tabel-index{
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0px;
+    input, select{
+        margin-bottom: 0px;
+    }
+    th{
+        //text-align: center;
+    }
+    td{
+        font-size: 0.825em;
+    }
+}
+input, select {
+    &.error{
+        margin-bottom: 0px;
+    }
+}
+
+nav{
+    .title-area{
+        img{
+            margin-top: -5px;
+        }
+    }
+}
+
+.summary{
+    font-weight: 300;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+span.required{
+    color: $merah;
+}
+
+li.active>a{
+    background-color: $biru;
+    color: #fff;
+}
+
+.row{
+    max-width: 100%;
+}
+.block{
+    border: 1px solid #3e4144;
+    margin-bottom: 10px;
+    background-color: #fff;
+}
+.block-header{
+    overflow: visible;
+    border-bottom: 1px solid #222;
+    ul{
+        &.title-area{
+            width: auto;
+            float: left;
+        }
+        &.right{		
+            width: auto;
+        }
+    }
+    li{
+        &.name>h1{
+            color: #fff;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+    }
+    .has-form{
+        padding: 0px 15px;
+    }
+    .button{
+        font-size: 0.875rem;
+        position: relative;
+        top: 7px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+.block-content	{
+    padding: 15px 15px  0;   
+    background-color: #373b3e;
+    border-top: 1px solid #515356;
+    &>table{
+        margin: 0px;
+        tr td{
+            font-size: 0.75rem;
+        }
+    }
+    div.panel{
+        // padding override
+        //padding: 0.75rem;
+        padding-bottom: 0;
+    }
+    .prefix .fa-2x{
+        padding-top:4px;
+    }
+}
+
+// Add box shadow to panel
+.panel{
+    box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(0, 0, 0, 0.15), inset 1px 0 2px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.button.tiny.bigfont{
+    font-size: 0.875rem;
+}
+
+div.error{
+    display: block;
+    padding: 0.33333rem 0.5rem 0.5rem;
+    margin-top: -1px;
+    margin-bottom: 0.88889rem;
+    font-size: 0.66667rem;
+    font-weight: normal;
+    font-style: italic;
+    background: #f04124;
+    color: white;
+}
+
+#input-pemb-detail{
+    input{
+        text-align: right;
+    }
+}
+
+th.rata-kanan, td.rata-kanan, .rata-kanan{
+    text-align: right;
+}
+
+/* Style untuk accesskey */
+.ak{
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+tr{
+    transition: background-color 0.5s ease;
+    &.pilih{
+        background-color: $hijau !important;
+    }
+}
+
+.total{
+    float: right;
+    /*font-weight: bold;*/
+    /*font-size: 1.125rem;*/
+}
+
+footer{
+    text-align: right;
+    background-color: #333;
+    color: white;
+    line-height: 20px;
+    font-size: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding-right: 15px;
+    z-index: 3;
+}
+
