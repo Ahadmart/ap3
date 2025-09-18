@@ -16,22 +16,50 @@
     <div class="medium-4 large-3 columns">
         <form id="form-scan">
             <div class="row collapse">
-                <div class="small-3 columns">
-                    <?php
-                    /* https://github.com/zxing/zxing/wiki/Scanning-From-Web-Pages */
-                    /* http://stackoverflow.com/questions/26356626/using-zxing-barcode-scanner-within-a-web-page */
-                    /*
+                <?php
+                if (!is_null($model->rak_id)) {
+                ?>
+                    <div class="small-2 columns">
+                        <?php
+                        /* https://github.com/zxing/zxing/wiki/Scanning-From-Web-Pages */
+                        /* http://stackoverflow.com/questions/26356626/using-zxing-barcode-scanner-within-a-web-page */
+                        /*
                       <a class="prefix secondary button" onclick="getZxing()"><i class="fa fa-barcode fa-2x"></i></a>
                      */
-                    ?>
-                    <a class="prefix secondary button" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('ubah', ['id' => $model->id, 'barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a>
-                </div>
-                <div class="small-6 columns">
-                    <input id="scan" type="text" placeholder="Scan [B]arcode" accesskey="b" autofocus="autofocus" autocomplete="off" />
-                </div>
-                <div class="small-3 columns">
-                    <a id="tombol-ok-scan" href="" class="button postfix">OK</a>
-                </div>
+                        ?>
+                        <a class="prefix secondary button" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('ubah', ['id' => $model->id, 'barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a>
+                    </div>
+                    <div class="small-6 columns">
+                        <input id="scan" type="text" placeholder="Scan [B]arcode" accesskey="b" autofocus="autofocus" autocomplete="off" />
+                    </div>
+                    <div class="small-2 columns">
+                        <a id="tombol-ok-scan" href="" class="button postfix">OK</a>
+                    </div>
+                    <div class="small-2 columns">
+                        <a class="postfix" id="tombol-gensampel" href=""><i class="fa fa-random"></i></a>
+                    </div>
+                <?php
+                } else {
+                ?>
+                    <div class="small-3 columns">
+                        <?php
+                        /* https://github.com/zxing/zxing/wiki/Scanning-From-Web-Pages */
+                        /* http://stackoverflow.com/questions/26356626/using-zxing-barcode-scanner-within-a-web-page */
+                        /*
+                      <a class="prefix secondary button" onclick="getZxing()"><i class="fa fa-barcode fa-2x"></i></a>
+                     */
+                        ?>
+                        <a class="prefix secondary button" href="zxing://scan/?ret=<?= $this->createAbsoluteUrl('ubah', ['id' => $model->id, 'barcodescan' => '{CODE}']) ?>"><i class="fa fa-barcode fa-2x"></i></a>
+                    </div>
+                    <div class="small-6 columns">
+                        <input id="scan" type="text" placeholder="Scan [B]arcode" accesskey="b" autofocus="autofocus" autocomplete="off" />
+                    </div>
+                    <div class="small-3 columns">
+                        <a id="tombol-ok-scan" href="" class="button postfix">OK</a>
+                    </div>
+                <?php
+                }
+                ?>
             </div>
         </form>
     </div>
@@ -114,7 +142,7 @@
             text += '  <small>Stok Retur Beli</small> ' + data.qtyReturBeliPosted;
         }
         text += '  <small>Qty SO</small> ' + data.qtySudahSo;
-        text += ' <a href="<?= $this->createUrl('ubah', ['id' => $model->id]) ?>"> Kembali </a>';
+        text += ' <a class="small bigfont button right" href="<?= $this->createUrl('ubah', ['id' => $model->id]) ?>" style="line-height:0;top:-9px;right:-7px">Kembali</a>';
         $("#barang-info p").html(text);
     }
 
@@ -334,4 +362,20 @@
     <?php
     }
     ?>
+
+    $("#tombol-gensampel").click(function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: "<?php echo $this->createUrl('gensampelacak', ['id' => $model->id]) ?>",
+            success: function(data) {
+                if (data.sukses) {
+                    $("#scan").val(data.barcode);
+                    kirimBarcode(data.barcode);
+                }
+            }
+        });
+
+        return false;
+    });
 </script>

@@ -66,11 +66,6 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
 
     </div>
 </div>
-<?php
-if (!$manualMode) {
-    $this->renderPartial('_cek_stok_acak');
-}
-?>
 <div class="row">
     <?php
     if ($manualMode) {

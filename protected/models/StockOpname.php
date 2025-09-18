@@ -207,10 +207,10 @@ class StockOpname extends CActiveRecord
     public function listRak()
     {
         return CMap::mergeArray([
-            'null' => '-'
+            'null' => '-',
         ], CHtml::listData(RakBarang::model()->findAll([
             'select' => 'id, nama',
-            'order'  => 'nama'
+            'order'  => 'nama',
         ]), 'id', 'nama'));
     }
 
@@ -233,7 +233,7 @@ class StockOpname extends CActiveRecord
         $data  = $this->find(
             [
                 'select'    => 'max(substring(nomor,9)*1) as max',
-                'condition' => "substring(nomor,5,2)='{$tahun}'"
+                'condition' => "substring(nomor,5,2)='{$tahun}'",
             ]
         );
 
@@ -279,7 +279,7 @@ class StockOpname extends CActiveRecord
                     if (!is_null($detail->ganti_rak_id)) {
                         Barang::model()->updateByPk($detail->barang_id, [
                             'rak_id' => $detail->ganti_rak_id,
-                            'status' => $detail->set_inaktif == 1 ? Barang::STATUS_TIDAK_AKTIF : Barang::STATUS_AKTIF
+                            'status' => $detail->set_inaktif == 1 ? Barang::STATUS_TIDAK_AKTIF : Barang::STATUS_AKTIF,
                         ]);
                     }
                 }
@@ -297,7 +297,7 @@ class StockOpname extends CActiveRecord
                 'error'  => [
                     'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-                ]
+                ],
             ];
         }
     }
@@ -380,5 +380,53 @@ class StockOpname extends CActiveRecord
 
         $rowAffected = $command->execute();
         return $rowAffected;
+    }
+
+    public function getSampelAcak()
+    {
+        $sql = '
+        SELECT
+            filtered_barang.id, b.barcode
+        FROM
+            (SELECT
+                b.id, SUM(qty) stok
+            FROM
+                inventory_balance ib
+            JOIN barang b ON b.id = ib.barang_id AND b.status = :barangAktif
+                AND b.rak_id = :rakId
+            LEFT JOIN stock_opname_detail sd ON sd.barang_id = ib.barang_id
+                AND sd.stock_opname_id = :soID
+            WHERE
+                sd.id IS NULL
+            GROUP BY b.id
+            UNION ALL
+            SELECT
+                b.id, SUM(qty) stok
+            FROM
+                inventory_balance ib
+            JOIN barang b ON b.id = ib.barang_id AND b.status = :barangNAktif
+                AND b.rak_id = :rakId
+            LEFT JOIN stock_opname_detail sd ON sd.barang_id = ib.barang_id
+                AND sd.stock_opname_id = :soID
+            WHERE
+                sd.id IS NULL
+            GROUP BY b.id
+            HAVING SUM(qty) != 0) AS filtered_barang
+                JOIN
+            barang b ON b.id = filtered_barang.id
+        ORDER BY RAND()
+        LIMIT 1;
+        ';
+
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValues([
+            ':soID'         => $this->id,
+            ':barangAktif'  => Barang::STATUS_AKTIF,
+            ':barangNAktif' => Barang::STATUS_TIDAK_AKTIF,
+            ':rakId'        => $this->rak_id,
+        ]);
+
+        $r = $command->queryRow();
+        return $r ? $r['barcode'] : false;
     }
 }
