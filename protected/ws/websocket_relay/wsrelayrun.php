@@ -9,7 +9,19 @@ date_default_timezone_set('Asia/Jakarta');
 
 $config = require __DIR__ . '/../../config/db.php';
 
-$db = new PDO($config['connectionString'], $config['username'], $config['password']);
+$wait = 1;
+while (true) {
+    try {
+        $db = new PDO($config['connectionString'], $config['username'], $config['password']);
+        echo "DB Connected successfully!\n";
+        break;
+    } catch (PDOException $e) {
+        echo 'DB Connection failed: ' . $e->getMessage() . "\n";
+        echo "Retrying in {$wait} detik..\n";
+        sleep($wait);
+        $wait = min($wait * 2, 30);
+    }
+}
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $q      = $db->query("SELECT nilai FROM config WHERE nama = 'toko.kode'");

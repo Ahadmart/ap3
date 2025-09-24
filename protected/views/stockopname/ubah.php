@@ -139,7 +139,8 @@ endif;
 $this->menu = array(
     array('itemOptions' => array('class' => 'divider'), 'label' => false),
     array(
-        'itemOptions' => array('class' => 'has-form hide-for-small-only'), 'label' => false,
+        'itemOptions' => array('class' => 'has-form hide-for-small-only'),
+        'label' => false,
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
                 'class' => 'button',
@@ -159,7 +160,8 @@ $this->menu = array(
         'submenuOptions' => array('class' => 'button-group')
     ),
     array(
-        'itemOptions' => array('class' => 'has-form show-for-small-only'), 'label' => false,
+        'itemOptions' => array('class' => 'has-form show-for-small-only'),
+        'label' => false,
         'items' => array(
             array('label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => array(
                 'class' => 'button',
