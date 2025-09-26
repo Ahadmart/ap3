@@ -3,28 +3,29 @@
     Author     : abumuhammad
 */
 
-$biru: #0b62a4;
-$biru-muda: #7a92a3;
-$hijau: #4da74d;
-$toska: #afd8f8;
-$oranye: #ff5722;
-$merah: #cb4b4b;
-$violet: #9440ed;
-
-$primary-color: #ff5722;
-$secondary-color: #37474f;
-$alert-color: #d32f2f;
-$success-color: #11a861;
-$warning-color: #ffcf63;
+$primary-color: #a66c00;
+$secondary-color: #ad8670;
+$alert-color: #46091c;
+$success-color: #1b5e20;
+$warning-color: #733e0a;
 $info-color: #455a64;
+$merah: #d32f2f;
+$gold: #cc9933;
+
+$warna-text: #d08700; //#fcf899
+$background: #030712;
+$background1: #001d36;
+$background2: #1d3246;
+$background3: #083352;
+$border0: #565553;
 
 body,
 html {
     height: 100%;
 }
 body {
-    color: #546e7a;
-    background: #eceff1;
+    color: $warna-text;
+    background: $background;
     padding: 0;
     margin: 0;
     font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
@@ -45,7 +46,7 @@ a {
 }
 
 .sidebar {
-    background-color: #263238;
+    background-color: $background1;
     padding-top: 15px;
     .huruf {
         font-size: 1.5rem;
@@ -74,7 +75,9 @@ a {
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
+    text-shadow:
+        rgba(0, 0, 0, 0.2) 2px 6px 5px,
+        rgba(255, 255, 255, 0.4) 0 -4px 30px;
 }
 #total-belanja {
     font-size: 3.5rem;
@@ -82,7 +85,9 @@ a {
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
+    text-shadow:
+        rgba(0, 0, 0, 0.2) 2px 6px 5px,
+        rgba(255, 255, 255, 0.4) 0 -4px 30px;
 }
 #surcharge {
     font-size: 2rem;
@@ -98,11 +103,13 @@ a {
     text-align: right;
     padding: 5px 0px;
     width: 100%;
-    text-shadow: rgba(0, 0, 0, 0.2) 2px 6px 5px, rgba(255, 255, 255, 0.4) 0 -4px 30px;
+    text-shadow:
+        rgba(0, 0, 0, 0.2) 2px 6px 5px,
+        rgba(255, 255, 255, 0.4) 0 -4px 30px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     margin-bottom: 15px;
     &.negatif {
-        color: $alert-color;
+        color: $gold;
     }
 }
 
@@ -168,13 +175,15 @@ a {
 }
 .tabel-index {
     th a {
-        color: #263238;
+        color: $gold;
     }
     tr td {
         font-family: "Open Sans";
         font-size: 0.875rem;
         font-weight: 700;
-        text-shadow: 2px 6px 5px rgba(0, 0, 0, 0.2), 0px -4px 30px rgba(255, 255, 255, 0.4);
+        text-shadow:
+            2px 6px 5px rgba(0, 0, 0, 0.2),
+            0px -4px 30px rgba(255, 255, 255, 0.4);
         &.barcode {
             font-size: 0.7rem;
             font-weight: 700;
@@ -198,26 +207,25 @@ tr.selected {
 
 table,
 table thead {
-    background: #cfd8dc;
+    background: darken($background3, 10%);
 }
 
 table thead tr th,
 table thead tr td {
-    color: #546e7a;
+    color: $warna-text;
     font-size: 0.9rem;
     font-weight: normal;
     padding: 0.5rem 0.625rem 0.625rem;
-    background-color: #cfd8dc;
 }
 
 table tr.even,
 table tr.alt,
 table tr:nth-of-type(even) {
-    background-color: #455a64;
+    background: darken($background3, 5%);
 }
 
 table tr.odd {
-    background-color: #37474f;
+    background-color: $background3;
 }
 
 table tr th,
@@ -240,11 +248,11 @@ table tr td {
     margin-bottom: 15px;
     padding: 10px 0;
     font-size: 0.9rem;
-    border-top: 1px solid $biru-muda;
-    border-bottom: 1px solid $biru-muda;
+    border-top: 1px solid $border0;
+    border-bottom: 1px solid $border0;
     nomor {
         font-weight: bold;
-        color: $hijau;
+        color: $info-color;
         display: block;
     }
     nama {
@@ -297,9 +305,10 @@ input[name="tarik-tunai"].tarik-tunai,
 #pesanan-no,
 #infaq,
 #diskon-nota {
-    background-color: #eff1f3;
-    color: 546e7a;
-    border-color: transparent;
+    color: $warna-text;
+    background-color: $background3;
+    border-color: $border0;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px inset;
 }
 
 #scan:focus,
@@ -314,17 +323,24 @@ input[name="kasbank[]"].uang-dibayar:focus,
 #pesanan-no:focus,
 #infaq:focus,
 #diskon-nota:focus {
-    border-top-color: #ff5722;
-    border-bottom-color: #ff5722;
-    box-shadow: 0px 0px 15px #ff5722;
+    background-color: $background3;
+    box-shadow: 0px 0px 15px lighten($background3, 15%);
+    border: 1px solid lighten($background3, 15%);
 }
 
 #scan-icon,
 span.prefix,
 span.postfix {
-    //background-color: rgba(0, 0, 0, 0.5);
-    color: #546e7a;
-    border-color: transparent;
+    background-color: $info-color;
+    color: #fff;
+    border-color: lighten($info-color, 10%);
+}
+
+// tombol disebelah kanan input
+.postfix.button {
+    .fa-2x {
+        padding-top: 4px;
+    }
 }
 
 .ui-autocomplete {
@@ -341,15 +357,15 @@ span.postfix {
 }
 
 .ui-menu-item.ui-state-focus {
-    background-color: #263238;
+    background-color: $background1;
 }
 button.warning,
 .button.warning {
-    color: #263238;
+    color: #fff;
 }
 
 .panel {
-    background: #263238;
+    background: $background1;
     h1,
     h2,
     h3,
@@ -432,7 +448,7 @@ aside > .row {
 
 .left-off-canvas-menu,
 .right-off-canvas-menu {
-    background: #263238;
+    background: $background1;
 }
 
 .left-off-canvas-menu {
@@ -531,7 +547,8 @@ a.prefix {
     text-align: center;
     background-color: transparent;
     backdrop-filter: blur(7px);
-    h1, h4{
+    h1,
+    h4 {
         color: #fff;
     }
     svg {

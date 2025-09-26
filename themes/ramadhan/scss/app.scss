@@ -3,17 +3,17 @@
     Author     : abumuhammad
 */
 
-$primary-color: #ab624b;
+$primary-color: #a66c00;
 $secondary-color: #ad8670;
-$alert-color: #d32f2f;
+$alert-color: #46091c;
 $success-color: #1b5e20;
-$warning-color: #dda270;
+$warning-color: #733e0a;
 $info-color: #455a64;
 $merah: #d32f2f;
 $gold: #cc9933;
 
-$warna-text: #f6984c; //#fcf899
-$background: #092d48;
+$warna-text: #d08700; //#fcf899
+$background: #030712;
 $background1: #001d36;
 $background2: #1d3246;
 $background3: #083352;
@@ -94,7 +94,7 @@ h4,
 h5,
 h6 {
     font-family: "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
-    color: #263238;
+    color: $warna-text;
 }
 
 hr {
@@ -227,7 +227,7 @@ nav {
     font-size: 0.85em;
     margin-bottom: 10px;
     text-align: right;
-    color: #263238;
+    color: $warna-text;
 }
 
 span.required {
@@ -342,9 +342,17 @@ a.button.micro.bigfont {
     }
 }
 
+span.postfix,
+span.prefix {
+    background-color: $info-color;
+    color: #fff;
+    border-color: lighten($info-color, 10%);
+}
 // tombol disebelah kanan input
 .postfix.button {
-    margin-bottom: 0;
+    // background-color: $primary-color;
+    // margin-bottom: 0;
+    // border-color: lighten($primary-color, 10%);
     .fa-2x {
         padding-top: 4px;
     }
