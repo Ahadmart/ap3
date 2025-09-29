@@ -2,10 +2,12 @@
 
 namespace Ahadmart\WebsocketRelay;
 
+use Psr\Http\Message\ResponseInterface;
 use WebSocket\Client;
 use WebSocket\Connection;
 use WebSocket\Message\Message;
 use WebSocket\Middleware\CloseHandler;
+use WebSocket\Middleware\PingInterval;
 use WebSocket\Middleware\PingResponder;
 
 class WebSocketRelay
@@ -15,6 +17,7 @@ class WebSocketRelay
     private string $sourceUrl;
     private string $statusFile;
     private bool $sourceConnected;
+    private int $lastPong;
 
     public function __construct(string $sourceUrl, string $targetUrl, string $statusFile)
     {
@@ -31,6 +34,7 @@ class WebSocketRelay
         $this->targetClient = new Client($targetUrl);
 
         // $this->setupMiddleware($this->sourceClient);
+
         $this->setupMiddleware($this->targetClient);
     }
 
@@ -61,69 +65,94 @@ class WebSocketRelay
 
         // Init Yii console application
         \Yii::createConsoleApplication($config);
-
         while (true) {
+            $this->lastPong     = time();
             $this->sourceClient = $this->ensureConnected($this->sourceUrl, 3);
+            $this->sourceClient
+                ->onConnect(function (Client $client, Connection $conn, ResponseInterface $response) {
+                    $this->sourceConnected = true;
+                    $this->updateStatus();
+                    echo "Connected\n";
+                })
+                ->onDisconnect(function (Client $client, Connection $conn, ResponseInterface $response) {
+                    $this->sourceConnected = false;
+                    $this->updateStatus();
+                })
+                ->onText(function (Client $client, Connection $conn, Message $msg) {
+                    // echo var_dump($msg->getContent());
+                    echo "Received from source: {$msg->getContent()}\n";
+                    $content = json_decode($msg->getContent(), true);
 
-            $this->sourceClient->onText(function (Client $client, Connection $conn, Message $msg) {
-                // echo var_dump($msg->getContent());
-                echo "Received from source: {$msg->getContent()}\n";
-                $content = json_decode($msg->getContent(), true);
-
-                // $config         = \Config::model()->find("nama='customerdisplay.pos.enable'");
-                // Tidak tergantung customer display
-                $wsClientEnable = 1; // $config ? $config->nilai : null;
-                if ($wsClientEnable) {
-                    $data = [
-                        'tipe'        => \AhadPosWsClient::TIPE_QRIS_PAID,
-                        'penjualanId' => $content['penjualanId'],
-                        'paid'        => $content['status'] == '00' ? true : false,
-                        'uId'         => $content['userId'],
-                        'timestamp'   => date('Y-m-d H:i:s'),
-                    ];
-                    // $clientWS->sendJsonEncoded($data);
-                    // Forward to target
-                    $jsonData = json_encode($data);
-                    echo "Forward to target: {$jsonData}\n";
-                    $this->targetClient->text(json_encode($data));
-                }
-            })->onError(function (Client $client, Connection $conn, ?\Throwable $e = null) {
-                if ($e) {
-                    echo "Receiver connection error: {$e->getMessage()}\n";
-                } else {
-                    echo "Receiver connection error: unknown reason\n";
-                }
-                $this->sourceConnected = false;
-                $this->updateStatus();
-            })->onClose(function (Client $client, Connection $conn, int $code, string $reason) {
-                echo "Receiver closed (code {$code}): {$reason}\n";
-                $this->sourceConnected = false;
-                $this->updateStatus();
-            });
+                    // $config         = \Config::model()->find("nama='customerdisplay.pos.enable'");
+                    // Tidak tergantung customer display
+                    $wsClientEnable = 1; // $config ? $config->nilai : null;
+                    if ($wsClientEnable) {
+                        $data = [
+                            'tipe'        => \AhadPosWsClient::TIPE_QRIS_PAID,
+                            'penjualanId' => $content['penjualanId'],
+                            'paid'        => $content['status'] == '00' ? true : false,
+                            'uId'         => $content['userId'],
+                            'timestamp'   => date('Y-m-d H:i:s'),
+                        ];
+                        // $clientWS->sendJsonEncoded($data);
+                        // Forward to target
+                        $jsonData = json_encode($data);
+                        echo "Forward to target: {$jsonData}\n";
+                        $this->targetClient->text(json_encode($data));
+                    }
+                })
+                ->onError(function (Client $client, Connection $conn, ?\Throwable $e = null) {
+                    if ($e) {
+                        echo "Receiver connection error: {$e->getMessage()}\n";
+                    } else {
+                        echo "Receiver connection error: unknown reason\n";
+                    }
+                    $this->sourceConnected = false;
+                    $this->updateStatus();
+                })
+                ->onClose(function (Client $client, Connection $conn, int $code, string $reason) {
+                    echo "Receiver closed (code {$code}): {$reason}\n";
+                    $this->sourceConnected = false;
+                    $this->updateStatus();
+                })
+                ->onPong(function (Client $client, Connection $conn) {
+                    $this->lastPong = time();
+                })
+                ->onTick(function(Client $client){
+                    $now     = time();
+                    $selisih = $now - $this->lastPong;
+                    // echo "ON TICK; lastPong: {$selisih}\n";
+                    if ($selisih > 15){
+                        $this->sourceClient->close();
+                    }
+                });
 
             try {
-                echo "Connected to {$this->sourceUrl}\n";
-                $this->sourceConnected = true;
-                $this->updateStatus();
+                echo "Connecting to {$this->sourceUrl}\n";
+                $this->sourceClient->setTimeout(5);
                 $this->sourceClient->start();
             } catch (\Throwable $e) {
                 $this->sourceConnected = false;
                 $this->updateStatus();
-                echo "{$e->getMessage()}\n";
+                echo "Error/Exception: {$e->getMessage()}\n";
             }
-            sleep(3);
+            echo "Wait 5s..\n";
+            sleep(5);
         }
     }
 
     private function ensureConnected($url, $delay): Client
     {
+        $this->sourceConnected = false;
+        $this->updateStatus();
         while (true) {
             try {
                 echo "Trying to connect to {$url}.. \n";
                 $client = new Client($url);
                 $this->setupMiddleware($client);
-                $this->sourceConnected = true;
-                $this->updateStatus();
+                $client->addMiddleware(new PingInterval(5));
+                // $this->sourceConnected = true;
+                // $this->updateStatus();
                 return $client;
             } catch (\Throwable $e) {
                 $this->sourceConnected = false;
