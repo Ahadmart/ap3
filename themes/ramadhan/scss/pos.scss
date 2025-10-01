@@ -1,5 +1,5 @@
 /* 
-    Created on : Mar 11, 2014, 10:07:14 AM
+    Created on : 1 Oktober 2025, 20:34
     Author     : abumuhammad
 */
 
@@ -25,7 +25,7 @@ html {
 }
 body {
     color: $warna-text;
-    background: $background;
+    background: $background url(../img/kubah_hijau.jpg) repeat repeat center / cover fixed;
     padding: 0;
     margin: 0;
     font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
@@ -36,7 +36,7 @@ body {
     cursor: default;
 }
 a {
-    color: #00e5ff;
+    color: $warna-text;
 }
 .prefix .fa-2x {
     padding-top: 4px;
@@ -46,7 +46,8 @@ a {
 }
 
 .sidebar {
-    background-color: $background1;
+    background-color: rgba($background1, 0.6);
+    backdrop-filter: blur(20px);
     padding-top: 15px;
     .huruf {
         font-size: 1.5rem;
@@ -193,7 +194,7 @@ a {
 
 tr.pilih,
 tr.selected {
-    background-color: rgba(0, 0, 0, 0.5) !important;
+    background-color: rgba(0, 0, 0, 0.3) !important;
 }
 /* ============== */
 
@@ -207,7 +208,8 @@ tr.selected {
 
 table,
 table thead {
-    background: darken($background3, 10%);
+    background: rgba(darken($background3, 10%), 0.7);
+    backdrop-filter: blur(10px);
 }
 
 table thead tr th,
@@ -221,11 +223,11 @@ table thead tr td {
 table tr.even,
 table tr.alt,
 table tr:nth-of-type(even) {
-    background: darken($background3, 5%);
+    background: rgba(darken($background3, 5%), 0.6);
 }
 
 table tr.odd {
-    background-color: $background3;
+    background-color: rgba($background3, 0.6);
 }
 
 table tr th,
@@ -252,7 +254,7 @@ table tr td {
     border-bottom: 1px solid $border0;
     nomor {
         font-weight: bold;
-        color: $info-color;
+        color: $gold;
         display: block;
     }
     nama {
@@ -365,7 +367,8 @@ button.warning,
 }
 
 .panel {
-    background: $background1;
+    background: rgba($background1, 0.7);
+    backdrop-filter: blur(7px);
     h1,
     h2,
     h3,

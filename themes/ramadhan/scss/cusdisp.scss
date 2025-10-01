@@ -1,18 +1,27 @@
 /* 
-    Created on : 28 Maret 2024, 11:29 AM
+    Created on : 1 Oktober 2025, 20:34
     Author     : abumuhammad
 */
 
-$primary-color: #ff5722;
-$secondary-color: #37474f;
-$alert-color: #d32f2f;
-$success-color: #11a861;
-$warning-color: #ffcf63;
+$primary-color: #a66c00;
+$secondary-color: #ad8670;
+$alert-color: #46091c;
+$success-color: #1b5e20;
+$warning-color: #733e0a;
 $info-color: #455a64;
+$merah: #d32f2f;
+$gold: #cc9933;
+
+$warna-text: #d08700; //#fcf899
+$background: #030712;
+$background1: #001d36;
+$background2: #1d3246;
+$background3: #083352;
+$border0: #565553;
 
 h1 {
     font-size: 2rem;
-    color: #fff;
+    color: $gold;
 }
 .box {
     // border: 1px solid #fff;
@@ -20,8 +29,9 @@ h1 {
     overflow: scroll;
 }
 .kiri_atas {
-    background-color: #37474f;
-    color: #fff;
+    background-color: rgba($background1, 0.7);
+    backdrop-filter: blur(5px);
+    color: $warna-text;
     padding: 1rem 2rem;
     overflow: hidden;
 }
@@ -30,8 +40,9 @@ h1 {
     display: flex;
     align-items: center;
     text-align: center;
-    background-color: #eceff1;
-    color: #263238;
+    background-color: rgba($background2, 0.8);
+    backdrop-filter: blur(20px);
+    color: #fff;
     overflow: hidden;
     img {
         width: 149px;
@@ -41,7 +52,9 @@ h1 {
     }
 }
 .kiri_bawah {
-    background-color: #263238;
+    background-color: rgba($background3, 0.5);
+    // background: transparent;
+    backdrop-filter: blur(5px);
     overflow: hidden;
 }
 .kanan_bawah {
@@ -49,8 +62,9 @@ h1 {
     display: flex;
     // align-items: center;
     text-align: center;
-    background-color: #263238;
-    color: #ff5722;
+    background-color: rgba($background3, 0.8);
+    backdrop-filter: blur(20px);
+    color: $secondary-color;
     overflow: hidden;
 }
 #info_kasir {
@@ -236,20 +250,21 @@ h1 {
         font-weight: 500;
         position: sticky;
         top: 0;
-        background-color: #cfd8dc;
+        background: rgba(darken($background3, 10%), 0.7);
+        backdrop-filter: blur(10px);
     }
     tbody {
         tr:nth-of-type(n) {
-            background-color: #37474f;
+            background: rgba(darken($background3, 5%), 0.6);
         }
         tr:nth-of-type(2n) {
-            background-color: #455a64;
+            background-color: rgba($background3, 0.6);
         }
     }
     th {
         border-bottom: 1px solid #e8e8e8;
         text-align: left;
-        color: #263238;
+        color: $warna-text;
     }
     td {
         color: #fff;
@@ -278,7 +293,7 @@ h1 {
     padding: 1.25rem 0 20px 0;
     span {
         color: #fff;
-        border-bottom: 2px solid rgba(255,255,255,.5);
+        border-bottom: 2px solid rgba(255, 255, 255, 0.5);
         width: 50%;
         // height: 50%;
         font-size: 1.5rem;
@@ -322,7 +337,7 @@ h1 {
             text-align: right;
         }
         &.total {
-            border-bottom: 2px solid rgba(255,255,255,.5);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
             padding-bottom: 1rem;
             font-size: 2rem;
             font-weight: bold;
@@ -331,13 +346,13 @@ h1 {
         }
         &.kembalian,
         &.payment_tt {
-            border-top: 2px solid rgba(255,255,255,.5);
+            border-top: 2px solid rgba(255, 255, 255, 0.5);
             margin-top: 1rem;
             padding-top: 1rem;
             font-size: 1.55rem;
             font-weight: bold;
         }
-        &.kembalian{
+        &.kembalian {
             border-top: none;
             margin-top: 0;
             padding-top: 0;
@@ -346,7 +361,7 @@ h1 {
     p {
         width: 100%;
         text-align: center;
-        margin-top: 1.5rem;  
+        margin-top: 1.5rem;
         font-size: 1.25rem;
     }
 }
@@ -368,7 +383,7 @@ h1 {
             font-size: 2.5rem;
             font-weight: 700;
             line-height: 2.5rem;
-            @media only screen and (min-width: 1360px){
+            @media only screen and (min-width: 1360px) {
                 font-size: 3rem;
                 line-height: 3rem;
             }
@@ -376,7 +391,7 @@ h1 {
         &:nth-child(6) {
             font-size: 1.4rem;
         }
-        &.caption_selanjutnya{
+        &.caption_selanjutnya {
             color: #eceff1;
         }
     }
@@ -399,7 +414,7 @@ h1 {
         font-size: 1rem;
         width: 80%;
         margin: auto;
-        @media only screen and (min-width: 1360px){
+        @media only screen and (min-width: 1360px) {
             font-size: 1.25rem;
             line-height: 2rem;
         }
@@ -469,7 +484,8 @@ h1 {
     text-align: center;
     background-color: transparent;
     backdrop-filter: blur(7px);
-    h1, h4{
+    h1,
+    h4 {
         color: #fff;
     }
     svg {
