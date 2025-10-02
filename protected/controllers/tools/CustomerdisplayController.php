@@ -69,37 +69,45 @@ class CustomerdisplayController extends Controller
          */
         // $tahun    = date('Y');
         // $bulan    = date('n');
-        $periode  = date('Yn');
+        // $periode  = date('Yn');
+
+        /* Cek file jadwal sholat untuk tahun berjalan
+        Jika tidak ada, coba download dari internet.
+        Jika tidak berhasil tidak ditampilkan
+         */
+        $periode  = date('Y');
         $dir      = __DIR__ . '/../../../assets/';
         $fileName = "jadwalsholat_{$periode}.json";
         $file     = $dir . $fileName;
-
-        if (file_exists($file)) {
-            // Nothing to do
-        } else {
-            // Hapus file-file yang mungkin ada di bulan sebelumnya
+        $waktu = null;
+        if (!file_exists($file)) {
+            // Hapus file-file yang mungkin ada di periode sebelumnya
             array_map('unlink', glob($dir . 'jadwalsholat*.json'));
 
-            // Ambil jadwal bulan berjalan ke internet
+            // Ambil jadwal tahun berjalan ke internet
             $this->getJadwalSholat($periode, $latitude, $longitude, $offset, $file);
         }
 
-        $fileContent   = file_get_contents($file);
-        $jadwalSebulan = json_decode($fileContent, true, 512, JSON_UNESCAPED_UNICODE);
+        if (file_exists($file)){
+            $fileContent = file_get_contents($file);
+            $jadwalSetahun = json_decode($fileContent, true, 512, JSON_UNESCAPED_UNICODE);
 
-        $i = 0;
-        foreach ($jadwalSebulan['data'] as $jadwal) {
-            if ($jadwal['date']['gregorian']['date'] == date('d-m-Y')) {
-                break;
+            $bulan = date('n');
+            foreach ($jadwalSetahun['data'][$bulan] as $jadwal) {
+                if ($jadwal['date']['gregorian']['date'] == date('d-m-Y')) {
+                    $waktu = $jadwal['timings'];
+                    break;
+                }
             }
-            $i++;
         }
+
 
         $this->render('desktop', [
             'namaToko' => $namaToko,
             'ws'       => $ws,
             'user'     => $user,
-            'jadwal'   => $jadwalSebulan['data'][$i],
+            // 'jadwal'   => $jadwalSetahun['data'][$i],
+            'waktu'    => $waktu,
             'logo'     => $this->getLogo(),
             'brosurs'  => json_encode($this->getBrosurPromo()),
 
@@ -111,16 +119,22 @@ class CustomerdisplayController extends Controller
         // echo 'Periode: ' . $periode . PHP_EOL;
         // echo 'Koordinat: ' . $lat . ', ' . $long . PHP_EOL;
 
-        $tahun = substr($periode, 0, 4);
-        $bulan = substr($periode, 4, 2);
-        $url   = "https://api.aladhan.com/v1/calendar/{$tahun}/{$bulan}";
+        // $tahun = substr($periode, 0, 4);
+        $tahun = $periode;
+        // $bulan = substr($periode, 4, 2);
+        // $url   = "https://api.aladhan.com/v1/calendar/{$tahun}/{$bulan}";
+        $url   = "https://api.aladhan.com/v1/calendar/{$tahun}";
         $param = [
             'latitude'  => $lat,
             'longitude' => $long,
             'method'    => 20,
             'tune'      => $offset,
         ];
-        file_put_contents($file, $this->getRequest($url, $param));
+        if ($this->getRequest($url, $param) != null) {
+            file_put_contents($file, $this->getRequest($url, $param));
+            return true;
+        }
+        return false;
     }
 
     private function getRequest($url, $param)
@@ -130,6 +144,24 @@ class CustomerdisplayController extends Controller
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $r = curl_exec($ch);
+        if ($r === false) {
+            // Curl itself failed (DNS, timeout, SSL, etc.)
+            $err   = curl_error($ch);
+            $errno = curl_errno($ch);
+            Yii::log("cURL error ({$errno}): {$err}", CLogger::LEVEL_ERROR);
+            $r = null;
+        } else {
+            // Check HTTP status
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ($httpCode !== 200) {
+                Yii::log("HTTP error code: {$httpCode}", CLogger::LEVEL_ERROR);
+                $r = null;
+            } elseif (trim($r) === '') {
+                // Got empty response
+                Yii::log("Empty response from {$url}", CLogger::LEVEL_WARNING);
+                $r = null;
+            }
+        }
         curl_close($ch);
 
         return $r;
@@ -140,9 +172,9 @@ class CustomerdisplayController extends Controller
         require_once __DIR__ . '/BrosurpromoController.php';
         $assetPath = BrosurpromoController::ASSETS_PATH;
         // Only one
-        $imgs      = [];
+        $imgs = [];
         foreach (glob($assetPath . 'logo*.*', GLOB_BRACE) as $filename) {
-            $imgs[] =  $this->createUrl($filename);
+            $imgs[] = $this->createUrl($filename);
         }
         if (isset($imgs[0])) {
             if (file_exists(realpath($filename))) {
@@ -158,7 +190,7 @@ class CustomerdisplayController extends Controller
         $assetPath = BrosurpromoController::ASSETS_PATH;
         $imgs      = [];
         foreach (glob($assetPath . 'brosur*.*', GLOB_BRACE) as $filename) {
-            $imgs[] =  $this->createUrl($filename);
+            $imgs[] = $this->createUrl($filename);
         }
         return $imgs;
     }

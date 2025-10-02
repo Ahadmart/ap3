@@ -7,7 +7,7 @@
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/qrcode.min.js', CClientScript::POS_HEAD);
 
 $logoSrc = Yii::app()->theme->baseUrl . '/img/logo.png';
-if (!empty($logo)) {
+if (! empty($logo)) {
     $logoSrc = $logo;
 }
 ?>
@@ -90,27 +90,30 @@ if (!empty($logo)) {
             <p id="waktu"><span id="jam"></span><span id="separator">:</span><span id="menit"></span></p>
             <p id="tanggal"></p>
             <hr />
-            <p class="caption_selanjutnya"></p>
-            <p class="waktu_selanjutnya"></p>
-            <p class="sholat_selanjutnya"></p>
-            <jadwal_sholat>
-                <p>Jadwal Sholat Hari Ini</p>
-                <?php
-                $waktu    = $jadwal['timings'];
-                $wSubuh           = substr($waktu['Fajr'], 0, 5);
-                $wSyuruq          = substr($waktu['Sunrise'], 0, 5);
-                $wZhuhur          = substr($waktu['Dhuhr'], 0, 5);
-                $wAshar           = substr($waktu['Asr'], 0, 5);
-                $wMaghrib         = substr($waktu['Maghrib'], 0, 5);
-                $wIsya            = substr($waktu['Isha'], 0, 5);
-                ?>
-                <span class="nama">Subuh / الفجر</span><span class="waktu"><?php echo $wSubuh ?></span>
-                <span class="nama">Syuruq / الشروق</span><span class="waktu"><?php echo $wSyuruq ?></span>
-                <span class="nama">Zuhur / الظُهر</span><span class="waktu"><?php echo $wZhuhur ?></span>
-                <span class="nama">'Ashar / العصر</span><span class="waktu"><?php echo $wAshar ?></span>
-                <span class="nama">Maghrib / المغرب</span><span class="waktu"><?php echo $wMaghrib ?></span>
-                <span class="nama">Isya' / العِشاء</span><span class="waktu"><?php echo $wIsya ?></span>
-            </jadwal_sholat>
+            <?php
+            $wSubuh   = substr($waktu['Fajr'] ?? '', 0, 5);
+            $wSyuruq  = substr($waktu['Sunrise'] ?? '', 0, 5);
+            $wZhuhur  = substr($waktu['Dhuhr'] ?? '', 0, 5);
+            $wAshar   = substr($waktu['Asr'] ?? '', 0, 5);
+            $wMaghrib = substr($waktu['Maghrib'] ?? '', 0, 5);
+            $wIsya    = substr($waktu['Isha'] ?? '', 0, 5);
+            if ($waktu != null) {
+            ?>
+                <p class="caption_selanjutnya"></p>
+                <p class="waktu_selanjutnya"></p>
+                <p class="sholat_selanjutnya"></p>
+                <jadwal_sholat>
+                    <p>Jadwal Sholat Hari Ini</p>
+                    <span class="nama">Subuh / الفجر</span><span class="waktu"><?php echo $wSubuh ?></span>
+                    <span class="nama">Syuruq / الشروق</span><span class="waktu"><?php echo $wSyuruq ?></span>
+                    <span class="nama">Zuhur / الظُهر</span><span class="waktu"><?php echo $wZhuhur ?></span>
+                    <span class="nama">'Ashar / العصر</span><span class="waktu"><?php echo $wAshar ?></span>
+                    <span class="nama">Maghrib / المغرب</span><span class="waktu"><?php echo $wMaghrib ?></span>
+                    <span class="nama">Isya' / العِشاء</span><span class="waktu"><?php echo $wIsya ?></span>
+                </jadwal_sholat>
+            <?php
+            }
+            ?>
         </div>
         <div id="detail_tr" class="proc">
             <div class="t_wrapper">
