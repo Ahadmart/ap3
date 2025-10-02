@@ -29,21 +29,23 @@ h1 {
     overflow: scroll;
 }
 .kiri_atas {
-    background-color: rgba($background1, 0.7);
+    background-color: rgba($background1, 1);
     backdrop-filter: blur(5px);
     color: $warna-text;
     padding: 1rem 2rem;
     overflow: hidden;
+    border-bottom: medium solid $gold;
 }
 .kanan_atas {
     padding: 1rem;
     display: flex;
     align-items: center;
     text-align: center;
-    background-color: rgba($background2, 0.8);
+    background-color: rgba($background1, 0.9);
     backdrop-filter: blur(20px);
     color: #fff;
     overflow: hidden;
+    border-bottom: medium solid $gold;
     img {
         width: 149px;
         max-width: 159px;
