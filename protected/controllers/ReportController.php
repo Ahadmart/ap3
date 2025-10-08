@@ -71,7 +71,7 @@ class ReportController extends Controller
                     // Nothing... yet
                     break;
             }
-        };
+        }
         $this->render('pembelian', [
             'model'          => $model,
             'profil'         => $profil,
@@ -604,15 +604,15 @@ class ReportController extends Controller
 
         $text      = $model->toCsv($hideOpenTxn);
         $namaStruk = '';
-        if (!empty($model->strukLv1)) :
+        if (! empty($model->strukLv1)):
             $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
             $namaStruk .= $strukLv1->nama;
         endif;
-        if (!empty($model->strukLv2)) :
+        if (! empty($model->strukLv2)):
             $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
             $namaStruk .= '_' . $strukLv2->nama;
         endif;
-        if (!empty($model->strukLv3)) :
+        if (! empty($model->strukLv3)):
             $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
             $namaStruk .= '_' . $strukLv3->nama;
         endif;
@@ -878,15 +878,15 @@ class ReportController extends Controller
 
         $text      = $model->toCsv();
         $namaStruk = '';
-        if (!empty($model->strukLv1)) :
+        if (! empty($model->strukLv1)):
             $strukLv1 = StrukturBarang::model()->findByPk($model->strukLv1);
             $namaStruk .= $strukLv1->nama;
         endif;
-        if (!empty($model->strukLv2)) :
+        if (! empty($model->strukLv2)):
             $strukLv2 = StrukturBarang::model()->findByPk($model->strukLv2);
             $namaStruk .= '_' . $strukLv2->nama;
         endif;
-        if (!empty($model->strukLv3)) :
+        if (! empty($model->strukLv3)):
             $strukLv3 = StrukturBarang::model()->findByPk($model->strukLv3);
             $namaStruk .= '_' . $strukLv3->nama;
         endif;
@@ -993,13 +993,13 @@ class ReportController extends Controller
             $device = Device::model()->findByPk($_GET['printId']);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
-                    $this->plsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['orderPeriod'], $_GET['sortBy'], $_GET['kertas']);
+                    $this->plsPdf($_GET['jumlahHari'], $_GET['profilId'], $_GET['orderPeriod'], $_GET['leadTime'], $_GET['sortBy'], $_GET['sortBy'], $_GET['kertas']);
                     break;
             }
         }
     }
 
-    public function plsPdf($jumlahHari, $profilId, $orderPeriod, $sortBy, $kertas)
+    public function plsPdf($jumlahHari, $profilId, $orderPeriod, $leadTime, $ssd, $sortBy, $kertas)
     {
         /* Agar tetap muncul, walaupun "agak" lama */
         ini_set('memory_limit', '-1');
@@ -1010,6 +1010,8 @@ class ReportController extends Controller
         $model->jumlahHari  = $jumlahHari;
         $model->profilId    = $profilId;
         $model->orderPeriod = $orderPeriod;
+        $model->leadTime    = $leadTime;
+        $model->ssd         = $ssd;
         $model->sortBy      = $sortBy;
         $report             = $model->reportPls();
 
@@ -1712,7 +1714,7 @@ class ReportController extends Controller
                     // Nothing... yet
                     break;
             }
-        };
+        }
 
         $kasirBuka = Kasir::model()->find('waktu_tutup is null');
         $pesan1    = false;
@@ -1771,8 +1773,8 @@ class ReportController extends Controller
             $device            = Device::model()->findByPk($printerInput[0]);
             if (is_null($device)) {
                 throw new CHttpException(500, 'Printer tidak ditemukan!');
-            };
-            if (!$model->validate()) {
+            }
+            if (! $model->validate()) {
                 throw new CHttpException(500, CHtml::errorSummary($model));
             }
 
@@ -1943,7 +1945,7 @@ class ReportController extends Controller
     {
         $reportPembelian             = new ReportPembelianForm;
         $reportPembelian->attributes = $formData;
-        if (!$reportPembelian->validate()) {
+        if (! $reportPembelian->validate()) {
             throw new CHttpException(500, 'Message: ' . json_encode($reportPembelian->getErrors()));
         }
         $csv = $reportPembelian->toCsv();
@@ -1956,7 +1958,7 @@ class ReportController extends Controller
 
         $namaToko = Config::model()->find("nama = 'toko.nama'");
         $profil   = '';
-        if (!empty($formData['profilId'])) {
+        if (! empty($formData['profilId'])) {
             $profil = ' ' . Profil::model()->findByPk($formData['profilId'])->nama;
         }
         $namaFile = "Pembelian {$namaToko->nilai} {$formData['dari']} {$formData['sampai']}{$profil}";

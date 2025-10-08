@@ -28,6 +28,8 @@
                                                                     'jumlahHari'  => $model->jumlahHari,
                                                                     'profilId'    => $model->profilId,
                                                                     'orderPeriod' => $model->orderPeriod,
+                                                                    'leadTime' => $model->leadTime,
+                                                                    'ssd' => $model->ssd,
                                                                     'sortBy'      => $model->sortBy,
                                                                 ])
                                                                 ?>"><?= $value; ?></a></li>
