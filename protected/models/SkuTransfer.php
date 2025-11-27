@@ -259,4 +259,40 @@ class SkuTransfer extends CActiveRecord
         $ib = new InventoryBalance();
         $ib->bukaKemasan($detail);
     }
+
+    public static function detailSkuOf($barangId)
+    {
+        $sql = '
+        SELECT 
+            detail1.id,
+            detail1.barang_id,
+            satuan.nama,
+            sku_level.level,
+            sku_level.rasio_konversi,
+            sku_level.jumlah_per_unit
+        FROM
+            sku_detail detail1
+                JOIN
+            sku_detail detail2 ON detail2.sku_id = detail1.sku_id
+                AND detail2.barang_id = :barangId
+                JOIN
+            barang ON detail1.barang_id = barang.id
+                JOIN
+            barang_satuan satuan ON satuan.id = barang.satuan_id
+                JOIN
+            sku_level ON sku_level.sku_id = detail1.sku_id
+                AND sku_level.satuan_id = satuan.id
+        ORDER BY sku_level.level
+        ';
+        return Yii::app()->db->createCommand($sql)->bindValue(':barangId', $barangId)->queryAll();
+    }
+
+    public static function autoTransfer($barangId)
+    {
+        if (empty(self::detailSkuOf($barangId))) {
+            return;
+        }
+        $skuDetails = self::detailSkuOf($barangId);
+        
+    }
 }

@@ -992,4 +992,18 @@ class InventoryBalance extends CActiveRecord
             throw new Exception('Gagal simpan layer inventory');
         }
     }
+
+    public static function stok($barangId)
+    {
+        $sql = '
+        SELECT 
+            SUM(qty) jml
+        FROM
+            inventory_balance
+        WHERE
+            barang_id = :barangId;
+               ';
+        $inventory = Yii::app()->db->createCommand($sql)->bindValue(':barangId', $barangId)->queryRow();
+        return $inventory['jml'];
+    }
 }
