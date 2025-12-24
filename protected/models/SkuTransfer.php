@@ -1,5 +1,7 @@
 <?php
 
+use Mpdf\Tag\S;
+
 /**
  * This is the model class for table "sku_transfer".
  *
@@ -180,14 +182,14 @@ class SkuTransfer extends CActiveRecord
 
     public function beforeValidate()
     {
-        $this->tanggal_referensi = ! empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : null;
+        $this->tanggal_referensi = !empty($this->tanggal_referensi) ? date_format(date_create_from_format('d-m-Y', $this->tanggal_referensi), 'Y-m-d') : null;
         return parent::beforeValidate();
     }
 
     public function afterFind()
     {
-        $this->tanggal           = ! is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
-        $this->tanggal_referensi = ! is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
+        $this->tanggal           = !is_null($this->tanggal) ? date_format(date_create_from_format('Y-m-d H:i:s', $this->tanggal), 'd-m-Y H:i:s') : '0';
+        $this->tanggal_referensi = !is_null($this->tanggal_referensi) ? date_format(date_create_from_format('Y-m-d', $this->tanggal_referensi), 'd-m-Y') : '';
         return parent::afterFind();
     }
 
@@ -225,7 +227,6 @@ class SkuTransfer extends CActiveRecord
 
     public function transfer()
     {
-        $this->scenario = 'simpanTransfer';
         $tr             = $this->dbConnection->beginTransaction();
         // Yii::log('simpan()');
         $r = [
@@ -246,8 +247,9 @@ class SkuTransfer extends CActiveRecord
 
     private function simpanTransfer()
     {
+        $this->scenario = 'simpanTransfer';
         // Yii::log('simpanTransfer() 1');
-        if (! $this->save()) {
+        if (!$this->save()) {
             // Yii::log('Gagal simpan transfer');
             throw new Exception('Gagal simpan transfer', 500);
         }
@@ -263,7 +265,7 @@ class SkuTransfer extends CActiveRecord
     public static function detailSkuOf($barangId)
     {
         $sql = '
-        SELECT 
+        SELECT
             detail1.id,
             detail1.barang_id,
             satuan.nama,
@@ -287,12 +289,72 @@ class SkuTransfer extends CActiveRecord
         return Yii::app()->db->createCommand($sql)->bindValue(':barangId', $barangId)->queryAll();
     }
 
-    public static function autoTransfer($barangId)
+    public static function autoRefill($barangId, $qty)
     {
         if (empty(self::detailSkuOf($barangId))) {
             return;
         }
         $skuDetails = self::detailSkuOf($barangId);
-        
+        // Yii::log(print_r($skuDetails, true));
+        do {
+            $awal       = false;
+            $stokKosong = true;
+            foreach ($skuDetails as $key => $item) {
+                // Yii::log("key: {$key}");
+                // Yii::log(print_r($item, true));
+                if ($item['barang_id'] == $barangId) {
+                    $awal = true;
+                    continue;
+                }
+
+                if ($awal) {
+                    $barang = Barang::model()->findByPk($item['barang_id']);
+                    $stok   = $barang->getStok();
+                    if ($stok > 0) {
+                        $stokKosong = false;
+                        $asalId     = $item['id'];
+                        $tujuanId   = $skuDetails[$key - 1]['id'];
+                        self::autoUnpack($asalId, $tujuanId, $item['rasio_konversi']);
+                        break;
+                    }
+                }
+            }
+            $stok = InventoryBalance::stok($barangId);
+        } while ($stok < $qty and !$stokKosong);
+    }
+
+    public static function autoUnpack($asalId, $tujuanId, $rasioKonversi)
+    {
+        $skuDetailAsal   = SkuDetail::model()->findByPk($asalId);
+        $skuDetailTujuan = SkuDetail::model()->findByPk($tujuanId);
+
+        $skuTransfer             = new SkuTransfer();
+        $skuTransfer->sku_id     = $skuDetailAsal->sku_id;
+        $skuTransfer->referensi  = 'Auto Unpack';
+        $skuTransfer->keterangan = 'Auto Transfer';
+        if (!$skuTransfer->save()) {
+            throw new Exception('Unpack: Gagal simpan SKU Transfer: ' . serialize($skuTransfer->getErrors()));
+        }
+
+        $skuTransfer = SkuTransfer::model()->findByPk($skuTransfer->id);
+
+        Yii::log(print_r($skuTransfer, true));
+
+        $detail                  = new SkuTransferDetail();
+        $detail->sku_transfer_id = $skuTransfer->id;
+        $detail->from_barang_id  = $skuDetailAsal->barang_id;
+        $detail->from_satuan_id  = $skuDetailAsal->barang->satuan_id;
+        $detail->from_qty        = 1;
+        $detail->to_barang_id    = $skuDetailTujuan->barang_id;
+        $detail->to_satuan_id    = $skuDetailTujuan->barang->satuan_id;
+        $detail->to_qty          = $rasioKonversi;
+
+        Yii::log(print_r($detail, true));
+
+        if (!$detail->save()) {
+            throw new Exception('Unpack: Gagal simpan sku transfer detail', 500);
+        }
+
+        return $skuTransfer->simpanTransfer();
     }
 }

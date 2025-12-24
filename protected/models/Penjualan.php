@@ -1049,10 +1049,10 @@ class Penjualan extends CActiveRecord
         $details = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
         foreach ($details as $detail) {
             if (InventoryBalance::stok($detail->barang_id) < $detail->qty){
-                // throw new Exception("Stok {$detail->barang_id} tidak cukup");
+                // throw new Exception("Stok {$detail->barang->barcode} tidak cukup");
                 // Barang tidak cukup cek sku, transfer stok
-                SkuTransfer::autoTransfer($detail->barang_id);
-
+                SkuTransfer::autoRefill($detail->barang_id, $detail->qty);
+                // Yii::app()->exit;
             }
             $inventoryTerpakai = InventoryBalance::model()->jual($detail->barang_id, $detail->qty);
             if (empty($inventoryTerpakai)) {
