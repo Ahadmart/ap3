@@ -391,6 +391,21 @@ class SkutransferController extends Controller
         return $return;
     }
 
+    public function renderDetailSum($data)
+    {
+        $detail = SkuTransferDetail::model()->find('sku_transfer_id=:skuId', [':skuId' => $data->id]);
+        return "{$detail->from_qty} {$detail->fromSatuan->nama} -> {$detail->to_qty} {$detail->toSatuan->nama}";
+    }
+
+    public function renderReferensi($data)
+    {
+        if (!empty($data->penjualan_id)) {
+            return $data->referensi . '<br>Penjualan: <a href="' . $this->createUrl('/penjualan/view', ['id' => $data->id]) . '">' . $data->penjualan->nomor . '</a>';
+        } else {
+            return $data->referensi;
+        }
+    }
+
     public function actionRenderTujuan()
     {
         $skuDetailId = Yii::app()->request->getPost('dariId');

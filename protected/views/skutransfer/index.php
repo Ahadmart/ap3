@@ -39,7 +39,14 @@ $this->widget('BGridView', [
 			'name'  => 'skuNama',
 			'value' => '$data->sku->nama',
 		],
-		'referensi',
+		[
+			'value' => [$this, 'renderDetailSum']
+		],
+		[
+			'name' => 'referensi',
+			'value' => [$this, 'renderReferensi'],
+			'type' => 'raw',
+		],
 		'tanggal_referensi',
 		'keterangan',
 		[

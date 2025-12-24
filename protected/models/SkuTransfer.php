@@ -13,12 +13,14 @@ use Mpdf\Tag\S;
  * @property string $referensi
  * @property string $tanggal_referensi
  * @property string $keterangan
+ * @property string $penjualan_id
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
  *
  * The followings are the available model relations:
+ * @property Penjualan $penjualan
  * @property Sku $sku
  * @property User $updatedBy
  * @property SkuTransferDetail[] $skuTransferDetails
@@ -50,13 +52,13 @@ class SkuTransfer extends CActiveRecord
         return [
             ['sku_id', 'required'],
             ['status', 'numerical', 'integerOnly' => true],
-            ['sku_id, updated_by', 'length', 'max' => 10],
+            ['sku_id, penjualan_id, updated_by', 'length', 'max' => 10],
             ['nomor, referensi', 'length', 'max' => 45],
             ['keterangan', 'length', 'max' => 500],
             ['tanggal, tanggal_referensi, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, sku_id, tanggal, nomor, referensi, tanggal_referensi, keterangan, status, updated_at, updated_by, created_at, skuNomor, skuNama', 'safe', 'on' => 'search'],
+            ['id, sku_id, tanggal, nomor, referensi, tanggal_referensi, keterangan, penjualan_id, status, updated_at, updated_by, created_at, skuNomor, skuNama', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -68,6 +70,7 @@ class SkuTransfer extends CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return [
+            'penjualan'          => [self::BELONGS_TO, 'Penjualan', 'penjualan_id'],
             'sku'                => [self::BELONGS_TO, 'Sku', 'sku_id'],
             'updatedBy'          => [self::BELONGS_TO, 'User', 'updated_by'],
             'skuTransferDetails' => [self::HAS_MANY, 'SkuTransferDetail', 'sku_transfer_id'],
@@ -87,6 +90,7 @@ class SkuTransfer extends CActiveRecord
             'referensi'         => 'Referensi',
             'tanggal_referensi' => 'Tanggal Referensi',
             'keterangan'        => 'Keterangan',
+            'penjualan_id'      => 'Penjualan',
             'status'            => 'Status',
             'updated_at'        => 'Updated At',
             'updated_by'        => 'Updated By',
@@ -121,6 +125,7 @@ class SkuTransfer extends CActiveRecord
         $criteria->compare('referensi', $this->referensi, true);
         $criteria->compare('tanggal_referensi', $this->tanggal_referensi, true);
         $criteria->compare('keterangan', $this->keterangan, true);
+        $criteria->compare('penjualan_id', $this->penjualan_id, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
@@ -131,7 +136,7 @@ class SkuTransfer extends CActiveRecord
         $criteria->compare('sku.nama', $this->skuNama, true);
 
         $sort = [
-            'defaultOrder' => 't.status, t.tanggal desc',
+            'defaultOrder' => 't.status, t.tanggal desc, t.nomor desc',
             'attributes'   => [
                 'skuNomor' => [
                     'asc'  => 'sku.nomor',
@@ -227,7 +232,7 @@ class SkuTransfer extends CActiveRecord
 
     public function transfer()
     {
-        $tr             = $this->dbConnection->beginTransaction();
+        $tr = $this->dbConnection->beginTransaction();
         // Yii::log('simpan()');
         $r = [
             'sukses' => false,
@@ -289,7 +294,7 @@ class SkuTransfer extends CActiveRecord
         return Yii::app()->db->createCommand($sql)->bindValue(':barangId', $barangId)->queryAll();
     }
 
-    public static function autoRefill($barangId, $qty)
+    public static function autoRefill($barangId, $qty, $penjualanId)
     {
         if (empty(self::detailSkuOf($barangId))) {
             return;
@@ -314,7 +319,7 @@ class SkuTransfer extends CActiveRecord
                         $stokKosong = false;
                         $asalId     = $item['id'];
                         $tujuanId   = $skuDetails[$key - 1]['id'];
-                        self::autoUnpack($asalId, $tujuanId, $item['rasio_konversi']);
+                        self::autoUnpack($asalId, $tujuanId, $item['rasio_konversi'], $penjualanId);
                         break;
                     }
                 }
@@ -323,15 +328,16 @@ class SkuTransfer extends CActiveRecord
         } while ($stok < $qty and !$stokKosong);
     }
 
-    public static function autoUnpack($asalId, $tujuanId, $rasioKonversi)
+    public static function autoUnpack($asalId, $tujuanId, $rasioKonversi, $penjualanId)
     {
         $skuDetailAsal   = SkuDetail::model()->findByPk($asalId);
         $skuDetailTujuan = SkuDetail::model()->findByPk($tujuanId);
 
-        $skuTransfer             = new SkuTransfer();
-        $skuTransfer->sku_id     = $skuDetailAsal->sku_id;
-        $skuTransfer->referensi  = 'Auto Unpack';
-        $skuTransfer->keterangan = 'Auto Transfer';
+        $skuTransfer               = new SkuTransfer();
+        $skuTransfer->sku_id       = $skuDetailAsal->sku_id;
+        $skuTransfer->referensi    = 'Auto Unpack';
+        $skuTransfer->keterangan   = 'Auto Transfer';
+        $skuTransfer->penjualan_id = $penjualanId;
         if (!$skuTransfer->save()) {
             throw new Exception('Unpack: Gagal simpan SKU Transfer: ' . serialize($skuTransfer->getErrors()));
         }
