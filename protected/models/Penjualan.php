@@ -1071,6 +1071,12 @@ class Penjualan extends CActiveRecord
                 if (isset($layer['negatif']) && $layer['negatif']) {
                     $hpp->harga_beli_temp = $layer['hargaBeli'];
                 }
+                
+                // Jika barang tidak aktif, set harga beli 0
+                if ($detail->barang->status == 0) {
+                    $hpp->harga_beli = 0;
+                }
+
                 if (!$hpp->save()) {
                     Yii::log('Gagal simpan HPP: ' . var_export($hpp->getErrors(), true), 'info');
                     throw new Exception('Gagal simpan HPP', 500);
