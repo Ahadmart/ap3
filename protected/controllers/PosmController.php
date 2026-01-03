@@ -232,4 +232,28 @@ class PosmController extends PosController
             'scanBarcode' => $scanBarcode,
         ]);
     }
+
+
+    public function actionIndex()
+    {
+        $model = new Penjualan('search');
+        $model->unsetAttributes(); // clear any default values
+        if (isset($_GET['Penjualan'])) {
+            $model->attributes = $_GET['Penjualan'];
+        }
+
+        $this->render('//posm/index', [
+            'model' => $model,
+        ]);
+
+        $config         = Config::model()->find("nama='customerdisplay.pos.enable'");
+        $wsClientEnable = $config->nilai;
+        if ($wsClientEnable) {
+            $clientWS = new AhadPosWsClient();
+            $data     = [
+                'tipe' => AhadPosWsClient::TIPE_IDLE,
+            ];
+            $clientWS->sendMessage(json_encode($data));
+        }
+    }
 }
