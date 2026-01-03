@@ -689,7 +689,7 @@ class Penjualan extends CActiveRecord
         ]);
         $sisa = $qty;
         if ($diskonModel->barang_id == $diskonModel->barang_bonus_id) {
-            $min = $diskonModel->qty + $diskonModel->barang_bonus_qty; // qty asli + bonus minimum
+            $min = $diskonModel->qty + $diskonModel->barang_bonus_qty;                                                   // qty asli + bonus minimum
             $max = ($diskonModel->qty_max / $diskonModel->qty * $diskonModel->barang_bonus_qty) + $diskonModel->qty_max; // qty asli + bonus maksimum
 
             if ($qty >= $min) {
@@ -885,6 +885,21 @@ class Penjualan extends CActiveRecord
             ]);
         }
 
+        if ($tipeDiskonId == DiskonBarang::TIPE_PROMO_PERSTRUKTUR) {
+            $barang = Barang::model()->findByPk($barangId);
+            $waktu  = date('Y-m-d H:i:s');
+            return DiskonBarang::model()->find([
+                'condition' => 'barang_struktur_id=:strukturBarangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= :waktu and (sampai >= :waktu or sampai is null)',
+                'order'     => 'id desc',
+                'params'    => [
+                    'strukturBarangId' => $barang->struktur_id,
+                    'status'           => DiskonBarang::STATUS_AKTIF,
+                    'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERSTRUKTUR,
+                    'waktu'            => $waktu,
+                ],
+            ]);
+        }
+
         /* Diskon lainnya */
         return DiskonBarang::model()->find([
             'condition' => '(barang_id=:barangId or semua_barang=:semuaBarang) and status=:status and tipe_diskon_id=:tipeDiskon and dari <= now() and (sampai >= now() or sampai is null)',
@@ -1065,7 +1080,7 @@ class Penjualan extends CActiveRecord
                 if (isset($layer['negatif']) && $layer['negatif']) {
                     $hpp->harga_beli_temp = $layer['hargaBeli'];
                 }
-                
+
                 // Jika barang tidak aktif, set harga beli 0
                 if ($detail->barang->status == 0) {
                     $hpp->harga_beli = 0;
@@ -1353,7 +1368,7 @@ class Penjualan extends CActiveRecord
 
         $no = 1;
         foreach ($penjualanDetail as $detail) {
-            $strBarcode              = str_pad(substr($detail['barcode'], 0, 13), 13, ' '); // Barcode hanya diambil 13 char pertama
+            $strBarcode              = str_pad(substr($detail['barcode'], 0, 13), 13, ' ');    // Barcode hanya diambil 13 char pertama
             $strBarang               = str_pad(trim(substr($detail['nama'], 0, 28)), 28, ' '); //Nama Barang hanya diambil 28 char pertama
             $strQty                  = str_pad($detail['qty'], 5, ' ', STR_PAD_LEFT);
             $strHarga                = str_pad(number_format($detail['harga_jual'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
@@ -2017,7 +2032,7 @@ class Penjualan extends CActiveRecord
         foreach ($listHarga as $satuan) {
             if ($sisa >= $satuan['qty']) {
                 $jmlSatuan = floor($sisa / $satuan['qty']); // Jumlah dari satuan (pak, lsn, karton, dst)
-                $qtyTotal  = $jmlSatuan * $satuan['qty']; // Jumlah qty total dari KELIPATAN satuan
+                $qtyTotal  = $jmlSatuan * $satuan['qty'];   // Jumlah qty total dari KELIPATAN satuan
                 /* -------------- */
                 $satuan['harga_jual_normal'] = $hargaJualNormal;
                 $this->insertBarang($barangId, $qtyTotal, $satuan['harga'], 0, null, $satuan);
@@ -2081,7 +2096,7 @@ class Penjualan extends CActiveRecord
     public function getDetailArr()
     {
         $sql = "
-        SELECT 
+        SELECT
             barang.nama,
             qty,
             FORMAT(harga_jual + IFNULL(diskon, 0), 0, 'id_ID') harga_jual,
