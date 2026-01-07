@@ -394,7 +394,7 @@ class SkutransferController extends Controller
     public function renderDetailSum($data)
     {
         $detail = SkuTransferDetail::model()->find('sku_transfer_id=:skuId', [':skuId' => $data->id]);
-        return "{$detail->from_qty} {$detail->fromSatuan->nama} -> {$detail->to_qty} {$detail->toSatuan->nama}";
+        return is_null($detail) ? '' : "{$detail->from_qty} {$detail->fromSatuan->nama} -> {$detail->to_qty} {$detail->toSatuan->nama}";
     }
 
     public function renderReferensi($data)
