@@ -12,7 +12,7 @@ if (isset($_POST['install'])):
     ?>Database Dropped!
     <p>Creating Database <?php echo $_POST['db']; ?>..</p>
     <?php
-    exec("mysql -uroot {$passwd} -e'CREATE DATABASE IF NOT EXISTS `{$_POST['db']}` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci'");
+    exec("mysql -uroot {$passwd} -e'CREATE DATABASE IF NOT EXISTS `{$_POST['db']}` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci'");
     ?>Database Created!
     <p>Migrating Database..</p>
     <?php
