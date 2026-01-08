@@ -5,7 +5,7 @@ class m200102_041515_create_penjualan_tarik_tunai extends CDbMigration
 
     public function safeUp()
     {
-        $tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4';
+        $tableOptions = 'ENGINE=InnoDB';
 
         $this->createTable('penjualan_tarik_tunai',
                 ["

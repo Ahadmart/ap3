@@ -16,7 +16,7 @@ class m170503_042309_create_table_fitur_tag extends CDbMigration
               PRIMARY KEY (`id`),
               UNIQUE KEY `nama` (`nama`),
               KEY `fk_tag_updatedby_idx` (`updated_by`)"
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine);
 
         /* Foreign Key Tabel tag */
         $this->addForeignKey('fk_tag_updatedby', 'tag', 'updated_by', 'user', 'id', 'NO ACTION', 'NO ACTION');
@@ -32,7 +32,7 @@ class m170503_042309_create_table_fitur_tag extends CDbMigration
               KEY `fk_tag_barang_updatedby_idx` (`updated_by`),
               KEY `fk_tag_barang_tag_idx` (`tag_id`),
               KEY `fk_tag_barang_barang_idx` (`barang_id`)"
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine);
 
         /* Foreign Key Tabel tag_barang */
         $this->addForeignKey('fk_tag_barang_barang', 'tag_barang', 'barang_id', 'barang', 'id', 'NO ACTION', 'NO ACTION');

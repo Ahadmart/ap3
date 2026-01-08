@@ -25,7 +25,7 @@ class m140112_075240_init_db extends CDbMigration
             'bizrule' => 'text',
             'data' => 'text',
             'PRIMARY KEY (`itemname`,`userid`)'
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine );
 
         $this->insert('AuthAssignment', array(
             'itemname' => 'admin',
@@ -41,7 +41,7 @@ class m140112_075240_init_db extends CDbMigration
             'bizrule' => 'text',
             'data' => 'text',
             'PRIMARY KEY (`name`)'
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine );
 
         $this->insert('AuthItem', array('name' => 'admin', 'type' => '2', 'description' => '', 'bizrule' => NULL, 'data' => 'N;'));
         $this->insert('AuthItem', array('name' => 'authenticated', 'type' => '2', 'description' => 'User Biasa', 'bizrule' => 'return !Yii::app()->user->isGuest;', 'data' => 'N;'));
@@ -55,7 +55,7 @@ class m140112_075240_init_db extends CDbMigration
             'child' => 'varchar(64) NOT NULL',
             'PRIMARY KEY (`parent`,`child`)',
             'KEY `child` (`child`)'
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine );
 
         $this->insert('AuthItemChild', array(
             'parent' => 'authenticated',
@@ -74,7 +74,7 @@ class m140112_075240_init_db extends CDbMigration
             'updated_by' => 'int(11) NOT NULL',
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)'
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 AUTO_INCREMENT=1');
+                ), 'ENGINE=' . $dbEngine . ' AUTO_INCREMENT=1');
 
         $this->createTable('user', array(
             'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -91,7 +91,7 @@ class m140112_075240_init_db extends CDbMigration
             'PRIMARY KEY (`id`)',
             'UNIQUE KEY `nama` (`nama`)',
             'KEY `fk_user_theme_idx` (`theme_id`)'
-                ), 'ENGINE=' . $dbEngine . '  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2');
+                ), 'ENGINE=' . $dbEngine . ' AUTO_INCREMENT=2');
 
         $this->insert('user', array(
             'id' => 1,

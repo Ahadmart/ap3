@@ -27,7 +27,7 @@ class m180202_155741_create_table_po extends CDbMigration
             CONSTRAINT `fk_po_pembelian` FOREIGN KEY (`pembelian_id`) REFERENCES `pembelian` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
             CONSTRAINT `fk_po_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
             ",
-        ], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+        ], 'ENGINE=' . $dbEngine);
 
         $this->createTable('po_detail', ["
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -53,7 +53,7 @@ class m180202_155741_create_table_po extends CDbMigration
             CONSTRAINT `fk_po_detail_header` FOREIGN KEY (`po_id`) REFERENCES `po` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
             CONSTRAINT `fk_po_detail_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
             ",
-        ], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+        ], 'ENGINE=' . $dbEngine);
         $now = date('Y-m-d H:i:s');
     }
 

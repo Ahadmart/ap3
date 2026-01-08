@@ -23,7 +23,7 @@ class m180413_014402_create_table_u_multisatuanhargajual extends CDbMigration
 			CONSTRAINT `fk_barang_harga_jual_multi_satuan` FOREIGN KEY (`satuan_id`) REFERENCES `barang_satuan` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 			CONSTRAINT `fk_barang_harga_jual_multi_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
             ",
-        ], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+        ], 'ENGINE=' . $dbEngine);
 
         $this->createTable('penjualan_multi_harga', ["
 			`id` int(10) NOT NULL AUTO_INCREMENT,
@@ -43,7 +43,7 @@ class m180413_014402_create_table_u_multisatuanhargajual extends CDbMigration
 			CONSTRAINT `fk_penjualan_multi_harga_penjualandetail` FOREIGN KEY (`penjualan_detail_id`) REFERENCES `penjualan_detail` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 			CONSTRAINT `fk_penjualan_multi_harga_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
             ",
-        ], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+        ], 'ENGINE=' . $dbEngine);
     }
 
     public function safeDown()

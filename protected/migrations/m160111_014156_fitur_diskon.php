@@ -37,7 +37,7 @@ class m160111_014156_fitur_diskon extends CDbMigration
             PRIMARY KEY (`id`),
             KEY `fk_barang_diskon_barang_idx` (`barang_id`),
             KEY `fk_barang_diskon_updatedby_idx` (`updated_by`)"
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine);
 
         $this->createTable('penjualan_diskon', array(
             "`id` int(10) NOT NULL AUTO_INCREMENT,
@@ -53,7 +53,7 @@ class m160111_014156_fitur_diskon extends CDbMigration
             KEY `fk_penjualan_diskon_penjualandetail_idx` (`penjualan_detail_id`),
             KEY `fk_penjualan_diskon_penjualan_idx` (`penjualan_id`),
             KEY `fk_penjualan_diskon_updatedby_idx` (`updated_by`)"
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine);
 
         /* Foreign Key Tabel barang_diskon */
         $this->addForeignKey('fk_barang_diskon_barang', 'barang_diskon', 'barang_id', 'barang', 'id', 'NO ACTION', 'NO ACTION');

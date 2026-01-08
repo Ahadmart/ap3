@@ -5,7 +5,7 @@ class m200721_025446_init_tabel_barang_struktur extends CDbMigration
 
     public function safeUp()
     {
-        $tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4';
+        $tableOptions = 'ENGINE=InnoDB';
 
         $this->createTable('barang_struktur',
                 ["

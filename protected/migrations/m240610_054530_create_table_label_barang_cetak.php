@@ -20,7 +20,7 @@ class m240610_054530_create_table_label_barang_cetak extends CDbMigration
 				CONSTRAINT `fk_label_barang_cetak_barang` FOREIGN KEY (`barang_id`) REFERENCES `barang` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 				CONSTRAINT `fk_label_barang_cetak_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 				 "
-		], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+		], 'ENGINE=' . $dbEngine);
 	}
 
 	public function safeDown()

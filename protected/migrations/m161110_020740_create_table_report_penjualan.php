@@ -18,7 +18,7 @@ class m161110_020740_create_table_report_penjualan extends CDbMigration
             `nama` varchar(100) DEFAULT NULL,
             `margin` decimal(18,2) DEFAULT NULL,
             `user_id` int(10) unsigned DEFAULT NULL"
-                ], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+                ], 'ENGINE=' . $dbEngine);
     }
 
     public function safeDown()

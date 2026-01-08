@@ -5,12 +5,12 @@ class m181008_034342_create_table_salesorder extends CDbMigration
 
     public function safeUp()
     {
-        $tableOption = 'ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci';
+        $tableOption = 'ENGINE=InnoDB';
 
         $this->createTable('so',
                 ["
                 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-                `nomor` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+                `nomor` varchar(45) DEFAULT NULL,
                 `tanggal` datetime NOT NULL,
                 `profil_id` int(10) unsigned NOT NULL,
                 `penjualan_id` int(10) unsigned DEFAULT NULL,

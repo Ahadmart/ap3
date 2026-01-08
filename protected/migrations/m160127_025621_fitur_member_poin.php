@@ -29,7 +29,7 @@ class m160127_025621_fitur_member_poin extends CDbMigration
             'created_at' => "timestamp NOT NULL DEFAULT '2000-01-01 00:00:00'",
             'PRIMARY KEY (`id`)',
             'KEY `fk_member_periode_poin_updatedby_idx` (`updated_by`)'
-                ), 'ENGINE=' . $dbEngine . '  DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine);
 
         $this->createTable('penjualan_member', array(
             'id' => 'int(10) unsigned NOT NULL AUTO_INCREMENT',
@@ -43,7 +43,7 @@ class m160127_025621_fitur_member_poin extends CDbMigration
             'KEY `fk_penjualan_member_profil_idx` (`profil_id`)',
             'KEY `fk_penjualan_member_penjualan_idx` (`penjualan_id`)',
             'KEY `fk_penjualan_member_updatedby_idx` (`updated_by`)'
-                ), 'ENGINE=' . $dbEngine . '  DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine);
 
         /* Foreign Key Tabel member_periode_poin */
         $this->addForeignKey('fk_member_periode_poin_updatedby_idx', 'member_periode_poin', 'updated_by', 'user', 'id', 'NO ACTION', 'NO ACTION');
