@@ -1,0 +1,155 @@
+body{
+    font-family: OpenSans;
+    font-size: 12px;
+}
+
+.clear{
+    clear: both;
+}
+
+
+#header1{
+    float:left;
+    text-align: left;
+    font-size: 2em;
+    width: 30%;
+    /*    border-top: thin solid black;
+        border-bottom: thin solid black;*/
+    /*border-right: thin solid black;*/
+    /*padding-bottom: 30px;*/
+    /*border: thin solid black;*/
+}
+
+#header1 div{
+    /* Hack biar rata kiri karena font-size */
+    margin-left: -2px; 
+}
+
+#header1 div.smaller{
+    font-size: 0.9em; 
+}
+
+#dari{
+    float: right;
+    text-align: right;
+    width: 59%;
+    /*    border-top: thin solid black;
+        border-bottom: thin solid black;*/
+    /*border-left: thin solid #333;*/
+}
+
+#kepada{
+    float:left;
+    width: 45%;
+}
+
+#faktur-info{
+    float:right;
+    width:30%;
+}
+
+.nama-toko{
+    font-size: 1.5em;
+}
+
+.nama-customer{
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.alamat{
+    font-size: 0.9em;
+}
+
+#dari .alamat{
+    border-top: 1px solid #000    
+}
+
+
+.email{
+    font-style: italic;
+}
+
+.garis{
+    width: 100%;
+    border-bottom: 1px solid #000;    
+    margin: 10px 0px;
+    /*margin-top: -20px;*/
+}
+
+#header-total{
+    font-size: 1.1em;
+    text-transform: uppercase;
+}
+
+#total{
+    font-weight: bold;
+}
+
+.kanan{
+    float: right;
+    text-align: right;
+}
+
+.kiri{
+    float: left;
+}
+
+
+.miring{
+    font-style: italic;
+}
+
+table{
+    width: 100%;
+}
+
+#ttd tr td{
+    text-align: center;
+}
+
+#theader{
+    padding-left:7px;
+}
+
+
+#tdetail{
+    border-collapse: collapse;
+    border: thin solid black;
+}
+
+#tdetail tr th{
+    height: 30px;
+    text-transform: uppercase;
+    font-weight: normal;
+}
+
+#tdetail tr th, #tdetail tr td{
+    border: thin solid black;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#tdetail tr td{
+    border-top: none;
+    border-bottom: none;
+}
+
+.table-bordered, .table-bordered tr td{
+    border:thin solid black;
+    border-collapse: collapse;
+}
+
+.jenisKayu{
+    padding-left: 5px;
+    text-align: left;
+}
+
+.vol{
+    text-align: right;
+}
+
+#catatan{
+    font-size: 0.8em;
+    padding-left: 5px;
+}

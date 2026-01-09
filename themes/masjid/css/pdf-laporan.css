@@ -1,0 +1,127 @@
+body{
+    font-family: OpenSans;
+    font-size: 12px;
+}
+
+.clear{
+    clear: both;
+}
+
+
+#header1{
+    /*float:left;*/
+    text-align: center;
+    font-size: 1.25em;
+    width: 100%;
+    /*    border-top: thin solid black;
+        border-bottom: thin solid black;*/
+    /*border-right: thin solid black;*/
+    /*padding-bottom: 30px;*/
+    /*border: thin solid black;*/
+}
+
+#header1 div{
+    /*Hack biar rata kiri karena font-size*/
+    margin-left: -2px; 
+}
+
+#tanggal{
+    font-size: .75em;
+}
+
+#dari{
+    float: right;
+    text-align: right;
+    width: 59%;
+    /*    border-top: thin solid black;
+        border-bottom: thin solid black;*/
+    /*border-left: thin solid #333;*/
+}
+
+.garis{
+    width: 100%;
+    border-bottom: 1px solid #000;    
+    margin: 10px 0px;
+    /*margin-top: -20px;*/
+}
+
+#total{
+    font-weight: bold;
+}
+
+.level-1{
+    padding-left: 25px;
+}
+
+.level-2{
+    padding-left: 35px;
+}
+
+.tebal{
+    font-weight: bold;
+}
+
+.kanan{
+    float: right;
+    text-align: right;
+}
+
+.kiri{
+    float: left;
+}
+
+.tengah{
+    text-align: center;
+}
+
+.miring{
+    font-style: italic;
+}
+
+table{
+    width: 100%;
+}
+
+th{
+    text-transform: uppercase;
+    padding: 2px 2px;
+}
+
+td{
+    padding: 2px 0;
+}
+
+.trx-header{
+    padding-top: 10px;
+}
+
+.table-bordered{     
+    border-collapse: collapse;
+}
+
+.table-bordered tr td{
+    border-bottom:1px solid gray;
+    border-top:1px solid gray;
+}
+
+.bordered{
+    border-collapse: collapse;
+}
+
+.bordered th, .bordered td{
+    border: 1px solid gray;
+}
+
+.bordered td{
+    padding: 5px;
+}
+
+.remarks-h{
+    margin-top: 25px;
+    font-style: italic;
+    margin-bottom: 5px;
+}
+
+.remarks-d{
+    text-align: justify;
+}

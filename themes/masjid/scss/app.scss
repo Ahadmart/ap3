@@ -1,0 +1,832 @@
+/* 
+    Created on : 1 Oktober 2025, 20:34
+    Author     : abumuhammad
+*/
+
+$primary-color: #a66c00;
+$secondary-color: #ad8670;
+$alert-color: #46091c;
+$success-color: #1b5e20;
+$warning-color: #733e0a;
+$info-color: #455a64;
+$merah: #d32f2f;
+$gold: #cc9933;
+
+$warna-text: #d08700; //#fcf899
+$background: #030712;
+$background1: #001d36;
+$background2: #1d3246;
+$background3: #083352;
+$border0: #565553;
+@mixin animasi($param) {
+    -webkit-animation: $param;
+    -moz-animation: $param;
+    -ms-animation: $param;
+    animation: $param;
+}
+
+body {
+    color: $warna-text;
+    background: $background url(../img/kubah_hijau.jpg) repeat repeat center / cover fixed;
+    padding: 0;
+    margin: 0;
+    font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
+    font-style: normal;
+    /*font-weight: 300;*/
+    line-height: 1;
+    position: relative;
+    cursor: default;
+}
+
+.delete,
+.angka-negatif {
+    color: $merah;
+}
+
+// Tambahin garis di bawah
+nav.top-bar {
+    box-shadow: 0 1px #4e4e4e;
+    background: rgba($background2, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.top-bar-section {
+    ul li {
+        background: rgba($background2, 0.5);
+        backdrop-filter: blur(5px);
+    }
+    li:not(.has-form) {
+        a:not(.button) {
+            background: rgba($background2, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        a:hover:not(.button) {
+            background: rgba($background2, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        & > a {
+            background: rgba($background2, 0.5);
+            backdrop-filter: blur(5px);
+        }
+    }
+    & > ul > .divider {
+        border-right: 1px solid #455a64;
+    }
+    & .divider {
+        border-top: 1px solid #455a64;
+    }
+    .dropdown li:not(.has-form):not(.active) > a:not(.button) {
+        background: rgba($background2, 0.5);
+        backdrop-filter: blur(5px);
+    }
+    .dropdown li:hover:not(.has-form):not(.active) > a:not(.button) {
+        background: #2d3a41;
+    }
+
+    .has-form {
+        background: rgba($background2, 0.5);
+        backdrop-filter: blur(5px);
+    }
+}
+
+// Font Override
+nav .top-bar-section ul li > a {
+    font-family: "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+    color: $warna-text;
+}
+
+hr {
+    border: solid $warna-text;
+    border-width: 1px 0 0;
+}
+
+// eo font override
+select {
+    color: $warna-text;
+    font-family: Ubuntu, "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+}
+
+option {
+    &.option-head {
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+}
+
+/*------------------*/
+
+#content {
+    margin: 0px 0px 30px;
+    padding-top: 15px;
+}
+
+.getar {
+    @include animasi(tada 1s infinite);
+}
+
+table {
+    background: $background3;
+    thead {
+        background: darken($background3, 10%);
+        tr {
+            th {
+                color: $warna-text;
+            }
+        }
+    }
+    tr {
+        &.even,
+        &.alt,
+        &:nth-of-type(2n) {
+            background: darken($background3, 5%);
+        }
+        th {
+            color: $warna-text;
+        }
+        td {
+            color: #f8f4ec;
+        }
+    }
+}
+
+.tabel-index {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 0;
+    input,
+    select {
+        margin-bottom: 0px;
+    }
+    th {
+        //text-align: center;
+    }
+    td {
+        font-size: 0.825em;
+    }
+    tr.baru,
+    tr.manual,
+    tr.inaktif {
+        background-color: #f57c00;
+        font-weight: bold;
+        td {
+            color: #fff;
+            a.editable {
+                color: #fff;
+                border-bottom-color: #fff;
+            }
+        }
+    }
+    tr.hj-berubah {
+        background-color: #388e3c;
+        font-weight: bold;
+        td {
+            color: #fff;
+            a.editable {
+                color: #fff;
+                border-bottom-color: #fff;
+            }
+        }
+    }
+    tr.margin-min {
+        background-color: $merah;
+        font-weight: bold;
+        td {
+            color: #fff;
+            a {
+                &.editable {
+                    color: #fff;
+                    border-bottom-color: #fff;
+                }
+                &.delete {
+                    color: $alert-color;
+                }
+            }
+        }
+    }
+}
+
+input,
+select {
+    &.error {
+        margin-bottom: 0px;
+    }
+}
+
+nav {
+    .title-area {
+        img {
+            margin-top: -5px;
+        }
+    }
+}
+
+.summary {
+    font-size: 0.85em;
+    margin-bottom: 10px;
+    text-align: right;
+    color: $warna-text;
+}
+
+span.required {
+    color: $merah;
+}
+
+li.active > a {
+    background-color: lighten($background3, 15%);
+    color: #fff;
+}
+
+.row {
+    max-width: 100%;
+}
+
+.block {
+    margin-bottom: 10px; //background: url(../img/bg-av.png) top fixed; //rgba(#000, 0.5)
+    background-color: rgba(
+        $background1,
+        0.6
+    ); //rgba(#000, 0.5);//rgba(34, 45, 45, 0.7);//rgba(14, 39, 40, 0.7);//rgba(0,0,0,0.7);
+    backdrop-filter: blur(20px);
+}
+
+.block-header {
+    overflow: visible;
+    background: rgba($background2, 0.6) url(../img/bg3.png) repeat-y left; //border-bottom: 1px solid #222;
+    ul {
+        &.title-area {
+            width: auto;
+            float: left;
+        }
+        &.right {
+            width: auto;
+        }
+    }
+    li {
+        &.name > h1 {
+            color: #fff;
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+        &.name > h6 {
+            color: #fff;
+            margin-left: 15px;
+            margin-right: 15px;
+            margin-top: 10px;
+        }
+    }
+    .has-form {
+        padding: 0px 15px; //border-bottom: 1px solid #222;
+    }
+    .button {
+        font-size: 0.875rem;
+        position: relative;
+        top: 7px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+.button.tiny.bigfont {
+    font-size: 0.875rem;
+}
+
+a.button.micro.bigfont {
+    font-size: 0.875rem;
+    padding: 0.3rem;
+    margin-bottom: 0;
+}
+
+.block-content {
+    padding: 15px 0 1px; //background: #373b3e;
+    border-top: 1px solid $border0;
+    & > table {
+        //margin: 0;
+        tr td {
+            font-size: 0.75rem;
+        }
+    }
+    div.panel {
+        // padding override
+        padding: 0.75rem;
+        padding-bottom: 0; //margin: 0 15px 15px;
+        form {
+            margin: 0 -15px;
+        }
+    }
+    .prefix .fa-2x {
+        padding-top: 4px;
+    }
+}
+
+// Add box shadow to panel
+.panel {
+    //box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(0, 0, 0, 0.15), inset 1px 0 2px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.15);
+    //background-color: #505F69;
+    border-color: $border0;
+    background: rgba($background, 0.75); //rgba(#000,0.3);
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    li,
+    dl {
+        color: $warna-text;
+        small {
+            color: $warna-text;
+        }
+    }
+    .detail-view {
+        margin-bottom: 20px;
+    }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    small {
+        color: $warna-text;
+    }
+}
+
+span.postfix,
+span.prefix {
+    background-color: $info-color;
+    color: #fff;
+    border-color: lighten($info-color, 10%);
+}
+// tombol disebelah kanan input
+.postfix.button {
+    // background-color: $primary-color;
+    // margin-bottom: 0;
+    // border-color: lighten($primary-color, 10%);
+    .fa-2x {
+        padding-top: 4px;
+    }
+}
+
+div.error {
+    display: block;
+    padding: 0.33333rem 0.5rem 0.5rem;
+    margin-top: -1px;
+    margin-bottom: 0.88889rem;
+    font-size: 0.66667rem;
+    font-weight: normal;
+    font-style: italic;
+    background: #f04124;
+    color: white;
+    &.alone {
+        font-size: 0.875rem;
+        margin: 0 15px;
+        margin-top: -1px;
+        margin-bottom: 0.88889rem;
+    }
+}
+
+#input-pemb-detail {
+    input {
+        text-align: right;
+    }
+}
+
+th.rata-kanan,
+td.rata-kanan,
+.rata-kanan {
+    text-align: right;
+}
+
+th.rata-tengah,
+td.rata-tengah,
+.rata-tengah {
+    text-align: center;
+}
+
+/* Style untuk accesskey */
+
+.ak {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+tr {
+    transition: background-color 0.5s ease;
+    &.pilih,
+    &.selected {
+        background-color: lighten($background3, 15%) !important;
+        a {
+            //color: $alert-color;
+            &.delete {
+                color: $gold;
+            }
+        }
+    }
+}
+
+.total {
+    float: right;
+    /*font-weight: bold;*/
+    /*font-size: 1.125rem;*/
+}
+
+footer {
+    text-align: right;
+    background-color: $background2;
+    color: white;
+    line-height: 20px;
+    font-size: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%; //padding: 0 15px;
+    z-index: 3;
+    box-shadow: 0 -1px #4e4e4e;
+    span {
+        padding: 0 15px;
+        &.left {
+            border-right: 1px solid #3e4144;
+        }
+        &.right {
+            border-left: 1px solid #3e4144;
+        }
+    }
+}
+
+.jqstooltip-ovr {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    visibility: hidden;
+    background: rgb(0, 0, 0) transparent;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    font-size: 10px;
+    text-align: left;
+    white-space: nowrap;
+    padding: 3px 0;
+    height: 30px;
+    width: auto;
+    border: 1px solid white;
+}
+
+.jqsfield {
+    color: #fff;
+    font: 10px;
+    text-align: left;
+}
+
+.input-toogle {
+    cursor: pointer;
+}
+
+.detail-view {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 1px;
+    border: 0;
+    tr {
+        th {
+            text-align: right;
+        }
+    }
+}
+
+.f-dropdown {
+    &.box-menu {
+        a {
+            top: 0;
+        }
+    }
+    &.content {
+        padding: 0;
+        span {
+            display: block;
+            padding: 0.5rem;
+            color: #555;
+        }
+    }
+}
+
+label {
+    color: $warna-text;
+}
+
+.datepicker.dropdown-menu {
+    //background-color: #34383b;
+    border-color: $border0;
+}
+
+.datepicker table {
+    th {
+        background-color: $background;
+    }
+    td {
+        background-color: $background;
+        &.day {
+            color: $background2;
+        }
+        &.old,
+        &.new {
+            color: #999;
+        }
+        span.hour {
+            color: $background2;
+        }
+        span.minute {
+            color: $background2;
+        }
+        &.active.day,
+        span.active {
+            background-color: #e73700;
+            color: #fff;
+        }
+    }
+}
+
+.header {
+    .label {
+        font-size: 0.85rem;
+        margin-bottom: 3px;
+    }
+    .label-total {
+        font-size: 1.3rem;
+    }
+}
+
+.label-total {
+    font-size: 1rem;
+}
+
+.primary.label {
+    background-color: darken($primary-color, 10%);
+    color: lighten($warna-text, 10%);
+}
+
+.top-bar-section {
+    .dropdown {
+        border: 1px solid #3e4144;
+    }
+    .divider {
+        //border-top: 0;
+    }
+}
+
+input:not([type]),
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+input[type="color"],
+textarea {
+    // color: $warna-text;
+    color: $warna-text;
+    background-color: $background3;
+    border-color: $border0;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px inset;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="month"]:focus,
+input[type="week"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="time"]:focus,
+input[type="url"]:focus,
+input[type="color"]:focus,
+textarea:focus {
+    //glow effect on focus
+    background-color: $background3;
+    box-shadow: 0px 0px 15px lighten($background3, 15%);
+    border: 1px solid lighten($background3, 15%);
+}
+
+input:not([type])[disabled],
+input:not([type])[readonly],
+fieldset[disabled] input:not([type]),
+input[type="text"][disabled],
+input[type="text"][readonly],
+fieldset[disabled] input[type="text"],
+input[type="password"][disabled],
+input[type="password"][readonly],
+fieldset[disabled] input[type="password"],
+input[type="date"][disabled],
+input[type="date"][readonly],
+fieldset[disabled] input[type="date"],
+input[type="datetime"][disabled],
+input[type="datetime"][readonly],
+fieldset[disabled] input[type="datetime"],
+input[type="datetime-local"][disabled],
+input[type="datetime-local"][readonly],
+fieldset[disabled] input[type="datetime-local"],
+input[type="month"][disabled],
+input[type="month"][readonly],
+fieldset[disabled] input[type="month"],
+input[type="week"][disabled],
+input[type="week"][readonly],
+fieldset[disabled] input[type="week"],
+input[type="email"][disabled],
+input[type="email"][readonly],
+fieldset[disabled] input[type="email"],
+input[type="number"][disabled],
+input[type="number"][readonly],
+fieldset[disabled] input[type="number"],
+input[type="search"][disabled],
+input[type="search"][readonly],
+fieldset[disabled] input[type="search"],
+input[type="tel"][disabled],
+input[type="tel"][readonly],
+fieldset[disabled] input[type="tel"],
+input[type="time"][disabled],
+input[type="time"][readonly],
+fieldset[disabled] input[type="time"],
+input[type="url"][disabled],
+input[type="url"][readonly],
+fieldset[disabled] input[type="url"],
+input[type="color"][disabled],
+input[type="color"][readonly],
+fieldset[disabled] input[type="color"],
+textarea[disabled],
+textarea[readonly],
+fieldset[disabled] textarea {
+    color: darken($warna-text, 10%);
+    background-color: lighten($background3, 10%);
+    cursor: default;
+}
+
+select {
+    -moz-appearance: none;
+    text-indent: 0.01px;
+    text-overflow: "";
+    color: $warna-text;
+    background-color: $background3;
+    border-color: $border0;
+    background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgdmVyc2lvbj0iMS4xIgogICB4PSIxMnB4IgogICB5PSIwcHgiCiAgIHdpZHRoPSIyNHB4IgogICBoZWlnaHQ9IjNweCIKICAgdmlld0JveD0iMCAwIDYgMyIKICAgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgNiAzIgogICB4bWw6c3BhY2U9InByZXNlcnZlIgogICBpZD0ic3ZnMSIKICAgc29kaXBvZGk6ZG9jbmFtZT0iaW1hZ2Uuc3ZnIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIxLjMuMiAoMDkxZTIwZWYwZiwgMjAyMy0xMS0yNSwgY3VzdG9tKSIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcwogICAgIGlkPSJkZWZzMSIgLz48c29kaXBvZGk6bmFtZWR2aWV3CiAgICAgaWQ9Im5hbWVkdmlldzEiCiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGJvcmRlcmNvbG9yPSIjNjY2NjY2IgogICAgIGJvcmRlcm9wYWNpdHk9IjEuMCIKICAgICBpbmtzY2FwZTpzaG93cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTpwYWdlb3BhY2l0eT0iMC4wIgogICAgIGlua3NjYXBlOnBhZ2VjaGVja2VyYm9hcmQ9IjAiCiAgICAgaW5rc2NhcGU6ZGVza2NvbG9yPSIjZDFkMWQxIgogICAgIGlua3NjYXBlOnpvb209IjMyLjM3NSIKICAgICBpbmtzY2FwZTpjeD0iMTIiCiAgICAgaW5rc2NhcGU6Y3k9IjEuNTEzNTEzNSIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjE5MjAiCiAgICAgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iMTA0OCIKICAgICBpbmtzY2FwZTp3aW5kb3cteD0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3cteT0iMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9InN2ZzEiIC8+PHBvbHlnb24KICAgICBwb2ludHM9IjUuOTkyLDAgMi45OTIsMyAtMC4wMDgsMCAiCiAgICAgaWQ9InBvbHlnb24xIgogICAgIHN0eWxlPSJmaWxsOiNmZmZmZmYiIC8+PC9zdmc+Cg==");
+    &:focus {
+        color: $warna-text;
+        background-color: $background3;
+        border-color: $border0;
+    }
+}
+
+.select2-container--default .select2-selection--multiple,
+.select2-results {
+    color: $warna-text;
+    background-color: $background3;
+}
+
+tr {
+    transition: background-color 0.5s ease;
+    &.pilih {
+        background-color: lighten($background, 15%) !important;
+    }
+}
+
+.alert-box.warning {
+    background-color: $gold;
+    border-color: darken($gold, 10);
+}
+
+select {
+    -moz-appearance: none;
+    text-indent: 0.01px;
+    text-overflow: "";
+}
+
+.grid-loading {
+    background: url(3.gif) no-repeat;
+    th {
+        animation: bgpulse 0.5s infinite;
+    }
+}
+
+@keyframes bgpulse {
+    0% {
+        background-color: inherit;
+    }
+    50% {
+        background-color: $warning-color;
+    }
+    100% {
+        background-color: inherit;
+    }
+}
+
+//jquery-editable overwrite
+.editable-clear-x {
+    margin-top: -15px;
+}
+
+.ui-autocomplete {
+    background-color: #fff;
+    border: 1px solid #dddcd6;
+    max-height: 400px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
+
+.ui-menu-item {
+    a {
+        color: $background2;
+        font-size: 0.9rem;
+        small {
+            font-size: 0.75rem;
+        }
+    }
+    &.ui-state-focus {
+        box-shadow: 0px 0px 15px #afd8f8;
+        border: 1px solid #afd8f8;
+        margin: 0;
+        background-color: #00b7f3;
+    }
+}
+
+.file-upload {
+    position: relative;
+    overflow: hidden;
+    margin: 10px;
+}
+
+.file-upload input.file-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.select2-container {
+    margin-bottom: 20px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #f93c00;
+    border-color: darken(#f93c00, 10%);
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.select2-results__options {
+    color: $warna-text;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #f93c00;
+}
+
+.text-total {
+    font-weight: bold;
+}
+
+input[type="checkbox"] + label,
+input[type="radio"] + label {
+    vertical-align: middle;
+    margin-top: -0.5rem;
+}
+
+pre {
+    padding-bottom: 1rem;
+    color: #fff;
+}
+
+.small-only {
+    display: none;
+}
+
+@media only screen and (max-width: 640px) {
+    .small-only {
+        display: table-cell;
+    }
+}
