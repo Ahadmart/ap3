@@ -117,16 +117,12 @@ $include-html-global-classes: $include-html-classes;
 
 // We use these as default colors throughout
  //$primary-color: #008CBA; 
- $primary-color: #a66c00; 
- $secondary-color: #ad8670;
- //$alert-color: #f04124;
- $alert-color: #46091c;
- //$success-color: #43AC6A;
- $success-color: #1B5E20; 
- //$warning-color: #f08a24;
- $warning-color: #733e0a;
- //$info-color: #a0d3e8;
- $info-color: #455a64;
+$primary-color: #a66c00;
+$secondary-color: #ad8670;
+$alert-color: #46091c;
+$success-color: #1b5e20;
+$warning-color: #733e0a;
+$info-color: #455a64;
 
 // We use these to control various global styles
 // $body-bg: $white;
