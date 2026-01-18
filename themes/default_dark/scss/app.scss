@@ -358,7 +358,8 @@ a.button.micro.bigfont {
     }
 }
 
-span.prefix, span.postfix {
+span.prefix,
+span.postfix {
     background: #282b2c;
     color: #fff;
     border-color: #444c4e;
@@ -800,6 +801,7 @@ select {
 
 .reveal-modal {
     background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(7px);
 }
 
 input[type="checkbox"] + label,

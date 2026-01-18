@@ -24,7 +24,7 @@ class m160530_025747_create_tabel_penjualan_detail_h extends CDbMigration
             PRIMARY KEY (`id`),
             KEY `barang_idx` (`barang_id`),
             KEY `barcode_idx` (`barang_barcode`)"
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine);
     }
 
     public function safeDown()

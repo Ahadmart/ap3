@@ -10,6 +10,8 @@ class AhadPosWsClient
     const TIPE_BROSUR_UPDATE  = 40;
     const TIPE_LOGO_UPDATE    = 41;
     const TIPE_WINDOW_REFRESH = 50;
+    const TIPE_QRIS_PAID      = 60;
+    const TIPE_QRIS_SHOW      = 61;
 
     public $global = false; // Global true jika untuk semua kasir
     private $client;
@@ -61,7 +63,7 @@ class AhadPosWsClient
         $this->coreFields = [
             'timestamp' => date('Y-m-d H:i:s'),
         ];
-        if (!$this->global) {
+        if (! $this->global) {
             $this->coreFields = [
                 'timestamp' => date('Y-m-d H:i:s'),
                 'uId'       => Yii::app()->user->id,

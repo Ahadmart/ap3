@@ -11,7 +11,18 @@ $this->breadcrumbs = [
 $this->boxHeader['small']  = 'Ubah';
 $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
 ?>
-
+<?php // Dialog form konfirmasi untuk batal / hapus nota
+?>
+<div id="batal-form" class="small reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Konfirmasi Batal</h2>
+    <label>Alasan batal:
+        <input type="text" id="alasan-batal">
+    </label>
+    <div class="text-right">
+        <a href="#" class="small bigfont tiny button alert" id="batal-submit">OK</a>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
+</div>
 <div class="medium-7 large-7 columns" style="/*height: 100%; overflow: scroll*/">
     <div class="row collapse">
         <div class="small-2 medium-1 columns">
@@ -58,6 +69,31 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
             'barang' => $barang,
         ]);
         ?>
+    </div>
+    <?php // <div id="wsoutput" style="color: #fff"></div> 
+    ?>
+    <div id="qrcode-wrapper" class="tiny reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+        <div id="qrislogo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 110.71" fill="currentColor">
+                <title>QRIS</title>
+                <g id="Layer_2" data-name="Layer 2">
+                    <g id="Layer_1-2" data-name="Layer 1">
+                        <polygon points="287.71 67.86 287.71 58.33 287.71 39.29 259.14 39.29 240.09 39.29 240.09 29.76 287.71 29.76 287.71 10.71 240.09 10.71 211.52 10.71 211.52 29.76 211.52 39.29 211.52 58.33 240.09 58.33 259.14 58.33 259.14 67.86 211.52 67.86 211.52 86.91 259.14 86.91 287.71 86.91 287.71 67.86" />
+                        <rect x="182.95" y="10.71" width="19.05" height="76.19" />
+                        <polygon points="97.24 10.71 97.24 29.76 154.38 29.76 154.38 39.29 116.28 39.29 97.24 39.29 97.24 58.33 97.24 86.91 116.28 86.91 116.28 58.62 144.86 86.91 173.43 86.91 143.62 58.33 154.38 58.33 173.43 58.33 173.43 39.29 173.43 29.76 173.43 10.71 154.38 10.71 97.24 10.71" />
+                        <path d="M40.09,58.33h19v-19h-19Zm4.77-14.28h9.52v9.52H44.86Z" />
+                        <path d="M30.57,10.71H13.9a2.41,2.41,0,0,0-1.68.7,2.38,2.38,0,0,0-.7,1.69V84.52a2.38,2.38,0,0,0,.7,1.69,2.4,2.4,0,0,0,1.68.69H59.14v-19H30.57Z" />
+                        <path d="M85.33,10.71H40.09V29.76H68.67V58.33h19V13.1A2.41,2.41,0,0,0,87,11.41,2.44,2.44,0,0,0,85.33,10.71Z" />
+                        <rect x="68.67" y="67.86" width="19.05" height="42.86" />
+                        <path d="M38.1,0H2.38A2.39,2.39,0,0,0,0,2.38V38.1H4.76v-31A2.39,2.39,0,0,1,7.14,4.76h31Z" />
+                        <path d="M295.24,61.9v31a2.39,2.39,0,0,1-2.38,2.38h-31V100h35.72A2.39,2.39,0,0,0,300,97.62V61.9Z" />
+                    </g>
+                </g>
+            </svg>
+        </div>
+        <div id="qrcode-jml"></div>
+        <div id="qrcode"></div>
+        <h4 id="ket">Scan QR untuk bayar</h4>
     </div>
 </div>
 <div class="medium-3 large-3 columns sidebar kanan">
@@ -200,13 +236,22 @@ $this->boxHeader['normal'] = "Penjualan: {$model->nomor}";
     </table>
     <a class="close-reveal-modal">&#215;</a>
 </div>
+
+<div class="network_status">
+    <figure class="sinyal mati"></figure>
+</div>
 <?php
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwithdelay.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/qrcode.min.js', CClientScript::POS_HEAD);
 ?>
 <script>
+    $(document).ready(function() {
+        connectWebSocket();
+    })
+
     function totalUangDibayar() {
         var inputUangDibayar = $("input.uang-dibayar"); //$('input[name^=kasbank]');
         var uangDibayar = 0;
@@ -422,7 +467,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         }
     }).autocomplete("instance")._renderItem = function(ul, item) {
         return $("<li style='clear:both'>")
-            .append(item.status == <?= Barang::STATUS_AKTIF ?> ?
+            .append(item.status == <?php echo Barang::STATUS_AKTIF ?> ?
                 "<a><span class='ac-nama'>" + item.label + "</span> <span class='ac-harga'>" + item.harga +
                 "</span> <span class='ac-barcode'><i>" + item.value + "</i></span> <span class='ac-stok'>" + item
                 .stok + "</stok></a>" :
@@ -450,7 +495,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                     if ($showTarikTunai) {
                     ?>
                         if (data.total >=
-                            <?= $tarikTunaiBelanjaMin ?>
+                            <?php echo $tarikTunaiBelanjaMin ?>
                         ) {
                             $(".input-tarik-tunai").show(500);
                         } else {
@@ -626,6 +671,50 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
             });
             return false;
         }
+        <?php /* Jika ditemukan akun E2PAY QRIS, request qr-code, tampilkan dan tunggu hingga dibayar atau dicancel */ ?>
+        console.log("ACCOUNT: " + JSON.stringify(bayar));
+        $.ajax({
+            type: 'POST',
+            url: "<?php echo $this->createUrl('onlyifqris', ['id' => $model->id]) ?>",
+            data: {
+                'bayar': JSON.stringify(bayar)
+            },
+            success: function(data) {
+                if (data.qris) {
+                    if (data.online){
+                    // console.log(data.qrcode + ' === ' + data.jumlah)
+                    $("#qrcode-wrapper").foundation('reveal', 'open');
+                    $("#qrcode-jml").html('<h1>' + data.jumlah + '</h1>');
+                    $("#ket").text("Scan QR untuk bayar");
+                    $("#qrcode").css('background', '#fff').html('');
+                    qr = new QRCode(document.getElementById("qrcode"), {
+                        text: data.qrcode,
+                        width: 300,
+                        height: 300,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.M
+                    });
+
+                    // Flag to indicate we're waiting for QRIS payment
+                    window.qrisWaiting = true;
+                    window.dataBayar = bayar; // store for later
+                } else {
+                    $("#qrcode-wrapper").foundation('reveal', 'open');
+                    $("#qrcode-jml").html('<h1>Offline</h1>');
+                    $("#ket").text("QRIS sementara belum dapat dipakai");
+                    // $("#qrcode").css('background', '#fff').html('');
+                }
+                } else {
+                    lanjutSimpan(bayar)
+                }
+            }
+        })
+
+        return false;
+    });
+
+    function lanjutSimpan(bayar) {
         $(".uang-dibayar").unbind('keyup')
         $(this).unbind("click").html("Simpan..").attr("class", "alert bigfont tiny button");
         var dataUrl =
@@ -634,12 +723,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         var dataKirim = {
             'pos[account]': $("#account").val(),
             'pos[jenistr]': $("#jenisbayar").val(),
-            'pos[uang]': $("#uang-dibayar").val(),
+            'pos[uang]': $("#uang-dibayar").length ? $("#uang-dibayar").val() : 0,
             'pos[bayar]': bayar,
-            'pos[infaq]': $("#infaq").val(),
-            'pos[diskon-nota]': $("#diskon-nota").val(),
-            'pos[tarik-tunai]': $("#tarik-tunai").val(),
-            'pos[tarik-tunai-acc]': $("#tarik-tunai").parent().parent().find(".account").val(),
+            'pos[infaq]': $("#infaq").length ? $("#infaq").val() : 0,
+            'pos[diskon-nota]': $("#diskon-nota").length ? $("#diskon-nota").val() : 0,
+            'pos[tarik-tunai]': $("#tarik-tunai").length ? $("#tarik-tunai").val() : 0,
+            'pos[tarik-tunai-acc]': $("#tarik-tunai").parent().parent().find(".account").length ? $("#tarik-tunai").parent().parent().find(".account").val() : 2,
             'pos[koin-mol]': cashBack,
         };
         console.log(dataUrl);
@@ -668,9 +757,71 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
                 $("#scan").focus();
             }
         });
+    }
+
+    $("#tombol-batal").click(function() {
+        $('#batal-form').one('opened.fndtn.reveal', function() {
+            $('#alasan-batal').val('').focus();
+        });
+        $('#batal-form').foundation('reveal', 'open');
+        $('#alasan-batal').val('').focus(); // Reset and focus input
+
         return false;
     });
 
+    $("#alasan-batal").keyup(function(e) {
+        if (e.keyCode === 13) {
+            $("#batal-submit").click();
+        }
+    });
+
+    $("#batal-submit").click(function() {
+        <?php
+        $configHapusNota = Config::model()->find("nama='pos.alasanhapusnota'");
+        if ($configHapusNota->nilai == 1) {
+        ?>
+            var alasan = $("#alasan-batal").val().trim();
+            if (alasan === "") {
+                alert("Silakan isi alasan pembatalan.");
+                return;
+            }
+        <?php
+        } else {
+        ?>
+            var alasan = $("#alasan-batal").val().trim();
+        <?php
+        }
+        ?>
+
+
+        var dataUrl = '<?php echo $this->createUrl('hapus', ['id' => $model->id]); ?>';
+
+        $.ajax({
+            type: 'POST',
+            url: dataUrl,
+            data: {
+                alasan: alasan
+            }, // Kirim alasan ke server
+            success: function(data) {
+                if (data.sukses) {
+                    window.location.href = "<?php echo $this->createUrl('index'); ?>";
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 3000,
+                    });
+                    $("#tombol-admin-mode").addClass('geleng alert');
+                }
+                $("#scan").val("").focus();
+            }
+        });
+
+        $("#batal-form").foundation('reveal', 'close'); // Tutup modal setelah klik OK
+        return false;
+    });
+
+    <?php /*
     $("#tombol-batal").click(function() {
         dataUrl =
             '<?php echo $this->createUrl('hapus', ['id' => $model->id]); ?>';
@@ -696,13 +847,105 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/bindwith
         });
         return false;
     });
+    */
+    ?>
+
+    let websocket;
+    const url = 'ws://<?php echo $ws['ip'] ?>:<?php echo $ws['port'] ?>';
+
+    function connectWebSocket() {
+        websocket = new WebSocket(url);
+
+        websocket.onopen = function() {
+            $(".sinyal").removeClass("mati error").addClass("nyala");
+            console.log('WebSocket connection established.');
+        };
+
+        websocket.onclose = function(event) {
+            $(".sinyal").removeClass("nyala error").addClass("mati");
+            console.log('WebSocket connection closed.');
+            $(".proc").fadeOut().promise().done(function() {
+                $(".checkout").hide();
+                $(".idle").fadeIn();
+            });
+
+            // Try to reconnect after a delay
+            setTimeout(function() {
+                console.log('Attempting to reconnect...');
+                connectWebSocket();
+            }, 3000);
+        };
+
+        websocket.onerror = function(error) {
+            $(".sinyal").removeClass("nyala mati").addClass("error");
+            console.error('WebSocket error:', error);
+        };
+
+        // Handle incoming messages
+        websocket.onmessage = function(event) {
+            showMessage(event.data);
+        };
+    }
+
+    function showMessage(pesan) {
+        var output = $("#wsoutput");
+        output.html(pesan + "<br />");
+        try {
+            var parsed = JSON.parse(pesan);
+            // output.html(pesan);
+            parseMessage(parsed);
+
+        } catch (e) {
+            console.log("Message not JSON")
+            output.html('Kemungkinan Error: ' + e);
+        }
+    }
+
+    function isValidUser(id) {
+        return id == <?php echo Yii::app()->user->id ?>;
+    }
+
+    function parseMessage(data) {
+        // console.log('User: ' + parsed.uId)
+        if (data.tipe == "<?php echo AhadPosWsClient::TIPE_QRIS_PAID ?>") {
+            console.log(data);
+            if (window.qrisWaiting) {
+                if (data.penjualanId == <?php echo $model->id ?>) {
+                    // $("#qrcode").html("Pembayaran diterima");
+                    window.qrisWaiting = false;
+                    $("#qrcode").slideUp(1000, function() {
+                        $(this)
+                            .css("background", "transparent")
+                            .html('<i class="fa fa-check-circle check-animate" aria-hidden="true"></i>')
+                            .slideDown();
+                        $("#ket").text("Pembayaran diterima");
+                        setTimeout(function() {
+                            lanjutSimpan(window.dataBayar);
+                        }, 1000);
+                    });
+                } else {
+                    <?php // $("#qrcode").html("Pembayaran diterima untuk" + data.penjualanId);
+                    ?>
+                }
+            }
+
+        }
+    }
+    $(document).on('close.fndtn.reveal', '[data-reveal]', function() {
+        alert('closed!!!');
+    });
+
+    // $(document).on('close.fndtn.reveal', '#qrcode-wrapper', function() {
+    //     console.log("modal closed");
+    //     var modal = $(this);
+    // });
 </script>
 <?php
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
         'itemOptions'    => ['class' => 'has-form hide-for-small-only'],
-        'label' => false,
+        'label'          => false,
         'items'          => [
             ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class'     => 'button',
@@ -717,7 +960,7 @@ $this->menu = [
     ],
     [
         'itemOptions'    => ['class' => 'has-form show-for-small-only'],
-        'label' => false,
+        'label'          => false,
         'items'          => [
             ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class' => 'button',
@@ -729,3 +972,4 @@ $this->menu = [
         'submenuOptions' => ['class' => 'button-group'],
     ],
 ];
+?>

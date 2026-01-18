@@ -156,7 +156,8 @@ class Penjualan extends CActiveRecord
                     'asc'  => 'profil.nama',
                     'desc' => 'profil.nama desc',
                 ],
-                'nomorHutangPiutang', [
+                'nomorHutangPiutang',
+                [
                     'asc'  => 'hutangPiutang.nomor',
                     'desc' => 'hutangPiutang.nomor desc',
                 ],
@@ -688,7 +689,7 @@ class Penjualan extends CActiveRecord
         ]);
         $sisa = $qty;
         if ($diskonModel->barang_id == $diskonModel->barang_bonus_id) {
-            $min = $diskonModel->qty + $diskonModel->barang_bonus_qty; // qty asli + bonus minimum
+            $min = $diskonModel->qty + $diskonModel->barang_bonus_qty;                                                   // qty asli + bonus minimum
             $max = ($diskonModel->qty_max / $diskonModel->qty * $diskonModel->barang_bonus_qty) + $diskonModel->qty_max; // qty asli + bonus maksimum
 
             if ($qty >= $min) {
@@ -805,7 +806,7 @@ class Penjualan extends CActiveRecord
      * @param int $tipeDiskonId
      * @throws Exception
      */
-    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [])
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [], $alasan = '')
     {
         $detail                         = new PenjualanDetail;
         $detail->penjualan_id           = $this->id;
@@ -820,14 +821,14 @@ class Penjualan extends CActiveRecord
             throw new Exception("Gagal simpan penjualan detail: penjualanId:{$this->id}, barangId:{$barangId}, qty:{$qty}", 500);
         }
         if ($diskon > 0) {
-            $this->insertDiskon($detail, $tipeDiskonId);
+            $this->insertDiskon($detail, $tipeDiskonId, $alasan);
         }
         if (!empty($multiHJ)) {
             $this->insertMultiHJ($detail, $multiHJ);
         }
     }
 
-    public function insertDiskon($penjualanDetail, $tipeDiskonId)
+    public function insertDiskon($penjualanDetail, $tipeDiskonId, $alasan = '')
     {
         $trxDiskon                      = new PenjualanDiskon;
         $trxDiskon->penjualan_detail_id = $penjualanDetail->id;
@@ -835,6 +836,9 @@ class Penjualan extends CActiveRecord
         $trxDiskon->harga               = $penjualanDetail->harga_jual;
         $trxDiskon->harga_normal        = $penjualanDetail->harga_jual + $penjualanDetail->diskon;
         $trxDiskon->tipe_diskon_id      = $tipeDiskonId;
+        if (!empty($alasan)) {
+            $trxDiskon->alasan = $alasan;
+        }
         if (!$trxDiskon->save()) {
             throw new Exception("Gagal simpan diskon detail: penjualanDetailId:{$penjualanDetail->id}", 500);
         }
@@ -876,6 +880,21 @@ class Penjualan extends CActiveRecord
                     'kategoriBarangId' => $barang->kategori_id,
                     'status'           => DiskonBarang::STATUS_AKTIF,
                     'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERKATEGORI,
+                    'waktu'            => $waktu,
+                ],
+            ]);
+        }
+
+        if ($tipeDiskonId == DiskonBarang::TIPE_PROMO_PERSTRUKTUR) {
+            $barang = Barang::model()->findByPk($barangId);
+            $waktu  = date('Y-m-d H:i:s');
+            return DiskonBarang::model()->find([
+                'condition' => 'barang_struktur_id=:strukturBarangId and status=:status and tipe_diskon_id=:tipeDiskon and dari <= :waktu and (sampai >= :waktu or sampai is null)',
+                'order'     => 'id desc',
+                'params'    => [
+                    'strukturBarangId' => $barang->struktur_id,
+                    'status'           => DiskonBarang::STATUS_AKTIF,
+                    'tipeDiskon'       => DiskonBarang::TIPE_PROMO_PERSTRUKTUR,
                     'waktu'            => $waktu,
                 ],
             ]);
@@ -1044,6 +1063,11 @@ class Penjualan extends CActiveRecord
         }
         $details = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
         foreach ($details as $detail) {
+            if (InventoryBalance::stok($detail->barang_id) < $detail->qty) {
+                // throw new Exception("Stok {$detail->barang->barcode} tidak cukup");
+                // Barang tidak cukup cek sku, transfer stok
+                SkuTransfer::autoRefill($detail->barang_id, $detail->qty, $this->id);
+            }
             $inventoryTerpakai = InventoryBalance::model()->jual($detail->barang_id, $detail->qty);
             if (empty($inventoryTerpakai)) {
                 throw new Exception('Gagal mengambil data inventory. Coba ulangi proses simpan!. Barang ID: ' . $detail->barang_id . '; Qty: ' . $detail->qty);
@@ -1061,6 +1085,12 @@ class Penjualan extends CActiveRecord
                 if (isset($layer['negatif']) && $layer['negatif']) {
                     $hpp->harga_beli_temp = $layer['hargaBeli'];
                 }
+
+                // Jika barang tidak aktif, set harga beli 0
+                if ($detail->barang->status == 0) {
+                    $hpp->harga_beli = 0;
+                }
+
                 if (!$hpp->save()) {
                     Yii::log('Gagal simpan HPP: ' . var_export($hpp->getErrors(), true), 'info');
                     throw new Exception('Gagal simpan HPP', 500);
@@ -1343,7 +1373,7 @@ class Penjualan extends CActiveRecord
 
         $no = 1;
         foreach ($penjualanDetail as $detail) {
-            $strBarcode              = str_pad(substr($detail['barcode'], 0, 13), 13, ' '); // Barcode hanya diambil 13 char pertama
+            $strBarcode              = str_pad(substr($detail['barcode'], 0, 13), 13, ' ');    // Barcode hanya diambil 13 char pertama
             $strBarang               = str_pad(trim(substr($detail['nama'], 0, 28)), 28, ' '); //Nama Barang hanya diambil 28 char pertama
             $strQty                  = str_pad($detail['qty'], 5, ' ', STR_PAD_LEFT);
             $strHarga                = str_pad(number_format($detail['harga_jual'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
@@ -1891,19 +1921,19 @@ class Penjualan extends CActiveRecord
      * @param ActiveRecord $penjualanDetail
      * @param int $hargaManual harga yang diinput
      */
-    public function updateHargaManual($penjualanDetail, $hargaManual)
+    public function updateHargaManual($penjualanDetail, $hargaManual, $alasan = '')
     {
         $transaction = $this->dbConnection->beginTransaction();
         try {
             $barangId  = $penjualanDetail->barang_id;
             $qty       = $penjualanDetail->qty;
             $hargaJual = $hargaManual;
-            $diskon    = $penjualanDetail->harga_jual - $hargaManual;
+            $barang    = Barang::model()->findByPk($barangId);
+            $diskon    = $barang->getHargaJualRaw() - $hargaManual;
 
-            $barang = Barang::model()->findByPk($barangId);
             $this->cleanBarang($barang);
 
-            $this->insertBarang($barangId, $qty, $hargaJual, $diskon, DiskonBarang::TIPE_MANUAL);
+            $this->insertBarang($barangId, $qty, $hargaJual, $diskon, DiskonBarang::TIPE_MANUAL, [], $alasan);
             $transaction->commit();
             return [
                 'sukses' => true,
@@ -2007,7 +2037,7 @@ class Penjualan extends CActiveRecord
         foreach ($listHarga as $satuan) {
             if ($sisa >= $satuan['qty']) {
                 $jmlSatuan = floor($sisa / $satuan['qty']); // Jumlah dari satuan (pak, lsn, karton, dst)
-                $qtyTotal  = $jmlSatuan * $satuan['qty']; // Jumlah qty total dari KELIPATAN satuan
+                $qtyTotal  = $jmlSatuan * $satuan['qty'];   // Jumlah qty total dari KELIPATAN satuan
                 /* -------------- */
                 $satuan['harga_jual_normal'] = $hargaJualNormal;
                 $this->insertBarang($barangId, $qtyTotal, $satuan['harga'], 0, null, $satuan);
@@ -2071,7 +2101,7 @@ class Penjualan extends CActiveRecord
     public function getDetailArr()
     {
         $sql = "
-        SELECT 
+        SELECT
             barang.nama,
             qty,
             FORMAT(harga_jual + IFNULL(diskon, 0), 0, 'id_ID') harga_jual,

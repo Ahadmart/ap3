@@ -407,7 +407,8 @@ class SkuController extends Controller
             ],
         ]);
         // Yii::log('skuId: ' . $data->sku_id . '; ' . 'satuanId: ' . $data->barang->satuan_id);
-        // Yii::log('rasioKonversi: '. $skuLevel->rasio_konversi);
+        // $rasioKonversi = is_null($skuLevel) ? '' : $skuLevel->rasio_konversi;
+        // Yii::log('rasioKonversi: ' . $rasioKonversi);
         $namaSatuan = is_null($skuLevel) ? '' : $skuLevel->satuan->nama;
         $r          = '';
         if (!is_null($data->skuLevel)) {

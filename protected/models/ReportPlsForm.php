@@ -171,7 +171,8 @@ class ReportPlsForm extends CFormModel
         $command->join('barang', 't_jualan.barang_id = barang.id');
         //$command->where("t_stok.qty / (t_jualan.qty / :range) <= :orderPeriod");
         $command->where('(t_jualan.qty / :range) * (:orderPeriod + :leadTime + :ssd) + barang.restock_min > t_stok.qty');
-        $command->order('(t_jualan.qty / :range) * (:orderPeriod + :leadTime + :ssd) + barang.restock_min ' . $this->listNamaSortBy()[$this->sortBy]);
+        // $command->order('(t_jualan.qty / :range) * (:orderPeriod + :leadTime + :ssd) + barang.restock_min ' . $this->listNamaSortBy()[$this->sortBy]);
+        $command->order('t_stok.qty / (t_jualan.qty / :range) ' . $this->listNamaSortBy()[$this->sortBy]);
 
         if (!empty($this->profilId)) {
             $command->join('supplier_barang sb', 'sb.barang_id = t_jualan.barang_id');

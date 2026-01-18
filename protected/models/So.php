@@ -291,7 +291,7 @@ class So extends Penjualan
      * @param int $tipeDiskonId
      * @throws Exception
      */
-    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [])
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [], $alasan = '')
     {
         $detail             = new SoDetail;
         $detail->so_id      = $this->id;

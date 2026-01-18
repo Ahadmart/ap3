@@ -13,131 +13,216 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
 ?>
 <?php
 if ($pesan1) {
-    ?>
-<div class="row">
-    <div class="small-12 columns">
-        <div data-alert="" class="alert-box radius">
-            <span>Sebagian penjualan tidak ditampakkan. Tutup akun kasir yang masih aktif untuk menampakkan seluruh penjualan</span>
-            <a href="#" class="close button">×</a>
+?>
+    <div class="row">
+        <div class="small-12 columns">
+            <div data-alert="" class="alert-box radius">
+                <span>Sebagian penjualan tidak ditampakkan. Tutup akun kasir yang masih aktif untuk menampakkan seluruh penjualan</span>
+                <a href="#" class="close button">×</a>
+            </div>
         </div>
     </div>
-</div>
 <?php
 }
 ?>
 <?php
 if ($pesan2) {
-    ?>
-<div class="row">
-    <div class="small-12 columns">
-        <div data-alert="" class="alert-box radius">
-            <span>Untuk memunculkan Omzet dan Margin, tutup kasir yang masih aktif</span>
-            <a href="#" class="close button">×</a>
+?>
+    <div class="row">
+        <div class="small-12 columns">
+            <div data-alert="" class="alert-box radius">
+                <span>Untuk memunculkan Omzet dan Margin, tutup kasir yang masih aktif</span>
+                <a href="#" class="close button">×</a>
+            </div>
         </div>
     </div>
-</div>
 <?php
 }
 ?>
+<div id="hapus-form" class="small reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <h2 id="modalTitle">Konfirmasi Hapus</h2>
+    <label>Alasan penghapusan:
+        <input type="text" id="alasan-hapus">
+    </label>
+    <div class="text-right">
+        <a href="#" class="small bigfont tiny button alert" id="hapus-submit">OK</a>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
+</div>
+
 <div class="row" style="overflow: auto">
     <div class="small-12 columns">
         <?php
-$this->widget('BGridView', ['id' => 'penjualan-grid',
-    // 'dataProvider' => $model->search(),
-    'dataProvider'                   => $model->search($merge),
-    'filter'                         => $model,
-    'itemsCssClass'                  => 'tabel-index',
-    'columns'                        => [
-        [
-            'class'     => 'BDataColumn',
-            'name'      => 'nomor',
-            'header'    => '<span class="ak">N</span>omor',
-            'accesskey' => 'n',
-            'type'      => 'raw',
-            'value'     => [$this, 'renderLinkToView'],
-        ],
-        [
-            'class'     => 'BDataColumn',
-            'name'      => 'tanggal',
-            'header'    => 'Tangga<span class="ak">l</span>',
-            'accesskey' => 'l',
-            'type'      => 'raw',
-            'value'     => [$this, 'renderLinkToUbah'],
-        ],
-        [
-            'name'  => 'namaProfil',
-            'value' => '$data->profil->nama',
-        ],
-        [
-            'name'  => 'nomorHutangPiutang',
-            'value' => 'isset($data->hutangPiutang) ? $data->hutangPiutang->nomor:""',
-        ],
-        [
-            'name'   => 'status',
-            'value'  => '$data->namaStatus',
-            'filter' => $model->listStatus(),
-        ],
-        [
-            'header'      => 'Total',
-            'value'       => '$data->total',
-            'htmlOptions' => ['class' => 'rata-kanan'],
-            'visible'     => !$pesan2,
-        ],
-        [
-            'header'            => 'Margin',
-            'value'             => '$data->margin',
-            'htmlOptions'       => ['class' => 'rata-kanan'],
-            'headerHtmlOptions' => ['class' => 'rata-kanan'],
-            'visible'           => !$pesan2,
-        ],
-        [
-            'header'            => 'Margin (%)',
-            'value'             => '$data->profitMargin',
-            'htmlOptions'       => ['class' => 'rata-kanan'],
-            'headerHtmlOptions' => ['class' => 'rata-kanan'],
-            'visible'           => !$pesan2,
-        ],
-        [
-            'name'  => 'namaUpdatedBy',
-            'value' => '$data->updatedBy->nama_lengkap',
-        ],
-        /* Tombol yang muncul sesuai keadaan
+        $this->widget('BGridView', [
+            'id' => 'penjualan-grid',
+            // 'dataProvider' => $model->search(),
+            'dataProvider'                   => $model->search($merge),
+            'filter'                         => $model,
+            'itemsCssClass'                  => 'tabel-index',
+            'columns'                        => [
+                [
+                    'class'     => 'BDataColumn',
+                    'name'      => 'nomor',
+                    'header'    => '<span class="ak">N</span>omor',
+                    'accesskey' => 'n',
+                    'type'      => 'raw',
+                    'value'     => [$this, 'renderLinkToView'],
+                ],
+                [
+                    'class'     => 'BDataColumn',
+                    'name'      => 'tanggal',
+                    'header'    => 'Tangga<span class="ak">l</span>',
+                    'accesskey' => 'l',
+                    'type'      => 'raw',
+                    'value'     => [$this, 'renderLinkToUbah'],
+                ],
+                [
+                    'name'  => 'namaProfil',
+                    'value' => '$data->profil->nama',
+                ],
+                [
+                    'name'  => 'nomorHutangPiutang',
+                    'value' => 'isset($data->hutangPiutang) ? $data->hutangPiutang->nomor:""',
+                ],
+                [
+                    'name'   => 'status',
+                    'value'  => '$data->namaStatus',
+                    'filter' => $model->listStatus(),
+                ],
+                [
+                    'header'      => 'Total',
+                    'value'       => '$data->total',
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                    'visible'     => !$pesan2,
+                ],
+                [
+                    'header'            => 'Margin',
+                    'value'             => '$data->margin',
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'visible'           => !$pesan2,
+                ],
+                [
+                    'header'            => 'Margin (%)',
+                    'value'             => '$data->profitMargin',
+                    'htmlOptions'       => ['class' => 'rata-kanan'],
+                    'headerHtmlOptions' => ['class' => 'rata-kanan'],
+                    'visible'           => !$pesan2,
+                ],
+                [
+                    'name'  => 'namaUpdatedBy',
+                    'value' => '$data->updatedBy->nama_lengkap',
+                ],
+                /* Tombol yang muncul sesuai keadaan
          * 1. Jika masih draft: maka ada tombol hapus/delete
          * fixme: di bawah ini belum, insyaAllah menyusul
          * 2. Jika sudah tidak draft dan belum export csv, maka ada tombol csv
          * 3. Jika sudah tidak draft dan sudah export csv, maka ada tombol csvsudah
          */
-        [
-            'class'    => 'BButtonColumn',
-            'template' => '{csv}{delete}',
-            'buttons'  => [
-                'csv'      => [
-                    'options'  => ['title' => 'Export CSV'],
-                    'label'    => '<i class="fa fa-file-text"></i>',
-                    'imageUrl' => false,
-                    'url'      => 'Yii::app()->controller->createUrl("exportcsv", array("id"=>$data->primaryKey))',
-                    'visible'  => '$data->status != ' . Penjualan::STATUS_DRAFT,
-                ],
-                'csvsudah' => [
-                    'options'  => ['title' => 'Export CSV'],
-                    'label'    => '<i class="fa fa-file-text-o"></i>',
-                    'imageUrl' => false,
-                    'url'      => 'Yii::app()->controller->createUrl("exportcsv", array("id"=>$data->primaryKey))',
-                ],
-                'delete'   => [
-                    'visible' => '$data->status == ' . Penjualan::STATUS_DRAFT,
+                [
+                    'class'    => 'BButtonColumn',
+                    'template' => '{csv}{delete}',
+                    'buttons'  => [
+                        'csv'      => [
+                            'options'  => ['title' => 'Export CSV'],
+                            'label'    => '<i class="fa fa-file-text"></i>',
+                            'imageUrl' => false,
+                            'url'      => 'Yii::app()->controller->createUrl("exportcsv", array("id"=>$data->primaryKey))',
+                            'visible'  => '$data->status != ' . Penjualan::STATUS_DRAFT,
+                        ],
+                        'csvsudah' => [
+                            'options'  => ['title' => 'Export CSV'],
+                            'label'    => '<i class="fa fa-file-text-o"></i>',
+                            'imageUrl' => false,
+                            'url'      => 'Yii::app()->controller->createUrl("exportcsv", array("id"=>$data->primaryKey))',
+                        ],
+                        'delete'   => [
+                            'visible' => '$data->status == ' . Penjualan::STATUS_DRAFT,
+                        ],
+                    ],
+                    // Altered, this button must be
+                    'deleteButtonOptions' => array(
+                        'title' => 'Hapus',
+                        'class' => 'tombol-hapuspenjualan',
+                    ),
+                    'deleteConfirmation' => $konfirmasiHapus ? false : 'Anda yakin?',
+
                 ],
             ],
-        ],
-    ],
-]);
-?>
+        ]);
+        ?>
     </div>
 </div>
 <?php
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+?>
+<script>
+    var deleteUrl = null;
+    var useHapusDialog = <?php echo $konfirmasiHapus ? 'true' : 'false'; ?>;
+    // Saat tombol hapus diklik, tampilkan dialog
+    $(document).on('click', '.tombol-hapuspenjualan', function(e) {
+        if (useHapusDialog) {
+            e.preventDefault();
+            $('#hapus-form').one('opened.fndtn.reveal', function() {
+                $('#alasan-hapus').val('').focus();
+            });
+
+            deleteUrl = $(this).attr('href'); // simpan URL
+            $("#alasan-hapus").val('').focus(); // reset and focus input
+            $("#hapus-form").foundation('reveal', 'open');
+        }
+    });
+
+    $("#alasan-hapus").keydown(function(e) {
+        if (e.keyCode === 13) {
+            $("#hapus-submit").click();
+        }
+    });
+
+    // Saat submit di modal diklik, kirim AJAX
+    $("#hapus-submit").click(function() {
+        var alasan = $("#alasan-hapus").val().trim();
+        // if (alasan === "") {
+        //     alert("Silakan isi alasan penghapusan.");
+        //     return;
+        // }
+
+        if (!deleteUrl) {
+            alert("URL penghapusan tidak ditemukan.");
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: deleteUrl,
+            data: {
+                alasan: alasan
+            },
+            success: function(data) {
+                if (data.sukses) {
+                    $.fn.yiiGridView.update('penjualan-grid');
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 3000,
+                    });
+                }
+            }
+        });
+
+        $("#hapus-form").foundation('reveal', 'close');
+        deleteUrl = null;
+        return false;
+    });
+</script>
+<?php
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => ''],
-    ['itemOptions'          => ['class' => 'has-form hide-for-small-only'], 'label' => '',
+    [
+        'itemOptions'          => ['class' => 'has-form hide-for-small-only'],
+        'label' => '',
         'items'             => [
             ['label' => '<i class="fa fa-download"></i> I<span class="ak">m</span>port', 'url' => $this->createUrl('import'), 'linkOptions' => [
                 'class'     => 'warning button',
@@ -150,7 +235,9 @@ $this->menu = [
         ],
         'submenuOptions'    => ['class' => 'button-group'],
     ],
-    ['itemOptions'          => ['class' => 'has-form show-for-small-only'], 'label' => '',
+    [
+        'itemOptions'          => ['class' => 'has-form show-for-small-only'],
+        'label' => '',
         'items'             => [
             ['label' => '<i class="fa fa-download"></i>', 'url' => $this->createUrl('import'), 'linkOptions' => [
                 'class' => 'warning button',

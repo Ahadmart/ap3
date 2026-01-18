@@ -21,8 +21,11 @@ $form = $this->beginWidget('CActiveForm', [
             <div class="medium-3 columns">
                 <?php
                 echo CHtml::ajaxSubmitButton('Update', $this->createUrl('updatehargajualmulti', ['id' => $barang->id]), [
-                    'success' => "function () {
+                    'success' => "function (data) {
                                 $.fn.yiiGridView.update('harga-jual-multi-grid');
+                                if (data.sukses == false){
+                                    alert(data.msg);
+                                }
                             }"
                         ], [
                     'class' => 'button postfix',

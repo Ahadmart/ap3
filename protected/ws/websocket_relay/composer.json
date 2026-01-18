@@ -1,0 +1,17 @@
+{
+    "name": "ahadmart/websocketrelay",
+    "description": "Dual WebSocket client for QRIS payment and cashier notification",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Ahadmart\\WebsocketRelay\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Abu Muhammad",
+            "email": "b.hermianto@gmail.com"
+        }
+    ],
+    "require": {}
+}

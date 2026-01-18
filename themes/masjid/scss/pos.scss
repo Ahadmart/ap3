@@ -1,0 +1,576 @@
+/* 
+    Created on : 1 Oktober 2025, 20:34
+    Author     : abumuhammad
+*/
+
+$primary-color: #a66c00;
+$secondary-color: #ad8670;
+$alert-color: #46091c;
+$success-color: #1b5e20;
+$warning-color: #733e0a;
+$info-color: #455a64;
+$merah: #d32f2f;
+$gold: #cc9933;
+
+$warna-text: #d08700; //#fcf899
+$background: #030712;
+$background1: #001d36;
+$background2: #1d3246;
+$background3: #083352;
+$border0: #565553;
+
+body,
+html {
+    height: 100%;
+}
+body {
+    color: $warna-text;
+    background: $background url(../img/kubah_hijau.jpg) repeat repeat center / cover fixed;
+    padding: 0;
+    margin: 0;
+    font-family: Ubuntu, "Open Sans", "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1;
+    position: relative;
+    cursor: default;
+}
+a {
+    color: $warna-text;
+}
+.prefix .fa-2x {
+    padding-top: 4px;
+}
+.postfix .fa-2x {
+    padding-top: 4px;
+}
+
+.sidebar {
+    background-color: rgba($background1, 0.6);
+    backdrop-filter: blur(20px);
+    padding-top: 15px;
+    .huruf {
+        font-size: 1.5rem;
+    }
+}
+#info-tabel {
+    width: 100%;
+    .key {
+        font-weight: bold;
+        text-align: right;
+    }
+    td {
+        font-size: 0.825rem;
+        padding: 2px;
+    }
+}
+#transaksi {
+    padding-bottom: 30px;
+}
+.tabel-detail-jual {
+    width: 100%;
+}
+#subtotal-belanja {
+    font-size: 2rem;
+    color: #fff;
+    text-align: right;
+    padding: 5px 0px;
+    width: 100%;
+    text-shadow:
+        rgba(0, 0, 0, 0.2) 2px 6px 5px,
+        rgba(255, 255, 255, 0.4) 0 -4px 30px;
+}
+#total-belanja {
+    font-size: 3.5rem;
+    color: #fff;
+    text-align: right;
+    padding: 5px 0px;
+    width: 100%;
+    text-shadow:
+        rgba(0, 0, 0, 0.2) 2px 6px 5px,
+        rgba(255, 255, 255, 0.4) 0 -4px 30px;
+}
+#surcharge {
+    font-size: 2rem;
+    color: #f00;
+    text-align: right;
+    padding: 5px 0px;
+    width: 100%;
+    text-shadow: 1px 1px black;
+}
+#kembali {
+    font-size: 2.5rem;
+    color: #fff;
+    text-align: right;
+    padding: 5px 0px;
+    width: 100%;
+    text-shadow:
+        rgba(0, 0, 0, 0.2) 2px 6px 5px,
+        rgba(255, 255, 255, 0.4) 0 -4px 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    margin-bottom: 15px;
+    &.negatif {
+        color: $gold;
+    }
+}
+
+#logo {
+    /*background-color: #fff;*/
+    /*padding: 10px;*/
+    margin-bottom: 35px;
+}
+
+#tombol-simpan {
+    float: right;
+}
+
+#tombol-batal {
+    float: left;
+}
+
+.off-canvas-wrap,
+.main-section,
+.inner-wrap {
+    height: 100%;
+}
+
+#gritter-notice-wrapper {
+    left: 33%;
+    right: 33%;
+    top: 3px;
+}
+/* Custom editable untuk POS */
+.editable-input {
+    width: 50px;
+    &.input-editable-harga-p {
+        width: 75px;
+    }
+}
+
+.editable-buttons {
+    button {
+        height: 25px;
+        line-height: 12px;
+        text-transform: capitalize;
+        width: 30px;
+        &.editable-cancel {
+            top: -25px;
+            left: 31px;
+            width: 30px;
+        }
+    }
+}
+
+.editable-container {
+    height: 20px;
+    margin-top: -10px;
+}
+
+.tabel-index input.edit-input,
+.tabel-index .editable-input input {
+    height: 25px;
+    padding: 2px 2px;
+}
+.editable-clear-x {
+    margin-top: -7px;
+}
+.tabel-index {
+    th a {
+        color: $gold;
+    }
+    tr td {
+        font-family: "Open Sans";
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-shadow:
+            2px 6px 5px rgba(0, 0, 0, 0.2),
+            0px -4px 30px rgba(255, 255, 255, 0.4);
+        &.barcode {
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+    }
+}
+
+tr.pilih,
+tr.selected {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+}
+/* ============== */
+
+.stack {
+    margin-bottom: 15px;
+}
+
+.main-section {
+    margin: 15px;
+}
+
+table,
+table thead {
+    background: rgba(darken($background3, 10%), 0.7);
+    backdrop-filter: blur(10px);
+}
+
+table thead tr th,
+table thead tr td {
+    color: $warna-text;
+    font-size: 0.9rem;
+    font-weight: normal;
+    padding: 0.5rem 0.625rem 0.625rem;
+}
+
+table tr.even,
+table tr.alt,
+table tr:nth-of-type(even) {
+    background: rgba(darken($background3, 5%), 0.6);
+}
+
+table tr.odd {
+    background-color: rgba($background3, 0.6);
+}
+
+table tr th,
+table tr td {
+    color: #fff;
+}
+
+#label-customer {
+    cursor: pointer;
+}
+
+#ganti-customer {
+    margin-top: 10px;
+}
+
+#data-customer,
+#data-member {
+    color: #fff;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    border-top: 1px solid $border0;
+    border-bottom: 1px solid $border0;
+    nomor {
+        font-weight: bold;
+        color: $gold;
+        display: block;
+    }
+    nama {
+        font-weight: bold;
+        display: block;
+        margin: 10px 0;
+    }
+}
+.ac-nama {
+    float: left;
+    width: 45%;
+}
+.ac-harga {
+    color: #fff;
+    font-weight: bold;
+    float: left;
+    width: 15%;
+    text-align: right;
+}
+.ac-barcode {
+    float: left;
+    width: 30%;
+    padding-left: 5px;
+}
+.ac-stok {
+    color: #fff;
+    font-weight: bold;
+    float: left;
+    width: 10%;
+    text-align: right;
+}
+
+.geleng {
+    -webkit-animation: shake 1s infinite;
+    -moz-animation: shake 1s infinite;
+    -ms-animation: shake 1s infinite;
+    animation: flash 2s infinite;
+}
+
+#scan,
+input[name="kasbank[]"].uang-dibayar,
+input[name="tarik-tunai"].tarik-tunai,
+#account,
+#account-tariktunai,
+#jenisbayar,
+#nomor-customer,
+#admin-user,
+#admin-password,
+#akm-no,
+#pesanan-no,
+#infaq,
+#diskon-nota {
+    color: $warna-text;
+    background-color: $background3;
+    border-color: $border0;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px inset;
+}
+
+#scan:focus,
+input[name="kasbank[]"].uang-dibayar:focus,
+#account:focus,
+#account-tariktunai:focus,
+#jenisbayar:focus,
+#nomor-customer:focus,
+#admin-user:focus,
+#admin-password:focus,
+#akm-no:focus,
+#pesanan-no:focus,
+#infaq:focus,
+#diskon-nota:focus {
+    background-color: $background3;
+    box-shadow: 0px 0px 15px lighten($background3, 15%);
+    border: 1px solid lighten($background3, 15%);
+}
+
+#scan-icon,
+span.prefix,
+span.postfix {
+    background-color: $info-color;
+    color: #fff;
+    border-color: lighten($info-color, 10%);
+}
+
+// tombol disebelah kanan input
+.postfix.button {
+    .fa-2x {
+        padding-top: 4px;
+    }
+}
+
+.ui-autocomplete {
+    background-color: rgba(55, 71, 79, 0.95);
+    border-color: transparent;
+}
+
+.ui-menu-item a {
+    color: #fff;
+}
+
+.ui-menu .ui-menu-item {
+    border-bottom: 1px solid;
+}
+
+.ui-menu-item.ui-state-focus {
+    background-color: $background1;
+}
+button.warning,
+.button.warning {
+    color: #fff;
+}
+
+.panel {
+    background: rgba($background1, 0.7);
+    backdrop-filter: blur(7px);
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    li,
+    dl {
+        color: #fff;
+    }
+    h1 {
+        font-weight: 700;
+        font-size: 48pt;
+        color: #fff;
+    }
+    h4 {
+        font-weight: 400;
+        color: #fff;
+    }
+}
+
+div.summary {
+    text-align: center;
+}
+
+.grid-loading {
+    th {
+        animation: bgpulse 0.5s infinite;
+    }
+}
+
+@keyframes bgpulse {
+    0% {
+        background-color: inherit;
+    }
+    50% {
+        background-color: $primary-color;
+    }
+    100% {
+        background-color: inherit;
+    }
+}
+
+// Untuk tampilan small
+aside > ul.stack,
+aside > form,
+aside > span,
+aside > div,
+aside > a#tombol-simpan,
+aside > a#tombol-batal,
+aside > a#tombol-baru,
+aside > a#tombol-print {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+aside > a#tombol-baru {
+    width: 14.4rem;
+}
+
+aside > #total-belanja {
+    font-size: 2rem;
+}
+
+aside > #subtotal-belanja,
+aside > #kembali {
+    font-size: 1.5rem;
+}
+
+aside > #subtotal-belanja,
+aside > #total-belanja,
+aside > #kembali {
+    padding-right: 20px;
+}
+aside > .row {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.left-off-canvas-menu,
+.right-off-canvas-menu {
+    background: $background1;
+}
+
+.left-off-canvas-menu {
+    padding-top: 10px;
+}
+
+a.prefix {
+    color: #546e7a;
+    border-color: transparent;
+}
+
+.network_status {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    .sinyal {
+        &.mati {
+            margin: 0 auto;
+            width: 12px;
+            height: 12px;
+            background-color: #f00;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #441313 0 -1px 3px,
+                rgba(255, 0, 0, 0.5) 0 2px 12px;
+            animation: merahKedip 0.5s infinite;
+        }
+        &.nyala {
+            margin: 0 auto;
+            width: 12px;
+            height: 12px;
+            background-color: #abff00;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #304701 0 -1px 3px,
+                #89ff00 0 2px 12px;
+        }
+        &.error {
+            margin: 0 auto;
+            width: 12px;
+            height: 12px;
+            background-color: #24e0ff;
+            border-radius: 50%;
+            box-shadow:
+                rgba(0, 0, 0, 0.2) 0 -1px 5px 1px,
+                inset #006 0 -1px 3px,
+                #3f8cff 0 2px 14px;
+        }
+    }
+}
+@keyframes merahKedip {
+    from {
+        background-color: #f00;
+    }
+    50% {
+        background-color: #a00;
+        box-shadow:
+            rgba(0, 0, 0, 0.2) 0 -1px 7px 1px,
+            inset #441313 0 -1px 9px,
+            rgba(255, 0, 0, 0.5) 0 2px 0;
+    }
+    to {
+        background-color: #f00;
+    }
+}
+
+.check-animate {
+    color: $success-color;
+    font-size: 80px !important;
+    animation: pop 0.6s ease-out forwards;
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#qrcode-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: transparent;
+    backdrop-filter: blur(7px);
+    h1,
+    h4 {
+        color: #fff;
+    }
+    svg {
+        height: 5rem;
+    }
+    & > div {
+        text-align: center;
+    }
+    #qrislogo {
+        color: $primary-color;
+        filter: drop-shadow(2px 6px 5px rgba(0, 0, 0, 0.2)) drop-shadow(0 -4px 30px rgba(255, 255, 255, 0.4));
+    }
+    #qrcode {
+        display: inline-block;
+        background-color: #fff;
+        padding: 10px;
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+}

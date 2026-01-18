@@ -20,6 +20,9 @@ use Mpdf\Tag\P;
  */
 class SkuDetail extends CActiveRecord
 {
+
+    private $_skuLevel = null;
+
     /**
      * @return string the associated database table name
      */
@@ -56,7 +59,7 @@ class SkuDetail extends CActiveRecord
             'barang'    => [self::BELONGS_TO, 'Barang', 'barang_id'],
             'sku'       => [self::BELONGS_TO, 'Sku', 'sku_id'],
             'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
-            'skuLevel'  => [self::BELONGS_TO, 'SkuLevel', ['satuan_id' => 'satuan_id'], 'through' => 'barang'],
+            // 'skuLevel'  => [self::BELONGS_TO, 'SkuLevel', ['satuan_id' => 'satuan_id'], 'through' => 'barang', 'condition' => 't.sku_id = skuLevel.sku_id'],
         ];
     }
 
@@ -75,7 +78,7 @@ class SkuDetail extends CActiveRecord
             'namaBarang' => 'Nama',
             'namaSatuan' => 'Satuan',
             'namaRak'    => 'Rak',
-            'skuLevel'   => 'Level'
+            'skuLevel'   => 'Level',
         ];
     }
 
@@ -126,14 +129,14 @@ class SkuDetail extends CActiveRecord
                     'asc'  => 'satuan.nama',
                     'desc' => 'satuan.nama desc',
                 ],
-                'namaRak' => [
+                'namaRak'    => [
                     'asc'  => 'rak.nama',
                     'desc' => 'rak.nama desc',
                 ],
-                'level' => [
+                'level'      => [
                     'asc'  => 'sku_level.level',
-                    'desc' => 'sku_level.level desc'
-                ]
+                    'desc' => 'sku_level.level desc',
+                ],
             ],
         ];
         if ($merge !== null) {
@@ -168,5 +171,17 @@ class SkuDetail extends CActiveRecord
         $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = Yii::app()->user->id;
         return parent::beforeSave();
+    }
+
+    public function getSkuLevel()
+    {
+        if ($this->_skuLevel === null && $this->sku_id !== null) {
+            $this->_skuLevel = SkuLevel::model()->findByAttributes([
+                'satuan_id' => $this->barang->satuan_id,
+                'sku_id'    => $this->sku_id,
+            ]);
+        }
+
+        return $this->_skuLevel;
     }
 }

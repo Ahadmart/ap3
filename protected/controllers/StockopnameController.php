@@ -528,4 +528,17 @@ class StockopnameController extends Controller
             'modelId' => Yii::app()->request->getParam('id'),
         ]);
     }
+
+    public function actionGenSampelAcak($id)
+    {
+        $model = $this->loadModel($id);
+        $r     = ['sukses' => false];
+        if ($model->getSampelAcak() != false) {
+            $r = [
+                'sukses'  => true,
+                'barcode' => $model->getSampelAcak(),
+            ];
+        }
+        $this->renderJSON($r);
+    }
 }

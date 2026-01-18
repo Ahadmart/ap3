@@ -1,5 +1,7 @@
 <?php
 
+use Mpdf\Tag\S;
+
 /**
  * This is the model class for table "sku_transfer".
  *
@@ -11,12 +13,14 @@
  * @property string $referensi
  * @property string $tanggal_referensi
  * @property string $keterangan
+ * @property string $penjualan_id
  * @property integer $status
  * @property string $updated_at
  * @property string $updated_by
  * @property string $created_at
  *
  * The followings are the available model relations:
+ * @property Penjualan $penjualan
  * @property Sku $sku
  * @property User $updatedBy
  * @property SkuTransferDetail[] $skuTransferDetails
@@ -27,6 +31,8 @@ class SkuTransfer extends CActiveRecord
     const STATUS_TRANSFER = 1;
 
     public $max; // Untuk mencari untuk nomor surat;
+    public $skuNomor;
+    public $skuNama;
 
     /**
      * @return string the associated database table name
@@ -46,13 +52,13 @@ class SkuTransfer extends CActiveRecord
         return [
             ['sku_id', 'required'],
             ['status', 'numerical', 'integerOnly' => true],
-            ['sku_id, updated_by', 'length', 'max' => 10],
+            ['sku_id, penjualan_id, updated_by', 'length', 'max' => 10],
             ['nomor, referensi', 'length', 'max' => 45],
             ['keterangan', 'length', 'max' => 500],
             ['tanggal, tanggal_referensi, created_at, updated_at, updated_by', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            ['id, sku_id, tanggal, nomor, referensi, tanggal_referensi, keterangan, status, updated_at, updated_by, created_at', 'safe', 'on' => 'search'],
+            ['id, sku_id, tanggal, nomor, referensi, tanggal_referensi, keterangan, penjualan_id, status, updated_at, updated_by, created_at, skuNomor, skuNama', 'safe', 'on' => 'search'],
         ];
     }
 
@@ -64,6 +70,7 @@ class SkuTransfer extends CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return [
+            'penjualan'          => [self::BELONGS_TO, 'Penjualan', 'penjualan_id'],
             'sku'                => [self::BELONGS_TO, 'Sku', 'sku_id'],
             'updatedBy'          => [self::BELONGS_TO, 'User', 'updated_by'],
             'skuTransferDetails' => [self::HAS_MANY, 'SkuTransferDetail', 'sku_transfer_id'],
@@ -83,10 +90,13 @@ class SkuTransfer extends CActiveRecord
             'referensi'         => 'Referensi',
             'tanggal_referensi' => 'Tanggal Referensi',
             'keterangan'        => 'Keterangan',
+            'penjualan_id'      => 'Penjualan',
             'status'            => 'Status',
             'updated_at'        => 'Updated At',
             'updated_by'        => 'Updated By',
             'created_at'        => 'Created At',
+            'skuNomor'          => 'Nomor SKU',
+            'skuNama'           => 'Nama SKU',
         ];
     }
 
@@ -115,13 +125,29 @@ class SkuTransfer extends CActiveRecord
         $criteria->compare('referensi', $this->referensi, true);
         $criteria->compare('tanggal_referensi', $this->tanggal_referensi, true);
         $criteria->compare('keterangan', $this->keterangan, true);
+        $criteria->compare('penjualan_id', $this->penjualan_id, true);
         $criteria->compare('status', $this->status);
         $criteria->compare('updated_at', $this->updated_at, true);
         $criteria->compare('updated_by', $this->updated_by, true);
         $criteria->compare('created_at', $this->created_at, true);
 
+        $criteria->with = ['sku'];
+        $criteria->compare('sku.nomor', $this->skuNomor, true);
+        $criteria->compare('sku.nama', $this->skuNama, true);
+
         $sort = [
-            'defaultOrder' => 't.status, t.tanggal desc',
+            'defaultOrder' => 't.status, t.tanggal desc, t.nomor desc',
+            'attributes'   => [
+                'skuNomor' => [
+                    'asc'  => 'sku.nomor',
+                    'desc' => 'sku.nomor desc',
+                ],
+                'skuNama'  => [
+                    'asc'  => 'sku.nama',
+                    'desc' => 'sku.nama desc',
+                ],
+                '*',
+            ],
         ];
 
         return new CActiveDataProvider($this, [
@@ -206,8 +232,7 @@ class SkuTransfer extends CActiveRecord
 
     public function transfer()
     {
-        $this->scenario = 'simpanTransfer';
-        $tr             = $this->dbConnection->beginTransaction();
+        $tr = $this->dbConnection->beginTransaction();
         // Yii::log('simpan()');
         $r = [
             'sukses' => false,
@@ -227,6 +252,7 @@ class SkuTransfer extends CActiveRecord
 
     private function simpanTransfer()
     {
+        $this->scenario = 'simpanTransfer';
         // Yii::log('simpanTransfer() 1');
         if (!$this->save()) {
             // Yii::log('Gagal simpan transfer');
@@ -239,5 +265,102 @@ class SkuTransfer extends CActiveRecord
         // Yii::log('simpan | detail: ' . var_export($detail, true));
         $ib = new InventoryBalance();
         $ib->bukaKemasan($detail);
+    }
+
+    public static function detailSkuOf($barangId)
+    {
+        $sql = '
+        SELECT
+            detail1.id,
+            detail1.barang_id,
+            satuan.nama,
+            sku_level.level,
+            sku_level.rasio_konversi,
+            sku_level.jumlah_per_unit
+        FROM
+            sku_detail detail1
+                JOIN
+            sku_detail detail2 ON detail2.sku_id = detail1.sku_id
+                AND detail2.barang_id = :barangId
+                JOIN
+            barang ON detail1.barang_id = barang.id
+                JOIN
+            barang_satuan satuan ON satuan.id = barang.satuan_id
+                JOIN
+            sku_level ON sku_level.sku_id = detail1.sku_id
+                AND sku_level.satuan_id = satuan.id
+        ORDER BY sku_level.level
+        ';
+        return Yii::app()->db->createCommand($sql)->bindValue(':barangId', $barangId)->queryAll();
+    }
+
+    public static function autoRefill($barangId, $qty, $penjualanId)
+    {
+        if (empty(self::detailSkuOf($barangId))) {
+            return;
+        }
+        $skuDetails = self::detailSkuOf($barangId);
+        // Yii::log(print_r($skuDetails, true));
+        do {
+            $awal       = false;
+            $stokKosong = true;
+            foreach ($skuDetails as $key => $item) {
+                // Yii::log("key: {$key}");
+                // Yii::log(print_r($item, true));
+                if ($item['barang_id'] == $barangId) {
+                    $awal = true;
+                    continue;
+                }
+
+                if ($awal) {
+                    $barang = Barang::model()->findByPk($item['barang_id']);
+                    $stok   = $barang->getStok();
+                    if ($stok > 0) {
+                        $stokKosong = false;
+                        $asalId     = $item['id'];
+                        $tujuanId   = $skuDetails[$key - 1]['id'];
+                        self::autoUnpack($asalId, $tujuanId, $item['rasio_konversi'], $penjualanId);
+                        break;
+                    }
+                }
+            }
+            $stok = InventoryBalance::stok($barangId);
+        } while ($stok < $qty and !$stokKosong);
+    }
+
+    public static function autoUnpack($asalId, $tujuanId, $rasioKonversi, $penjualanId)
+    {
+        $skuDetailAsal   = SkuDetail::model()->findByPk($asalId);
+        $skuDetailTujuan = SkuDetail::model()->findByPk($tujuanId);
+
+        $skuTransfer               = new SkuTransfer();
+        $skuTransfer->sku_id       = $skuDetailAsal->sku_id;
+        $skuTransfer->referensi    = 'Auto Unpack';
+        $skuTransfer->keterangan   = 'Auto Transfer';
+        $skuTransfer->penjualan_id = $penjualanId;
+        if (!$skuTransfer->save()) {
+            throw new Exception('Unpack: Gagal simpan SKU Transfer: ' . serialize($skuTransfer->getErrors()));
+        }
+
+        $skuTransfer = SkuTransfer::model()->findByPk($skuTransfer->id);
+
+        Yii::log(print_r($skuTransfer, true));
+
+        $detail                  = new SkuTransferDetail();
+        $detail->sku_transfer_id = $skuTransfer->id;
+        $detail->from_barang_id  = $skuDetailAsal->barang_id;
+        $detail->from_satuan_id  = $skuDetailAsal->barang->satuan_id;
+        $detail->from_qty        = 1;
+        $detail->to_barang_id    = $skuDetailTujuan->barang_id;
+        $detail->to_satuan_id    = $skuDetailTujuan->barang->satuan_id;
+        $detail->to_qty          = $rasioKonversi;
+
+        Yii::log(print_r($detail, true));
+
+        if (!$detail->save()) {
+            throw new Exception('Unpack: Gagal simpan sku transfer detail', 500);
+        }
+
+        return $skuTransfer->simpanTransfer();
     }
 }

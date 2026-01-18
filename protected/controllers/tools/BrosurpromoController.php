@@ -38,7 +38,7 @@ class BrosurpromoController extends Controller
 	protected function getBrosurPromo()
 	{
 		$imgs = [];
-		foreach (glob(self::ASSETS_PATH . '*.*', GLOB_BRACE) as $filename) {
+		foreach (glob(self::ASSETS_PATH . 'brosur*.*', GLOB_BRACE) as $filename) {
 			$imgs[] = $this->createUrl($filename);
 		}
 		return $imgs;
@@ -69,6 +69,8 @@ class BrosurpromoController extends Controller
 		// echo ('Dari upload Brosur');
 		// echo '<pre>';
 		// print_r($_FILES);
+		ini_set('upload_max_filesize', '20M');
+		ini_set('post_max_size', '25M');
 		foreach ($_FILES as $brosur) {
 			// print_r($brosur);
 			$file = new CUploadedFile(
@@ -97,7 +99,7 @@ class BrosurpromoController extends Controller
 				}
 				$thumbnail->save(realpath(self::ASSETS_PATH_TH) . '/' . $fileName . '.' . $file->extensionName);
 			} else {
-				echo 'Gagal simpan ke: ' . $fullFilePath;
+				echo 'Gagal simpan ke: ' . $fullFilePath . PHP_EOL . var_dump($file->getError());
 			}
 		}
 		// echo '</pre>';

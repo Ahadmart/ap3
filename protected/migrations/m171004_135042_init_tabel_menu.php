@@ -11,10 +11,10 @@ class m171004_135042_init_tabel_menu extends CDbMigration
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `parent_id` int(10) unsigned DEFAULT NULL,
             `root_id` int(10) unsigned DEFAULT NULL,
-            `nama` varchar(128) CHARACTER SET utf8 NOT NULL,
-            `icon` varchar(512) CHARACTER SET utf8 DEFAULT NULL,
-            `link` varchar(1024) CHARACTER SET utf8 DEFAULT NULL,
-            `keterangan` varchar(1024) CHARACTER SET utf8 DEFAULT NULL,
+            `nama` varchar(128) NOT NULL,
+            `icon` varchar(512) DEFAULT NULL,
+            `link` varchar(1024) DEFAULT NULL,
+            `keterangan` varchar(1024) DEFAULT NULL,
             `level` tinyint(4) NOT NULL DEFAULT '0',
             `urutan` tinyint(1) NOT NULL DEFAULT '1',
             `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0=not publish; 1=publish; 2=reserved',
@@ -27,7 +27,7 @@ class m171004_135042_init_tabel_menu extends CDbMigration
             KEY `nama_menu_idx` (`nama`),
             CONSTRAINT `fk_menu_parent` FOREIGN KEY (`parent_id`) REFERENCES `menu` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
             CONSTRAINT `fk_menu_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
-                ], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+                ], 'ENGINE=' . $dbEngine);
 
         $now = date('Y-m-d H:i:s');
         $this->insertMultiple('menu', [

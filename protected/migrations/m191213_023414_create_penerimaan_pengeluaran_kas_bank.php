@@ -6,7 +6,7 @@ class m191213_023414_create_penerimaan_pengeluaran_kas_bank extends CDbMigration
     public function safeUp()
     {
 
-        $tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4';
+        $tableOptions = 'ENGINE=InnoDB';
 
         $this->createTable('penerimaan_kas_bank',
                 ["

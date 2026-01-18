@@ -19,9 +19,8 @@
  */
 class Akm extends Penjualan
 {
-
     const STATUS_DRAFT = 0;
-    const STATUS_OK = 1;
+    const STATUS_OK    = 1;
 
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;
@@ -39,18 +38,18 @@ class Akm extends Penjualan
      */
     public function rules()
     {
-// NOTE: you should only define rules for those attributes that
-// will receive user inputs.
-        return array(
-            array('profil_id', 'required'),
-            array('status', 'numerical', 'integerOnly' => true),
-            array('nomor', 'length', 'max' => 45),
-            array('profil_id', 'length', 'max' => 10),
-            array('created_at, updated_at, updated_by, tanggal', 'safe'),
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return [
+            ['profil_id', 'required'],
+            ['status', 'numerical', 'integerOnly' => true],
+            ['nomor', 'length', 'max' => 45],
+            ['profil_id', 'length', 'max' => 10],
+            ['created_at, updated_at, updated_by, tanggal', 'safe'],
             // The following rule is used by search().
             // @todo Please remove those attributes that should not be searched.
-            array('id, nomor, tanggal, profil_id, status, updated_at, updated_by, created_at, namaProfil', 'safe', 'on' => 'search'),
-        );
+            ['id, nomor, tanggal, profil_id, status, updated_at, updated_by, created_at, namaProfil', 'safe', 'on' => 'search'],
+        ];
     }
 
     /**
@@ -58,12 +57,12 @@ class Akm extends Penjualan
      */
     public function relations()
     {
-// NOTE: you may need to adjust the relation name and the related
-// class name for the relations automatically generated below.
-        return array(
-            'profil' => array(self::BELONGS_TO, 'Profil', 'profil_id'),
-            'akmDetails' => array(self::HAS_MANY, 'AkmDetail', 'akm_id'),
-        );
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return [
+            'profil'     => [self::BELONGS_TO, 'Profil', 'profil_id'],
+            'akmDetails' => [self::HAS_MANY, 'AkmDetail', 'akm_id'],
+        ];
     }
 
     /**
@@ -71,17 +70,17 @@ class Akm extends Penjualan
      */
     public function attributeLabels()
     {
-        return array(
-            'id' => 'ID',
-            'nomor' => 'Nomor',
-            'tanggal' => 'Tanggal',
-            'profil_id' => 'Profil',
-            'status' => 'Status',
+        return [
+            'id'         => 'ID',
+            'nomor'      => 'Nomor',
+            'tanggal'    => 'Tanggal',
+            'profil_id'  => 'Profil',
+            'status'     => 'Status',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
             'created_at' => 'Created At',
             'namaProfil' => 'Customer',
-        );
+        ];
     }
 
     /**
@@ -98,7 +97,7 @@ class Akm extends Penjualan
      */
     public function search($merge = null)
     {
-// @todo Please modify the following code to remove attributes that should not be searched.
+        // @todo Please modify the following code to remove attributes that should not be searched.
 
         $criteria = new CDbCriteria;
 
@@ -116,18 +115,18 @@ class Akm extends Penjualan
 
         $sort = [
             'defaultOrder' => 't.status, tanggal desc',
-            'attributes' => [
+            'attributes'   => [
                 '*',
                 'namaProfil' => [
-                    'asc' => 'profil.nama',
-                    'desc' => 'profil.nama desc'
+                    'asc'  => 'profil.nama',
+                    'desc' => 'profil.nama desc',
                 ],
-            ]
+            ],
         ];
 
         return new CActiveDataProvider($this, [
             'criteria' => $criteria,
-            'sort' => $sort
+            'sort'     => $sort,
         ]);
     }
 
@@ -145,13 +144,12 @@ class Akm extends Penjualan
     public function beforeValidate()
     {
         $this->profil_id = empty($this->profil_id) ? Profil::PROFIL_UMUM : $this->profil_id;
-//        $this->updated_by = sprintf('%u', ip2long(Yii::app()->getRequest()->getUserHostAddress()));
+        //        $this->updated_by = sprintf('%u', ip2long(Yii::app()->getRequest()->getUserHostAddress()));
         return parent::beforeValidate();
     }
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s'); /*
              * Tanggal akan diupdate jika melalui proses simpanPenjualan
@@ -159,14 +157,14 @@ class Akm extends Penjualan
              */
             $this->tanggal = date('Y-m-d H:i:s');
         }
-        $this->updated_at = date("Y-m-d H:i:s");
+        $this->updated_at = date('Y-m-d H:i:s');
         $this->updated_by = sprintf('%u', ip2long(Yii::app()->getRequest()->getUserHostAddress()));
         // Jika disimpan melalui proses simpan akm
         if ($this->scenario === 'simpanAkm') {
             $this->status = self::STATUS_OK;
             // Dapat nomor dan tanggal baru
             $this->tanggal = date('Y-m-d H:i:s');
-            $this->nomor = $this->generateNomor();
+            $this->nomor   = $this->generateNomor();
         }
         return CActiveRecord::beforeSave();
     }
@@ -178,11 +176,11 @@ class Akm extends Penjualan
      */
     public function barangAda($barangId)
     {
-        $detail = Yii::app()->db->createCommand("
+        $detail = Yii::app()->db->createCommand('
         select sum(qty) qty from akm_detail
         where akm_id=:akmId and barang_id=:barangId
-            ")->bindValues(array(':akmId' => $this->id, ':barangId' => $barangId))
-                ->queryRow();
+            ')->bindValues([':akmId' => $this->id, ':barangId' => $barangId])
+            ->queryRow();
 
         return $detail['qty'];
     }
@@ -193,10 +191,10 @@ class Akm extends Penjualan
      */
     public function cleanBarang($barang)
     {
-        AkmDetail::model()->deleteAll('barang_id=:barangId AND akm_id=:akmId', array(
+        AkmDetail::model()->deleteAll('barang_id=:barangId AND akm_id=:akmId', [
             ':barangId' => $barang->id,
-            ':akmId' => $this->id
-        ));
+            ':akmId'    => $this->id,
+        ]);
     }
 
     /**
@@ -211,7 +209,7 @@ class Akm extends Penjualan
     {
         $transaction = $this->dbConnection->beginTransaction();
         try {
-            $barang = Barang::model()->find('barcode=:barcode', array(':barcode' => $barcode));
+            $barang = Barang::model()->find('barcode=:barcode', [':barcode' => $barcode]);
 
             /* Jika barang tidak ada */
             if (is_null($barang)) {
@@ -224,17 +222,18 @@ class Akm extends Penjualan
             }
 
             $transaction->commit();
-            return array(
-                'sukses' => true
-            );
+            return [
+                'sukses' => true,
+            ];
         } catch (Exception $ex) {
             $transaction->rollback();
-            return array(
+            return [
                 'sukses' => false,
-                'error' => array(
-                    'msg' => $ex->getMessage(),
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                ],
+            ];
         }
     }
 
@@ -247,12 +246,12 @@ class Akm extends Penjualan
      * @param int $tipeDiskonId
      * @throws Exception
      */
-    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [])
+    public function insertBarang($barangId, $qty, $hargaJual, $diskon = 0, $tipeDiskonId = null, $multiHJ = [], $alasan = '')
     {
-        $detail = new AkmDetail;
-        $detail->akm_id = $this->id;
-        $detail->barang_id = $barangId;
-        $detail->qty = $qty;
+        $detail             = new AkmDetail;
+        $detail->akm_id     = $this->id;
+        $detail->barang_id  = $barangId;
+        $detail->qty        = $qty;
         $detail->harga_jual = $hargaJual;
         if ($diskon > 0) {
             $detail->diskon = $diskon;
@@ -272,9 +271,11 @@ class Akm extends Penjualan
     public function cariNomor()
     {
         $tahun = date('y');
-        $data = $this->find([
-            'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,2)='{$tahun}'"]
+        $data  = $this->find(
+            [
+                'select'    => 'max(substring(nomor,9)*1) as max',
+                'condition' => "substring(nomor,5,2)='{$tahun}'",
+            ]
         );
 
         $value = is_null($data) ? 0 : $data->max;
@@ -287,11 +288,11 @@ class Akm extends Penjualan
      */
     public function generateNomor()
     {
-        $config = Config::model()->find("nama='toko.kode'");
-        $kodeCabang = $config->nilai;
-        $kodeDokumen = KodeDokumen::AKM;
+        $config         = Config::model()->find("nama='toko.kode'");
+        $kodeCabang     = $config->nilai;
+        $kodeDokumen    = KodeDokumen::AKM;
         $kodeTahunBulan = date('ym');
-        $sequence = substr('00000' . $this->cariNomor(), -6);
+        $sequence       = substr('00000' . $this->cariNomor(), -6);
         return "{$kodeCabang}{$kodeDokumen}{$kodeTahunBulan}{$sequence}";
     }
 
@@ -302,10 +303,10 @@ class Akm extends Penjualan
     public function ambilTotal()
     {
         $detail = Yii::app()->db->createCommand()
-                ->select('sum(harga_jual * qty) total')
-                ->from(AkmDetail::model()->tableName())
-                ->where('akm_id=:akmId', array(':akmId' => $this->id))
-                ->queryRow();
+            ->select('sum(harga_jual * qty) total')
+            ->from(AkmDetail::model()->tableName())
+            ->where('akm_id=:akmId', [':akmId' => $this->id])
+            ->queryRow();
         return $detail['total'];
     }
 
@@ -323,22 +324,23 @@ class Akm extends Penjualan
 
     public function simpan()
     {
-        $transaction = $this->dbConnection->beginTransaction();
+        $transaction    = $this->dbConnection->beginTransaction();
         $this->scenario = 'simpanAkm';
         try {
             $this->simpanAkm();
             $transaction->commit();
             return [
-                'sukses' => true
+                'sukses' => true,
             ];
         } catch (Exception $ex) {
             $transaction->rollback();
             return [
                 'sukses' => false,
-                'error' => [
-                    'msg' => $ex->getMessage(),
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ],
+            ];
         }
     }
 
@@ -346,7 +348,7 @@ class Akm extends Penjualan
     {
         return [
             self::STATUS_DRAFT => 'Draft',
-            self::STATUS_OK => 'OK',
+            self::STATUS_OK    => 'OK',
         ];
     }
 
@@ -363,46 +365,45 @@ class Akm extends Penjualan
     public function strukText()
     {
         $configToko = Config::model()->find('nama=:key', [':key' => 'toko.nama']);
-        $total = $this->getTotal();
-        $nomor = substr($this->nomor, -6) * 1;
+        $total      = $this->getTotal();
+        $nomor      = substr($this->nomor, -6) * 1;
 
-        $struk = chr(27) . "@"; //Init Printer
+        $struk = chr(27) . '@';            //Init Printer
         //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
-        $struk .= chr(27) . "!" . chr(1); //font B / normal
+        $struk .= chr(27) . '!' . chr(1);  //font B / normal
         //$struk .= chr(27) . chr(101) . chr(2); //1 reverse lf
-        $struk .= chr(27) . "a" . chr(48); //0 left
+        $struk .= chr(27) . 'a' . chr(48); //0 left
         //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
         //$struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
         $struk .= strtoupper($configToko->nilai) . "\n";
         $struk .= "Anjungan Kasir Mandiri\n";
 
-
         $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
         $struk .= chr(27) . chr(101) . chr(2); //2 reverse lf
-        $struk .= chr(27) . "!" . chr(16); //font double width
-        $struk .= chr(27) . "a" . chr(2); //2 right
+        $struk .= chr(27) . '!' . chr(16);     //font double width
+        $struk .= chr(27) . 'a' . chr(2);      //2 right
         $struk .= "Rp. {$total}\n\n";
 
-        $struk .= chr(27) . "!" . chr(48); //font besar
-        $struk .= chr(27) . "a" . chr(1); //0 center
-        $struk .="{$nomor}\n\n";
-        $struk .= chr(27) . "!" . chr(1); //font Normal
+        $struk .= chr(27) . '!' . chr(48); //font besar
+        $struk .= chr(27) . 'a' . chr(1);  //0 center
+        $struk .= "{$nomor}\n\n";
+        $struk .= chr(27) . '!' . chr(1);  //font Normal
         //$struk .= chr(27) . '@' . chr(29) . 'k' . chr(107) . chr(3) . $nomor . chr(0);
-        $struk .= chr(27) . "a" . chr(48); //0 left
+        $struk .= chr(27) . 'a' . chr(48); //0 left
 
         $struk .= "Ketentuan:\n";
-        $struk .= "Struk ini ";
+        $struk .= 'Struk ini ';
 
         //    $struk .= chr(27) . "!" . chr(8); //font tebal
         $struk .= "BUKAN bukti pembayaran\n";
-        $struk .= chr(27) . "!" . chr(1); //font normal
+        $struk .= chr(27) . '!' . chr(1); //font normal
         $struk .= "Silahkan melakukan pembayaran di kasir\n"
-                . "Jika ada perbedaan perhitungan,\n"
-                . "Yang benar adalah ";
+            . "Jika ada perbedaan perhitungan,\n"
+            . 'Yang benar adalah ';
         //    $struk .= chr(27) . "!" . chr(8); //font tebal
         $struk .= "perhitungan kasir\n";
-        $struk .= chr(27) . "!" . chr(1); //font normal
-        $struk .= chr(29) . "V" . chr(66) . chr(48); //Feed paper & cut
+        $struk .= chr(27) . '!' . chr(1);            //font normal
+        $struk .= chr(29) . 'V' . chr(66) . chr(48); //Feed paper & cut
 
         return $struk;
     }
@@ -416,15 +417,15 @@ class Akm extends Penjualan
     {
         $profil = Profil::model()->findByPk($this->profil_id);
         if ($profil->isMember()) {
-            $penjualan = Yii::app()->db->createCommand("
+            $penjualan = Yii::app()->db->createCommand('
             select sum(harga_jual * qty) jumlah from akm_detail where akm_id=:akmId
-                ")->bindValues(array(':akmId' => $this->id))
-                    ->queryRow();
+                ')->bindValues([':akmId' => $this->id])
+                ->queryRow();
 
-            $configMember = Yii::app()->db->createCommand("
+            $configMember = Yii::app()->db->createCommand('
             select nilai from config where nama=:namaConfig
-                ")->bindValues(array(':namaConfig' => 'member.nilai_1_poin'))
-                    ->queryRow();
+                ')->bindValues([':namaConfig' => 'member.nilai_1_poin'])
+                ->queryRow();
 
             /* Jika di config nilai = 0, berarti tidak memakai sistem poin */
             return $configMember['nilai'] > 0 ? floor($penjualan['jumlah'] / $configMember['nilai']) : 0;
@@ -438,24 +439,24 @@ class Akm extends Penjualan
         $transaction = $this->dbConnection->beginTransaction();
 
         try {
-            if (!$this->saveAttributes(array('profil_id' => $customer->id))) {
+            if (!$this->saveAttributes(['profil_id' => $customer->id])) {
                 throw new Exception('Gagal ubah customer', 500);
             }
             $alamat1 = !empty($customer->alamat1) ? $customer->alamat1 : '';
             $alamat2 = !empty($customer->alamat2) ? '<br>' . $customer->alamat2 : '';
             $alamat3 = !empty($customer->alamat3) ? '<br>' . $customer->alamat3 : '';
             /* Ambil data detail */
-            $akmDetails = AkmDetail::model()->findAll('akm_id=:akmId', array(
-                ':akmId' => $this->id
-            ));
+            $akmDetails = AkmDetail::model()->findAll('akm_id=:akmId', [
+                ':akmId' => $this->id,
+            ]);
 
             /* Hapus dan re-insert */
 
             $tabelAkmDetail = AkmDetail::model()->tableName();
 
-            AkmDetail::model()->deleteAll('akm_id=:akmId', array(
-                'akmId' => $this->id
-            ));
+            AkmDetail::model()->deleteAll('akm_id=:akmId', [
+                'akmId' => $this->id,
+            ]);
 
             foreach ($akmDetails as $detail) {
                 $barang = Barang::model()->findByPk($detail->barang_id);
@@ -464,21 +465,21 @@ class Akm extends Penjualan
 
             $transaction->commit();
 
-            return array(
-                'sukses' => true,
-                'nama' => $customer->nama,
-                'nomor' => $customer->nomor,
-                'address' => $alamat1 . $alamat2 . $alamat3
-            );
+            return [
+                'sukses'  => true,
+                'nama'    => $customer->nama,
+                'nomor'   => $customer->nomor,
+                'address' => $alamat1 . $alamat2 . $alamat3,
+            ];
         } catch (Exception $ex) {
             $transaction->rollback();
-            return array(
+            return [
                 'sukses' => false,
-                'error' => array(
-                    'msg' => $ex->getMessage(),
+                'error'  => [
+                    'msg'  => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                ],
+            ];
         }
     }
-
 }

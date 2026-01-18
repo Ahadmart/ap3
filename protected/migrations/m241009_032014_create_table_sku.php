@@ -5,7 +5,7 @@ class m241009_032014_create_table_sku extends CDbMigration
 	public function safeUp()
 	{
 
-		$tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4';
+		$tableOptions = 'ENGINE=InnoDB';
 
 		$this->createTable(
 			'sku',

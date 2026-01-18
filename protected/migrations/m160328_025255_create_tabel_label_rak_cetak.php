@@ -26,7 +26,7 @@ class m160328_025255_create_tabel_label_rak_cetak extends CDbMigration
             `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
             PRIMARY KEY (`barang_id`),
             KEY `fk_label_rak_cetak_updatedby_idx` (`updated_by`)"
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine);
 
         /* Foreign Key Tabel label_rak_cetak */
 

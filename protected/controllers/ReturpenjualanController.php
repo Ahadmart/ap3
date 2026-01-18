@@ -102,7 +102,7 @@ class ReturpenjualanController extends Controller
          */
         $penjualanDetail = new PenjualanDetail('search');
         $penjualanDetail->unsetAttributes();
-        $penjualanDetail->setAttribute('id', '0');
+        $penjualanDetail->setAttribute('id', '=0');
         if (isset($_GET['PenjualanDetail'])) {
             $penjualanDetail->unsetAttributes(['id']);
             $penjualanDetail->attributes = $_GET['PenjualanDetail'];
@@ -114,7 +114,7 @@ class ReturpenjualanController extends Controller
             $penjualanDetail->setAttribute('qty', '>=' . $qty);
         }
         $penjualanDetail->setAttribute('statusPenjualan', '<>0');
-//      $penjualanDetail->setAttribute('customerId', '='.$model->customer_id);
+        // $penjualanDetail->setAttribute('customerId', '='.$model->customer_id);
 
         $this->render('ubah',
                 [

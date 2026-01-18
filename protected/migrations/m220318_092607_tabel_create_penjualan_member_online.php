@@ -5,7 +5,7 @@ class m220318_092607_tabel_create_penjualan_member_online extends CDbMigration
     // Use safeUp/safeDown to do migration with transaction
     public function safeUp()
     {
-        $tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4';
+        $tableOptions = 'ENGINE=InnoDB';
 
         $this->createTable(
             'penjualan_member_online',

@@ -4,7 +4,7 @@ class m231113_021510_create_table_parameter_analisa_pls extends CDbMigration
 {
 	public function safeUp()
 	{
-		$tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4';
+		$tableOptions = 'ENGINE=InnoDB';
 
 		$this->createTable(
 			'po_analisapls_param',

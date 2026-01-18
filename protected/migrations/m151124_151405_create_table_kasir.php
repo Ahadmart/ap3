@@ -38,7 +38,7 @@ class m151124_151405_create_table_kasir extends CDbMigration
             KEY `fk_kasir_user_idx` (`user_id`),
             KEY `fk_kasir_device_idx` (`device_id`),
             KEY `fk_kasir_updatedby_idx` (`updated_by`)"
-                ), 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8');
+                ), 'ENGINE=' . $dbEngine);
 
         /* Foreign Key Tabel kasir */
         $this->addForeignKey('fk_kasir_device', 'kasir', 'device_id', 'device', 'id', 'NO ACTION', 'NO ACTION');

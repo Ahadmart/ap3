@@ -5,7 +5,7 @@ class m220318_092523_tabel_create_membership_config extends CDbMigration
 	// Use safeUp/safeDown to do migration with transaction
 	public function safeUp()
 	{
-        $tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4';
+        $tableOptions = 'ENGINE=InnoDB';
 
         $this->createTable(
             'membership_config',

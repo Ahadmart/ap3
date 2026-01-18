@@ -1,0 +1,14 @@
+[Unit]
+Description=Ahadpos WebSocket Relay Service
+Requires=ahadpos-websocket.service
+After=ahadpos-websocket.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/php /var/www/html/ahadpos3/protected/ws/websocket_relay/wsrelayrun.php
+WorkingDirectory=/var/www/html/ahadpos3/protected/ws/websocket_relay/
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

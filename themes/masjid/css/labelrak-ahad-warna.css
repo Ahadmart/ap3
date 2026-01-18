@@ -1,0 +1,91 @@
+body{
+    font-family: OpenSans;
+    font-size: 7pt;
+}
+.label{
+    border: 1px solid #000;  
+    height:30mm; 
+    text-align: left; 
+    overflow: hidden;
+    margin-bottom: 2mm;
+}
+
+.label-container{
+    width:53mm; 
+    page-break-inside: avoid;
+    float:left; 
+    margin-left: 2mm;
+}
+
+.nama-barang{
+    padding: 2px 5px;
+    /*margin-top: 3px;*/
+    text-transform: uppercase;
+    font-weight: bold;
+    font-family: Ubuntu;
+    background-color: greenyellow;
+    height: 15px;
+}
+
+.harga-jual{
+    font-size: 25pt;
+    padding: 0 5px;
+    float: right;
+    text-align: center;
+    margin-top: -8px;
+}
+
+.barcode, .tgl-cetak{
+    font-size: 6pt;
+    margin: 0;
+}
+
+.barcode{
+    width: 40%;
+    float:left;
+    text-align: left;
+    padding-left: 9px
+}
+
+.tgl-cetak{
+    width: 40%;
+    float:right;
+    text-align: right;
+    font-size: 6pt;
+    padding-top: 12px;
+    padding-right: 9px;
+    /*display: none;*/
+}
+
+.footer1{
+    background-color: greenyellow;
+    height: 10px;
+    width: 100%;
+    /*margin-top: -25px;*/
+    overflow: visible;
+    margin-left: 0;
+}
+.footer2{
+    background-color: red;
+    height: 10px;
+    width: 100%;
+    margin-left: 0;
+    /*margin-top: 25px;*/
+}
+.footer3{
+    background-color: greenyellow;
+    height: 10px;
+    width: 100%;
+    margin-left: 0;
+    /*margin-top: 25px;*/
+}
+
+img.logo{
+    background-color: white;
+    height: 30px;
+    width: auto;
+    margin-top: -30px;
+    margin-left: 19mm;
+    float: left;
+}
+

@@ -18,7 +18,7 @@ class m161223_025320_create_table_akm extends CDbMigration
                 `created_at` timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `nomor_UNIQUE` (`nomor`)"
-                ], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+                ], 'ENGINE=' . $dbEngine);
 
         $this->createTable('akm_detail', ["
                 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -34,7 +34,7 @@ class m161223_025320_create_table_akm extends CDbMigration
                 KEY `fk_akm_detail_barang_idx` (`barang_id`),
                 CONSTRAINT `fk_akm_detail_barang` FOREIGN KEY (`barang_id`) REFERENCES `barang` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
                 CONSTRAINT `fk_akm_detail_header` FOREIGN KEY (`akm_id`) REFERENCES `akm` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
-                ], 'ENGINE=' . $dbEngine . ' DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+                ], 'ENGINE=' . $dbEngine);
     }
 
     public function safeDown()
