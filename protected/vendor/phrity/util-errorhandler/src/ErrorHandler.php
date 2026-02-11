@@ -7,6 +7,7 @@
 
 namespace Phrity\Util;
 
+use Closure;
 use ErrorException;
 use Throwable;
 
@@ -20,14 +21,14 @@ class ErrorHandler
 
     /**
      * Set error handler to run until removed.
-     * @param mixed $handling
+     * @param Closure|Throwable|null $handling
      *   - If null, handler will throw ErrorException
      *   - If Throwable $t, throw $t with ErrorException attached as previous
      *   - If callable, will invoke callback with ErrorException as argument
      * @param int $levels Error levels to catch, all errors by default
-     * @return mixed Previously registered error handler, if any
+     * @return (callable(): mixed)|null Previously registered error handler, if any
      */
-    public function set($handling = null, int $levels = E_ALL)
+    public function set(Closure|Throwable|null $handling = null, int $levels = E_ALL): callable|null
     {
         return set_error_handler($this->getHandler($handling), $levels);
     }
@@ -44,14 +45,14 @@ class ErrorHandler
     /**
      * Run code with error handling, breaks on first encountered error.
      * @param callable $callback The code to run
-     * @param mixed $handling
+     * @param Closure|Throwable|null $handling
      *   - If null, handler will throw ErrorException
      *   - If Throwable $t, throw $t with ErrorException attached as previous
      *   - If callable, will invoke callback with ErrorException as argument
      * @param int $levels Error levels to catch, all errors by default
      * @return mixed Return what $callback returns, or what $handling retuns on error
      */
-    public function with(callable $callback, $handling = null, int $levels = E_ALL)
+    public function with(callable $callback, Closure|Throwable|null $handling = null, int $levels = E_ALL): mixed
     {
         $error = null;
         $result = null;
@@ -63,20 +64,20 @@ class ErrorHandler
         } finally {
             $this->restore();
         }
-        return $error ?: $result;
+        return $error ?? $result;
     }
 
     /**
      * Run code with error handling, comletes code before handling errors
      * @param callable $callback The code to run
-     * @param mixed $handling
+     * @param Closure|Throwable|null $handling
      *   - If null, handler will throw ErrorException
      *   - If Throwable $t, throw $t with ErrorException attached as previous
      *   - If callable, will invoke callback with ErrorException as argument
      * @param int $levels Error levels to catch, all errors by default
      * @return mixed Return what $callback returns, or what $handling retuns on error
      */
-    public function withAll(callable $callback, $handling = null, int $levels = E_ALL)
+    public function withAll(callable $callback, Closure|Throwable|null $handling = null, int $levels = E_ALL): mixed
     {
         $errors = [];
         $this->set(function (ErrorException $e) use (&$errors) {
@@ -85,13 +86,14 @@ class ErrorHandler
         $result = $callback();
         $this->restore();
         $error = empty($errors) ? null : $this->handle($handling, $errors, $result);
-        return $error ?: $result;
+        return $error ?? $result;
     }
+
 
     /* ----------------- Private helpers --------------------------------------------- */
 
     // Get handler function
-    private function getHandler($handling)
+    private function getHandler(Closure|Throwable|null $handling): Closure
     {
         return function ($severity, $message, $file, $line) use ($handling) {
             $error = new ErrorException($message, 0, $severity, $file, $line);
@@ -99,8 +101,15 @@ class ErrorHandler
         };
     }
 
-    // Handle error according to $handlig type
-    private function handle($handling, $error, $result = null)
+    /**
+     * Handle error according to $handlig type
+     * @param Closure|Throwable|null $handling
+     * @param ErrorException|non-empty-array<ErrorException> $error
+     * @mixed $result
+     * @return mixed
+     * @throws Throwable
+     */
+    private function handle(Closure|Throwable|null $handling, ErrorException|array $error, mixed $result = null): mixed
     {
         if (is_callable($handling)) {
             return $handling($error, $result);
@@ -110,8 +119,10 @@ class ErrorHandler
         }
         if ($handling instanceof Throwable) {
             try {
+                /* @phpstan-ignore finally.exitPoint */
                 throw $error;
             } finally {
+                /* @phpstan-ignore finally.exitPoint */
                 throw $handling;
             }
         }

@@ -2,8 +2,10 @@
 
 namespace Phrity\Net;
 
+use InvalidArgumentException;
+
 /**
- * Phrity\Net\SocketStream class.
+ * SocketStream class.
  */
 class SocketStream extends Stream
 {
@@ -15,7 +17,7 @@ class SocketStream extends Stream
      */
     public function isConnected(): bool
     {
-        return $this->stream && ($this->readable || $this->writable);
+        return is_resource($this->stream) && ($this->readable || $this->writable);
     }
 
     /**
@@ -24,7 +26,7 @@ class SocketStream extends Stream
      */
     public function getRemoteName(): string|null
     {
-        return stream_socket_get_name($this->stream, true);
+        return is_resource($this->stream) ? (stream_socket_get_name($this->stream, true) ?: null) : null;
     }
 
     /**
@@ -33,7 +35,7 @@ class SocketStream extends Stream
      */
     public function getLocalName(): string|null
     {
-        return stream_socket_get_name($this->stream, false);
+        return is_resource($this->stream) ? (stream_socket_get_name($this->stream, false) ?: null) : null;
     }
 
     /**
@@ -58,7 +60,7 @@ class SocketStream extends Stream
      * Toggle blocking/non-blocking mode.
      * @param bool $enable Blocking mode to set.
      * @return bool If operation was succesful.
-     * @throws \StreamException if stream is closed.
+     * @throws StreamException if stream is closed.
      */
     public function setBlocking(bool $enable): bool
     {
@@ -69,17 +71,43 @@ class SocketStream extends Stream
     }
 
     /**
-     * Set timeout period on a stream.
-     * @param int $seconds Seconds to be set.
-     * @param int $microseconds Microseconds to be set.
-     * @return bool If operation was succesful.
-     * @throws \StreamException if stream is closed.
+     * If socket stream has unread content.
+     * @return bool If there is content to read.
+     * @throws StreamException if stream is unselectable.
      */
-    public function setTimeout(int $seconds, int $microseconds = 0): bool
+    public function hasContents(): bool
     {
+        if (!is_resource($this->stream)) {
+            return false;
+        }
+        /** @throws StreamException */
+        return $this->handler->with(function () {
+            $read = [$this->getOpenResource()];
+            $write = $oob = [];
+            return stream_select($read, $write, $oob, 0, 0) > 0;
+        }, new StreamException(StreamException::FAIL_SELECT));
+    }
+
+    /**
+     * Set timeout period on a stream.
+     * @param int<0, max>|float $timeout Seconds to be set.
+     * @param int|null $microseconds Microseconds to be set - deprecated
+     * @return bool If operation was succesful.
+     * @throws InvalidArgumentException if invalid timeout.
+     * @throws StreamException if stream is closed.
+     */
+    public function setTimeout(int|float $timeout, int|null $microseconds = null): bool
+    {
+        // @deprecated Setting $microseconds is deprecated, use float value on $timeout instead
+        // @todo Add deprecation warning
+        if ($timeout < 0) {
+            throw new InvalidArgumentException("Timeout must be 0 or more.");
+        }
         if (!isset($this->stream)) {
             throw new StreamException(StreamException::STREAM_DETACHED);
         }
+        $seconds = intval($timeout);
+        $microseconds = $microseconds ?? intval(round($timeout - $seconds, 6) * 1000000);
         return stream_set_timeout($this->stream, $seconds, $microseconds);
     }
 
@@ -88,20 +116,19 @@ class SocketStream extends Stream
 
     /**
      * Read line from the stream.
-     * @param int $length Read up to $length bytes from the object and return them.
+     * @param int<0, max> $length Read up to $length bytes from the object and return them.
      * @return string|null Returns the data read from the stream, or null of eof.
-     * @throws \StreamException if an error occurs.
+     * @throws StreamException if an error occurs.
      */
     public function readLine(int $length): string|null
     {
-        if (!isset($this->stream)) {
-            throw new StreamException(StreamException::STREAM_DETACHED);
-        }
+        $stream = $this->getOpenResource();
         if (!$this->readable) {
             throw new StreamException(StreamException::NOT_READABLE);
         }
-        return $this->handler->with(function () use ($length) {
-            $result = fgets($this->stream, $length);
+        /** @throws StreamException */
+        return $this->handler->with(function () use ($stream, $length) {
+            $result = fgets($stream, $length);
             return $result === false ? null : $result;
         }, new StreamException(StreamException::FAIL_GETS));
     }
@@ -112,11 +139,13 @@ class SocketStream extends Stream
      */
     public function closeRead(): void
     {
-        if ($this->readable && $this->writable) {
-            stream_socket_shutdown($this->stream, STREAM_SHUT_RD);
-            $this->evalStream();
-        } elseif (!$this->writable) {
-            $this->close();
+        if (is_resource($this->stream)) {
+            if ($this->readable && $this->writable) {
+                stream_socket_shutdown($this->stream, STREAM_SHUT_RD);
+                $this->evalStream();
+            } elseif (!$this->writable) {
+                $this->close();
+            }
         }
         $this->readable = false;
     }
@@ -127,7 +156,7 @@ class SocketStream extends Stream
     public function closeWrite(): void
     {
         if ($this->readable && $this->writable) {
-            $x = stream_socket_shutdown($this->stream, STREAM_SHUT_WR);
+            stream_socket_shutdown($this->getOpenResource(), STREAM_SHUT_WR);
             $this->evalStream();
         } elseif (!$this->readable) {
             $this->close();

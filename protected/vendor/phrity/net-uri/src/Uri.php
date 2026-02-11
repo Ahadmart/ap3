@@ -11,14 +11,17 @@ namespace Phrity\Net;
 
 use InvalidArgumentException;
 use JsonSerializable;
+use Phrity\Comparison\{
+    Equalable,
+    IncomparableException,
+};
 use Psr\Http\Message\UriInterface;
 use Stringable;
-use TypeError;
 
 /**
  * Net\Uri class.
  */
-class Uri implements JsonSerializable, Stringable, UriInterface
+class Uri implements Equalable, JsonSerializable, Stringable, UriInterface
 {
     public const REQUIRE_PORT = 1; // Always include port, explicit or default
     public const ABSOLUTE_PATH = 2; // Enforce absolute path
@@ -26,13 +29,17 @@ class Uri implements JsonSerializable, Stringable, UriInterface
     public const IDNA = 8; // @deprecated, replaced by IDN_ENCODE
     public const IDN_ENCODE = 16; // IDN-encode host
     public const IDN_DECODE = 32; // IDN-decode host
+    public const URI_DECODE = 64; // Decoded URI
+    public const URI_ENCODE = 128; // Minimal URI encoded
+    public const URI_ENCODE_3986 = 256; // URI encoded RFC 3986
 
     private const RE_MAIN = '!^(?P<schemec>(?P<scheme>[^:/?#]+):)?(?P<authorityc>//(?P<authority>[^/?#]*))?'
                           . '(?P<path>[^?#]*)(?P<queryc>\?(?P<query>[^#]*))?(?P<fragmentc>#(?P<fragment>.*))?$!';
     private const RE_AUTH = '!^(?P<userinfoc>(?P<user>[^:/?#]+)(?P<passc>:(?P<pass>[^:/?#]+))?@)?'
                           . '(?P<host>[^:/?#]*|\[[^/?#]*\])(?P<portc>:(?P<port>[0-9]*))?$!';
 
-    private static array $port_defaults = [
+    /** @var array<string, int> $portDefaults */
+    private static array $portDefaults = [
         'acap' => 674,
         'afp' => 548,
         'dict' => 2628,
@@ -87,12 +94,12 @@ class Uri implements JsonSerializable, Stringable, UriInterface
 
     /**
      * Create new URI instance using a string
-     * @param string $uri_string URI as string
-     * @throws \InvalidArgumentException If the given URI cannot be parsed
+     * @param string $uriString URI as string
+     * @throws InvalidArgumentException If the given URI cannot be parsed
      */
-    public function __construct(string $uri_string = '')
+    public function __construct(string $uriString = '')
     {
-        $this->parse($uri_string);
+        $this->parse($uriString);
     }
 
 
@@ -119,7 +126,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
         if ($host === '') {
             return '';
         }
-        $userinfo = $this->formatComponent($this->getUserInfo(), '', '@');
+        $userinfo = $this->formatComponent($this->getUserInfo($flags), '', '@');
         $port = $this->formatComponent($this->getPort($flags), ':');
         return "{$userinfo}{$host}{$port}";
     }
@@ -131,8 +138,8 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      */
     public function getUserInfo(int $flags = 0): string
     {
-        $user = $this->formatComponent($this->user);
-        $pass = $this->formatComponent($this->pass, ':');
+        $user = $this->formatComponent($this->uriEncode($this->user, $flags));
+        $pass = $this->formatComponent($this->uriEncode($this->pass ?? '', $flags), ':');
         return $user === '' ? '' : "{$user}{$pass}";
     }
 
@@ -163,7 +170,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      */
     public function getPort(int $flags = 0): int|null
     {
-        $default = self::$port_defaults[$this->scheme] ?? null;
+        $default = self::$portDefaults[$this->scheme] ?? null;
         if ($flags & self::REQUIRE_PORT) {
             return $this->port !== null ? $this->port : $default;
         }
@@ -184,7 +191,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
         if ($flags & self::ABSOLUTE_PATH && substr($path, 0, 1) !== '/') {
             $path = "/{$path}";
         }
-        return $path;
+        return $this->uriEncode($path, $flags, '\/:@');
     }
 
     /**
@@ -194,7 +201,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      */
     public function getQuery(int $flags = 0): string
     {
-        return $this->query;
+        return $this->uriEncode($this->query, $flags, '\/:@?');
     }
 
     /**
@@ -204,7 +211,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      */
     public function getFragment(int $flags = 0): string
     {
-        return $this->fragment;
+        return $this->uriEncode($this->fragment, $flags, '\/:@?');
     }
 
 
@@ -214,11 +221,11 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      * Return an instance with the specified scheme.
      * @param string $scheme The scheme to use with the new instance
      * @param int $flags Optional modifier flags
-     * @return static A new instance with the specified scheme
-     * @throws \InvalidArgumentException for invalid schemes
-     * @throws \InvalidArgumentException for unsupported schemes
+     * @return self A new instance with the specified scheme
+     * @throws InvalidArgumentException for invalid schemes
+     * @throws InvalidArgumentException for unsupported schemes
      */
-    public function withScheme(string $scheme, int $flags = 0): UriInterface
+    public function withScheme(string $scheme, int $flags = 0): self
     {
         $clone = $this->clone($flags);
         $clone->setScheme($scheme, $flags);
@@ -230,9 +237,9 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      * @param string $user The user name to use for authority
      * @param null|string $password The password associated with $user
      * @param int $flags Optional modifier flags
-     * @return static A new instance with the specified user information
+     * @return self A new instance with the specified user information
      */
-    public function withUserInfo(string $user, string|null $password = null, int $flags = 0): UriInterface
+    public function withUserInfo(string $user, string|null $password = null, int $flags = 0): self
     {
         $clone = $this->clone($flags);
         $clone->setUserInfo($user, $password);
@@ -243,10 +250,10 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      * Return an instance with the specified host.
      * @param string $host The hostname to use with the new instance
      * @param int $flags Optional modifier flags
-     * @return static A new instance with the specified host
-     * @throws \InvalidArgumentException for invalid hostnames
+     * @return self A new instance with the specified host
+     * @throws InvalidArgumentException for invalid hostnames
      */
-    public function withHost(string $host, int $flags = 0): UriInterface
+    public function withHost(string $host, int $flags = 0): self
     {
         $clone = $this->clone($flags);
         $clone->setHost($host, $flags);
@@ -257,10 +264,10 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      * Return an instance with the specified port.
      * @param null|int $port The port to use with the new instance
      * @param int $flags Optional modifier flags
-     * @return static A new instance with the specified port
-     * @throws \InvalidArgumentException for invalid ports
+     * @return self A new instance with the specified port
+     * @throws InvalidArgumentException for invalid ports
      */
-    public function withPort(int|null $port, int $flags = 0): UriInterface
+    public function withPort(int|null $port, int $flags = 0): self
     {
         $clone = $this->clone($flags);
         $clone->setPort($port, $flags);
@@ -271,10 +278,10 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      * Return an instance with the specified path.
      * @param string $path The path to use with the new instance
      * @param int $flags Optional modifier flags
-     * @return static A new instance with the specified path
-     * @throws \InvalidArgumentException for invalid paths
+     * @return self A new instance with the specified path
+     * @throws InvalidArgumentException for invalid paths
      */
-    public function withPath(string $path, int $flags = 0): UriInterface
+    public function withPath(string $path, int $flags = 0): self
     {
         $clone = $this->clone($flags);
         $clone->setPath($path, $flags);
@@ -285,10 +292,10 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      * Return an instance with the specified query string.
      * @param string $query The query string to use with the new instance
      * @param int $flags Optional modifier flags
-     * @return static A new instance with the specified query string
-     * @throws \InvalidArgumentException for invalid query strings
+     * @return self A new instance with the specified query string
+     * @throws InvalidArgumentException for invalid query strings
      */
-    public function withQuery(string $query, int $flags = 0): UriInterface
+    public function withQuery(string $query, int $flags = 0): self
     {
         $clone = $this->clone($flags);
         $clone->setQuery($query, $flags);
@@ -299,9 +306,9 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      * Return an instance with the specified URI fragment.
      * @param string $fragment The fragment to use with the new instance
      * @param int $flags Optional modifier flags
-     * @return static A new instance with the specified fragment
+     * @return self A new instance with the specified fragment
      */
-    public function withFragment(string $fragment, int $flags = 0): UriInterface
+    public function withFragment(string $fragment, int $flags = 0): self
     {
         $clone = $this->clone($flags);
         $clone->setFragment($fragment, $flags);
@@ -333,17 +340,35 @@ class Uri implements JsonSerializable, Stringable, UriInterface
     }
 
 
+    // ---------- Equalable ------------------------------------------------------------------------------------------
+
+    /**
+     * Return JSON encode value as URI reference.
+     * @param UriInterface|string $compareWith
+     * @return bool
+     */
+    public function equals(mixed $compareWith): bool
+    {
+        if (!$compareWith instanceof UriInterface && !is_string($compareWith)) {
+            throw new IncomparableException(sprintf("Can not compare with type '%s'", get_debug_type($compareWith)));
+        }
+        $flags = self::REQUIRE_PORT | self::NORMALIZE_PATH | self::IDN_ENCODE;
+        $them = $compareWith instanceof self ? $compareWith : new self((string)$compareWith);
+        return $this->toString($flags) == $them->toString($flags);
+    }
+
+
     // ---------- Extensions ------------------------------------------------------------------------------------------
 
     /**
      * Return the string representation as a URI reference.
      * @param int $flags Optional modifier flags
-     * @param tring $format Optional format specification
+     * @param string $format Optional format specification
      * @return string
      */
     public function toString(int $flags = 0, string $format = '{scheme}{authority}{path}{query}{fragment}'): string
     {
-        $path_flags = ($this->authority && $this->path ? self::ABSOLUTE_PATH : 0) | $flags;
+        $pathFlags = ($this->authority && $this->path ? self::ABSOLUTE_PATH : 0) | $flags;
         return str_replace([
             '{scheme}',
             '{authority}',
@@ -353,7 +378,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
         ], [
             $this->formatComponent($this->getScheme($flags), '', ':'),
             $this->authority ? "//{$this->formatComponent($this->getAuthority($flags))}" : '',
-            $this->formatComponent($this->getPath($path_flags)),
+            $this->formatComponent($this->getPath($pathFlags)),
             $this->formatComponent($this->getQuery(), '?'),
             $this->formatComponent($this->getFragment(), '#'),
         ], $format);
@@ -362,7 +387,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
     /**
      * Get compontsns as array; as parse_url() method
      * @param int $flags Optional modifier flags
-     * @return array
+     * @return array<string, mixed>
      */
     public function getComponents(int $flags = 0): array
     {
@@ -380,9 +405,11 @@ class Uri implements JsonSerializable, Stringable, UriInterface
 
     /**
      * Return an instance with the specified compontents set.
-     * @return static A new instance with the specified components
+     * @param array<string, mixed> $components
+     * @param int<0, 256> $flags
+     * @return self A new instance with the specified components
      */
-    public function withComponents(array $components, int $flags = 0): UriInterface
+    public function withComponents(array $components, int $flags = 0): self
     {
         $clone = $this->clone($flags);
         foreach ($components as $component => $value) {
@@ -418,7 +445,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
     /**
      * Return all query items (if any) as associative array.
      * @param int $flags Optional modifier flags
-     * @return array Query items
+     * @return array<array-key, mixed> Query items
      */
     public function getQueryItems(int $flags = 0): array
     {
@@ -430,7 +457,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
      * Return query item value for named query item, or null if not present.
      * @param string $name Name of query item to retrieve
      * @param int $flags Optional modifier flags
-     * @return array|string|null Query item value
+     * @return string|null|array<string, mixed> Query item value
      */
     public function getQueryItem(string $name, int $flags = 0): array|string|null
     {
@@ -440,11 +467,11 @@ class Uri implements JsonSerializable, Stringable, UriInterface
 
     /**
      * Add query items as associative array that will be merged qith current items.
-     * @param array $items Array of query items to add
+     * @param array<string, mixed> $items Array of query items to add
      * @param int $flags Optional modifier flags
-     * @return static A new instance with the added query items
+     * @return self A new instance with the added query items
      */
-    public function withQueryItems(array $items, int $flags = 0): UriInterface
+    public function withQueryItems(array $items, int $flags = 0): self
     {
         $clone = $this->clone($flags);
         $clone->setQuery(http_build_query(
@@ -459,11 +486,11 @@ class Uri implements JsonSerializable, Stringable, UriInterface
     /**
      * Add query item value for named query item
      * @param string $name Name of query item to add
-     * @param array|string|null $value Value of query item to add
+     * @param string|null|array<string, mixed> $value Value of query item to add
      * @param int $flags Optional modifier flags
-     * @return static A new instance with the added query items
+     * @return self A new instance with the added query items
      */
-    public function withQueryItem(string $name, array|string|null $value, int $flags = 0): UriInterface
+    public function withQueryItem(string $name, array|string|null $value, int $flags = 0): self
     {
         return $this->withQueryItems([$name => $value], $flags);
     }
@@ -512,27 +539,27 @@ class Uri implements JsonSerializable, Stringable, UriInterface
         if ($flags & self::ABSOLUTE_PATH && substr($path, 0, 1) !== '/') {
             $path = "/{$path}";
         }
-        $this->path = $this->uriEncode($path, $flags);
+        $this->path = $this->uriDecode($path);
     }
 
     protected function setQuery(string $query, int $flags = 0): void
     {
-        $this->query = $this->uriEncode($query, $flags, '?');
+        $this->query = $this->uriDecode($query);
     }
 
     protected function setFragment(string $fragment, int $flags = 0): void
     {
-        $this->fragment = $this->uriEncode($fragment, $flags, '?');
+        $this->fragment = $this->uriDecode($fragment);
     }
 
     protected function setUser(string $user, int $flags = 0): void
     {
-        $this->user = $this->uriEncode($user, $flags, '?');
+        $this->user = $this->uriDecode($user);
     }
 
     protected function setPassword(string|null $pass, int $flags = 0): void
     {
-        $this->pass = $pass === null ? null : $this->uriEncode($pass, $flags, '?');
+        $this->pass = $pass === null ? null : $this->uriDecode($pass);
     }
 
     protected function setUserInfo(string $user = '', string|null $pass = null, int $flags = 0): void
@@ -544,29 +571,29 @@ class Uri implements JsonSerializable, Stringable, UriInterface
 
     // ---------- Private helper methods ------------------------------------------------------------------------------
 
-    private function parse(string $uri_string = ''): void
+    private function parse(string $uriString = ''): void
     {
-        if ($uri_string === '') {
+        if ($uriString === '') {
             return;
         }
-        preg_match(self::RE_MAIN, $uri_string, $main);
+        preg_match(self::RE_MAIN, $uriString, $main);
         $this->authority = !empty($main['authorityc']);
-        $this->setScheme(isset($main['schemec']) ? $main['scheme'] : '');
-        $this->setPath(isset($main['path']) ? $main['path'] : '');
-        $this->setQuery(isset($main['queryc']) ? $main['query'] : '');
-        $this->setFragment(isset($main['fragmentc']) ? $main['fragment'] : '');
-        if ($this->authority) {
+        $this->setScheme($main['scheme'] ?? '');
+        $this->setPath($main['path'] ?? '');
+        $this->setQuery($main['query'] ?? '');
+        $this->setFragment($main['fragment'] ?? '');
+        if ($this->authority && !empty($main['authority'])) {
             preg_match(self::RE_AUTH, $main['authority'], $auth);
-            if (empty($auth) && $main['authority'] !== '') {
+            if (empty($auth)) {
                 throw new InvalidArgumentException("Invalid 'authority'.");
             }
             if ($auth['host'] === '' && $auth['user'] !== '') {
                 throw new InvalidArgumentException("Invalid 'authority'.");
             }
-            $this->setUser(isset($auth['user']) ? $auth['user'] : '');
-            $this->setPassword(isset($auth['passc']) ? $auth['pass'] : null);
-            $this->setHost(isset($auth['host']) ? $auth['host'] : '');
-            $this->setPort(isset($auth['portc']) ? (int)$auth['port'] : null);
+            $this->setUser($auth['user'] ?? '');
+            $this->setPassword($auth['pass'] ?? null);
+            $this->setHost($auth['host'] ?? '');
+            $this->setPort(isset($auth['port']) ? (int)$auth['port'] : null);
         }
     }
 
@@ -581,15 +608,31 @@ class Uri implements JsonSerializable, Stringable, UriInterface
 
     private function uriEncode(string $source, int $flags = 0, string $keep = ''): string
     {
-        $exclude = "[^%\/:=&!\$'()*+,;@{$keep}]+";
-        $exp = "/(%{$exclude})|({$exclude})/";
-        return preg_replace_callback($exp, function ($matches) {
-            if ($e = preg_match('/^(%[0-9a-fA-F]{2})/', $matches[0], $m)) {
-                return substr($matches[0], 0, 3) . rawurlencode(substr($matches[0], 3));
-            } else {
-                return rawurlencode($matches[0]);
-            }
-        }, $source);
+        if ($flags & self::URI_DECODE) {
+            return $source;
+        }
+
+        $unreserved = 'a-zA-Z0-9_\-\.~';
+        $subdelim = '!\$&\'\(\)\*\+,;=';
+        $char = '\pL';
+        $pct = '%(?![A-Fa-f0-9]{2}))';
+
+        $re = "/(?:[^%{$unreserved}{$subdelim}{$keep}]+|{$pct}/u";
+
+        if ($flags & self::URI_ENCODE) {
+            $re = "/(?:[^%{$unreserved}{$subdelim}{$keep}{$char}]+|{$pct}/u";
+        }
+        return preg_replace_callback($re, function ($matches) {
+            return rawurlencode($matches[0]);
+        }, $source) ?? $source;
+    }
+
+    private function uriDecode(string $source): string
+    {
+        $re = "/(%[A-Fa-f0-9]{2})/u";
+        return preg_replace_callback($re, function ($matches) {
+            return rawurldecode($matches[0]);
+        }, $source) ?? $source;
     }
 
     private function formatComponent(string|int|null $value, string $before = '', string $after = ''): string
@@ -630,20 +673,25 @@ class Uri implements JsonSerializable, Stringable, UriInterface
 
     private function idnEncode(string $value): string
     {
-        if ($value === '' || !is_callable('idn_to_ascii')) {
+        if ($value === '' || !function_exists('idn_to_ascii')) {
             return $value; // Can't convert, but don't cause exception
         }
-        return idn_to_ascii($value, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
+        return idn_to_ascii($value, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46) ?: $value;
     }
 
     private function idnDecode(string $value): string
     {
-        if ($value === '' || !is_callable('idn_to_utf8')) {
+        if ($value === '' || !function_exists('idn_to_utf8')) {
             return $value; // Can't convert, but don't cause exception
         }
-        return idn_to_utf8($value, IDNA_NONTRANSITIONAL_TO_UNICODE, INTL_IDNA_VARIANT_UTS46);
+        return idn_to_utf8($value, IDNA_NONTRANSITIONAL_TO_UNICODE, INTL_IDNA_VARIANT_UTS46) ?: $value;
     }
 
+    /**
+     * @param array<string, mixed> $a
+     * @param array<string, mixed> $b
+     * @return array<string, mixed>
+     */
     private function queryMerge(array $a, array $b): array
     {
         foreach ($b as $key => $value) {
@@ -652,7 +700,7 @@ class Uri implements JsonSerializable, Stringable, UriInterface
             } elseif (is_array($value)) {
                 $a[$key] = $this->queryMerge($a[$key] ?? [], $b[$key] ?? []);
             } elseif (is_scalar($value)) {
-                $a[$key] = rawurldecode($b[$key]);
+                $a[$key] = $this->uriDecode($b[$key]);
             } else {
                 unset($a[$key]);
             }

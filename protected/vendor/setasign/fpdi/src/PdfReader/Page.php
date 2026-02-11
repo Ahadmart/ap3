@@ -4,7 +4,7 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2023 Setasign GmbH & Co. KG (https://www.setasign.com)
+ * @copyright Copyright (c) 2024 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
  */
 
@@ -280,6 +280,8 @@ class Page
      *
      * All coordinates are normalized in view to rotation and translation of the boundary-box, so that their
      * origin is lower-left.
+     *
+     * The URI is the binary value of the PDF string object. It can be in PdfDocEncoding or in UTF-16BE encoding.
      *
      * @return array
      */

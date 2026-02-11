@@ -5,15 +5,14 @@ namespace Mpdf;
 use Mpdf\Color\ColorConverter;
 use Mpdf\Color\ColorModeConverter;
 use Mpdf\Color\ColorSpaceRestrictor;
-
+use Mpdf\File\LocalContentLoader;
 use Mpdf\Fonts\FontCache;
 use Mpdf\Fonts\FontFileFinder;
-
+use Mpdf\Http\CurlHttpClient;
+use Mpdf\Http\SocketHttpClient;
 use Mpdf\Image\ImageProcessor;
-
 use Mpdf\Pdf\Protection;
 use Mpdf\Pdf\Protection\UniqidGenerator;
-
 use Mpdf\Writer\BaseWriter;
 use Mpdf\Writer\BackgroundWriter;
 use Mpdf\Writer\ColorWriter;
@@ -25,18 +24,26 @@ use Mpdf\Writer\JavaScriptWriter;
 use Mpdf\Writer\MetadataWriter;
 use Mpdf\Writer\OptionalContentWriter;
 use Mpdf\Writer\PageWriter;
-
 use Mpdf\Writer\ResourceWriter;
 use Psr\Log\LoggerInterface;
 
 class ServiceFactory
 {
 
+	/**
+	 * @var \Mpdf\Container\ContainerInterface|null
+	 */
+	private $container;
+
+	public function __construct($container = null)
+	{
+		$this->container = $container;
+	}
+
 	public function getServices(
 		Mpdf $mpdf,
 		LoggerInterface $logger,
 		$config,
-		$restrictColorSpace,
 		$languageToFont,
 		$scriptToLanguage,
 		$fontDescriptor,
@@ -49,19 +56,34 @@ class ServiceFactory
 		$colorModeConverter = new ColorModeConverter();
 		$colorSpaceRestrictor = new ColorSpaceRestrictor(
 			$mpdf,
-			$colorModeConverter,
-			$restrictColorSpace
+			$colorModeConverter
 		);
 		$colorConverter = new ColorConverter($mpdf, $colorModeConverter, $colorSpaceRestrictor);
 
 		$tableOfContents = new TableOfContents($mpdf, $sizeConverter);
 
-		$cache = new Cache($config['tempDir']);
-		$fontCache = new FontCache(new Cache($config['tempDir'] . '/ttfontdata'));
+		$cacheBasePath = $config['tempDir'] . '/mpdf';
+
+		$cache = new Cache($cacheBasePath, $config['cacheCleanupInterval']);
+		$fontCache = new FontCache(new Cache($cacheBasePath . '/ttfontdata', $config['cacheCleanupInterval']));
 
 		$fontFileFinder = new FontFileFinder($config['fontDir']);
 
-		$cssManager = new CssManager($mpdf, $cache, $sizeConverter, $colorConverter);
+		if ($this->container && $this->container->has('httpClient')) {
+			$httpClient = $this->container->get('httpClient');
+		} elseif (\function_exists('curl_init')) {
+			$httpClient = new CurlHttpClient($mpdf, $logger);
+		} else {
+			$httpClient = new SocketHttpClient($logger);
+		}
+
+		$localContentLoader = $this->container && $this->container->has('localContentLoader')
+			? $this->container->get('localContentLoader')
+			: new LocalContentLoader();
+
+		$assetFetcher = new AssetFetcher($mpdf, $localContentLoader, $httpClient, $logger);
+
+		$cssManager = new CssManager($mpdf, $cache, $sizeConverter, $colorConverter, $assetFetcher);
 
 		$otl = new Otl($mpdf, $fontCache);
 
@@ -77,8 +99,6 @@ class ServiceFactory
 
 		$hyphenator = new Hyphenator($mpdf);
 
-		$remoteContentFetcher = new RemoteContentFetcher($mpdf, $logger);
-
 		$imageProcessor = new ImageProcessor(
 			$mpdf,
 			$otl,
@@ -89,7 +109,7 @@ class ServiceFactory
 			$cache,
 			$languageToFont,
 			$scriptToLanguage,
-			$remoteContentFetcher,
+			$assetFetcher,
 			$logger
 		);
 
@@ -147,7 +167,9 @@ class ServiceFactory
 			'sizeConverter' => $sizeConverter,
 			'colorConverter' => $colorConverter,
 			'hyphenator' => $hyphenator,
-			'remoteContentFetcher' => $remoteContentFetcher,
+			'localContentLoader' => $localContentLoader,
+			'httpClient' => $httpClient,
+			'assetFetcher' => $assetFetcher,
 			'imageProcessor' => $imageProcessor,
 			'protection' => $protection,
 
@@ -165,8 +187,47 @@ class ServiceFactory
 			'colorWriter' => $colorWriter,
 			'backgroundWriter' => $backgroundWriter,
 			'javaScriptWriter' => $javaScriptWriter,
-
 			'resourceWriter' => $resourceWriter
+		];
+	}
+
+	public function getServiceIds()
+	{
+		return [
+			'otl',
+			'bmp',
+			'cache',
+			'cssManager',
+			'directWrite',
+			'fontCache',
+			'fontFileFinder',
+			'form',
+			'gradient',
+			'tableOfContents',
+			'tag',
+			'wmf',
+			'sizeConverter',
+			'colorConverter',
+			'hyphenator',
+			'localContentLoader',
+			'httpClient',
+			'assetFetcher',
+			'imageProcessor',
+			'protection',
+			'languageToFont',
+			'scriptToLanguage',
+			'writer',
+			'fontWriter',
+			'metadataWriter',
+			'imageWriter',
+			'formWriter',
+			'pageWriter',
+			'bookmarkWriter',
+			'optionalContentWriter',
+			'colorWriter',
+			'backgroundWriter',
+			'javaScriptWriter',
+			'resourceWriter',
 		];
 	}
 

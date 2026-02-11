@@ -55,7 +55,7 @@ class Imagine extends AbstractImagine implements InfoProvider
      *
      * @see \Imagine\Image\ImagineInterface::create()
      */
-    public function create(BoxInterface $size, ColorInterface $color = null)
+    public function create(BoxInterface $size, ?ColorInterface $color = null)
     {
         $width = $size->getWidth();
         $height = $size->getHeight();
@@ -181,7 +181,9 @@ class Imagine extends AbstractImagine implements InfoProvider
 
                 imagecopy($truecolor, $resource, 0, 0, 0, 0, $width, $height);
 
-                imagedestroy($resource);
+                if (PHP_VERSION_ID < 80500) {
+                    imagedestroy($resource);
+                }
                 $resource = $truecolor;
             }
         }
@@ -229,7 +231,7 @@ class Imagine extends AbstractImagine implements InfoProvider
     }
 
     /**
-     * Create an image resource starting from its raw daa.
+     * Create an image resource starting from its raw data.
      *
      * @param string $string
      *

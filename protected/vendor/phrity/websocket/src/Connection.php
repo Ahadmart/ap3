@@ -26,7 +26,8 @@ use WebSocket\Exception\{
     ConnectionClosedException,
     ConnectionFailureException,
     ConnectionTimeoutException,
-    Exception
+    Exception,
+    ReconnectException,
 };
 use WebSocket\Message\{
     Message,
@@ -352,6 +353,10 @@ class Connection implements LoggerAwareInterface, Stringable
     protected function throwException(Throwable $e): never
     {
         // Internal exceptions are handled and re-thrown
+        if ($e instanceof ReconnectException) {
+            $this->logger->info("[connection] {$e->getMessage()}");
+            throw $e;
+        }
         if ($e instanceof Exception) {
             $this->logger->error("[connection] {$e->getMessage()}");
             throw $e;

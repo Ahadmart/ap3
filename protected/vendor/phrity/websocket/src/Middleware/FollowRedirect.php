@@ -36,7 +36,7 @@ class FollowRedirect implements LoggerAwareInterface, ProcessHttpIncomingInterfa
     use StringableTrait;
 
     private $limit;
-    private $attempts = 0;
+    private $attempts = 1;
 
     public function __construct(int $limit = 10)
     {
@@ -53,15 +53,14 @@ class FollowRedirect implements LoggerAwareInterface, ProcessHttpIncomingInterfa
             && $locationHeader = $message->getHeaderLine('Location')
         ) {
             $note = "{$this->attempts} of {$this->limit} redirect attempts";
-            if ($this->attempts >= $this->limit) {
+            if ($this->attempts > $this->limit) {
                 $this->logger->debug("[follow-redirect] Too many redirect attempts, giving up");
-                throw new HandshakeException("{$note}, giving up", $message);
+                throw new HandshakeException("Too many redirect attempts, giving up", $message);
             }
             $this->attempts++;
             $this->logger->debug("[follow-redirect] {$message->getStatusCode()} {$locationHeader} ($note)");
             throw new ReconnectException(new Uri($locationHeader));
         }
-        $this->logger->debug("Exp {$message->getStatusCode()} ");
         return $message;
     }
 }

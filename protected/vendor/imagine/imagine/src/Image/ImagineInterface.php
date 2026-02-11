@@ -20,7 +20,7 @@ use Imagine\Image\Palette\Color\ColorInterface;
  */
 interface ImagineInterface extends ClassFactoryAwareInterface
 {
-    const VERSION = '1.3.5';
+    const VERSION = '1.5.2';
 
     /**
      * Creates a new empty image with an optional background color.
@@ -33,7 +33,7 @@ interface ImagineInterface extends ClassFactoryAwareInterface
      *
      * @return \Imagine\Image\ImageInterface
      */
-    public function create(BoxInterface $size, ColorInterface $color = null);
+    public function create(BoxInterface $size, ?ColorInterface $color = null);
 
     /**
      * Opens an existing image from $path.

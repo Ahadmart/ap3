@@ -1,5 +1,22 @@
 # CHANGELOG
 
+### 1.5.2 (2026-01-09)
+- Do not call curl_close on PHP 8.0+ (#875, @dmaicher)
+
+### 1.5.1 (2025-12-09)
+- Don't call imagedestroy on PHP 8.5+ (#873, @mlocati)
+
+### 1.5.0 (2024-12-03)
+- Minimum supported PHP version raised from 5.5 to 7.1 (#865, @alexander-schranz)
+- Fix PHP 8.4 deprecation warnings (#865, @alexander-schranz)
+- The GD driver now supports resolution for PHP >= 7.2 (#813, #866, @gutocf, @mlocati)
+
+### 1.4.0 (2024-11-10)
+- If a file couldn't be found, we now throw a NotFoundException exception (#853, @playmono)
+- Add support for webp_lossless to GD and GMagick (#858, @ausi)
+- Use streams in ExifMetadataReader (#861, @ausi)
+- WebP format now supports animation (#812, @Yoann-TYT)
+
 ### 1.3.5 (2023-06-07)
 * Fix PHP 8.2 warnings with Point class (#847, @anovsiradj)
 

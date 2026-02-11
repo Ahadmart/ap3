@@ -2,6 +2,7 @@
 
 namespace Phrity\Net;
 
+use InvalidArgumentException;
 use Phrity\Util\ErrorHandler;
 use Psr\Http\Message\UriInterface;
 
@@ -10,19 +11,21 @@ use Psr\Http\Message\UriInterface;
  */
 class SocketClient
 {
-    protected $uri;
-    protected $handler;
-    protected $persistent = false;
-    protected $timeout = null;
-    protected $context = null;
+    protected UriInterface $uri;
+    protected ErrorHandler $handler;
+    protected bool $persistent = false;
+    /** @var int<0, max>|float|null */
+    protected int|float|null $timeout = null;
+    protected Context $context;
 
     /**
      * Create new socker server instance
-     * @param \Psr\Http\Message\UriInterface $uri The URI to open socket on.
+     * @param UriInterface $uri The URI to open socket on.
      */
-    public function __construct(UriInterface $uri)
+    public function __construct(UriInterface $uri, Context|null $context = null)
     {
         $this->uri = $uri;
+        $this->context = $context ?? new Context();
         $this->handler = new ErrorHandler();
     }
 
@@ -31,20 +34,32 @@ class SocketClient
 
     /**
      * Set stream context.
-     * @param array|null $options
-     * @param array|null $params
-     * @return \Phrity\Net\SocketClient
+     * @param Context|array<string, array<string, mixed>>|null $options
+     * @param array<string, mixed>|null $params
+     * @return SocketClient
      */
-    public function setContext(array|null $options = null, array|null $params = null): self
+    public function setContext(Context|array|null $options = null, array|null $params = null): self
     {
-        $this->context = stream_context_create($options, $params);
+        if ($options instanceof Context) {
+            $this->context = $options;
+            return $this;
+        }
+        // @deprecated
+        // @todo Add deprecation warning
+        $this->context->setOptions($options ?? []);
+        $this->context->setParams($params ?? []);
         return $this;
+    }
+
+    public function getContext(): Context
+    {
+        return $this->context;
     }
 
     /**
      * Set connection persistency.
      * @param bool $persistent
-     * @return \Phrity\Net\SocketClient
+     * @return SocketClient
      */
     public function setPersistent(bool $persistent): self
     {
@@ -54,11 +69,15 @@ class SocketClient
 
     /**
      * Set timeout in seconds.
-     * @param int|null $timeout
-     * @return \Phrity\Net\SocketClient
+     * @param int<0, max>|float|null $timeout
+     * @return SocketClient
+     * @throws InvalidArgumentException if invalid timeout
      */
-    public function setTimeout(int|null $timeout): self
+    public function setTimeout(int|float|null $timeout): self
     {
+        if (!is_null($timeout) && $timeout < 0) {
+            throw new InvalidArgumentException("Timeout must be 0 or more.");
+        }
         $this->timeout = $timeout;
         return $this;
     }
@@ -68,11 +87,11 @@ class SocketClient
 
     /**
      * Create a connection on remote socket.
-     * @return \Phrity\Net\SocketStream The stream for opened conenction.
-     * @throws StreamException if connection could not be created
+     * @return SocketStream The stream for opened conenction.
      */
     public function connect(): SocketStream
     {
+        /** @throws StreamException if connection could not be created */
         $stream = $this->handler->with(function () {
             $error_code = $error_message = '';
             return stream_socket_client(
@@ -81,7 +100,7 @@ class SocketClient
                 $error_message,
                 $this->timeout,
                 $this->persistent ? STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT : STREAM_CLIENT_CONNECT,
-                $this->context
+                $this->context->getResource()
             );
         }, new StreamException(StreamException::CLIENT_CONNECT_ERR, ['uri' => $this->uri]));
         return new SocketStream($stream);
