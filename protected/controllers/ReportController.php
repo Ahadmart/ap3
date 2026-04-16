@@ -1981,7 +1981,7 @@ class ReportController extends Controller
         $this->layout = '//layouts/box_kecil';
         $model        = new ReportHarian01Form;
 
-        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER];
+        $tipePrinterAvailable = [Device::TIPE_PDF_PRINTER]; //, DEVICE::TIPE_JSON_FILE];
         $printers             = Device::model()->listDevices($tipePrinterAvailable);
         $kertasPdf            = ReportHarian01Form::listKertas();
 
@@ -1994,7 +1994,7 @@ class ReportController extends Controller
         ]);
     }
 
-    public function actionPrintHarian01($printId, $kertas, $tanggal)
+    public function actionPrintHarian01($printId, $tanggal, $kertas = null)
     {
         $model          = new ReportHarian01Form;
         $model->tanggal = $tanggal;
@@ -2009,6 +2009,9 @@ class ReportController extends Controller
                 case Device::TIPE_PDF_PRINTER:
                     /* Ada tambahan parameter kertas untuk tipe pdf */
                     $this->harianPdf($report, $kertas);
+                    break;
+                case Device::TIPE_JSON_FILE:
+                    $this->harian01json($report);
                     break;
             }
             Yii::app()->end();
@@ -2033,6 +2036,25 @@ class ReportController extends Controller
         // Render PDF
         $mpdf->Output("Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']}.pdf", 'I');
     }
+
+    public function harian01json($report)
+    {
+        $jsonData = json_encode($report);
+
+        if (is_null($jsonData)) {
+            throw new Exception('Tidak ada data', 500);
+        }
+
+        $timestamp = date('Y-m-d-H-i');
+        $namaFile  = "Buku Harian {$report['kodeToko']} {$report['namaToko']} {$report['tanggal']} {$timestamp}";
+
+        $this->renderPartial('_json', [
+            'namaFile' => $namaFile,
+            'jsonData' => $jsonData,
+        ]);
+    }
+
+
 
     /**
      * Report Retur Penjualan
