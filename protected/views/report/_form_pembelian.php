@@ -5,16 +5,16 @@
 ?>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
-    'id' => 'report-pembelian-form-_form_pembelian-form',
+    'id' => 'report-pembelian-form',
     // Please note: When you enable ajax validation, make sure the corresponding
     // controller action is handling ajax validation correctly.
     // See class documentation of CActiveForm for details on this,
     // you need to use the performAjaxValidation()-method described there.
     'enableAjaxValidation' => false,
-    'action'               => $this->createUrl($printHandle),
-    'htmlOptions'          => [
-        'target' => '_blank',
-    ],
+    // 'action'               => $this->createUrl($printHandle),
+    // 'htmlOptions'          => [
+    //     'target' => '_blank',
+    // ],
         ));
 ?>
 <?php echo $form->errorSummary($model, 'Error: Perbaiki input', null, array('class' => 'panel callout')); ?>
@@ -57,14 +57,18 @@ $form = $this->beginWidget('CActiveForm', array(
 </div>
  */
     ?>
-    <div class="small-6 medium-2 large-1 columns">
-        <?php echo $form->labelEx($model, 'printer'); ?>
-        <?php echo $form->dropDownList($model, 'printer', $optionPrinters); ?>
-        <?php echo $form->error($model, 'printer', ['class' => 'error']); ?>
+    <!-- <div class="small-6 medium-2 large-1 columns">
+        <?php //echo $form->labelEx($model, 'printer'); ?>
+        <?php //echo $form->dropDownList($model, 'printer', $optionPrinters); ?>
+        <?php //echo $form->error($model, 'printer', ['class' => 'error']); ?>
     </div>
     <div class="small-6 medium-2 large-1 columns end">
         <label for="tombol-cetak">&nbsp;</label>
-        <?php echo CHtml::submitButton('Submit', ['name' => 'cetak', 'id' => 'tombol-cetak', 'class' => 'tiny bigfont success button']); ?>
+        <?php //echo CHtml::submitButton('Submit', ['name' => 'cetak', 'id' => 'tombol-cetak', 'class' => 'tiny bigfont success button']); ?>
+    </div> -->
+
+    <div class="small-12 columns">
+        <?php echo CHtml::submitButton('Submit', array('class' => 'tiny bigfont button right')); ?>
     </div>
 </div>
 

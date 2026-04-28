@@ -1925,9 +1925,11 @@ class ReportController extends Controller
     public function actionPrintPembelian()
     {
         // Yii::log("Masuk action Print Pembelian");
-        if (isset($_POST['ReportPembelianForm'])) {
-            // Yii::log("PrintId: " . $_POST['ReportPembelianForm']['printer']);
-            $device = Device::model()->findByPk($_POST['ReportPembelianForm']['printer']);
+        // Yii::log(print_r($_GET, true));
+        $printId = Yii::app()->request->getQuery('printId');
+        $param = Yii::app()->request->getQuery('ReportPembelianForm');
+        if (!is_null($param) && !is_null($printId)) {
+            $device = Device::model()->findByPk($printId);
             switch ($device->tipe_id) {
                 case Device::TIPE_PDF_PRINTER:
                     /* Ada tambahan parameter kertas untuk tipe pdf */
@@ -1935,7 +1937,7 @@ class ReportController extends Controller
                     break;
                 case Device::TIPE_CSV_PRINTER:
                     // Yii::log("Masuk action Print Pembelian CSV");
-                    $this->pembelianCsv($_POST['ReportPembelianForm']);
+                    $this->pembelianCsv($param);
                     break;
             }
         }
@@ -1950,7 +1952,7 @@ class ReportController extends Controller
         }
         $csv = $reportPembelian->toCsv();
 
-        Yii::log('Hasil CSV:' . $csv);
+        // Yii::log('Hasil CSV:' . $csv);
 
         if (is_null($csv)) {
             throw new CHttpException(500, 'Tidak ada data');

@@ -26,7 +26,73 @@ $this->renderPartial('_form_pembelian', [
         </div>
     </div>
 </div>
-
+<?php
+if (isset($report['rekap']) && $report['rekap']) {
+?>
+    <div class="row">
+        <div class="small-6 columns">
+            <?php
+            $this->renderPartial('_form_pembelian_cetak', [
+                'model'       => $model,
+                'printers'    => $printers,
+                'printHandle' => $printHandle,
+            ]);
+            ?>
+        </div>
+        <div class="small-6 columns rata-kanan">
+            <h6>Total:
+                <?php echo number_format($report['rekap']['total'], 0, ',', '.'); ?>
+            </h6>
+        </div>
+    </div>
+<?php
+}
+if (! empty($report['detail'])) {
+?>
+    <div class="row">
+        <div class="small-12 columns">
+            <table class="tabel-index responsive">
+                <thead>
+                    <tr>
+                        <th class="rata-kanan">No</th>
+                        <th>Tanggal</th>
+                        <th>Nomor</th>
+                        <th>Supplier</th>
+                        <th>Ref</th>
+                        <th class="rata-kanan">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $i = 1;
+                    foreach ($report['detail'] as $baris) {
+                    ?>
+                        <tr>
+                            <td class="rata-kanan"><?= $i ?></td>
+                            <td><?= $baris['tanggal'] ?>
+                            </td>
+                            <td><a
+                                    href="<?= Yii::app()->createUrl('pembelian/view', ['id' => $baris['pembelian_id']]) ?>"><?= $baris['nomor'] ?></a>
+                            </td>
+                            <td><?= $baris['profil'] ?>
+                            </td>
+                            <td><?= $baris['referensi'] ?>
+                            </td>
+                            <td class="rata-kanan">
+                                <?= number_format($baris['jumlah'], 0, ',', '.') ?>
+                            </td>
+                        </tr>
+                    <?php
+                        $i++;
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+<?php
+}
+?>
 <script>
     $(function() {
         $('.tanggalan').fdatepicker({
