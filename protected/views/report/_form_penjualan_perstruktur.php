@@ -13,7 +13,7 @@ $form = $this->beginWidget('CActiveForm', [
     'enableAjaxValidation' => false,
     'action'               => $this->createUrl('printpenjualanstruktur'),
     'htmlOptions'          => [
-        'target' => '_blank',
+        'target' => 'pdfFrame',
     ],
 ]);
 ?>
@@ -92,6 +92,11 @@ $form = $this->beginWidget('CActiveForm', [
         <?php echo CHtml::submitButton('Submit', ['name' => 'cetak', 'id' => 'tombol-cetak', 'class' => 'tiny bigfont success button']); ?>
     </div>
 </div>
+<div class="row">
+    <div class="small-12 columns">
+        <iframe name="pdfFrame" style="display: none; border: none" width="100%" height="600px"></iframe>
+    </div>
+</div>
 
 <?php
 $this->endWidget();
@@ -130,4 +135,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/l
             $("label[for='ReportPenjualanPerStrukturForm_strukLv3']").text('Struktur Level 3');
         })
     })
+
+    $("#report-penjualan-form").on("submit", function() {
+        $('iframe[name="pdfFrame"]').show();
+    });
 </script>
