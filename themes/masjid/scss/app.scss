@@ -251,7 +251,7 @@ li.active > a {
 }
 
 .block {
-    margin-bottom: 10px; //background: url(../img/bg-av.png) top fixed; //rgba(#000, 0.5)
+    margin-bottom: 35px; //background: url(../img/bg-av.png) top fixed; //rgba(#000, 0.5)
     background-color: rgba(
         $background1,
         0.6
@@ -325,6 +325,9 @@ a.button.micro.bigfont {
     }
     .prefix .fa-2x {
         padding-top: 4px;
+    }
+    iframe{
+        margin-bottom: 10px;
     }
 }
 

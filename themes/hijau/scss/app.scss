@@ -246,6 +246,7 @@ li.active > a {
 .block {
     margin-bottom: 10px;
     background-color: #fff;
+    margin-bottom: 35px;
 }
 
 .block-header {
@@ -315,6 +316,9 @@ a.button.micro.bigfont {
     }
     .prefix .fa-2x {
         padding-top: 4px;
+    }
+    iframe{
+        margin-bottom: 10px;
     }
 }
 
