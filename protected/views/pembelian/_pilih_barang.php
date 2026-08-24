@@ -1,4 +1,16 @@
 <?php
+
+/**
+ * @var integer $tipeCari
+ * @var string $barangBarcode
+ * @var string $barangNama
+ * @var integer $pembulatan
+ * @var Barang $barangList
+ * @var Pembelian $pembelianModel
+ * @var CDbCriteria $curSupplierCr
+ * @var StrukturBarang $lv1
+ * @var StrukturBarang $strukturDummy
+ */
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery-ui-ac.min.css');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/jquery-ui.min-ac.js', CClientScript::POS_HEAD);
 ?>
@@ -8,8 +20,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             <h5>Pilih Barang: <a href="#" id="tambah-barang-baru" class="button tiny bigfont right" accesskey="g">Tambah baran<span class="ak">g</span></a></h5>
         </div>
         <?php
-        if ($tipeCari <= 1) :
-        ?>
+        if ($tipeCari <= 1):
+            ?>
             <div class="row collapse" id="scan-cari-barang">
                 <div class="small-2 medium-1 columns">
                     <span class="prefix" id="scan-icon"><i class="fa fa-barcode fa-2x"></i></span>
@@ -24,14 +36,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 <?php
                 switch ($tipeCari):
                     case 0:
-                ?>
+                        ?>
                         <div class="small-2 medium-1 columns">
                             <a href="#" class="success button postfix" id="tombol-cari-barang" accesskey="c"><i class="fa fa-search fa-2x"></i></a>
                         </div>
                     <?php
-                        break;
+                    break;
 
-                    case 1:
+                case 1:
                     ?>
                         <div class="small-2 medium-1 columns">
                             <a href="#" class="success button postfix" id="tombol-cari-tabel" accesskey="c"><i class="fa fa-search-plus fa-2x"></i></a>
@@ -42,8 +54,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 ?>
             </div>
         <?php
-        else :
-        ?>
+        else:
+            ?>
             <div id="dropdown-barang">
                 <?php echo CHtml::label('<span class="ak">1</span> Barcode', 'barcode'); ?>
                 <div class="row collapse">
@@ -115,13 +127,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         $("#satuan").text(info['satuan']);
         $("#qty").val('');
         $("#subtotal").val('');
-        <?php // Harga Jual Multi: 
+        <?php  // Harga Jual Multi:
         ?>
         $("#HargaJualMulti_satuan_id").val('');
         $("#HargaJualMulti_qty").val('');
         $("#HargaJualMulti_harga").val('');
         $('#hj-aktif').load('<?= Yii::app()->createUrl('barang/listhargajualmulti', ['id' => '']) ?>' + $("#barang-id").val());
-        <?php // :Harga Jual Multi 
+        <?php  // :Harga Jual Multi
         ?>
         $("#input-pemb-detail").slideDown(500);
         $("#qty").focus();
@@ -130,7 +142,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
     }
 
     $(document).on("click", "#hitung-harga", function() {
-        hitungHargaBarang();
+        var subTotal = parseInt($("#subtotal").val());
+        var ppn = parseInt($("#ppn").val()) || 0;
+        var qty = parseInt($("#qty").val()) || 0;
+        var profitPersen = parseInt($("#profit").val()) || 0;
+        var diskonPersen = parseFloat($("#diskonp").val()) || 0;
+        var diskonRupiah = parseInt($("#diskonr").val()) || 0;
+        var hasil = hitungHargaBarang(subTotal, ppn, qty, profitPersen, diskonPersen, diskonRupiah);
+        $("#harga-beli").val(hasil['hargaBeli']);
+        $("#harga-jual").val(hasil['hargaJual']);
+        $("#harga-jual-raw").html(hasil['hargaJualRaw']);
     });
 
     $("#hitung-harga").keyup(function(e) {
@@ -142,19 +163,27 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         }
     });
 
+    $(document).on("click", "#edit-hitung-harga", function() {
+        var subTotal = parseInt($("#edit-subtotal").val());
+        var ppn = parseInt($("#edit-ppn").val()) || 0;
+        var qty = parseInt($("#edit-qty").val()) || 0;
+        var profitPersen = parseInt($("#edit-profit").val()) || 0;
+        var diskonPersen = parseFloat($("#edit-diskonp").val()) || 0;
+        var diskonRupiah = parseInt($("#edit-diskonr").val()) || 0;
+        var hasil = hitungHargaBarang(subTotal, ppn, qty, profitPersen, diskonPersen, diskonRupiah);
+
+        $("#edit-harga-beli").val(hasil['hargaBeli']);
+        $("#edit-harga-jual").val(hasil['hargaJual']);
+        $("#edit-harga-jual-raw").html(hasil['hargaJualRaw']);
+    });
+
     /**
      * Menghitung harga beli dan harga jual satuan
      * @returns {mixed} Mengubah value di input harga beli dan harga jual
      * */
-    function hitungHargaBarang() {
+    function hitungHargaBarang(subTotal, ppn, qty, profitPersen, diskonPersen, diskonRupiah) {
         var hargaBeli = 0;
         var hargaJual = 0;
-        var subTotal = parseInt($("#subtotal").val());
-        var ppn = parseInt($("#ppn").val()) || 0;
-        var qty = parseInt($("#qty").val()) || 0;
-        var profitPersen = parseInt($("#profit").val()) || 0;
-        var diskonPersen = parseFloat($("#diskonp").val()) || 0;
-        var diskonRupiah = parseInt($("#diskonr").val()) || 0;
         //console.log('st: ' + subTotal + ', ppn: ' + ppn, ', qty: ' + qty + ', prof: ' + profitPersen + ', dp: ' + diskonPersen + ', dr: ' + diskonRupiah);
         if (subTotal > 0) {
             hargaBeli = (subTotal / qty);
@@ -165,10 +194,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
             // Baru kemudian hitung PPN
             hargaBeli = hargaBeli + (hargaBeli / 100 * ppn);
             hargaJualH = hargaBeli + (hargaBeli / 100 * profitPersen);
-            hargaJual = hargaJualH - (hargaJualH % <?= $pembulatan; ?>) + <?= $pembulatan; ?>;
-            $("#harga-beli").val(hargaBeli);
-            $("#harga-jual").val(hargaJual);
-            $("#harga-jual-raw").html(hargaJualH);
+            tambahanPembulatan = hargaJualH % <?= $pembulatan ?> == 0 ? 0 : <?= $pembulatan ?>;
+            hargaJual = hargaJualH - (hargaJualH % <?= $pembulatan; ?>) + tambahanPembulatan;
+            return {
+                'hargaBeli': hargaBeli,
+                'hargaJual': hargaJual,
+                'hargaJualRaw': hargaJualH
+            }
         }
     }
 
@@ -349,7 +381,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 ]);
                 ?>  
             </div>
-            <input type="hidden" id="input-struktur" />
+            <input type=" hidden" id="input-struktur" />
         </div>
         <script>
             function lv1Dipilih(id) {
@@ -357,19 +389,19 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 if (!Array.isArray(lv1Id) || !lv1Id.length) {
                     console.log("1 tidak dipilih");
                     <?php /* render nothing */ ?>
-                    $("#grid2-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid2-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 2,
                         parent: 0
                     });
                     $('#input-struktur').val("");
                 } else {
                     console.log(lv1Id[0] + ":1 dipilih");
-                    $("#grid2-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid2-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 2,
                         parent: lv1Id[0]
                     });
                 }
-                $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                $("#grid3-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                     level: 3,
                     parent: 0
                 });
@@ -380,14 +412,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 if (!Array.isArray(lv2Id) || !lv2Id.length) {
                     console.log("2 tidak dipilih");
                     <?php /* render nothing */ ?>
-                    $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid3-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 3,
                         parent: 0
                     });
                     $('#input-struktur').val("");
                 } else {
                     console.log(lv2Id[0] + ":2 dipilih");
-                    $("#grid3-container").load("<?= $this->createUrl("renderstrukturgrid") ?>", {
+                    $("#grid3-container").load("<?= $this->createUrl('renderstrukturgrid') ?>", {
                         level: 3,
                         parent: lv2Id[0]
                     });
@@ -414,11 +446,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                     'type' => 'POST',
                     'success' => "function (data) {
                                     if (data.sukses){
-                                       $('#input-barang-baru').slideUp(500);
+                                       \$('#input-barang-baru').slideUp(500);
                                        updateFormDetail(data);
                                        bersihkanInputBarangBaru();
                                     } else {
-                                       $('#input-barang-baru h5').html(data.msg);
+                                       \$('#input-barang-baru h5').html(data.msg);
                                     }
                               }"
                 ), array(
@@ -539,9 +571,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
                 <?php echo CHtml::label('test', '', ['id' => 'harga-jual-raw']); ?>
             </div>
             <!--            <div class="medium-6 large-4 columns">
-                <?php // echo CHtml::label('RRP', 'rrp', array('id' => 'label-rrp')) 
+                <?php  // echo CHtml::label('RRP', 'rrp', array('id' => 'label-rrp'))
                 ?>
-                <?php // echo CHtml::textField('rrp', '', array('id' => 'rrp', 'autocomplete' => 'off')); 
+                <?php  // echo CHtml::textField('rrp', '', array('id' => 'rrp', 'autocomplete' => 'off'));
                 ?>
             </div>-->
             <div class="medium-6 large-4 columns">
@@ -552,16 +584,16 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/j
         <div class="row">
             <div class="span-12 columns">
                 <?php
-                $focusSetelahTambah = $tipeCari > 1 ? "#barcode-pilih" : "#scan";
+                $focusSetelahTambah = $tipeCari > 1 ? '#barcode-pilih' : '#scan';
                 echo CHtml::ajaxSubmitButton('Tambah (Alt+a)', $this->createUrl('tambahbarang', array(
                     'id' => $pembelianModel->id,
                 )), array(
                     'type' => 'POST',
                     'success' => "function () {
-                                        $.fn.yiiGridView.update('pembelian-detail-grid');
+                                        \$.fn.yiiGridView.update('pembelian-detail-grid');
                                         updateTotal();
-                                        $('{$focusSetelahTambah}').focus();
-                                        $('#input-pemb-detail').slideUp(500);
+                                        \$('{$focusSetelahTambah}').focus();
+                                        \$('#input-pemb-detail').slideUp(500);
                                     }"
                 ), array(
                     'id' => 'tombol-tambah',

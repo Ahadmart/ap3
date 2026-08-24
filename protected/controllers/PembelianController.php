@@ -841,4 +841,67 @@ class PembelianController extends Controller
                 break;
         }
     }
+
+    /**
+     * Untuk mengambil informasi barang untuk ditampilkan
+     * pada saat edit detail pembelian
+     */
+    public function actionGetDetailBarang($id)
+    {
+        if (isset($_POST['detailId'])) {
+            $detailId = $_POST['detailId'];
+        }
+        $pembelian = $this->loadModel($id);
+        $detail    = PembelianDetail::model()->findByPk($detailId);
+        if (!is_null($detail)) {
+            $barangId  = $detail->barang_id;
+            $barang    = Pembelian::model()->ambilDataBarang($barangId);
+            $supBarang = SupplierBarang::model()->find(
+                'supplier_id=:supplierId AND barang_id=:barangId',
+                [
+                    ':supplierId' => $pembelian->profil_id,
+                    ':barangId'   => $barangId,
+                ]
+            );
+            $termasuk = is_null($supBarang) ? false : true;
+            $arr      = [
+                'sukses'         => true,
+                'termasuk'       => $termasuk, //Apakah termasuk supplier pembelian ini atau bukan
+                'detailId'       => $detailId,
+                'barangId'       => $barangId,
+                'nama'           => $barang['nama'],
+                'barcode'        => $barang['barcode'],
+                'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
+                'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
+                'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
+                'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
+                'satuan'         => $barang['satuan'],
+                'qty'            => $detail->qty,
+            ];
+            $this->renderJSON($arr);
+        }
+    }
+
+    public function actionSimpanEditBarang($id)
+    {
+        // Jika ada post edit-detail, berarti (kemungkinan) ada edit-an barang.
+        if (isset($_POST['edit-detail']) && $_POST['edit-detail'] == 1) {
+            $detail                         = new PembelianDetail;
+            $detail->pembelian_id           = $id;
+            $detail->barang_id              = $_POST['barang-id'];
+            $detail->qty                    = $_POST['qty'] > 0 ? $_POST['qty'] : 0;
+            $detail->harga_beli             = $_POST['hargabeli'];
+            $detail->tanggal_kadaluwarsa    = $_POST['tanggal_kadaluwarsa'];
+            $detail->harga_jual             = $_POST['hargajual'];
+
+            // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
+            // echo terlihat di console
+            if ($detail->save()) {
+                PembelianDetail::model()->deleteByPk($_POST['detail-id']);
+                echo 'berhasil';
+            } else {
+                echo 'gagal';
+            }
+        }
+    }
 }

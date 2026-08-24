@@ -1,4 +1,10 @@
 <?php
+/**
+ * @var Pembelian $pembelian
+ * @var PembelianDetail $pembelianDetail
+ * @var boolean $pilihBarang
+ * @var integer $tipeCari
+ */
 // Bisa Edit Qty jika masih draft
 if ($pembelian->status == Pembelian::STATUS_DRAFT) :
     Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.poshytip.js', CClientScript::POS_HEAD);
@@ -76,6 +82,15 @@ endif;
                 'headerHtmlOptions' => ['class' => 'rata-tengah'],
                 'htmlOptions'       => ['class' => 'rata-tengah'],
             ],
+            [
+                'header'            => 'Edit',
+                'value'             => function ($data) {
+                    return '<a href="#" data-reveal-id="edit-modal" class="tombol-edit-detail" data-pk="' . $data->id . '"><i class="fa fa-edit"></i></a>';
+                },
+                'type'              => 'raw',
+                'headerHtmlOptions' => ['class' => 'rata-tengah'],
+                'htmlOptions'       => ['class' => 'rata-tengah'],
+            ],
             // Jika pembelian masih draft tampilkan tombol hapus
             [
                 'class'           => 'BButtonColumn',
@@ -87,8 +102,76 @@ endif;
     ]);
     ?>
 </div>
-
+<div id="edit-modal" class="reveal-modal" data-reveal aria-labelledby="Edit Detail" aria-hidden="true" role="dialog" style="padding:0">
+    <?php
+    $this->renderPartial('_edit_pemb_detail', [
+        'pembelianModel' => $pembelian,
+        'tipeCari'       => $tipeCari,
+    ]);
+    ?>
+</div>
 <script>
+ /**
+     * Update nilai-nilai pada form edit detail barang
+     * @param json Informasi barang
+     * @returns {mixed} Menampilkan form detail edit barang dan mengisi field yang diperlukan
+     */
+    function updateFormEditDetail(info) {
+        infoBarangEdit = info;
+        $(".response").html("");
+        $(".response").hide();
+        if (!info['sukses']) {
+            $.gritter.add({
+                title: 'Error ' + info.error.code,
+                text: info.error.msg,
+                time: 5000,
+            });
+            $("#scan").focus();
+            return false;
+        }
+        if (!info['termasuk']) {
+            $(".response").show();
+            $(".response").html("Barang TIDAK terdaftar di SUPPLIER ini! Jika diinput akan OTOMATIS DITAMBAHKAN ke supplier ini")
+        }
+        $("#edit-barang-info").html(info['nama'] + ' <small>' + info['barcode'] + '</small>');
+        $("#edit-detail-id").val(info['detailId']);
+        $("#edit-barang-id").val(info['barangId']);
+        $("#edit-edit-label-harga-beli").text('Harga Beli (' + info['labelHargaBeli'] + ')');
+        $("#edit-harga-beli").val(info['hargaBeli']);
+        $("#edit-label-harga-jual").text('Harga Jual (' + info['labelHargaJual'] + ')');
+        $("#edit-harga-jual").val(info['hargaJual']);
+        $("#edit-satuan").text(info['satuan']);
+        $("#edit-qty").val(info['qty']);
+        $("#subtotal").val('');
+        $("#edit-qty").focus();
+        $("#edit-qty").select();
+        $("#edit-harga-jual-raw").html('&nbsp;');
+        $("#scan").val("");
+
+        $(".input-shj").val('');
+        info['skemaHJ'].forEach(function(skema) {
+            console.log(skema);
+            $("#skemahj_" + skema['id']).val(skema['harga']);
+        });
+    }
+
+    $(document).on('click', ".tombol-edit-detail", function() {
+        var detailId = $(this).data("pk");
+        console.log(detailId);
+        var datakirim = {
+            'detailId': detailId
+        };
+        var dataurl = "<?php echo $this->createUrl('getdetailbarang', ['id' => $pembelian->id]) ?>";
+
+        $.ajax({
+            data: datakirim,
+            url: dataurl,
+            type: "POST",
+            dataType: "json",
+            success: updateFormEditDetail
+        });
+    })
+
     function enableEditable() {
         $(".editable-qty").editable({
             mode: "inline",
