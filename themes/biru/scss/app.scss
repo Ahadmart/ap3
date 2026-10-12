@@ -105,6 +105,18 @@ option {
     }
     td {
         font-size: 0.825em;
+        i.harga-naik {
+            color: $secondary-color
+        }
+        i.harga-turun {
+            color: $success-color;
+        }
+        i.harga-tetap {
+            color: transparent;
+        }
+        & > span.profit-min {
+            color: $merah;
+        }
     }
     tr {
         td {
@@ -113,7 +125,9 @@ option {
             }
         }
     }
-    tr.baru, tr.manual, tr.inaktif  {
+    tr.baru,
+    tr.manual,
+    tr.inaktif {
         background-color: $warning-color;
         font-weight: bold;
         td {
@@ -124,31 +138,37 @@ option {
             }
         }
     }
-    tr.hj-berubah {
-        background-color: $success-color;
-        font-weight: bold;
-        td {
-            color: #fff;
-            a.editable {
-                color: #fff;
-                border-bottom-color: #fff;
-            }
+    tr {
+        &.margin-min td:first-child {
+            font-weight: bold;
+            border-left: 5px solid $merah;
+            color: $merah;
+            // --b: 2px; /* thickness of the border */
+            // --c: red; /* color of the border */
+            // --w: 8px;
+            // border: var(--b) solid #0000; /* space for the border */
+            // --_g: #0000 90deg, var(--c) 0;
+            // --_p: var(--w) var(--w) border-box no-repeat;
+            // background:
+            //     conic-gradient(from 90deg at top var(--b) left var(--b), var(--_g)) 0 0 / var(--_p),
+            //     conic-gradient(from 180deg at top var(--b) right var(--b), var(--_g)) 100% 0 / var(--_p),
+            //     conic-gradient(from 0deg at bottom var(--b) left var(--b), var(--_g)) 0 100% / var(--_p),
+            //     conic-gradient(from -90deg at bottom var(--b) right var(--b), var(--_g)) 100% 100% / var(--_p);
         }
-    }
-    tr.margin-min {
-        background-color: $merah;
-        font-weight: bold;
-        td {
-            color: #fff;
-            a {
-                &.editable {
-                    color: #fff;
-                    border-bottom-color: #fff;
-                }
-                &.delete {
-                    color: $oranye;
-                }
-            }
+        &.hb-y-hj-n td:first-child {
+            font-weight: bold;
+            border-left: 5px solid $violet;
+            color: $violet;
+        }
+        &.barang-baru td:first-child {
+            font-weight: bold;
+            border-left: 5px solid $toska;
+            color: $toska;
+        }
+        &.not-aktif td:first-child {
+            font-weight: bold;
+            border-left: 5px solid grey;
+            color: grey;
         }
     }
 }
@@ -263,7 +283,7 @@ a.button.micro.bigfont {
         padding-top: 4px;
     }
 
-    iframe{
+    iframe {
         margin-bottom: 10px;
     }
 }
@@ -478,13 +498,37 @@ label {
         font-size: 0.85rem;
         margin-bottom: 3px;
     }
-    .label-total{
+    .label-total {
         font-size: 1.3rem;
     }
 }
 
-.label-total{
+.label-total {
     font-size: 1rem;
+}
+
+.label {
+    &.margin-min {
+        border-left: 5px solid $merah;
+        background-color: $info-color;
+        color: $merah;
+        // background: linear-gradient(90deg, $merah 0%, transparent 100%);
+    }
+    &.beli-berubah {
+        border-left: 5px solid $violet;
+        background-color: $info-color;
+        color: $violet;
+    }
+    &.barang-baru {
+        border-left: 5px solid $toska;
+        background-color: $info-color;
+        color: $toska;
+    }
+    &.not-aktif {
+        border-left: 5px solid grey;
+        background-color: $info-color;
+        color: grey;
+    }
 }
 
 .top-bar-section {

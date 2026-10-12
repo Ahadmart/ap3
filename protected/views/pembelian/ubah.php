@@ -13,9 +13,8 @@
  * @var CDbCriteria $curSupplierCr
  * @var StrukturBarang $lv1
  * @var StrukturBarang $strukturDummy
+ * @var integer @warningHbBerubah
  */
-
-
 $this->breadcrumbs = [
     'Pembelian' => ['index'],
     $model->id => ['view', 'id' => $model->id],
@@ -86,9 +85,10 @@ $this->boxHeader['normal'] = "Pembelian: {$model->nomor}";
     }
     ?>
     <div class="small-12 columns">
-        <span class="warning label" style="font-weight: bold">BARANG BARU</span>
-        <span class="success label" style="font-weight: bold">HARGA JUAL BERUBAH</span>
-        <span class="alert label" style="font-weight: bold">MARGIN ≤ 0</span>
+        <span class="margin-min label" style="font-weight: bold">MARGIN ≤ 0</span>&nbsp;&nbsp;
+        <span class="beli-berubah label" style="font-weight: bold">BELI NAIK - JUAL TETAP</span>&nbsp;&nbsp;
+        <span class="barang-baru label" style="font-weight: bold">BARU</span>&nbsp;&nbsp;
+        <span class="not-aktif label" style="font-weight: bold">TIDAK AKTIF</span>
     </div>
 </div>
 

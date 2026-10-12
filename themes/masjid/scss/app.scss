@@ -172,6 +172,18 @@ table {
     }
     td {
         font-size: 0.825em;
+        i.harga-naik {
+            color: $gold;
+        }
+        i.harga-turun {
+            color: greenyellow;
+        }
+        i.harga-tetap {
+            color: transparent;
+        }
+        & > span.profit-min {
+            color: $warning-color;
+        }
     }
     tr.baru,
     tr.manual,
@@ -186,31 +198,49 @@ table {
             }
         }
     }
-    tr.hj-berubah {
-        background-color: #388e3c;
-        font-weight: bold;
-        td {
-            color: #fff;
-            a.editable {
-                color: #fff;
-                border-bottom-color: #fff;
-            }
+    // tr.hj-berubah {
+    //     background-color: #388e3c;
+    //     font-weight: bold;
+    //     td {
+    //         color: #fff;
+    //         a.editable {
+    //             color: #fff;
+    //             border-bottom-color: #fff;
+    //         }
+    //     }
+    // }
+    // tr.margin-min {
+    //     background-color: $merah;
+    //     font-weight: bold;
+    //     td {
+    //         color: #fff;
+    //         a {
+    //             &.editable {
+    //                 color: #fff;
+    //                 border-bottom-color: #fff;
+    //             }
+    //             &.delete {
+    //                 color: $alert-color;
+    //             }
+    //         }
+    //     }
+    // }
+    tr {
+        &.margin-min td:first-child {
+            background: linear-gradient(90deg, $merah 0%, transparent 100%);
+            font-weight: bold;
         }
-    }
-    tr.margin-min {
-        background-color: $merah;
-        font-weight: bold;
-        td {
-            color: #fff;
-            a {
-                &.editable {
-                    color: #fff;
-                    border-bottom-color: #fff;
-                }
-                &.delete {
-                    color: $alert-color;
-                }
-            }
+        &.hb-y-hj-n td:first-child {
+            background: linear-gradient(90deg, $alert-color 0%, transparent 100%);
+            font-weight: bold;
+        }
+        &.barang-baru td:first-child {
+            background: linear-gradient(90deg, $success-color 0%, transparent 100%);
+            font-weight: bold;
+        }
+        &.not-aktif td:first-child {
+            background: linear-gradient(90deg, grey 0%, transparent 100%);
+            font-weight: bold;
         }
     }
 }
@@ -326,7 +356,7 @@ a.button.micro.bigfont {
     .prefix .fa-2x {
         padding-top: 4px;
     }
-    iframe{
+    iframe {
         margin-bottom: 10px;
     }
 }
@@ -571,6 +601,21 @@ label {
 
 .label-total {
     font-size: 1rem;
+}
+
+.label {
+    &.margin-min {
+        background: linear-gradient(90deg, $merah 0%, transparent 100%);
+    }
+    &.beli-berubah {
+        background: linear-gradient(90deg, $warning-color 0%, transparent 100%);
+    }
+    &.barang-baru {
+        background: linear-gradient(90deg, $success-color 0%, transparent 100%);
+    }
+    &.not-aktif {
+        background: linear-gradient(90deg, grey 0%, transparent 100%);
+    }
 }
 
 .primary.label {

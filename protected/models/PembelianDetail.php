@@ -24,6 +24,10 @@
  */
 class PembelianDetail extends CActiveRecord
 {
+    const HARGA_NAIK = 1;
+    const HARGA_TURUN = -1;
+    const HARGA_NAIK_ATAU_TURUN = 0;
+
     public $barcode;
     public $namaBarang;
     public $subTotal;
@@ -63,9 +67,9 @@ class PembelianDetail extends CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return [
-            'barang'                => [self::BELONGS_TO, 'Barang', 'barang_id'],
-            'pembelian'             => [self::BELONGS_TO, 'Pembelian', 'pembelian_id'],
-            'updatedBy'             => [self::BELONGS_TO, 'User', 'updated_by'],
+            'barang' => [self::BELONGS_TO, 'Barang', 'barang_id'],
+            'pembelian' => [self::BELONGS_TO, 'Pembelian', 'pembelian_id'],
+            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
             'returPembelianDetails' => [self::HAS_MANY, 'ReturPembelianDetail', 'pembelian_detail_id'],
         ];
     }
@@ -76,17 +80,17 @@ class PembelianDetail extends CActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'                     => 'ID',
-            'pembelian_id'           => 'Pembelian',
-            'barang_id'              => 'Barang',
-            'qty'                    => 'Qty',
-            'harga_beli'             => 'Harga Beli',
-            'harga_jual'             => 'Harga Jual',
+            'id' => 'ID',
+            'pembelian_id' => 'Pembelian',
+            'barang_id' => 'Barang',
+            'qty' => 'Qty',
+            'harga_beli' => 'Harga Beli',
+            'harga_jual' => 'Harga Jual',
             'harga_jual_rekomendasi' => 'RRP',
-            'tanggal_kadaluwarsa'    => 'Tanggal Kadaluwarsa',
-            'updated_at'             => 'Updated At',
-            'updated_by'             => 'Updated By',
-            'created_at'             => 'Created At',
+            'tanggal_kadaluwarsa' => 'Tanggal Kadaluwarsa',
+            'updated_at' => 'Updated At',
+            'updated_by' => 'Updated By',
+            'created_at' => 'Created At',
         ];
     }
 
@@ -129,13 +133,13 @@ class PembelianDetail extends CActiveRecord
 
         $sort = [
             'defaultOrder' => $orderBy,
-            'attributes'   => [
+            'attributes' => [
                 'barcode' => [
-                    'asc'  => 'barang.barcode',
+                    'asc' => 'barang.barcode',
                     'desc' => 'barang.barcode desc'
                 ],
                 'namaBarang' => [
-                    'asc'  => 'barang.nama',
+                    'asc' => 'barang.nama',
                     'desc' => 'barang.nama desc'
                 ],
                 '*',
@@ -147,8 +151,8 @@ class PembelianDetail extends CActiveRecord
         ];
 
         return new CActiveDataProvider($this, [
-            'criteria'   => $criteria,
-            'sort'       => $sort,
+            'criteria' => $criteria,
+            'sort' => $sort,
             'pagination' => $pagination
         ]);
     }
@@ -185,16 +189,10 @@ class PembelianDetail extends CActiveRecord
      */
     public function isBarangBaru()
     {
-        $ketemu = Yii::app()->db->createCommand()->
-                select('barang.id')->
-                from('pembelian_detail detail')->
-                join('pembelian', 'detail.pembelian_id = pembelian.id')->
-                join('barang', 'detail.barang_id = barang.id')->
-                where('barang.created_at >= pembelian.created_at AND pembelian.id = :pembelianId AND barang.id = :barangId', [
-                    ':pembelianId' => $this->pembelian_id,
-                    ':barangId'    => $this->barang_id
-                ])->
-                queryRow();
+        $ketemu = Yii::app()->db->createCommand()->select('barang.id')->from('pembelian_detail detail')->join('pembelian', 'detail.pembelian_id = pembelian.id')->join('barang', 'detail.barang_id = barang.id')->where('barang.created_at >= pembelian.created_at AND pembelian.id = :pembelianId AND barang.id = :barangId', [
+            ':pembelianId' => $this->pembelian_id,
+            ':barangId' => $this->barang_id
+        ])->queryRow();
 
         return $ketemu != false;
     }
@@ -205,23 +203,17 @@ class PembelianDetail extends CActiveRecord
      */
     public function isHargaJualBerubah()
     {
-        $ketemu = Yii::app()->db->createCommand()->
-                select('detail.barang_id')->
-                from('pembelian_detail detail')->
-                join('pembelian', 'detail.pembelian_id = pembelian.id')->
-                join('(SELECT
+        $ketemu = Yii::app()->db->createCommand()->select('detail.barang_id')->from('pembelian_detail detail')->join('pembelian', 'detail.pembelian_id = pembelian.id')->join('(SELECT
                             barang_id, harga
                         FROM
                             barang_harga_jual hj
                         WHERE
                             hj.barang_id = :barangId
                         ORDER BY id DESC
-                        LIMIT 1) thj', 'thj.barang_id = detail.barang_id')->
-                where('pembelian.id = :pembelianId AND detail.barang_id = :barangId AND detail.harga_jual != thj.harga', [
-                    ':pembelianId' => $this->pembelian_id,
-                    ':barangId'    => $this->barang_id
-                ])->
-                queryRow();
+                        LIMIT 1) thj', 'thj.barang_id = detail.barang_id')->where('pembelian.id = :pembelianId AND detail.barang_id = :barangId AND detail.harga_jual != thj.harga', [
+            ':pembelianId' => $this->pembelian_id,
+            ':barangId' => $this->barang_id
+        ])->queryRow();
 
         return $ketemu != false;
     }
@@ -237,7 +229,7 @@ class PembelianDetail extends CActiveRecord
 
     public function beforeValidate()
     {
-        $this->tanggal_kadaluwarsa    = $this->tanggal_kadaluwarsa == '' ? null : $this->tanggal_kadaluwarsa;
+        $this->tanggal_kadaluwarsa = $this->tanggal_kadaluwarsa == '' ? null : $this->tanggal_kadaluwarsa;
         $this->harga_jual_rekomendasi = $this->harga_jual_rekomendasi == '' ? null : $this->harga_jual_rekomendasi;
         return parent::beforeValidate();
     }
@@ -250,5 +242,155 @@ class PembelianDetail extends CActiveRecord
 				  where barang_id = {$this->barang_id}
 				  ")->queryRow();
         return $stok['stok'] ? $stok['stok'] : 0;
+    }
+
+    /**
+     * Get Selisih Harga Beli dengan pembelian terakhir
+     *
+     * @return string|float selisih harga beli
+     */
+    public function getSelisihHB()
+    {
+        $sql = '
+            SELECT 
+                d.barang_id,
+                d.barang_id,
+                d.harga_beli,
+                COALESCE(thb.harga_beli, 0),
+                CASE
+                    WHEN
+                        d.harga_beli IS NULL OR thb.harga_beli IS NULL
+                    THEN 0
+                    ELSE d.harga_beli - thb.harga_beli
+                END AS selisih
+            FROM
+                pembelian_detail d
+                    JOIN
+                pembelian ON pembelian.id = d.pembelian_id
+                    AND pembelian.id = :pembelianId
+                    JOIN
+                (SELECT 
+                    barang_id, harga_beli
+                FROM
+                    inventory_balance
+                WHERE
+                    barang_id = :barangId
+                ORDER BY id DESC
+                LIMIT 1) AS thb ON thb.barang_id = d.barang_id
+        ';
+
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValues([
+            ':pembelianId' => $this->pembelian_id,
+            ':barangId' => $this->barang_id,
+        ]);
+        $r = $command->queryRow();
+        return empty($r) ? 0 : $r['selisih'];
+    }
+
+    /**
+     * Get selisih harga Jual dengan harga jual terakhir
+     *
+     * @return string|float selisih harga jual
+     */
+    public function getSelisihHJ()
+    {
+        $sql = '
+        SELECT 
+            d.barang_id,
+            d.harga_jual,
+            COALESCE(thj.harga, 0),
+            CASE
+                WHEN
+                    d.harga_jual IS NULL OR thj.harga IS NULL
+                THEN 0
+                ELSE d.harga_jual - thj.harga
+            END AS selisih
+        FROM
+            pembelian_detail d
+                JOIN
+            pembelian ON pembelian.id = d.pembelian_id
+                AND pembelian.id = :pembelianId
+                JOIN
+            (SELECT 
+                barang_id, harga
+            FROM
+                barang_harga_jual
+            WHERE
+                barang_id = :barangId
+            ORDER BY id DESC
+            LIMIT 1) AS thj ON thj.barang_id = d.barang_id
+        ';
+
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValues([
+            ':pembelianId' => $this->pembelian_id,
+            ':barangId' => $this->barang_id,
+        ]);
+        $r = $command->queryRow();
+        return empty($r) ? 0 : $r['selisih'];
+    }
+
+    /**
+     * Mengecek apakah barang di pembelian statusnya tidak aktif
+     * @return bool true jika iya
+     */
+    public function isBarangTidakAktif()
+    {
+        $ketemu = Yii::app()
+            ->db
+            ->createCommand()
+            ->select('status')
+            ->from('barang')
+            ->where('id = :barangId', [
+                ':barangId' => $this->barang_id,
+            ])
+            ->queryRow();
+
+        if ($ketemu) {
+            return $ketemu['status'] == Barang::STATUS_TIDAK_AKTIF;
+        }
+        return false;
+    }
+
+    public function isHargaBeliBerubah($arah)
+    {
+        switch ($arah) {
+            case self::HARGA_NAIK:
+                $condition = ' thb.harga_beli < d.harga_beli';
+                break;
+            case self::HARGA_TURUN:
+                $condition = ' thb.harga_beli > d.harga_beli';
+                break;
+            default:
+                $condition = ' thb.harga_beli != d.harga_beli';
+                break;
+        }
+        $sql = "
+        SELECT 
+            d.barang_id
+        FROM
+            pembelian_detail d
+                JOIN
+            pembelian ON pembelian.id = d.pembelian_id
+                AND pembelian.id = :pembelianId
+                JOIN
+            (SELECT 
+                barang_id, harga_beli
+            FROM
+                inventory_balance
+            WHERE
+                barang_id = :barangId
+            ORDER BY id DESC
+            LIMIT 1) AS thb ON thb.barang_id = d.barang_id
+                AND {$condition}
+        ";
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindValues([
+            ':pembelianId' => $this->pembelian_id,
+            ':barangId' => $this->barang_id,
+        ]);
+        $ketemu = $command->queryRow();
+        return $ketemu;
     }
 }

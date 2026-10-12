@@ -36,6 +36,10 @@ class Pembelian extends CActiveRecord
     const KERTAS_LETTER_NAMA = 'Letter';
     const KERTAS_A4_NAMA = 'A4';
     const KERTAS_FOLIO_NAMA = 'Folio';
+    /* ===================== */
+    const HB_BERUBAH_TANPA_WARNING = 0;
+    const HB_BERUBAH_WARNING = 1;
+    const HB_BERUBAH_BLOKIR = 2;
 
     public $totalPembelian;
     public $namaSupplier;
@@ -266,7 +270,7 @@ class Pembelian extends CActiveRecord
 
     /**
      * Nilai total pembelian
-     * @return text Total Pembelian dalam format ribuan
+     * @return string Total Pembelian dalam format ribuan
      */
     public function getTotal()
     {

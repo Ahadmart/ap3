@@ -2,7 +2,7 @@
 
 class PembelianController extends Controller
 {
-    const PROFIL_ALL      = 0;
+    const PROFIL_ALL = 0;
     const PROFIL_SUPPLIER = Profil::TIPE_SUPPLIER;
     /* ============== */
     const PRINT_PEMBELIAN = 0;
@@ -13,8 +13,8 @@ class PembelianController extends Controller
     public function filters()
     {
         return [
-            'accessControl', // perform access control for CRUD operations
-            'postOnly + delete', // we only allow deletion via POST request
+            'accessControl',  // perform access control for CRUD operations
+            'postOnly + delete',  // we only allow deletion via POST request
         ];
     }
 
@@ -27,7 +27,7 @@ class PembelianController extends Controller
     {
         return [
             [
-                'deny', // deny guest
+                'deny',  // deny guest
                 'users' => ['guest'],
             ],
         ];
@@ -52,14 +52,14 @@ class PembelianController extends Controller
 
         $kertasUntukPdf = Pembelian::model()->listNamaKertas();
 
-        $configShowStok   = Config::model()->find('nama = :namaConfig', [':namaConfig' => 'pembelian.view.showstok']);
+        $configShowStok = Config::model()->find('nama = :namaConfig', [':namaConfig' => 'pembelian.view.showstok']);
         $showCurrentStock = $configShowStok && $configShowStok->nilai == true ? true : false;
 
         $this->render('view', [
-            'model'            => $this->loadModel($id),
-            'pembelianDetail'  => $pembelianDetail,
+            'model' => $this->loadModel($id),
+            'pembelianDetail' => $pembelianDetail,
             'printerPembelian' => $printerPembelian,
-            'kertasUntukPdf'   => $kertasUntukPdf,
+            'kertasUntukPdf' => $kertasUntukPdf,
             'showCurrentStock' => $showCurrentStock,
         ]);
     }
@@ -71,7 +71,7 @@ class PembelianController extends Controller
     public function actionTambah()
     {
         $this->layout = '//layouts/box_kecil';
-        $model        = new Pembelian;
+        $model = new Pembelian;
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
@@ -88,7 +88,7 @@ class PembelianController extends Controller
         ]);
 
         $this->render('tambah', [
-            'model'        => $model,
+            'model' => $model,
             'supplierList' => $supplierList,
         ]);
     }
@@ -143,7 +143,7 @@ class PembelianController extends Controller
         /*
          * Untuk menampilkan dropdown barang sort by barcode;
          */
-        $barcode       = SupplierBarang::model()->ambilBarangBarcodePerSupplier($model->profil_id);
+        $barcode = SupplierBarang::model()->ambilBarangBarcodePerSupplier($model->profil_id);
         $barangBarcode = [];
         foreach ($barcode as $barang) {
             $barangBarcode[$barang['id']] = "{$barang['barcode']} ({$barang['nama']})";
@@ -152,7 +152,7 @@ class PembelianController extends Controller
         /*
          * Untuk menampilkan dropdown barang sort by nama;
          */
-        $nama       = SupplierBarang::model()->ambilBarangNamaPerSupplier($model->profil_id);
+        $nama = SupplierBarang::model()->ambilBarangNamaPerSupplier($model->profil_id);
         $barangNama = [];
         foreach ($nama as $barang) {
             $barangNama[$barang['id']] = "{$barang['nama']} ({$barang['barcode']})";
@@ -165,8 +165,8 @@ class PembelianController extends Controller
 
         if (isset($_GET['cariBarang'])) {
             $barangList->setAttribute('nama', $_GET['namaBarang']);
-            $curSupplierCr        = new CDbCriteria;
-            $curSupplierCr->join  = "JOIN supplier_barang ON barang_id = t.id AND supplier_id = {$model->profil_id}";
+            $curSupplierCr = new CDbCriteria;
+            $curSupplierCr->join = "JOIN supplier_barang ON barang_id = t.id AND supplier_id = {$model->profil_id}";
             $curSupplierCr->order = 'nama ASC';
         }
 
@@ -186,32 +186,35 @@ class PembelianController extends Controller
         }
 
         /* Mengambil nilai pembulatan ke atas untuk harga jual */
-        $config           = Config::model()->find('nama=:nama', [':nama' => 'pembelian.pembulatankeatashj']);
+        $config = Config::model()->find('nama=:nama', [':nama' => 'pembelian.pembulatankeatashj']);
         $configCariBarang = Config::model()->find("nama='pembelian.caribarangmode'");
 
         $lv1 = new StrukturBarang('search');
-        $lv1->unsetAttributes(); // clear any default values
-        $lv1->setAttribute('level', 1); // default yang tampil
+        $lv1->unsetAttributes();  // clear any default values
+        $lv1->setAttribute('level', 1);  // default yang tampil
         $lv1->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
 
         $strukturDummy = new StrukturBarang('search');
-        $strukturDummy->unsetAttributes(); // clear any default values
+        $strukturDummy->unsetAttributes();  // clear any default values
         $strukturDummy->setAttribute('level', 0);
 
+        $configWarning = Config::model()->find("nama='pembelian.warning.harga-berubah'");
+        $warningHbBerubah = $configWarning->nilai;
         $this->render('ubah', [
-            'model'           => $model,
-            'barangBarcode'   => $barangBarcode,
-            'barangNama'      => $barangNama,
+            'model' => $model,
+            'barangBarcode' => $barangBarcode,
+            'barangNama' => $barangNama,
             'pembelianDetail' => $pembelianDetail,
-            'barangList'      => $barangList,
-            'curSupplierCr'   => $curSupplierCr,
-            'barang'          => $barang,
-            'pilihBarang'     => $pilihBarang,
-            'pembulatan'      => $config->nilai,
-            'tipeCari'        => $configCariBarang->nilai,
-            'lv1'             => $lv1,
-            'strukturDummy'   => $strukturDummy,
-            //'totalPembelian' => $model->ambilTotal()
+            'barangList' => $barangList,
+            'curSupplierCr' => $curSupplierCr,
+            'barang' => $barang,
+            'pilihBarang' => $pilihBarang,
+            'pembulatan' => $config->nilai,
+            'tipeCari' => $configCariBarang->nilai,
+            'lv1' => $lv1,
+            'strukturDummy' => $strukturDummy,
+            'warningHbBerubah' => $warningHbBerubah,
+            // 'totalPembelian' => $model->ambilTotal()
         ]);
     }
 
@@ -240,7 +243,7 @@ class PembelianController extends Controller
     public function actionIndex()
     {
         $model = new Pembelian('search');
-        $model->unsetAttributes(); // clear any default values
+        $model->unsetAttributes();  // clear any default values
         if (isset($_GET['Pembelian'])) {
             $model->attributes = $_GET['Pembelian'];
         }
@@ -288,21 +291,21 @@ class PembelianController extends Controller
         if (isset($_POST['barangId'])) {
             $barangId = $_POST['barangId'];
         } elseif (isset($_POST['barcode'])) {
-            $barang   = Barang::model()->find('barcode = :barcode', [':barcode' => $_POST['barcode']]);
+            $barang = Barang::model()->find('barcode = :barcode', [':barcode' => $_POST['barcode']]);
             $barangId = $barang->id;
         }
         $barang = Pembelian::model()->ambilDataBarang($barangId);
-        $arr    = [
-            'barangId'       => $barangId,
-            'nama'           => $barang['nama'],
-            'barcode'        => $barang['barcode'],
+        $arr = [
+            'barangId' => $barangId,
+            'nama' => $barang['nama'],
+            'barcode' => $barang['barcode'],
             'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
-            'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
+            'hargaBeli' => number_format($barang['harga_beli'], 0, '', ''),
             'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
-            'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
-            'labelRrp'       => number_format($barang['rrp'], 0, ',', '.'),
-            'rrp'            => number_format($barang['rrp'], 0, '', ''),
-            'satuan'         => $barang['satuan'],
+            'hargaJual' => number_format($barang['harga_jual'], 0, '', ''),
+            'labelRrp' => number_format($barang['rrp'], 0, ',', '.'),
+            'rrp' => number_format($barang['rrp'], 0, '', ''),
+            'satuan' => $barang['satuan'],
         ];
         echo CJSON::encode($arr);
     }
@@ -311,19 +314,19 @@ class PembelianController extends Controller
     {
         // Jika ada post input-detail, berarti ada input-an barang
         if (isset($_POST['input-detail']) && $_POST['input-detail'] == 1) {
-            $detail                         = new PembelianDetail;
-            $detail->pembelian_id           = $id;
-            $detail->barang_id              = $_POST['barang-id'];
-            $detail->qty                    = $_POST['qty'] > 0 ? $_POST['qty'] : 0;
-            $detail->harga_beli             = $_POST['hargabeli'];
-            $detail->tanggal_kadaluwarsa    = $_POST['tanggal_kadaluwarsa'];
-            $detail->harga_jual             = $_POST['hargajual'];
+            $detail = new PembelianDetail;
+            $detail->pembelian_id = $id;
+            $detail->barang_id = $_POST['barang-id'];
+            $detail->qty = $_POST['qty'] > 0 ? $_POST['qty'] : 0;
+            $detail->harga_beli = $_POST['hargabeli'];
+            $detail->tanggal_kadaluwarsa = $_POST['tanggal_kadaluwarsa'];
+            $detail->harga_jual = $_POST['hargajual'];
             $detail->harga_jual_rekomendasi = empty($_POST['rrp']) ? 0 : $_POST['rrp'];
 
             // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
             // echo terlihat di console
             if ($detail->save()) {
-                //HargaJualBarang::model()->updateHargaJual($_POST['barang-id'], $inputHargaJual);
+                // HargaJualBarang::model()->updateHargaJual($_POST['barang-id'], $inputHargaJual);
                 echo 'berhasil';
             } else {
                 echo 'gagal';
@@ -347,8 +350,8 @@ class PembelianController extends Controller
      */
     public function actionTotal($id)
     {
-        $pembelian       = $this->loadModel($id);
-        $total           = [];
+        $pembelian = $this->loadModel($id);
+        $total = [];
         $total['sukses'] = true;
         $total['totalF'] = number_format($pembelian->ambilTotal(), 0, ',', '.');
 
@@ -361,9 +364,9 @@ class PembelianController extends Controller
     public function actionUpdateQty()
     {
         if (isset($_POST['pk'])) {
-            $pk          = $_POST['pk'];
-            $qty         = $_POST['value'];
-            $detail      = PembelianDetail::model()->findByPk($pk);
+            $pk = $_POST['pk'];
+            $qty = $_POST['value'];
+            $detail = PembelianDetail::model()->findByPk($pk);
             $detail->qty = $qty;
 
             $return = ['sukses' => false];
@@ -381,9 +384,9 @@ class PembelianController extends Controller
     public function actionUpdateRak()
     {
         if (isset($_POST['pk'])) {
-            $pk             = $_POST['pk'];
-            $rakId          = $_POST['value'];
-            $barang         = Barang::model()->findByPk($pk);
+            $pk = $_POST['pk'];
+            $rakId = $_POST['value'];
+            $barang = Barang::model()->findByPk($pk);
             $barang->rak_id = $rakId;
 
             $return = ['sukses' => false];
@@ -423,9 +426,9 @@ class PembelianController extends Controller
     {
         $return = '';
         if (isset($data->nomor)) {
-            $return = '<a href="' .
-                $this->createUrl('view', ['id' => $data->id]) . '">' .
-                $data->nomor . '</a>';
+            $return = '<a href="'
+                . $this->createUrl('view', ['id' => $data->id]) . '">'
+                . $data->nomor . '</a>';
         }
         return $return;
     }
@@ -433,9 +436,9 @@ class PembelianController extends Controller
     public function renderLinkToUbah($data)
     {
         if (!isset($data->nomor)) {
-            $return = '<a href="' .
-                $this->createUrl('ubah', ['id' => $data->id]) . '">' .
-                $data->tanggal . '</a>';
+            $return = '<a href="'
+                . $this->createUrl('ubah', ['id' => $data->id]) . '">'
+                . $data->tanggal . '</a>';
         } else {
             $return = $data->tanggal;
         }
@@ -444,9 +447,9 @@ class PembelianController extends Controller
 
     public function renderLinkToSupplier($data)
     {
-        return '<a href="' .
-            $this->createUrl('supplier/view', ['id' => $data->profil_id]) . '">' .
-            $data->profil->nama . '</a>';
+        return '<a href="'
+            . $this->createUrl('supplier/view', ['id' => $data->profil_id]) . '">'
+            . $data->profil->nama . '</a>';
     }
 
     public function actionTambahBarangBaru($id)
@@ -456,20 +459,20 @@ class PembelianController extends Controller
         ];
         $model = $this->loadModel($id);
         if (isset($_POST['Barang'])) {
-            $barang             = new Barang;
+            $barang = new Barang;
             $barang->attributes = $_POST['Barang'];
             if ($barang->save()) {
-                $supplierBarang              = new SupplierBarang;
+                $supplierBarang = new SupplierBarang;
                 $supplierBarang->supplier_id = $model->profil_id;
-                $supplierBarang->barang_id   = $barang->id;
-                $supplierBarang->default     = SupplierBarang::SUPPLIER_DEFAULT;
+                $supplierBarang->barang_id = $barang->id;
+                $supplierBarang->default = SupplierBarang::SUPPLIER_DEFAULT;
                 if ($supplierBarang->save()) {
                     $return = [
-                        'sukses'   => true,
+                        'sukses' => true,
                         'barangId' => $barang->id,
-                        'barcode'  => $barang->barcode,
-                        'nama'     => $barang->nama,
-                        'satuan'   => $barang->satuan->nama,
+                        'barcode' => $barang->barcode,
+                        'nama' => $barang->nama,
+                        'satuan' => $barang->satuan->nama,
                     ];
                 } else {
                     /* Jika error simpan supplier, barang hapus saja, emulate roolback */
@@ -489,9 +492,10 @@ class PembelianController extends Controller
     public function actionImport()
     {
         if (isset($_POST['nomor'])) {
-            $dbAhadPos2    = $_POST['database'];
-            $nomor         = $_POST['nomor'];
-            $pembelianPos2 = Yii::app()->db
+            $dbAhadPos2 = $_POST['database'];
+            $nomor = $_POST['nomor'];
+            $pembelianPos2 = Yii::app()
+                ->db
                 ->createCommand("
                      SELECT tb.tglTransaksiBeli, s.namaSupplier
                      FROM {$dbAhadPos2}.transaksibeli tb
@@ -503,12 +507,13 @@ class PembelianController extends Controller
             $profil = Profil::model()->find('nama=:nama', ['nama' => trim($pembelianPos2['namaSupplier'])]);
             // print_r($supplier);
             if (!is_null($profil)) {
-                $pembelian                    = new Pembelian;
-                $pembelian->profil_id         = $profil->id;
-                $pembelian->referensi         = $nomor;
-                $pembelian->tanggal_referensi = date_format(date_create_from_format('Y-m-d', $pembelianPos2['tglTransaksiBeli']), 'd-m-Y'); //$pembelianPos2['tglTransaksiBeli'].' 00:00:00';
+                $pembelian = new Pembelian;
+                $pembelian->profil_id = $profil->id;
+                $pembelian->referensi = $nomor;
+                $pembelian->tanggal_referensi = date_format(date_create_from_format('Y-m-d', $pembelianPos2['tglTransaksiBeli']), 'd-m-Y');  // $pembelianPos2['tglTransaksiBeli'].' 00:00:00';
                 if ($pembelian->save()) {
-                    $pembelianDetailPos2 = Yii::app()->db
+                    $pembelianDetailPos2 = Yii::app()
+                        ->db
                         ->createCommand("
                            select db.barcode, hargaBeli, gb.hargaJual, RRP, jumBarangAsli, tglExpire, barang.id
                            from {$dbAhadPos2}.detail_beli db
@@ -523,7 +528,9 @@ class PembelianController extends Controller
                         // Jika barang.id belum ada, buat data barang baru
                         $barangId = $detailPos2['id'];
                         if (is_null($detailPos2['id'])) {
-                            $barangBaru = Yii::app()->db->createCommand("
+                            $barangBaru = Yii::app()
+                                ->db
+                                ->createCommand("
                         select b.barcode, b.namaBarang, k.namaKategoriBarang, s.namaSatuanBarang, r.namaRak
                         from {$dbAhadPos2}.barang b
                         left join {$dbAhadPos2}.kategori_barang k on b.idKategoriBarang=k.idKategoriBarang
@@ -555,28 +562,28 @@ class PembelianController extends Controller
                                 $rakId = $rakBarang->id;
                             }
 
-                            $barang              = new Barang;
-                            $barang->barcode     = $barangBaru['barcode'];
-                            $barang->nama        = $barangBaru['namaBarang'];
+                            $barang = new Barang;
+                            $barang->barcode = $barangBaru['barcode'];
+                            $barang->nama = $barangBaru['namaBarang'];
                             $barang->kategori_id = $kategoriId;
-                            $barang->satuan_id   = $satuanId;
-                            $barang->rak_id      = $rakId;
+                            $barang->satuan_id = $satuanId;
+                            $barang->rak_id = $rakId;
                             if ($barang->save()) {
-                                $barangId                    = $barang->id;
-                                $supplierBarang              = new SupplierBarang;
-                                $supplierBarang->barang_id   = $barangId;
+                                $barangId = $barang->id;
+                                $supplierBarang = new SupplierBarang;
+                                $supplierBarang->barang_id = $barangId;
                                 $supplierBarang->supplier_id = $profil->id;
                                 $supplierBarang->save();
                             }
                         }
-                        $detail                         = new PembelianDetail;
-                        $detail->pembelian_id           = $pembelian->id;
-                        $detail->barang_id              = $barangId;
-                        $detail->qty                    = $detailPos2['jumBarangAsli'];
-                        $detail->harga_beli             = $detailPos2['hargaBeli'];
-                        $detail->harga_jual             = $detailPos2['hargaJual'];
+                        $detail = new PembelianDetail;
+                        $detail->pembelian_id = $pembelian->id;
+                        $detail->barang_id = $barangId;
+                        $detail->qty = $detailPos2['jumBarangAsli'];
+                        $detail->harga_beli = $detailPos2['hargaBeli'];
+                        $detail->harga_jual = $detailPos2['hargaJual'];
                         $detail->harga_jual_rekomendasi = $detailPos2['RRP'];
-                        $detail->tanggal_kadaluwarsa    = $detailPos2['tglExpire'];
+                        $detail->tanggal_kadaluwarsa = $detailPos2['tglExpire'];
                         $detail->save();
                     }
                     $this->redirect('index');
@@ -592,7 +599,7 @@ class PembelianController extends Controller
             $modelCsvForm->attributes = $_POST['UploadCsvPembelianForm'];
             if (!empty($_FILES['UploadCsvPembelianForm']['tmp_name']['csvFile'])) {
                 $modelCsvForm->csvFile = CUploadedFile::getInstance($modelCsvForm, 'csvFile');
-                $return                = $modelCsvForm->simpanCsvKePembelian();
+                $return = $modelCsvForm->simpanCsvKePembelian();
                 if ($return['sukses']) {
                     $this->redirect($this->createUrl('ubah', ['id' => $return['pembelianId'], 'pilihb' => false]));
                 }
@@ -625,7 +632,7 @@ class PembelianController extends Controller
     public function printLpr($id, $device, $print = 0)
     {
         $model = $this->loadModel($id);
-        $text  = $this->getText($model, $print);
+        $text = $this->getText($model, $print);
         $device->printLpr($text);
         $this->renderPartial('_print_autoclose', [
             'text' => $text,
@@ -635,7 +642,8 @@ class PembelianController extends Controller
     public function exportPdf($id, $kertas = Pembelian::KERTAS_A4, $draft = false)
     {
         $modelHeader = $this->loadModel($id);
-        $configs     = Config::model()->findAll();
+        $configs = Config::model()->findAll();
+
         /*
          * Ubah config (object) jadi array
          */
@@ -654,7 +662,7 @@ class PembelianController extends Controller
          */
         $pembelianDetail = PembelianDetail::model()->with('barang')->findAll([
             'condition' => "pembelian_id={$id}",
-            'order'     => 'barang.nama',
+            'order' => 'barang.nama',
         ]);
 
         /*
@@ -662,17 +670,17 @@ class PembelianController extends Controller
          */
         require_once __DIR__ . '/../vendor/autoload.php';
         $listNamaKertas = Pembelian::listNamaKertas();
-        $mpdf           = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
-        $viewCetak      = '_pdf';
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => $listNamaKertas[$kertas], 'tempDir' => __DIR__ . '/../runtime/']);
+        $viewCetak = '_pdf';
         if ($draft) {
             $viewCetak = '_pdf_draft';
         }
         $mpdf->WriteHTML($this->renderPartial(
             $viewCetak,
             [
-                'modelHeader'     => $modelHeader,
-                'branchConfig'    => $branchConfig,
-                'profil'          => $profil,
+                'modelHeader' => $modelHeader,
+                'branchConfig' => $branchConfig,
+                'profil' => $profil,
                 'pembelianDetail' => $pembelianDetail,
             ],
             true
@@ -680,14 +688,14 @@ class PembelianController extends Controller
 
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->pagenumSuffix = ' / ';
-        //$mpdf->pagenumPrefix = 'hlm ';
+        // $mpdf->pagenumPrefix = 'hlm ';
         // Render PDF
         $mpdf->Output("{$modelHeader->nomor}.pdf", 'I');
     }
 
     public function exportText($id, $device, $print = 0)
     {
-        $model    = $this->loadModel($id);
+        $model = $this->loadModel($id);
         $namaFile = $this->getNamaFile($model->nomor, $print);
         header('Content-type: text/plain');
         header("Content-Disposition: attachment; filename=\"{$namaFile}.text\"");
@@ -729,17 +737,17 @@ class PembelianController extends Controller
     {
         $q = new CDbCriteria();
         $q->addCondition('barcode like :term OR nama like :term');
-        $q->order  = 'nama';
-        $q->join   = "JOIN supplier_barang ON barang_id = t.id AND supplier_id = {$profilId}";
+        $q->order = 'nama';
+        $q->join = "JOIN supplier_barang ON barang_id = t.id AND supplier_id = {$profilId}";
         $q->params = [':term' => "%{$term}%"];
-        $barangs   = Barang::model()->findAll($q);
+        $barangs = Barang::model()->findAll($q);
 
         $r = [];
         foreach ($barangs as $barang) {
             $r[] = [
                 'label' => $barang->nama,
                 'value' => $barang->barcode,
-                'id'    => $barang->id,
+                'id' => $barang->id,
             ];
         }
 
@@ -749,7 +757,7 @@ class PembelianController extends Controller
     public function actionRetur($id)
     {
         if (isset($id)) {
-            $model  = $this->loadModel($id);
+            $model = $this->loadModel($id);
             $return = $model->retur();
             if ($return['sukses']) {
                 $this->redirect(['returpembelian/ubah', 'id' => $return['data']['returPembelianId']]);
@@ -759,7 +767,7 @@ class PembelianController extends Controller
 
     public function actionUpdateHjMulti()
     {
-        $barangId   = $_POST['barang-id'];
+        $barangId = $_POST['barang-id'];
         $attributes = $_POST['HargaJualMulti'];
         if (HargaJualMulti::updateHargaTrx($barangId, $attributes)) {
             echo 'Sukses';
@@ -815,7 +823,7 @@ class PembelianController extends Controller
 
     public function actionRenderStrukturGrid()
     {
-        $level  = Yii::app()->request->getPost('level');
+        $level = Yii::app()->request->getPost('level');
         $parent = Yii::app()->request->getPost('parent');
         switch ($level) {
             case 1:
@@ -827,14 +835,14 @@ class PembelianController extends Controller
                 break;
             case 2:
                 $model = new StrukturBarang('search');
-                $model->unsetAttributes(); // clear any default values
+                $model->unsetAttributes();  // clear any default values
                 $model->setAttribute('parent_id', $parent);
                 $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
                 $this->renderPartial('_grid2', ['lv2' => $model]);
                 break;
             case 3:
                 $model = new StrukturBarang('search');
-                $model->unsetAttributes(); // clear any default values
+                $model->unsetAttributes();  // clear any default values
                 $model->setAttribute('parent_id', $parent);
                 $model->setAttribute('status', StrukturBarang::STATUS_PUBLISH);
                 $this->renderPartial('_grid3', ['lv3' => $model]);
@@ -852,31 +860,31 @@ class PembelianController extends Controller
             $detailId = $_POST['detailId'];
         }
         $pembelian = $this->loadModel($id);
-        $detail    = PembelianDetail::model()->findByPk($detailId);
+        $detail = PembelianDetail::model()->findByPk($detailId);
         if (!is_null($detail)) {
-            $barangId  = $detail->barang_id;
-            $barang    = Pembelian::model()->ambilDataBarang($barangId);
+            $barangId = $detail->barang_id;
+            $barang = Pembelian::model()->ambilDataBarang($barangId);
             $supBarang = SupplierBarang::model()->find(
                 'supplier_id=:supplierId AND barang_id=:barangId',
                 [
                     ':supplierId' => $pembelian->profil_id,
-                    ':barangId'   => $barangId,
+                    ':barangId' => $barangId,
                 ]
             );
             $termasuk = is_null($supBarang) ? false : true;
-            $arr      = [
-                'sukses'         => true,
-                'termasuk'       => $termasuk, //Apakah termasuk supplier pembelian ini atau bukan
-                'detailId'       => $detailId,
-                'barangId'       => $barangId,
-                'nama'           => $barang['nama'],
-                'barcode'        => $barang['barcode'],
+            $arr = [
+                'sukses' => true,
+                'termasuk' => $termasuk,  // Apakah termasuk supplier pembelian ini atau bukan
+                'detailId' => $detailId,
+                'barangId' => $barangId,
+                'nama' => $barang['nama'],
+                'barcode' => $barang['barcode'],
                 'labelHargaBeli' => number_format($barang['harga_beli'], 0, ',', '.'),
-                'hargaBeli'      => number_format($barang['harga_beli'], 0, '', ''),
+                'hargaBeli' => number_format($barang['harga_beli'], 0, '', ''),
                 'labelHargaJual' => number_format($barang['harga_jual'], 0, ',', '.'),
-                'hargaJual'      => number_format($barang['harga_jual'], 0, '', ''),
-                'satuan'         => $barang['satuan'],
-                'qty'            => $detail->qty,
+                'hargaJual' => number_format($barang['harga_jual'], 0, '', ''),
+                'satuan' => $barang['satuan'],
+                'qty' => $detail->qty,
             ];
             $this->renderJSON($arr);
         }
@@ -886,13 +894,13 @@ class PembelianController extends Controller
     {
         // Jika ada post edit-detail, berarti (kemungkinan) ada edit-an barang.
         if (isset($_POST['edit-detail']) && $_POST['edit-detail'] == 1) {
-            $detail                         = new PembelianDetail;
-            $detail->pembelian_id           = $id;
-            $detail->barang_id              = $_POST['barang-id'];
-            $detail->qty                    = $_POST['qty'] > 0 ? $_POST['qty'] : 0;
-            $detail->harga_beli             = $_POST['hargabeli'];
-            $detail->tanggal_kadaluwarsa    = $_POST['tanggal_kadaluwarsa'];
-            $detail->harga_jual             = $_POST['hargajual'];
+            $detail = new PembelianDetail;
+            $detail->pembelian_id = $id;
+            $detail->barang_id = $_POST['barang-id'];
+            $detail->qty = $_POST['qty'] > 0 ? $_POST['qty'] : 0;
+            $detail->harga_beli = $_POST['hargabeli'];
+            $detail->tanggal_kadaluwarsa = $_POST['tanggal_kadaluwarsa'];
+            $detail->harga_jual = $_POST['hargajual'];
 
             // echo $id.' '.$_POST['barang-id'].' '.$_POST['qty'].' '.$_POST['tanggal_kadaluwarsa'].' '.$_POST['hargabeli'];
             // echo terlihat di console
@@ -902,6 +910,31 @@ class PembelianController extends Controller
             } else {
                 echo 'gagal';
             }
+        }
+    }
+
+    public function renderHarga($data, $row, $dataColumn)
+    {
+        $sign = '<i class="fa fa-fw fa-circle-o harga-tetap" aria-hidden="true"></i>';
+        switch ($dataColumn->name) {
+            case 'harga_beli':
+                $selisih = $data->getSelisihHB();
+                if ($selisih > 0) {
+                    $sign = '<i class="fa fa-fw fa-caret-up harga-naik" aria-hidden="true"></i>';
+                } elseif ($selisih < 0) {
+                    $sign = '<i class="fa fa-fw fa-caret-down harga-turun" aria-hidden="true"></i>';
+                }
+                return number_format($data->harga_beli, 2, ',', '.') . $sign;
+                break;
+            case 'harga_jual':
+                $selisih = $data->getSelisihHJ();
+                if ($selisih > 0) {
+                    $sign = '<i class="fa fa-fw fa-caret-up harga-naik" aria-hidden="true"></i>';
+                } elseif ($selisih < 0) {
+                    $sign = '<i class="fa fa-fw fa-caret-down harga-turun" aria-hidden="true"></i>';
+                }
+                return number_format($data->harga_jual, 0, ',', '.') . $sign;
+                break;
         }
     }
 }
