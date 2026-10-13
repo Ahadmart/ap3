@@ -393,4 +393,11 @@ class PembelianDetail extends CActiveRecord
         $ketemu = $command->queryRow();
         return $ketemu;
     }
+
+    public function getProfitMargin(){
+        $hargaJual = $this->harga_jual;
+        $hargaBeli = $this->harga_beli;
+        Yii::log("Barang ID: {$this->barang_id} | HJ: {$hargaJual} | HB: {$hargaBeli}");
+        return ($hargaJual - $hargaBeli) / $hargaBeli * 100;
+    }
 }

@@ -933,7 +933,11 @@ class PembelianController extends Controller
                 } elseif ($selisih < 0) {
                     $sign = '<i class="fa fa-fw fa-caret-down harga-turun" aria-hidden="true"></i>';
                 }
-                return number_format($data->harga_jual, 0, ',', '.') . $sign;
+                $text = number_format($data->harga_jual, 0, ',', '.') . $sign;
+                if ($data->profitMargin < 0) {
+                    $text .= '<br /><span class="profit-min">[ ' . number_format($data->profitMargin, 2, ',', '.') . '% ]</span>';
+                }
+                return $text;
                 break;
         }
     }
