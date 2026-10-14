@@ -2,7 +2,7 @@
     Created on : Jan 3, 2014, 10:32:29 AM
     Author     : abumuhammad
 */
-
+@use "sass:color";
 $biru: #0b62a4;
 $biru-muda: #7a92a3;
 $hijau: #4da74d;
@@ -159,7 +159,9 @@ table {
             color: transparent;
         }
         & > span.profit-min {
-            color: $merah;
+            // color: color.scale($merah, $lightness: 30%);
+            color: lighten($merah, 25%);
+            font-weight: bold;
         }
     }
 

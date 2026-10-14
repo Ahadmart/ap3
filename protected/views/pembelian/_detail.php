@@ -65,6 +65,14 @@ endif;
                 'value' => [$this, 'renderHarga'],
                 'type' => 'raw',
             ],
+            // [
+            //     'name' => 'profitMargin',
+            //     'headerHtmlOptions' => ['class' => 'rata-kanan'],
+            //     'htmlOptions' => ['class' => 'rata-kanan'],
+            //     'value' => function ($data) {
+            //         return number_format($data->profitMargin, 2, ',', '.') . '%';
+            //     }
+            // ],
             [
                 'name' => 'subTotal',
                 'header' => 'Total',

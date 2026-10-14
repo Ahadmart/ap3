@@ -934,8 +934,9 @@ class PembelianController extends Controller
                     $sign = '<i class="fa fa-fw fa-caret-down harga-turun" aria-hidden="true"></i>';
                 }
                 $text = number_format($data->harga_jual, 0, ',', '.') . $sign;
+                $percentSign = '<i class="fa fa-fw fa-percent" aria-hidden="true"></i>';
                 if ($data->profitMargin < 0) {
-                    $text .= '<br /><span class="profit-min">[ ' . number_format($data->profitMargin, 2, ',', '.') . '% ]</span>';
+                    $text .= '<br /><span class="profit-min">' . number_format($data->profitMargin, 2, ',', '.') . $percentSign.'</span>';
                 }
                 return $text;
                 break;
