@@ -408,14 +408,38 @@ class PembelianController extends Controller
      */
     public function actionSimpanPembelian($id)
     {
-        $return = ['sukses' => false];
+        $return = [
+            'sukses' => false,
+            'error' => [
+                'code' => 500,
+                'msg' => 'Data tidak lengkap'
+            ]
+        ];
         // cek jika 'simpan' ada dan bernilai true
         if (isset($_POST['simpan']) && $_POST['simpan']) {
             $pembelian = $this->loadModel($id);
-            if ($pembelian->status == Pembelian::STATUS_DRAFT) {
-                /*
-                 * simpan pembelian jika hanya dan hanya jika status masih draft
-                 */
+            $configWarning = Config::model()->find("nama='pembelian.warning.harga-berubah'");
+            $isBlokir = $configWarning->nilai == Pembelian::HB_BERUBAH_BLOKIR;
+            $isDraft = $pembelian->status == Pembelian::STATUS_DRAFT;
+            $isHbNaikHjTidak = $pembelian->isHbNaikHjTidak();
+
+            if (!$isDraft) {
+                $return = [
+                    'sukses' => false,
+                    'error' => [
+                        'code' => 500,
+                        'msg' => 'Pembelian sudah pernah disimpan'
+                    ]
+                ];
+            } elseif ($isBlokir && $isHbNaikHjTidak) {
+                $return = [
+                    'sukses' => false,
+                    'error' => [
+                        'code' => 500,
+                        'msg' => 'Harga beli mengalami kenaikan. Harap perbarui harga jual agar dapat dilanjutkan'
+                    ]
+                ];
+            } else {
                 $return = $pembelian->simpanPembelian();
             }
         }
@@ -920,9 +944,9 @@ class PembelianController extends Controller
             case 'harga_beli':
                 $selisih = $data->getSelisihHB();
                 if ($selisih > 0) {
-                    $sign = '<i class="fa fa-fw fa-caret-up harga-naik" aria-hidden="true"></i>';
+                    $sign = '<i class="fa fa-fw fa-caret-up fa-lg harga-naik" aria-hidden="true"></i>';
                 } elseif ($selisih < 0) {
-                    $sign = '<i class="fa fa-fw fa-caret-down harga-turun" aria-hidden="true"></i>';
+                    $sign = '<i class="fa fa-fw fa-caret-down fa-lg harga-turun" aria-hidden="true"></i>';
                 }
                 return number_format($data->harga_beli, 2, ',', '.') . $sign;
                 break;
@@ -936,7 +960,7 @@ class PembelianController extends Controller
                 $text = number_format($data->harga_jual, 0, ',', '.') . $sign;
                 $percentSign = '<i class="fa fa-fw fa-percent" aria-hidden="true"></i>';
                 if ($data->profitMargin < 0) {
-                    $text .= '<br /><span class="profit-min">' . number_format($data->profitMargin, 2, ',', '.') . $percentSign.'</span>';
+                    $text .= '<br /><span class="profit-min">' . number_format($data->profitMargin, 2, ',', '.') . $percentSign . '</span>';
                 }
                 return $text;
                 break;

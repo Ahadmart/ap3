@@ -24,7 +24,6 @@
  */
 class Pembelian extends CActiveRecord
 {
-
     const STATUS_DRAFT = 0;
     const STATUS_HUTANG = 1;
     const STATUS_LUNAS = 2;
@@ -43,10 +42,10 @@ class Pembelian extends CActiveRecord
 
     public $totalPembelian;
     public $namaSupplier;
-    public $max; // Untuk mencari untuk nomor surat;
+    public $max;  // Untuk mencari untuk nomor surat;
     public $nomorHutang;
     public $namaUpdatedBy;
-    public $hutangBayar; // Untuk menampilkan nomor hutang ATAU nomor Pembayaran jika sudah Lunas
+    public $hutangBayar;  // Untuk menampilkan nomor hutang ATAU nomor Pembayaran jika sudah Lunas
 
     /**
      * @return string the associated database table name
@@ -133,7 +132,7 @@ class Pembelian extends CActiveRecord
 
         $criteria->compare('id', $this->id, true);
         $criteria->compare('t.nomor', $this->nomor, true);
-        //$criteria->compare("DATE_FORMAT(tanggal, '%d-%m-%Y %H:%i:%s')", $this->tanggal, true);
+        // $criteria->compare("DATE_FORMAT(tanggal, '%d-%m-%Y %H:%i:%s')", $this->tanggal, true);
         $criteria->compare("DATE_FORMAT(tanggal, '%d-%m-%Y')", $this->tanggal, true);
         $criteria->compare('profil_id', $this->profil_id);
         $criteria->compare('referensi', $this->referensi, true);
@@ -169,8 +168,7 @@ class Pembelian extends CActiveRecord
         ];
 
         return new CActiveDataProvider($this, ['criteria' => $criteria,
-            'sort' => $sort
-        ]);
+            'sort' => $sort]);
     }
 
     /**
@@ -186,9 +184,9 @@ class Pembelian extends CActiveRecord
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
+
             /*
              * Tanggal akan diupdate jika melalui proses simpanPembelian
              * bersamaan dengan dapat nomor
@@ -231,7 +229,9 @@ class Pembelian extends CActiveRecord
      */
     public function ambilDataBarang($id)
     {
-        return Yii::app()->db->createCommand("
+        return Yii::app()
+            ->db
+            ->createCommand("
 							select
 								b.nama,
 								b.barcode,
@@ -250,8 +250,8 @@ class Pembelian extends CActiveRecord
 							left join barang_satuan sb on sb.id = b.satuan_id
 							where b.id=:barangId
 							")
-                        ->bindParam(':barangId', $id)
-                        ->queryRow();
+            ->bindParam(':barangId', $id)
+            ->queryRow();
     }
 
     /**
@@ -260,11 +260,13 @@ class Pembelian extends CActiveRecord
      */
     public function ambilTotal()
     {
-        $pembelian = Yii::app()->db->createCommand()
-                ->select('sum(harga_beli * qty) total')
-                ->from(PembelianDetail::model()->tableName())
-                ->where('pembelian_id=:pembelianId', array(':pembelianId' => $this->id))
-                ->queryRow();
+        $pembelian = Yii::app()
+            ->db
+            ->createCommand()
+            ->select('sum(harga_beli * qty) total')
+            ->from(PembelianDetail::model()->tableName())
+            ->where('pembelian_id=:pembelianId', array(':pembelianId' => $this->id))
+            ->queryRow();
         return $pembelian['total'];
     }
 
@@ -318,6 +320,7 @@ class Pembelian extends CActiveRecord
                     if (!HargaJual::model()->updateHarga($detail->barang_id, $detail->harga_jual)) {
                         throw new Exception("Gagal Update Harga Jual");
                     }
+
                     /*
                      * Update Rrp
                      */
@@ -337,13 +340,14 @@ class Pembelian extends CActiveRecord
                     }
 
                     /* Set Barang menjadi aktif */
-                    Barang::model()->updateByPk($detail->barang_id, ['status'=>Barang::STATUS_AKTIF]);
+                    Barang::model()->updateByPk($detail->barang_id, ['status' => Barang::STATUS_AKTIF]);
                 }
 
                 // Total dari pembelian barang
                 // Jika nanti ada item lain, misal: Transport, pajak, dll
                 // ditambahkan di sini
                 $jumlahPembelian = $this->ambilTotal();
+
                 /*
                  * Create (hutang)
                  */
@@ -389,7 +393,8 @@ class Pembelian extends CActiveRecord
                 'error' => array(
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ));
+                )
+            );
         }
     }
 
@@ -402,8 +407,8 @@ class Pembelian extends CActiveRecord
         $tahun = date('y');
         $data = $this->find(array(
             'select' => 'max(substring(nomor,9)*1) as max',
-            'condition' => "substring(nomor,5,2)='{$tahun}'")
-        );
+            'condition' => "substring(nomor,5,2)='{$tahun}'"
+        ));
 
         $value = is_null($data) ? 0 : $data->max;
         return $value + 1;
@@ -463,10 +468,11 @@ class Pembelian extends CActiveRecord
 
     public function pembelianText($draft = false, $cpi = 10)
     {
-        $lebarKertas = 8; //inchi
+        $lebarKertas = 8;  // inchi
         $jumlahKolom = $cpi * $lebarKertas;
 
         $configs = Config::model()->findAll();
+
         /*
          * Ubah config (object) jadi array
          */
@@ -475,14 +481,16 @@ class Pembelian extends CActiveRecord
             $branchConfig[$config->nama] = $config->nilai;
         }
 
-        $pembelianDetail = Yii::app()->db->createCommand("
+        $pembelianDetail = Yii::app()
+            ->db
+            ->createCommand("
          select barang.barcode, barang.nama, pd.qty, pd.harga_beli, pd.harga_jual
          from pembelian_detail pd
          join barang on pd.barang_id = barang.id
          where pd.pembelian_id = :pembelianId
               ")
-                ->bindValue(':pembelianId', $this->id)
-                ->queryAll();
+            ->bindValue(':pembelianId', $this->id)
+            ->queryAll();
 
         $nota = '';
 
@@ -498,20 +506,20 @@ class Pembelian extends CActiveRecord
         /* Jika Nama User terlalu panjang, akan di truncate */
         $strUser = strlen($strUser) > $kananMaxLength ? substr($strUser, 0, $kananMaxLength - 2) . '..' : $strUser;
 
-        $strInvoice = 'PEMBELIAN '; //Jumlah karakter harus genap!
+        $strInvoice = 'PEMBELIAN ';  // Jumlah karakter harus genap!
 
         $nota = str_pad($branchConfig['toko.nama'], $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ')
-                . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
-                . PHP_EOL;
+            . $strInvoice . str_pad(str_pad($strNomor, $kananMaxLength, ' '), $jumlahKolom / 2 - strlen($strInvoice) / 2, ' ', STR_PAD_LEFT)
+            . PHP_EOL;
         $nota .= str_pad($branchConfig['toko.alamat1'], $jumlahKolom - $kananMaxLength, ' ')
-                . str_pad($strTgl, $kananMaxLength, ' ')
-                . PHP_EOL;
+            . str_pad($strTgl, $kananMaxLength, ' ')
+            . PHP_EOL;
         $nota .= str_pad($branchConfig['toko.alamat2'], $jumlahKolom - $kananMaxLength, ' ')
-                . str_pad($strUser, $kananMaxLength, ' ')
-                . PHP_EOL;
+            . str_pad($strUser, $kananMaxLength, ' ')
+            . PHP_EOL;
         $nota .= str_pad($branchConfig['toko.alamat3'], $jumlahKolom - $kananMaxLength, ' ')
-                . str_pad($strTotal, $kananMaxLength, ' ')
-                . PHP_EOL . PHP_EOL;
+            . str_pad($strTotal, $kananMaxLength, ' ')
+            . PHP_EOL . PHP_EOL;
 
         $nota .= 'Dari: ' . $this->profil->nama . PHP_EOL;
         $nota .= '      ' . substr($this->profil->alamat1 . ' ' . $this->profil->alamat2 . ' ' . $this->profil->alamat3, 0, $jumlahKolom - 10) . PHP_EOL;
@@ -530,8 +538,8 @@ class Pembelian extends CActiveRecord
 
         $no = 1;
         foreach ($pembelianDetail as $detail) {
-            $strBarcode = str_pad(substr($detail['barcode'], 0, 13), 13, ' '); // Barcode hanya diambil 13 char pertama
-            $strBarang = str_pad(trim(substr($detail['nama'], 0, 28)), 28, ' '); //Nama Barang hanya diambil 28 char pertama
+            $strBarcode = str_pad(substr($detail['barcode'], 0, 13), 13, ' ');  // Barcode hanya diambil 13 char pertama
+            $strBarang = str_pad(trim(substr($detail['nama'], 0, 28)), 28, ' ');  // Nama Barang hanya diambil 28 char pertama
             $strQty = str_pad($detail['qty'], 5, ' ', STR_PAD_LEFT);
             $strHarga = str_pad(number_format($detail['harga_jual'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
             $strHargaBeli = str_pad(number_format($detail['harga_beli'], 0, ',', '.'), 8, ' ', STR_PAD_LEFT);
@@ -545,18 +553,18 @@ class Pembelian extends CActiveRecord
         }
 
         $nota .= str_pad('', $jumlahKolom, "-") . PHP_EOL . PHP_EOL;
-        /*
-          if (!$draft) {
-          $signatureHead1 = '          Diterima';
-          $signatureHead2 = 'a.n. ' . $branchConfig['toko.nama'];
-          $signatureHead3 = 'Driver';
 
-          $nota .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) .
-          str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
-          $nota .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
-          $nota .= '     (                )         (                )         (                )' . PHP_EOL;
-          }
+        /*
+         * if (!$draft) {
+         * $signatureHead1 = '          Diterima';
+         * $signatureHead2 = 'a.n. ' . $branchConfig['toko.nama'];
+         * $signatureHead3 = 'Driver';
          *
+         * $nota .= $signatureHead1 . str_pad($signatureHead2, 23 - (strlen($signatureHead2) / 2) + strlen($signatureHead2), ' ', STR_PAD_LEFT) .
+         * str_pad($signatureHead3, 17 - (strlen($signatureHead3) / 2) + strlen($signatureHead3), ' ', STR_PAD_LEFT) . PHP_EOL;
+         * $nota .= PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL;
+         * $nota .= '     (                )         (                )         (                )' . PHP_EOL;
+         * }
          */
         $nota .= PHP_EOL;
         return $nota;
@@ -573,9 +581,11 @@ class Pembelian extends CActiveRecord
 
     public function cariByRef($profilId, $noRef, $nominal)
     {
-        return Yii::app()->db->createCommand()->
-                        select('*')->
-                        from("
+        return Yii::app()
+            ->db
+            ->createCommand()
+            ->select('*')
+            ->from("
                     (SELECT
                         id, nomor, tanggal, referensi, `status`
                     FROM
@@ -583,8 +593,8 @@ class Pembelian extends CActiveRecord
                     WHERE
                         profil_id = :profilId
                             AND referensi = :noRef) t1
-                        ")->
-                        join("
+                        ")
+            ->join("
                     (SELECT
                         pembelian_id, SUM(qty * harga_beli) total
                     FROM
@@ -599,13 +609,13 @@ class Pembelian extends CActiveRecord
                                     AND referensi = :noRef)
                     GROUP BY pembelian_id
                     HAVING SUM(qty * harga_beli) = :nominal) t2
-                        ", 't1.id = t2.pembelian_id')->
-                        bindValues([
-                            ':profilId' => $profilId,
-                            ':noRef' => $noRef,
-                            ':nominal' => $nominal
-                        ])
-                        ->queryAll();
+                        ", 't1.id = t2.pembelian_id')
+            ->bindValues([
+                ':profilId' => $profilId,
+                ':noRef' => $noRef,
+                ':nominal' => $nominal
+            ])
+            ->queryAll();
     }
 
     /**
@@ -658,8 +668,21 @@ class Pembelian extends CActiveRecord
                 'error' => [
                     'msg' => $ex->getMessage(),
                     'code' => $ex->getCode(),
-            ]];
+                ]
+            ];
         }
     }
 
+    public function isHbNaikHjTidak()
+    {
+        $details = PembelianDetail::model()->findAll('pembelian_id=:ID', [':ID' => $this->id]);
+        $ketemu = false;
+        foreach ($details as $detail) {
+            if ($detail->isHargaBeliBerubah(PembelianDetail::HARGA_NAIK) && ($detail->isHargaJualBerubah())) {
+                $ketemu = true;
+                break;
+            }
+        }
+        return $ketemu;
+    }
 }
