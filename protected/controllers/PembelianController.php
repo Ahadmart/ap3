@@ -944,9 +944,9 @@ class PembelianController extends Controller
             case 'harga_beli':
                 $selisih = $data->getSelisihHB();
                 if ($selisih > 0) {
-                    $sign = '<i class="fa fa-fw fa-caret-up fa-lg harga-naik" aria-hidden="true"></i>';
+                    $sign = '<i class="fa fa-fw fa-caret-up harga-naik" aria-hidden="true"></i>';
                 } elseif ($selisih < 0) {
-                    $sign = '<i class="fa fa-fw fa-caret-down fa-lg harga-turun" aria-hidden="true"></i>';
+                    $sign = '<i class="fa fa-fw fa-caret-down harga-turun" aria-hidden="true"></i>';
                 }
                 return number_format($data->harga_beli, 2, ',', '.') . $sign;
                 break;
