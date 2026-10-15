@@ -1006,4 +1006,96 @@ class InventoryBalance extends CActiveRecord
         $inventory = Yii::app()->db->createCommand($sql)->bindValue(':barangId', $barangId)->queryRow();
         return $inventory['jml'];
     }
+    
+    /**
+     * Method simulasiJual menghitung hpp tanpa mengurangi stok
+     *
+     * @param integer $barangId ID Barang
+     * @param integer $qty Jumlah jual
+     *
+     * @return array Layer Inventory
+     */
+    public function simulasiJual($barangId, $qty)
+    {
+        $inventories = InventoryBalance::model()->findAll([
+            'condition' => 'barang_id=:barangId and qty <>0',
+            'order' => 'id',
+            'params' => [':barangId' => $barangId],
+        ]);
+
+        if (empty($inventories)) {
+            /* Jika kosong cari lagi inventory terakhir */
+            $layerTerakhir = $this->layerTerakhir($barangId);
+            /* Jika kosong juga, berarti belum ada proses pembelian ?? */
+            if (is_null($layerTerakhir)) {
+                // throw new Exception('Inventory barang tidak ditemukan, lakukan pembelian terlebih dahulu', 500);
+                return [];
+            }
+            /* Variabel $inventories diisi hanya dengan layer terakhir */
+            $inventories = [$layerTerakhir];
+        }
+
+        $inventoryTerpakai = [];
+        $layer = count($inventories);
+        $curLayer = $layer;
+        $sisa = $qty;
+        foreach ($inventories as $inventory) {
+            $curLayer--;
+            $qtyTerpakai = 0;
+            /* Jika sudah tidak ada sisa. Keluar */
+            if ($sisa == 0) {
+                break;
+            }
+
+            /*
+             * Jika inventory > 0. Stok ADA
+             * sisa selalu > 0
+             */
+            if ($inventory->qty > $sisa) {
+                /* Inventory cukup. 0 (nol) kan sisa, kurangi inventory */
+                $inventory->qty -= $sisa;
+                $qtyTerpakai = $sisa;
+                $sisa = 0;
+            } elseif ($inventory->qty <= $sisa && $inventory->qty > 0) {
+                /*
+                 * Inventory kurang (tapi masih positif). Kurangi sisa. 0 (nol) kan.
+                 */
+                $qtyTerpakai = $inventory->qty;
+                $sisa -= $inventory->qty;
+                /* Inventory di 0 (nol) kan */
+                $inventory->qty = 0;
+            }
+
+            /*
+             * Jika ada qtyTerpakai, catat.
+             */
+            if ($qtyTerpakai > 0) {
+                $inventoryTerpakai[] = [
+                    'id' => $inventory->id,
+                    'pembelianDetailId' => $inventory->pembelian_detail_id,
+                    'hargaBeli' => $inventory->harga_beli,
+                    'qtyTerpakai' => $qtyTerpakai,
+                ];
+            }
+
+            /*
+             * Jika inventory layer terakhir dan
+             * Jika inventory <= 0. Stok MINUS/HABIS
+             * 0 kan sisa
+             */
+            if (0 === $curLayer && $inventory->qty <= 0 && $sisa > 0) {
+                /* Kurangi inventory. 0 (nol) kan sisa */
+                $inventory->qty -= $sisa;
+                $inventoryTerpakai[] = [
+                    'id' => $inventory->id,
+                    'pembelianDetailId' => $inventory->pembelian_detail_id,
+                    'hargaBeli' => $inventory->harga_beli,
+                    'qtyTerpakai' => $sisa,
+                    'negatif' => true,
+                ];
+                $sisa = 0;
+            }
+        }
+        return $inventoryTerpakai;
+    }
 }

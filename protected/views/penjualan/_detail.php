@@ -18,6 +18,13 @@
         'id'            => 'penjualan-detail-grid',
         'dataProvider'  => $penjualanDetail->search(),
         'itemsCssClass' => 'tabel-index responsive',
+        'rowCssClassExpression' => function ($row, $data) {
+            $class = '';
+            if ($data->profitMargin < 0) {
+                $class = 'margin-min';
+            }
+            return $class;
+        },
         //'filter' => $penjualanDetail,
         'columns'       => [
             [
@@ -47,21 +54,54 @@
             //		 }
             //			  ),
             [
+                'name' => 'simulasiHPP',
+                'headerHtmlOptions' => ['class' => 'rata-kanan show-for-medium-up'],
+                'htmlOptions' => ['class' => 'rata-kanan'],
+                'value' => function ($data) {
+                    $text = '';
+                    $barisPertama = true;
+                    $inv = $data->simulasiHPP;
+                    $jmlLayer = count($inv[$data->barang_id]);
+                    foreach ($inv[$data->barang_id] as $layer) {
+                        if (!$barisPertama) {
+                            $text .= '<br />';
+                        }
+                        if ($layer['negatif']) {
+                            $text .= "-{$layer['qty']}";
+                        } else {
+                            $text .= number_format($layer['harga'], 2, ',', '.') . ' x ' . $layer['qty'];
+                        }
+                        $barisPertama = false;
+                    }
+                    if ($jmlLayer > 1) {
+                        $text .= '<br />';
+                        $text .= 'avg: ' . number_format($inv['avg'], 2, ',', '.');
+                    }
+                    return $text;
+                },
+                'type' => 'raw',
+            ],
+            [
                 'name'              => 'harga_jual',
                 'headerHtmlOptions' => ['class' => 'rata-kanan'],
                 'htmlOptions'       => ['class' => 'rata-kanan'],
-                'value'             => function ($data) {
-                    return number_format($data->harga_jual, 0, ',', '.');
+                'value' => function ($data) {
+                    $r = number_format($data->harga_jual, 0, ',', '.');
+                    if ($data->profitMargin < 0) {
+                        $r .= '<br /><span class="profit-min">[ ' . number_format($data->profitMargin, 2, ',', '.') . '% ]</span>';
+                    }
+                    return $r;
                 },
+                'type' => 'raw',
             ],
-            [
-                'name'              => 'harga_jual_rekomendasi',
-                'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                'htmlOptions'       => ['class' => 'rata-kanan'],
-                'value'             => function ($data) {
-                    return number_format($data->harga_jual_rekomendasi, 0, ',', '.');
-                },
-            ],
+            // [
+            //     'name'              => 'harga_jual_rekomendasi',
+            //     'headerHtmlOptions' => ['class' => 'rata-kanan'],
+            //     'htmlOptions'       => ['class' => 'rata-kanan'],
+            //     'value'             => function ($data) {
+            //         return number_format($data->harga_jual_rekomendasi, 0, ',', '.');
+            //     },
+            // ],
             [
                 'name'              => 'subTotal',
                 'value'             => '$data->total',

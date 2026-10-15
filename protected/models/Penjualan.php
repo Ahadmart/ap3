@@ -38,6 +38,10 @@ class Penjualan extends CActiveRecord
     // nilai field transfer_mode
     const JENIS_PENJUALAN = 0;
     const JENIS_TRANSFER  = 1;
+    /* ========== */
+    const MARGIN_MINUS_TANPA_WARNING = 0;
+    const MARGIN_MINUS_WARNING = 1;
+    const MARGIN_MINUS_BLOKIR = 2;
 
     public $max; // Untuk mencari untuk nomor surat;
     public $namaProfil;
@@ -2119,5 +2123,18 @@ class Penjualan extends CActiveRecord
         $command = Yii::app()->db->createCommand($sql);
         $command->bindValue(':id', $this->id);
         return $command->queryAll();
+    }
+
+    public function hasMinusMargin()
+    {
+        $details = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', [':penjualanId' => $this->id]);
+        $ketemu = false;
+        foreach ($details as $detail) {
+            if ($detail->getProfitMargin() < 0) {
+                $ketemu = true;
+                break;
+            }
+        }
+        return $ketemu;
     }
 }

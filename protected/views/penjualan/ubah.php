@@ -1,16 +1,37 @@
 <?php
-/* @var $this PenjualanController */
-/* @var $model Penjualan */
 
+/**
+ * @var PenjualanController $this
+ * @var Penjualan $model
+ * @var PenjualanDetail $penjualanDetail
+ * @var integer $konfirmasiHapusDetail
+ * @var integer $konfirmasiHapusNota
+ * @var array $printerInvoiceRrp
+ * @var integer $warningMarginMinus
+ */
 $this->breadcrumbs = [
     'Penjualan' => ['index'],
-    $model->id  => ['view', 'id' => $model->id],
+    $model->id => ['view', 'id' => $model->id],
     'Ubah',
 ];
 
-$this->boxHeader['small']  = 'Ubah';
+$this->boxHeader['small'] = 'Ubah';
 $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjualan';
 ?>
+<div id="konfirmasi-simpan" class="medium reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true"
+    role="dialog">
+    <?= CHtml::link('&#215;', '', ['class' => 'close-reveal-modal', 'aria-label' => 'Close']) ?>
+    <h6>Checking..</h6>
+    <br />
+    <table id="tabel-konfirmasi" class="tabel-index">
+    </table>
+    <div class="row">
+        <div class="small-12 columns rata-kanan">
+            <?= CHtml::link('Batal', '#', ['class' => 'tiny bigfont warning button kanan', 'id' => 'tombol-konfirmasi-batal']) ?>
+            <?= CHtml::link('Simpan', '#', ['class' => 'tiny bigfont button kanan', 'id' => 'tombol-konfirmasi-simpan']) ?>
+        </div>
+    </div>
+</div>
 <div id="hapus-form" class="small reveal-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
     <h2 id="modalTitle">Konfirmasi Hapus</h2>
     <label>Alasan penghapusan:
@@ -26,7 +47,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
     <div class="large-7 columns header">
         <?php
         if ($model->transfer_mode) {
-        ?>
+            ?>
             <span class="warning label">Transfer Mode</span>
         <?php
         }
@@ -41,7 +62,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
                 <ul id="printinvoice" data-dropdown-content class="f-dropdown" aria-hidden="true">
                     <?php
                     foreach ($printerInvoiceRrp as $printer) {
-                    ?>
+                        ?>
                         <li>
                             <a href="<?php echo $this->createUrl('printdraftinvoice', ['id' => $model->id, 'printId' => $printer['id']]) ?>">
                                 <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
@@ -52,25 +73,7 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
                 </ul>
             </li>
             <li>
-                <?php
-                echo CHtml::ajaxLink(
-                    '<i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Penjualan',
-                    $this->createUrl('simpanpenjualan', ['id' => $model->id]),
-                    [
-                        'data'    => 'simpan=true',
-                        'type'    => 'POST',
-                        'success' => 'function(data) {
-                            if (data.sukses) {
-                                location.reload();;
-                            }
-                        }',
-                    ],
-                    [
-                        'class'     => 'tiny bigfont button',
-                        'accesskey' => 's',
-                    ]
-                );
-                ?>
+                <a id="tombol-simpan" class="tiny bigfont button" accesskey="s"><i class="fa fa-floppy-o"></i> <span class="ak">S</span>impan Penjualan</a>
             </li>
         </ul>
     </div>
@@ -85,8 +88,8 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
 <div class="row" id="penjualan-detail">
     <?php
     $this->renderPartial('_detail', [
-        'penjualan'             => $model,
-        'penjualanDetail'       => $penjualanDetail,
+        'penjualan' => $model,
+        'penjualanDetail' => $penjualanDetail,
         'konfirmasiHapusDetail' => $konfirmasiHapusDetail,
     ]);
     ?>
@@ -102,42 +105,42 @@ $this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjuala
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
-        'itemOptions'    => ['class' => 'has-form hide-for-small-only'],
-        'label'          => false,
-        'items'          => [
+        'itemOptions' => ['class' => 'has-form hide-for-small-only'],
+        'label' => false,
+        'items' => [
             ['label' => '<i class="fa fa-plus"></i> <span class="ak">T</span>ambah', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
-                'class'     => 'button',
+                'class' => 'button',
                 'accesskey' => 't',
             ]],
             [
-                'label'       => '<i class="fa fa-times"></i> <span class="ak">H</span>apus',
-                'url'         => $this->createUrl('hapus', ['id' => $model->id]),
+                'label' => '<i class="fa fa-times"></i> <span class="ak">H</span>apus',
+                'url' => $this->createUrl('hapus', ['id' => $model->id]),
                 'linkOptions' => [
-                    'class'     => 'alert button tombol-hapus-nota',
+                    'class' => 'alert button tombol-hapus-nota',
                     'accesskey' => 'h',
                     // 'submit'    => ['hapus', 'id' => $model->id],
-                    'confirm'   => $konfirmasiHapusNota ? null : 'Anda yakin?',
+                    'confirm' => $konfirmasiHapusNota ? null : 'Anda yakin?',
                 ],
             ],
             ['label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => [
-                'class'     => 'success button',
+                'class' => 'success button',
                 'accesskey' => 'i',
             ]],
         ],
         'submenuOptions' => ['class' => 'button-group'],
     ],
     [
-        'itemOptions'    => ['class' => 'has-form show-for-small-only'],
-        'label'          => false,
-        'items'          => [
+        'itemOptions' => ['class' => 'has-form show-for-small-only'],
+        'label' => false,
+        'items' => [
             ['label' => '<i class="fa fa-plus"></i>', 'url' => $this->createUrl('tambah'), 'linkOptions' => [
                 'class' => 'button',
             ]],
             [
-                'label'       => '<i class="fa fa-times"></i>',
-                'url'         => $this->createUrl('hapus', ['id' => $model->id]),
+                'label' => '<i class="fa fa-times"></i>',
+                'url' => $this->createUrl('hapus', ['id' => $model->id]),
                 'linkOptions' => [
-                    'class'   => 'alert button tombol-hapus-nota',
+                    'class' => 'alert button tombol-hapus-nota',
                     // 'submit'  => ['hapus', 'id' => $model->id],
                     'confirm' => $konfirmasiHapusNota ? null : 'Anda yakin?',
                 ],
@@ -149,8 +152,10 @@ $this->menu = [
         'submenuOptions' => ['class' => 'button-group'],
     ],
 ];
-?>
 
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/jquery.gritter.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/vendor/jquery.gritter.min.js', CClientScript::POS_HEAD);
+?>
 <script>
     var deleteUrl = null;
 
@@ -161,7 +166,7 @@ $this->menu = [
 
         <?php
         if ($konfirmasiHapusNota) {
-        ?>
+            ?>
             $('#hapus-form').one('opened.fndtn.reveal', function() {
                 $('#alasan-hapus').val('').focus();
             });
@@ -170,7 +175,7 @@ $this->menu = [
             $("#hapus-form").foundation('reveal', 'open');
         <?php
         } else {
-        ?>
+            ?>
             $.ajax({
                 type: 'GET',
                 url: deleteUrl,
@@ -235,4 +240,84 @@ $this->menu = [
         return false;
     });
     // Saat tombol hapus diklik, tampilkan dialog
+
+
+    $("#tombol-konfirmasi-simpan").on("click", function() {
+        simpan();
+    })
+
+    $("#tombol-simpan").on("click", function() {
+        <?php
+        // Yii::log('Warning: '.$warningMarginMinus);
+        switch ($warningMarginMinus) {
+            case Penjualan::MARGIN_MINUS_WARNING || Penjualan::MARGIN_MINUS_BLOKIR
+            ?>
+                var marginMin = $("#penjualan-detail-grid tr.margin-min");
+                if (marginMin.length > 0) {
+                    $("#konfirmasi-simpan h6").text(
+                        "Barang ini dijual dengan margin minus");
+                    var target = $("#tabel-konfirmasi");
+                    target.empty();
+                    target.append(
+                        "<thead><tr><th>Barcode</th><th>Nama</th><th>Simulasi HPP</th><th>Harga Jual</th><th>RRP</th></tr></thead>"
+                    );
+                    marginMin.each(function(i, tr) {
+                        var cols = $(tr).children(
+                            'td:nth-child(2), td:nth-child(3), td:nth-child(6), td:nth-child(7), td:nth-child(8) '
+                        );
+
+                        var newRow = $('<tr></tr>')
+                            .append(cols.clone()) // clone so source table keeps its cells
+                            .append($('<td></td>'));
+
+                        target.append(newRow);
+                    })
+                    $('#konfirmasi-simpan').foundation('reveal', 'open');
+                    setTimeout(function() {
+                        $('#tombol-konfirmasi-batal').focus();
+                    }, 500);
+                } else {
+                    simpan();
+                }
+            <?php
+            break;
+        default:
+            ?>
+                simpan();
+        <?php
+                break;
+        }
+        ?>
+    })
+    $("#tombol-konfirmasi-batal").on("click", function() {
+        $('#konfirmasi-simpan').foundation('reveal', 'close');
+    })
+
+    function simpan() {
+        var dataKirim = {
+            'simpan': true,
+        };
+        $.ajax({
+            type: "POST",
+            url: '<?php echo $this->createUrl('simpanpenjualan', ['id' => $model->id]); ?>',
+            data: dataKirim,
+            dataType: "json",
+            beforeSend: function() {
+                $("#tombol-simpan").addClass("warning");
+            },
+            success: function(data) {
+                if (data.sukses) {
+                    location.reload();
+                } else {
+                    $.gritter.add({
+                        title: 'Error ' + data.error.code,
+                        text: data.error.msg,
+                        time: 5000,
+                    });
+                    $('#konfirmasi-simpan').foundation('reveal', 'close');
+                    $("#tombol-simpan").removeClass("warning");
+                }
+            }
+        });
+    }
 </script>
