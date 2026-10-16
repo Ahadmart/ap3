@@ -201,7 +201,8 @@ class PenjualanDetail extends CActiveRecord
 
     public function getProfitMargin()
     {
-        $hargaJual = Barang::model()->findByPk($this->barang_id)->getHargaJualRaw();
+        // $hargaJual = Barang::model()->findByPk($this->barang_id)->getHargaJualRaw();
+        $hargaJual = $this->harga_jual; // Pakai harga jual yang diinput di penjualan (bukan yang terkini)
         $hargaBeli = $this->getSimulasiHPP()['avg'];
         return ($hargaJual - $hargaBeli) / $hargaBeli * 100;
     }
