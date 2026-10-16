@@ -259,11 +259,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                     var target = $("#tabel-konfirmasi");
                     target.empty();
                     target.append(
-                        "<thead><tr><th>Barcode</th><th>Nama</th><th>Simulasi HPP</th><th>Harga Jual</th><th>RRP</th></tr></thead>"
+                        "<thead><tr><th>Barcode</th><th>Nama</th><th>Qty</th><th>Simulasi HPP</th><th>Harga Jual</th></tr></thead>"
                     );
                     marginMin.each(function(i, tr) {
                         var cols = $(tr).children(
-                            'td:nth-child(2), td:nth-child(3), td:nth-child(6), td:nth-child(7), td:nth-child(8) '
+                            'td:nth-child(1), td:nth-child(2), td:nth-child(4), td:nth-child(5), td:nth-child(6)'
                         );
 
                         var newRow = $('<tr></tr>')
