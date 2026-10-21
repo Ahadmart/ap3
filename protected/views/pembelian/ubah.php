@@ -107,7 +107,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 }
             }
         });
-    } $(document).on('opened.fndtn.reveal', '#konfirmasi-simpan', function() {
+    }
+    $(document).on('opened.fndtn.reveal', '#konfirmasi-simpan', function() {
         $('#tombol-konfirmasi-batal').focus();
     });
 
@@ -115,36 +116,34 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         <?php
         switch ($warningHbBerubah) {
             case Pembelian::HB_BERUBAH_WARNING || Pembelian::HB_BERUBAH_BLOKIR:
-                ?>
-                var hby_hjn = $("#pembelian-detail-grid tr.hb-y-hj-n");
-                if (hby_hjn.length > 0) {
-                    $("#konfirmasi-simpan h6").text(
-                        "Barang ini mengalami kenaikan harga beli, tapi harga jual belum disesuaikan");
-                    var target = $("#tabel-konfirmasi");
-                    target.empty();
-                    target.append(
-                        "<thead><tr><th>Barcode</th><th>Nama</th><th class='rata-kanan'>Harga Beli</th><th class='rata-kanan'>Harga Jual</th></tr></thead>");
-                    hby_hjn.each(function(i, tr) {
-                        var cols = $(tr).children(
-                            'td:nth-child(1), td:nth-child(2), td:nth-child(4), td:nth-child(5)'
-                        );
-
-                        var newRow = $('<tr></tr>')
-                            .append(cols.clone()) // clone so source table keeps its cells
-                            .append($('<td></td>'));
-
-                        target.append(newRow);
-                    })
-                    $('#konfirmasi-simpan').foundation('reveal', 'open');
-                    setTimeout(function() {
-                        $('#tombol-konfirmasi-batal').focus();
-                    }, 500);
-                } else {
-                    simpan();
-                }
+        ?>
+                $.get('<?= $this->createUrl('belinaikjualtetap', ['id' => $model->id]) ?>', function(data) {
+                    if (data.length > 0) {
+                        $("#konfirmasi-simpan h6").text(
+                            "Barang ini mengalami kenaikan harga beli, tapi harga jual belum disesuaikan");
+                        var target = $("#tabel-konfirmasi");
+                        target.empty();
+                        target.append(
+                            "<thead><tr><th>Barcode</th><th>Nama</th><th class='rata-kanan'>Harga Beli</th><th class='rata-kanan'>Harga Jual</th></tr></thead>");
+                        data.forEach(function(barang) {
+                            const row = $('<tr>');
+                            row.append($('<td>').text(barang.barcode));
+                            row.append($('<td>').text(barang.nama));
+                            row.append($('<td class="rata-kanan">').text(barang.harga_beli));
+                            row.append($('<td class="rata-kanan">').text(barang.harga_jual));
+                            target.append(row);
+                        })
+                        $('#konfirmasi-simpan').foundation('reveal', 'open');
+                        setTimeout(function() {
+                            $('#tombol-konfirmasi-batal').focus();
+                        }, 500);
+                    } else {
+                        simpan();
+                    }
+                }, 'json')
             <?php
-            break;
-        default:
+                break;
+            default:
             ?>
                 simpan();
         <?php

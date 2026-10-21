@@ -966,4 +966,21 @@ class PembelianController extends Controller
                 break;
         }
     }
+
+    public function actionBeliNaikJualTetap($id)
+    {
+        $details = PembelianDetail::model()->findAll('pembelian_id=:ID', [':ID' => $id]);
+        $hasil = [];
+        foreach ($details as $detail) {
+            if ($detail->isHargaBeliBerubah(PembelianDetail::HARGA_NAIK) && !$detail->isHargaJualBerubah()) {
+                $hasil[] = [
+                    'barcode' => $detail->barang->barcode,
+                    'nama' => $detail->barang->nama,
+                    'harga_beli' => $detail->harga_beli,
+                    'harga_jual' => $detail->harga_jual,
+                ];
+            }
+        }
+        $this->renderJSON($hasil);
+    }
 }
