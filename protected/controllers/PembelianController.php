@@ -976,8 +976,8 @@ class PembelianController extends Controller
                 $hasil[] = [
                     'barcode' => $detail->barang->barcode,
                     'nama' => $detail->barang->nama,
-                    'harga_beli' => $detail->harga_beli,
-                    'harga_jual' => $detail->harga_jual,
+                    'harga_beli' => number_format($detail->harga_beli, '2', ',', '.'),
+                    'harga_jual' => number_format($detail->harga_jual, '0', ',', '.'),
                 ];
             }
         }
