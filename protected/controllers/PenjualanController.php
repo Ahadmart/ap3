@@ -801,4 +801,23 @@ class PenjualanController extends Controller
             }
         }
     }
+
+    public function actionMarginMinus($id)
+    {
+        $details = PenjualanDetail::model()->findAll('penjualan_id=:penjualanId', [':penjualanId' => $id]);
+        $hasil = [];
+        foreach ($details as $detail) {
+            if ($detail->profitMargin < 0) {
+                $hasil[] = [
+                    'barcode' => $detail->barang->barcode,
+                    'nama' => $detail->barang->nama,
+                    'sim_hpp' => number_format($detail->simulasiHPP['avg'], 2, ',', '.'),
+                    'harga_jual' => number_format($detail->harga_jual, 2, ',', '.'),
+                    'profit_margin' => number_format($detail->profitMargin, 2, ',', '.') . '%',
+                    'rrp' => number_format($detail->harga_jual_rekomendasi, 2, ',', '.'),
+                ];
+            }
+        }
+        $this->renderJSON($hasil);
+    }
 }

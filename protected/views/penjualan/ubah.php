@@ -252,25 +252,23 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
         switch ($warningMarginMinus) {
             case Penjualan::MARGIN_MINUS_WARNING || Penjualan::MARGIN_MINUS_BLOKIR
             ?>
-                var marginMin = $("#penjualan-detail-grid tr.margin-min");
-                if (marginMin.length > 0) {
+            $.get('<?= $this->createUrl('marginminus', ['id' => $model->id]) ?>', function(data) {
+                if (data.length > 0) {
                     $("#konfirmasi-simpan h6").text(
-                        "Barang ini dijual dengan margin minus");
+                        "Barang ini dijual dengan margin minus!");
                     var target = $("#tabel-konfirmasi");
                     target.empty();
                     target.append(
-                        "<thead><tr><th>Barcode</th><th>Nama</th><th>Qty</th><th>Simulasi HPP</th><th>Harga Jual</th></tr></thead>"
+                        "<thead><tr><th>Barcode</th><th>Nama</th><th class='rata-kanan'>Simulasi HPP</th><th class='rata-kanan'>Harga Jual</th><th class='rata-kanan'>Profit Margin</th></tr></thead>"
                     );
-                    marginMin.each(function(i, tr) {
-                        var cols = $(tr).children(
-                            'td:nth-child(1), td:nth-child(2), td:nth-child(4), td:nth-child(5), td:nth-child(6)'
-                        );
-
-                        var newRow = $('<tr></tr>')
-                            .append(cols.clone()) // clone so source table keeps its cells
-                            .append($('<td></td>'));
-
-                        target.append(newRow);
+                    data.forEach(function(barang) {
+                        const row = $('<tr>');
+                        row.append($('<td>').text(barang.barcode));
+                        row.append($('<td>').text(barang.nama));
+                        row.append($('<td class="rata-kanan">').text(barang.sim_hpp));
+                        row.append($('<td class="rata-kanan">').text(barang.harga_jual));
+                        row.append($('<td class="rata-kanan">').text(barang.profit_margin));
+                        target.append(row);
                     })
                     $('#konfirmasi-simpan').foundation('reveal', 'open');
                     setTimeout(function() {
@@ -279,12 +277,13 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl . '/js/v
                 } else {
                     simpan();
                 }
-            <?php
-            break;
-        default:
-            ?>
-                simpan();
+            })
         <?php
+        break;
+    default:
+        ?>
+            simpan();
+    <?php
                 break;
         }
         ?>
