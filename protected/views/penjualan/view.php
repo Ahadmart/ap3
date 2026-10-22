@@ -7,8 +7,9 @@ $this->breadcrumbs = [
     $model->id,
 ];
 
-$this->boxHeader['small']  = 'View';
-$this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjualan: ' . $model->nomor;
+$this->boxHeader['small'] = 'View';
+$token = empty($model->nomor_publik) ? '' : $model->nomor_publik;
+$this->boxHeader['normal'] = '<i class="fa fa-shopping-cart fa-lg"></i> Penjualan: ' . $token . ' ' . $model->nomor;
 
 // Agar total terformat
 $model->scenario = 'tampil';
@@ -22,7 +23,7 @@ $model->scenario = 'tampil';
                 <ul id="printinvoice" data-dropdown-content class="f-dropdown" aria-hidden="true">
                     <?php
                     foreach ($printerInvoiceRrp as $printer) {
-                    ?>
+                        ?>
                         <li>
                             <a href="<?php echo $this->createUrl('printinvoice', ['id' => $model->id, 'printId' => $printer['id']]) ?>">
                                 <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
@@ -37,7 +38,7 @@ $model->scenario = 'tampil';
                 <ul id="printnota" data-dropdown-content class="f-dropdown" aria-hidden="true">
                     <?php
                     foreach ($printerNota as $printer) {
-                    ?>
+                        ?>
                         <li>
                             <a href="<?php echo $this->createUrl('printnota', ['id' => $model->id, 'printId' => $printer['id']]) ?>">
                                 <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
@@ -52,7 +53,7 @@ $model->scenario = 'tampil';
                 <ul id="printstruk" data-dropdown-content class="f-dropdown" aria-hidden="true">
                     <?php
                     foreach ($printerStruk as $printer) {
-                    ?>
+                        ?>
                         <li>
                             <a href="<?php echo $this->createUrl('printstruk', ['id' => $model->id, 'printId' => $printer['id']]) ?>">
                                 <?php echo $printer['nama']; ?> <small><?php echo $printer['keterangan']; ?></small></a>
@@ -67,7 +68,7 @@ $model->scenario = 'tampil';
     <div class="small-12 columns header">
         <?php
         if ($model->transfer_mode) {
-        ?>
+            ?>
             <span class="warning label">Transfer Barang</span>
         <?php
         }
@@ -82,62 +83,63 @@ $model->scenario = 'tampil';
     <div class="small-12  columns">
         <?php
         $this->widget('BGridView', [
-            'id'           => 'penjualan-detail-grid',
+            'id' => 'penjualan-detail-grid',
             'dataProvider' => $penjualanDetail->search(),
-            'filter'       => $penjualanDetail,
-            'columns'      => [
+            'filter' => $penjualanDetail,
+            'columns' => [
                 [
-                    'name'  => 'barcode',
+                    'name' => 'barcode',
                     'value' => '$data->barang->barcode',
                 ],
                 [
-                    'name'  => 'namaBarang',
+                    'name' => 'namaBarang',
                     'value' => '$data->barang->nama',
                 ],
                 [
-                    //'name' => 'harga_jual',
-                    'header'            => 'HPP',
-                    'type'              => 'raw',
+                    // 'name' => 'harga_jual',
+                    'header' => 'HPP',
+                    'type' => 'raw',
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'filter'            => false,
-                    'value'             => [$this, 'tampilkanHargaBeli'],
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                    'filter' => false,
+                    'value' => [$this, 'tampilkanHargaBeli'],
                 ],
                 [
-                    'name'              => 'qty',
+                    'name' => 'qty',
                     'headerHtmlOptions' => ['style' => 'width:75px;', 'class' => 'rata-kanan'],
-                    'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'filter'            => false,
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                    'filter' => false,
                 ],
+
                 /*
-        array(
-        'name' => 'harga_beli',
-        'htmlOptions' => array('class' => 'rata-kanan'),
-        'value' => function($data) {
-        return number_format($data->harga_beli, 0, ',', '.');
-        }
-        ),
-         */
+                 * array(
+                 * 'name' => 'harga_beli',
+                 * 'htmlOptions' => array('class' => 'rata-kanan'),
+                 * 'value' => function($data) {
+                 * return number_format($data->harga_beli, 0, ',', '.');
+                 * }
+                 * ),
+                 */
                 [
-                    'name'              => 'harga_jual',
+                    'name' => 'harga_jual',
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'filter'            => false,
-                    'value'             => [$this, 'formatHargaJual'],
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                    'filter' => false,
+                    'value' => [$this, 'formatHargaJual'],
                 ],
                 [
-                    'name'              => 'harga_jual_rekomendasi',
+                    'name' => 'harga_jual_rekomendasi',
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'filter'            => false,
-                    'value'             => [$this, 'formatHargaJualRekomendasi'],
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                    'filter' => false,
+                    'value' => [$this, 'formatHargaJualRekomendasi'],
                 ],
                 [
-                    'name'              => 'subTotal',
-                    'value'             => '$data->total',
+                    'name' => 'subTotal',
+                    'value' => '$data->total',
                     'headerHtmlOptions' => ['class' => 'rata-kanan'],
-                    'htmlOptions'       => ['class' => 'rata-kanan'],
-                    'filter'            => false,
+                    'htmlOptions' => ['class' => 'rata-kanan'],
+                    'filter' => false,
                 ],
             ],
         ]);
@@ -148,22 +150,24 @@ $model->scenario = 'tampil';
 $this->menu = [
     ['itemOptions' => ['class' => 'divider'], 'label' => false],
     [
-        'itemOptions'       => ['class' => 'has-form hide-for-small-only'], 'label' => false,
-        'items'          => [
+        'itemOptions' => ['class' => 'has-form hide-for-small-only'],
+        'label' => false,
+        'items' => [
             ['label' => '<i class="fa fa-download"></i> I<span class="ak">m</span>port', 'url' => $this->createUrl('import'), 'linkOptions' => [
-                'class'     => 'warning button',
+                'class' => 'warning button',
                 'accesskey' => 'm',
             ]],
             ['label' => '<i class="fa fa-asterisk"></i> <span class="ak">I</span>ndex', 'url' => $this->createUrl('index'), 'linkOptions' => [
-                'class'     => 'success button',
+                'class' => 'success button',
                 'accesskey' => 'i',
             ]],
         ],
         'submenuOptions' => ['class' => 'button-group'],
     ],
     [
-        'itemOptions'       => ['class' => 'has-form show-for-small-only'], 'label' => false,
-        'items'          => [
+        'itemOptions' => ['class' => 'has-form show-for-small-only'],
+        'label' => false,
+        'items' => [
             ['label' => '<i class="fa fa-download"></i>', 'url' => $this->createUrl('import'), 'linkOptions' => [
                 'class' => 'warning button',
             ]],
