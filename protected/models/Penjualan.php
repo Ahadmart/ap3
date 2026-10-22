@@ -2205,13 +2205,20 @@ class Penjualan extends CActiveRecord
         $config = Config::model()->find("nama='toko.kode'");
         $kodeCabang = $config->nilai;
         $alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-        $bytes = random_bytes(8);
-        $code = '';
+        do {
+            $bytes = random_bytes(8);
+            $code = '';
+            for ($i = 0; $i < 8; $i++) {
+                $code .= $alphabet[ord($bytes[$i]) & 31];
+            }
+            $nomor = $kodeCabang . $code;
+        } while (!is_null($this->isNomorPublikSudahAda($nomor)));
 
-        for ($i = 0; $i < 8; $i++) {
-            $code .= $alphabet[ord($bytes[$i]) & 31];
-        }
+        return $nomor;
+    }
 
-        return $kodeCabang . $code;
+    public function isNomorPublikSudahAda($nomor)
+    {
+        return Penjualan::model()->find('nomor_publik=:nomor', [':nomor' => $nomor]);
     }
 }
