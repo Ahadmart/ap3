@@ -78,6 +78,7 @@ class PosController extends Controller
      */
     public function actionUbah($id)
     {
+        require_once __DIR__ . '/../vendor/autoload.php';
         $this->penjualanId = $id;
         $model             = $this->loadModel($id);
         // Penjualan tidak bisa diubah kecuali statusnya draft
@@ -153,12 +154,9 @@ class PosController extends Controller
 
         $this->showVoucherMOL = true;
 
-        $configCD = Config::model()->find('nama=:nama', [':nama' => 'customerdisplay.wsport']);
-        $wsPort   = $configCD->nilai;
-        $ws       = [
-            'ip'   => $_SERVER['SERVER_ADDR'],
-            'port' => $wsPort,
-        ];
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');  // Yii::getPathOfAlias('application');
+        $dotenv->load();
+        $wsServerTokoUrl = $_ENV['WS_SERVER_STORE_URL'];
         $this->render(
             'ubah',
             [
@@ -171,7 +169,7 @@ class PosController extends Controller
                 'showTarikTunai'       => $showTarikTunai,
                 'tarikTunaiBelanjaMin' => $configTarikTunaiMinBelanja->nilai,
                 'poins'                => $poins,
-                'ws'                   => $ws,
+                'wsServerTokoUrl'      => $wsServerTokoUrl,
             ]
         );
 

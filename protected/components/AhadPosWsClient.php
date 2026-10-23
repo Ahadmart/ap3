@@ -19,9 +19,15 @@ class AhadPosWsClient
 
     public function __construct()
     {
-        $configCD     = Config::model()->find('nama=:nama', [':nama' => 'customerdisplay.wsport']);
-        $wsPort       = $configCD->nilai;
-        $this->client = new WebSocket\Client('ws://localhost:' . $wsPort);
+        // $configCD     = Config::model()->find('nama=:nama', [':nama' => 'customerdisplay.wsport']);
+        // $wsPort       = $configCD->nilai;
+        // $this->client = new WebSocket\Client('ws://localhost:' . $wsPort);
+
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');  // Yii::getPathOfAlias('application');
+        $dotenv->load();
+        $wsServerTokoUrl = $_ENV['WS_SERVER_STORE_URL'];
+        $this->client = new WebSocket\Client($wsServerTokoUrl);
+
         $this->client
             ->addMiddleware(new WebSocket\Middleware\CloseHandler())
             ->addMiddleware(new WebSocket\Middleware\PingResponder());

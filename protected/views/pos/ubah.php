@@ -851,7 +851,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/qrcode.m
     ?>
 
     let websocket;
-    const url = 'ws://<?php echo $ws['ip'] ?>:<?php echo $ws['port'] ?>';
+    const url = '<?= $wsServerTokoUrl ?>';
 
     function connectWebSocket() {
         websocket = new WebSocket(url);
