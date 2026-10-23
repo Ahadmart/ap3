@@ -23,7 +23,7 @@ class AhadPosWsClient
         // $wsPort       = $configCD->nilai;
         // $this->client = new WebSocket\Client('ws://localhost:' . $wsPort);
 
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');  // Yii::getPathOfAlias('application');
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
         $dotenv->load();
         $wsServerTokoUrl = $_ENV['WS_SERVER_STORE_URL'];
         $this->client = new WebSocket\Client($wsServerTokoUrl);
