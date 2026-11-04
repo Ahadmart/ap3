@@ -212,7 +212,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
         return ['' => '[SEMUA]'] + CHtml::listData(RakBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
-    private function __sesuaikanreport($reportDetail)
+    private function _sesuaikanreport($reportDetail)
     {
         $r = [];
         foreach ($reportDetail as $detail) {
