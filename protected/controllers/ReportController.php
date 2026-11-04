@@ -2115,7 +2115,7 @@ class ReportController extends Controller
         if (isset($_POST['ReportPenjualanPerBarangPerRakForm'])) {
             $model->attributes = $_POST['ReportPenjualanPerBarangPerRakForm'];
             if ($model->validate()) {
-                $report = $model->report();
+                $report = $model->report($hideOpenTxn);
             }
         }
 
@@ -2171,10 +2171,15 @@ class ReportController extends Controller
 
     public function penjualanRakCsv($param)
     {
+        $config = Config::model()->find("nama='report.penjualan.hideopentxn'");
+        $hideOpenTxn = $config->nilai;
+        if ($this->isSuperUser(Yii::app()->user->id)) {
+            $hideOpenTxn = false;
+        }
         $model = new ReportPenjualanPerBarangPerRakForm();
         $model->attributes = $param;
         if ($model->validate()) {
-            $csv = $model->toCsv();
+            $csv = $model->toCsv($hideOpenTxn);
         }
         if (is_null($csv)) {
             throw new Exception('Tidak ada data', 500);
