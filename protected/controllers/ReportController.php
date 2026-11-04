@@ -2187,7 +2187,7 @@ class ReportController extends Controller
 
         $namaToko = Config::model()->find("nama = 'toko.nama'");
         $timeStamp = date('Y-m-d-H-i');
-        $namaFile = "Penjualan per Rak {$namaToko->nilai} {$timeStamp}";
+        $namaFile = "Penjualan per Rak {$namaToko->nilai} {$param['dari']}-{$param['sampai']} {$timeStamp}";
 
         $this->renderPartial('_csv', [
             'namaFile' => $namaFile,
