@@ -20,7 +20,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
     {
         return [
             ['dari, sampai', 'required', 'message' => '{attribute} tidak boleh kosong'],
-            ['profilId, userId, rakId', 'safe']
+            ['profilId, userId, rakId', 'safe'],
         ];
     }
 
@@ -34,7 +34,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
             'userId' => 'User',
             'dari' => 'Dari',
             'sampai' => 'Sampai',
-            'rakId' => 'Rak'
+            'rakId' => 'Rak',
         ];
     }
 
@@ -55,7 +55,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
         }
         $rakJoin = '';
         if (empty($this->rakId)) {
-            $rakJoin = " LEFT JOIN barang_rak r ON r.id = b.rak_id";
+            $rakJoin = ' LEFT JOIN barang_rak r ON r.id = b.rak_id';
         } else {
             $rakJoin = " JOIN barang_rak r ON r.id = b.rak_id {$rakQuery}";
         }
@@ -83,7 +83,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
 
         $userId = Yii::app()->user->id;
         $sqlSelect = "
-        SELECT 
+        SELECT
             r.nama AS rak,
             b.barcode,
             b.nama AS nama,
@@ -93,7 +93,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
             total_beli AS pembelian,
             (t_penjualan.total_jual - total_beli) AS margin
         FROM
-            (SELECT 
+            (SELECT
                 barang_id,
                     SUM(qty) qty_jual,
                     SUM(qty * harga_jual) total_jual
@@ -108,7 +108,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
                 {$hideOpenTxnCond}
             GROUP BY barang_id) AS t_penjualan
                 LEFT JOIN
-            (SELECT 
+            (SELECT
                 d.barang_id,
                     SUM(hpp.qty) qty_jual,
                     SUM(hpp.qty * hpp.harga_beli) total_beli
@@ -132,7 +132,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
                 ";
 
         $sqlRekap = "
-        SELECT 
+        SELECT
             t_penjualan.qty_jual,
             t_penjualan.total_jual,
             t_hpp.qty_hpp,
@@ -140,7 +140,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
             total_jual - total_beli margin,
             (total_jual - total_beli) / total_jual * 100 profit_margin
         FROM
-            (SELECT 
+            (SELECT
                 SUM(qty) qty_jual, SUM(qty * harga_jual) total_jual
             FROM
                 penjualan_detail d
@@ -156,7 +156,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
                 {$hideOpenTxnCond}
                 ) t_penjualan
                 CROSS JOIN
-            (SELECT 
+            (SELECT
                 SUM(hpp.qty) qty_hpp,
                     SUM(hpp.qty * hpp.harga_beli) total_beli
             FROM
@@ -203,7 +203,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
         $rekap = $RCommand->queryRow();
         return [
             'detail' => $penjualan,
-            'rekap' => $rekap
+            'rekap' => $rekap,
         ];
     }
 
@@ -212,9 +212,26 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
         return ['' => '[SEMUA]'] + CHtml::listData(RakBarang::model()->findAll(['order' => 'nama']), 'id', 'nama');
     }
 
+    private function __sesuaikanreport($reportDetail)
+    {
+        $r = [];
+        foreach ($reportDetail as $detail) {
+            $r[] = [
+                'rak' => $detail['rak'],
+                'barcode' => $detail['barcode'],
+                'nama' => $detail['nama'],
+                'qty_terjual' => $detail['qty_penjualan'],
+                'penjualan' => $detail['penjualan'],
+                'margin' => $detail['margin'],
+                'profit_margin' => $detail['margin'] / $detail['penjualan'],
+            ];
+        }
+        return $r;
+    }
+
     public function toCsv($hideOpenTxn = false)
     {
-        return $this->array2csv($this->report($hideOpenTxn)['detail']);
+        return $this->array2csv($this->_sesuaikanreport($this->report($hideOpenTxn)['detail']));
     }
 
     public function array2csv(array &$array)
