@@ -204,6 +204,6 @@ class PenjualanDetail extends CActiveRecord
         // $hargaJual = Barang::model()->findByPk($this->barang_id)->getHargaJualRaw();
         $hargaJual = $this->harga_jual; // Pakai harga jual yang diinput di penjualan (bukan yang terkini)
         $hargaBeli = $this->getSimulasiHPP()['avg'];
-        return ($hargaJual - $hargaBeli) / $hargaBeli * 100;
+        return ($hargaJual - $hargaBeli) / $hargaJual * 100;
     }
 }
