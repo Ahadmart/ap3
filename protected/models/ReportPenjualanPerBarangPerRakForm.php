@@ -231,7 +231,9 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
 
     public function toCsv($hideOpenTxn = false)
     {
-        return $this->array2csv($this->_sesuaikanreport($this->report($hideOpenTxn)['detail']));
+        $report = $this->report($hideOpenTxn);
+        $rDetail = $report['detail'];
+        return $this->array2csv($this->_sesuaikanreport($rDetail));
     }
 
     public function array2csv(array &$array)
