@@ -113,7 +113,7 @@ if (!empty($report['detail'])):
                                 <?= number_format($barisReport['margin'], 2, ',', '.'); ?>
                             </td>
                             <td class="rata-kanan">
-                                <?= number_format($barisReport['margin'] / $barisReport['penjualan'] * 100, 2, ',', '.'); ?>%
+                                <?= $barisReport['penjualan'] != 0 ? number_format($barisReport['margin'] / $barisReport['penjualan'] * 100, 2, ',', '.') . '%' : '-' ?>
                             </td>
                         </tr>
                     <?php

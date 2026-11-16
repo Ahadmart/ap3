@@ -148,10 +148,10 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
                 AND p.tanggal >= :tanggalAwal
                 AND p.tanggal < :tanggalAkhir
                 AND p.`status` != :penjualanDraft
+                {$whereSub}
             JOIN
                 barang b ON b.id = d.barang_id
                 {$rakJoin}
-                {$whereSub}
                 {$hideOpenTxnJoin}
                 {$hideOpenTxnCond}
                 ) t_penjualan
@@ -166,10 +166,10 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
                 AND p.tanggal >= :tanggalAwal
                 AND p.tanggal < :tanggalAkhir
                 AND p.`status` != :penjualanDraft
+                {$whereSub}
             JOIN
                 barang b ON b.id = d.barang_id
                 {$rakJoin}
-                {$whereSub}
                 {$hideOpenTxnJoin}
                 {$hideOpenTxnCond}
                 ) t_hpp
@@ -223,7 +223,7 @@ class ReportPenjualanPerBarangPerRakForm extends CFormModel
                 'qty_terjual' => $detail['qty_penjualan'],
                 'penjualan' => $detail['penjualan'],
                 'margin' => $detail['margin'],
-                'profit_margin' => $detail['margin'] / $detail['penjualan'],
+                'profit_margin' => $detail['penjualan'] != 0 ? $detail['margin'] / $detail['penjualan'] : 0,
             ];
         }
         return $r;
