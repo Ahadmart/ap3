@@ -36,9 +36,8 @@
  */
 class Barang extends CActiveRecord
 {
-
     const STATUS_TIDAK_AKTIF = 0;
-    const STATUS_AKTIF       = 1;
+    const STATUS_AKTIF = 1;
 
     public $soId;
     public $daftarSupplier;
@@ -65,7 +64,7 @@ class Barang extends CActiveRecord
     public function belumSO($soId, $rakId)
     {
         $this->getDbCriteria()->mergeWith([
-            'join'      => "left join stock_opname_detail sod on t.id = sod.barang_id and sod.stock_opname_id = {$soId}",
+            'join' => "left join stock_opname_detail sod on t.id = sod.barang_id and sod.stock_opname_id = {$soId}",
             'condition' => "t.rak_id={$rakId} and sod.barang_id is null",
         ]);
         return $this;
@@ -106,7 +105,6 @@ class Barang extends CActiveRecord
         }
     }
 
-
     /**
      * @return array relational rules.
      */
@@ -115,18 +113,18 @@ class Barang extends CActiveRecord
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return [
-            'kategori'                    => [self::BELONGS_TO, 'KategoriBarang', 'kategori_id'],
-            'struktur'                    => [self::BELONGS_TO, 'StrukturBarang', 'struktur_id'],
-            'satuan'                      => [self::BELONGS_TO, 'SatuanBarang', 'satuan_id'],
-            'rak'                         => [self::BELONGS_TO, 'RakBarang', 'rak_id'],
-            'updatedBy'                   => [self::BELONGS_TO, 'User', 'updated_by'],
-            'barangHargaJuals'            => [self::HAS_MANY, 'BarangHargaJual', 'barang_id'],
+            'kategori' => [self::BELONGS_TO, 'KategoriBarang', 'kategori_id'],
+            'struktur' => [self::BELONGS_TO, 'StrukturBarang', 'struktur_id'],
+            'satuan' => [self::BELONGS_TO, 'SatuanBarang', 'satuan_id'],
+            'rak' => [self::BELONGS_TO, 'RakBarang', 'rak_id'],
+            'updatedBy' => [self::BELONGS_TO, 'User', 'updated_by'],
+            'barangHargaJuals' => [self::HAS_MANY, 'BarangHargaJual', 'barang_id'],
             'barangHargaJualRekomendasis' => [self::HAS_MANY, 'BarangHargaJualRekomendasi', 'barang_id'],
-            'inventoryBalances'           => [self::HAS_MANY, 'InventoryBalance', 'barang_id'],
-            'pembelianDetails'            => [self::HAS_MANY, 'PembelianDetail', 'barang_id'],
-            'penjualanDetails'            => [self::HAS_MANY, 'PenjualanDetail', 'barang_id'],
-            'stockOpnameDetails'          => [self::HAS_MANY, 'StockOpnameDetail', 'barang_id'],
-            'supplierBarangs'             => [self::HAS_MANY, 'SupplierBarang', 'barang_id'],
+            'inventoryBalances' => [self::HAS_MANY, 'InventoryBalance', 'barang_id'],
+            'pembelianDetails' => [self::HAS_MANY, 'PembelianDetail', 'barang_id'],
+            'penjualanDetails' => [self::HAS_MANY, 'PenjualanDetail', 'barang_id'],
+            'stockOpnameDetails' => [self::HAS_MANY, 'StockOpnameDetail', 'barang_id'],
+            'supplierBarangs' => [self::HAS_MANY, 'SupplierBarang', 'barang_id'],
         ];
     }
 
@@ -136,23 +134,23 @@ class Barang extends CActiveRecord
     public function attributeLabels()
     {
         return [
-            'id'                  => 'ID',
-            'barcode'             => 'Barcode',
-            'nama'                => 'Nama',
-            'struktur_id'         => 'Struktur',
-            'kategori_id'         => 'Kategori',
-            'satuan_id'           => 'Satuan',
-            'rak_id'              => 'Rak',
-            'restock_point'       => 'Restock Point',
-            'restock_level'       => 'Restock Level',
-            'restock_min'         => 'Minimum Restock',
+            'id' => 'ID',
+            'barcode' => 'Barcode',
+            'nama' => 'Nama',
+            'struktur_id' => 'Struktur',
+            'kategori_id' => 'Kategori',
+            'satuan_id' => 'Satuan',
+            'rak_id' => 'Rak',
+            'restock_point' => 'Restock Point',
+            'restock_level' => 'Restock Level',
+            'restock_min' => 'Minimum Restock',
             'variant_coefficient' => 'VC',
-            'status'              => 'Status',
-            'updated_at'          => 'Updated At',
-            'updated_by'          => 'Updated By',
-            'created_at'          => 'Created At',
-            'daftarSupplier'      => 'Supplier',
-            'strukturFullPath'    => 'Struktur',
+            'status' => 'Status',
+            'updated_at' => 'Updated At',
+            'updated_by' => 'Updated By',
+            'created_at' => 'Created At',
+            'daftarSupplier' => 'Supplier',
+            'strukturFullPath' => 'Struktur',
         ];
     }
 
@@ -225,7 +223,7 @@ class Barang extends CActiveRecord
         }
 
         return new CActiveDataProvider($this, [
-            'criteria'   => $criteria,
+            'criteria' => $criteria,
             'pagination' => [
                 'pageSize' => $pageSize,
             ],
@@ -245,7 +243,6 @@ class Barang extends CActiveRecord
 
     public function beforeSave()
     {
-
         if ($this->isNewRecord) {
             $this->created_at = date('Y-m-d H:i:s');
         }
@@ -325,7 +322,7 @@ class Barang extends CActiveRecord
     {
         return [
             Barang::STATUS_TIDAK_AKTIF => 'Non Aktif',
-            Barang::STATUS_AKTIF       => 'Aktif',
+            Barang::STATUS_AKTIF => 'Aktif',
         ];
     }
 
@@ -345,7 +342,6 @@ class Barang extends CActiveRecord
     }
 
     /**
-     *
      * @return array Daftar Tag
      */
     public function getTagList()
@@ -424,5 +420,77 @@ class Barang extends CActiveRecord
         ]);
         $r = $command->queryRow();
         return !empty($r) ? $r['qty_retur'] : '';
+    }
+
+    /**
+     * Data barang untuk API v1: hanya barang aktif, termasuk harga jual
+     * terakhir dan total stok. Satu query, tanpa N+1.
+     *
+     * @param int $from
+     * @param int $to
+     * @return array
+     */
+    public function getApiList($from, $to)
+    {
+        $sql = "
+        SELECT
+            b.id,
+            b.barcode,
+            b.nama,
+            # b.kategori_id,
+            k.nama AS kategori,
+            # b.satuan_id,
+            s.nama AS satuan,
+            # b.rak_id,
+            r.nama AS rak,
+            st3.nama  AS struktur,
+            st2.nama  AS struktur_parent,
+            st1.nama  AS struktur_grandparent,
+            NULLIF(CONCAT_WS(' > ', st1.nama, st2.nama, st3.nama), '') AS struktur_path,
+            # b.status,
+            # b.updated_at,
+            hj.harga AS harga_jual,
+            hj.updated_at AS updated_at, 
+            (SELECT COALESCE(SUM(ib.qty), 0)
+               FROM inventory_balance ib
+              WHERE ib.barang_id = b.id) AS stok
+        FROM barang b
+        LEFT JOIN barang_harga_jual hj
+        ON hj.id = (
+                SELECT MAX(hj2.id)
+                FROM barang_harga_jual hj2
+                WHERE hj2.barang_id = b.id
+        )
+        LEFT JOIN barang_kategori k ON k.id = b.kategori_id
+        LEFT JOIN barang_satuan   s ON s.id = b.satuan_id
+        LEFT JOIN barang_rak      r ON r.id = b.rak_id
+        LEFT JOIN barang_struktur st3 ON st3.id = b.struktur_id
+        LEFT JOIN barang_struktur st2 ON st2.id = st3.parent_id
+        LEFT JOIN barang_struktur st1 ON st1.id = st2.parent_id
+        WHERE b.id BETWEEN :from AND :to
+          AND b.status = :status
+        ORDER BY b.id ASC
+    ";
+
+        $rows = Yii::app()
+            ->db
+            ->createCommand($sql)
+            ->bindValue(':from', (int) $from, PDO::PARAM_INT)
+            ->bindValue(':to', (int) $to, PDO::PARAM_INT)
+            ->bindValue(':status', self::STATUS_AKTIF, PDO::PARAM_INT)
+            ->queryAll();
+
+        foreach ($rows as &$row) {
+            $row['id'] = (int) $row['id'];
+            // $row['kategori_id'] = $row['kategori_id'] === null ? null : (int) $row['kategori_id'];
+            // $row['satuan_id']   = $row['satuan_id'] === null ? null : (int) $row['satuan_id'];
+            // $row['rak_id']      = $row['rak_id'] === null ? null : (int) $row['rak_id'];
+            // $row['status']      = (int) $row['status'];
+            $row['stok'] = (int) $row['stok'];
+            $row['harga_jual'] = $row['harga_jual'] === null ? null : (float) $row['harga_jual'];
+        }
+        unset($row);
+
+        return $rows;
     }
 }
