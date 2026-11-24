@@ -423,7 +423,7 @@ class HutangPiutang extends CActiveRecord
 
     /**
      * Ambil nomor referensi untuk pembelian
-     * @return text nomor referensi, null jika selain pembelian
+     * @return string nomor referensi, null jika selain pembelian
      */
     public function getNoref()
     {

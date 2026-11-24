@@ -15,8 +15,17 @@ final class SecureConnector implements ConnectorInterface
     private $streamEncryption;
     private $context;
 
-    public function __construct(ConnectorInterface $connector, LoopInterface $loop = null, array $context = array())
+    /**
+     * @param ConnectorInterface $connector
+     * @param ?LoopInterface $loop
+     * @param array $context
+     */
+    public function __construct(ConnectorInterface $connector, $loop = null, array $context = array())
     {
+        if ($loop !== null && !$loop instanceof LoopInterface) { // manual type check to support legacy PHP < 7.1
+            throw new \InvalidArgumentException('Argument #2 ($loop) expected null|React\EventLoop\LoopInterface');
+        }
+
         $this->connector = $connector;
         $this->streamEncryption = new StreamEncryption($loop ?: Loop::get(), false);
         $this->context = $context;
@@ -82,7 +91,9 @@ final class SecureConnector implements ConnectorInterface
                 // avoid garbage references by replacing all closures in call stack.
                 // what a lovely piece of code!
                 $r = new \ReflectionProperty('Exception', 'trace');
-                $r->setAccessible(true);
+                if (\PHP_VERSION_ID < 80100) {
+                    $r->setAccessible(true);
+                }
                 $trace = $r->getValue($e);
 
                 // Exception trace arguments are not available on some PHP 7.4 installs

@@ -2,7 +2,7 @@
     Created on : Jan 3, 2014, 10:32:29 AM
     Author     : abumuhammad
 */
-
+@use "sass:color";
 $biru: #0b62a4;
 $biru-muda: #7a92a3;
 $hijau: #4da74d;
@@ -149,9 +149,23 @@ table {
 
     td {
         font-size: 0.825em;
+        i.harga-naik {
+            color: $warning-color;
+        }
+        i.harga-turun {
+            color: $hijau;
+        }
+        i.harga-tetap {
+            color: transparent;
+        }
+        & > span.profit-min {
+            // color: color.scale($merah, $lightness: 30%);
+            color: lighten($merah, 25%);
+            font-weight: bold;
+        }
     }
 
-    tr.baru,
+    // tr.baru,
     tr.manual,
     tr.inaktif {
         background-color: #f57c00;
@@ -167,31 +181,49 @@ table {
         }
     }
 
-    tr.hj-berubah {
-        background-color: #388e3c;
-        font-weight: bold;
+    // tr.hj-berubah {
+    //     background-color: #388e3c;
+    //     font-weight: bold;
 
-        td {
-            color: #fff;
+    //     td {
+    //         color: #fff;
 
-            a.editable {
-                color: #fff;
-                border-bottom-color: #fff;
-            }
+    //         a.editable {
+    //             color: #fff;
+    //             border-bottom-color: #fff;
+    //         }
+    //     }
+    // }
+
+    // tr.margin-min {
+    //     background-color: #d32f2f;
+    //     font-weight: bold;
+
+    //     td {
+    //         color: #fff;
+
+    //         a.editable {
+    //             color: #fff;
+    //             border-bottom-color: #fff;
+    //         }
+    //     }
+    // }
+    tr {
+        &.margin-min td:first-child {
+            background: linear-gradient(90deg, $merah 0%, transparent 100%);
+            font-weight: bold;
         }
-    }
-
-    tr.margin-min {
-        background-color: #d32f2f;
-        font-weight: bold;
-
-        td {
-            color: #fff;
-
-            a.editable {
-                color: #fff;
-                border-bottom-color: #fff;
-            }
+        &.hb-y-hj-n td:first-child {
+            background: linear-gradient(90deg, $warning-color 0%, transparent 100%);
+            font-weight: bold;
+        }
+        &.barang-baru td:first-child {
+            background: linear-gradient(90deg, $biru 0%, transparent 100%);
+            font-weight: bold;
+        }
+        &.not-aktif td:first-child {
+            background: linear-gradient(90deg, $biru-muda 0%, transparent 100%);
+            font-weight: bold;
         }
     }
 }
@@ -233,7 +265,7 @@ li.active > a {
 
 .block {
     border: 1px solid #3e4144;
-    margin-bottom: 10px;
+    margin-bottom: 35px;
     //background: url(../img/bg-av.png) top fixed; //rgba(#000, 0.5)
     background-color: rgba(#000, 0.5); //rgba(34, 45, 45, 0.7);//rgba(14, 39, 40, 0.7);//rgba(0,0,0,0.7);
 }
@@ -318,6 +350,10 @@ a.button.micro.bigfont {
 
     .prefix .fa-2x {
         padding-top: 4px;
+    }
+
+    iframe {
+        margin-bottom: 10px;
     }
 }
 
@@ -568,6 +604,21 @@ label {
 .label.secondary {
     background-color: rgb(40, 43, 44);
     color: rgb(235, 229, 221);
+}
+
+.label {
+    &.margin-min {
+        background: linear-gradient(90deg, $merah 0%, transparent 100%);
+    }
+    &.beli-berubah {
+        background: linear-gradient(90deg, $warning-color 0%, transparent 100%);
+    }
+    &.barang-baru {
+        background: linear-gradient(90deg, $biru 0%, transparent 100%);
+    }
+    &.not-aktif {
+        background: linear-gradient(90deg, $biru-muda 0%, transparent 100%);
+    }
 }
 
 .top-bar-section {

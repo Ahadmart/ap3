@@ -34,7 +34,7 @@ final class FulfilledPromise implements PromiseInterface
      * @param ?(callable((T is void ? null : T)): (PromiseInterface<TFulfilled>|TFulfilled)) $onFulfilled
      * @return PromiseInterface<($onFulfilled is null ? T : TFulfilled)>
      */
-    public function then(callable $onFulfilled = null, callable $onRejected = null): PromiseInterface
+    public function then(?callable $onFulfilled = null, ?callable $onRejected = null): PromiseInterface
     {
         if (null === $onFulfilled) {
             return $this;
@@ -59,6 +59,7 @@ final class FulfilledPromise implements PromiseInterface
     public function finally(callable $onFulfilledOrRejected): PromiseInterface
     {
         return $this->then(function ($value) use ($onFulfilledOrRejected): PromiseInterface {
+            /** @var T $value */
             return resolve($onFulfilledOrRejected())->then(function () use ($value) {
                 return $value;
             });

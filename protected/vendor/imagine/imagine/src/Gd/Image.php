@@ -71,7 +71,7 @@ final class Image extends AbstractImage implements InfoProvider
     {
         if ($this->resource) {
             if (is_resource($this->resource) && get_resource_type($this->resource) === 'gd' || $this->resource instanceof \GdImage) {
-                imagedestroy($this->resource);
+                self::destroyImage($this->resource);
             }
             $this->resource = null;
         }
@@ -88,7 +88,7 @@ final class Image extends AbstractImage implements InfoProvider
         $size = $this->getSize();
         $copy = $this->createImage($size, 'copy');
         if (imagecopy($copy, $this->resource, 0, 0, 0, 0, $size->getWidth(), $size->getHeight()) === false) {
-            imagedestroy($copy);
+            self::destroyImage($copy);
             throw new RuntimeException('Image copy operation failed');
         }
         $this->resource = $copy;
@@ -146,11 +146,11 @@ final class Image extends AbstractImage implements InfoProvider
         $dest = $this->createImage($size, 'crop');
 
         if (imagecopy($dest, $this->resource, 0, 0, $start->getX(), $start->getY(), $width, $height) === false) {
-            imagedestroy($dest);
+            self::destroyImage($dest);
             throw new RuntimeException('Image crop operation failed');
         }
 
-        imagedestroy($this->resource);
+        self::destroyImage($this->resource);
 
         $this->resource = $dest;
 
@@ -188,7 +188,7 @@ final class Image extends AbstractImage implements InfoProvider
                 throw new RuntimeException('Image paste operation failed');
             }
         } elseif ($alpha > 0) {
-            if (imagecopymerge(/*dst_im*/$this->resource, /*src_im*/$image->resource, /*dst_x*/$start->getX(), /*dst_y*/$start->getY(), /*src_x*/0, /*src_y*/0, /*src_w*/$size->getWidth(), /*src_h*/$size->getHeight(), /*pct*/$alpha) === false) {
+            if (imagecopymerge(/*dst_im*/$this->resource, /*src_im*/ $image->resource, /*dst_x*/ $start->getX(), /*dst_y*/ $start->getY(), /*src_x*/ 0, /*src_y*/ 0, /*src_w*/ $size->getWidth(), /*src_h*/ $size->getHeight(), /*pct*/ $alpha) === false) {
                 throw new RuntimeException('Image paste operation failed');
             }
         }
@@ -223,11 +223,11 @@ final class Image extends AbstractImage implements InfoProvider
         imagealphablending($dest, false);
 
         if ($success === false) {
-            imagedestroy($dest);
+            self::destroyImage($dest);
             throw new RuntimeException('Image resize operation failed');
         }
 
-        imagedestroy($this->resource);
+        self::destroyImage($this->resource);
 
         $this->resource = $dest;
 
@@ -239,7 +239,7 @@ final class Image extends AbstractImage implements InfoProvider
      *
      * @see \Imagine\Image\ManipulatorInterface::rotate()
      */
-    final public function rotate($angle, ColorInterface $background = null)
+    final public function rotate($angle, ?ColorInterface $background = null)
     {
         if ($background === null) {
             $background = $this->palette->color('fff');
@@ -251,7 +251,7 @@ final class Image extends AbstractImage implements InfoProvider
             throw new RuntimeException('Image rotate operation failed');
         }
 
-        imagedestroy($this->resource);
+        self::destroyImage($this->resource);
         $this->resource = $resource;
 
         return $this;
@@ -360,12 +360,12 @@ final class Image extends AbstractImage implements InfoProvider
 
             for ($i = 0; $i < $width; $i++) {
                 if (imagecopy($dest, $this->resource, $i, 0, ($width - 1) - $i, 0, 1, $height) === false) {
-                    imagedestroy($dest);
+                    self::destroyImage($dest);
                     throw new RuntimeException('Horizontal flip operation failed');
                 }
             }
 
-            imagedestroy($this->resource);
+            self::destroyImage($this->resource);
 
             $this->resource = $dest;
         }
@@ -390,12 +390,12 @@ final class Image extends AbstractImage implements InfoProvider
 
             for ($i = 0; $i < $height; $i++) {
                 if (imagecopy($dest, $this->resource, 0, $i, 0, ($height - 1) - $i, $width, 1) === false) {
-                    imagedestroy($dest);
+                    self::destroyImage($dest);
                     throw new RuntimeException('Vertical flip operation failed');
                 }
             }
 
-            imagedestroy($this->resource);
+            self::destroyImage($this->resource);
 
             $this->resource = $dest;
         }
@@ -730,7 +730,9 @@ final class Image extends AbstractImage implements InfoProvider
                         $options['webp_quality'] = $options['quality'];
                     }
                 }
-                if (isset($options['webp_quality'])) {
+                if (!empty($options['webp_lossless'])) {
+                    $result[] = defined('IMG_WEBP_LOSSLESS') ? IMG_WEBP_LOSSLESS : 100;
+                } elseif (isset($options['webp_quality'])) {
                     if ($options['webp_quality'] < 0 || $options['webp_quality'] > 100) {
                         throw new InvalidArgumentException('webp_quality option should be an integer from 0 to 100');
                     }
@@ -743,6 +745,21 @@ final class Image extends AbstractImage implements InfoProvider
                     $result[] = $options['foreground'];
                 }
                 break;
+        }
+
+        if (isset($options['resolution-units']) && isset($options['resolution-x']) && function_exists('imageresolution')) {
+            $resolutionX = $options['resolution-x'];
+            $resolutionY = isset($options['resolution-y']) ? $options['resolution-y'] : $resolutionX;
+            switch ($options['resolution-units']) {
+                case ImageInterface::RESOLUTION_PIXELSPERCENTIMETER:
+                    imageresolution($this->resource, $resolutionX * ImageInterface::RESOLUTION_PPC_TO_PPI_MULTIPLIER, $resolutionY * ImageInterface::RESOLUTION_PPC_TO_PPI_MULTIPLIER);
+                    break;
+                case ImageInterface::RESOLUTION_PIXELSPERINCH:
+                    imageresolution($this->resource, $resolutionX, $resolutionY);
+                    break;
+                default:
+                    throw new RuntimeException('Unsupported image unit format');
+            }
         }
 
         return $result;
@@ -804,5 +821,17 @@ final class Image extends AbstractImage implements InfoProvider
         }
 
         return $index;
+    }
+
+    /**
+     * @param resource|\GdImage $resource
+     *
+     * @return void
+     */
+    private static function destroyImage($resource)
+    {
+        if (PHP_VERSION_ID < 80500) {
+            imagedestroy($resource);
+        }
     }
 }

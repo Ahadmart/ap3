@@ -25,10 +25,11 @@ function namaBulan($i) {
    );
    return $bulan[$i - 1];
 }
+$nomor = empty($modelHeader->nomor_publik) ? $modelHeader->nomor : $modelHeader->nomor_publik;
 ?>
 <html>
    <head>	
-      <title>Invoice : <?php echo $modelHeader->nomor; ?></title>
+      <title>Invoice : <?php echo $nomor; ?></title>
       <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/pdf.css" />
       <link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->theme->baseUrl; ?>/css/font-awesome.css" />
    </head>
@@ -38,7 +39,7 @@ function namaBulan($i) {
               <table style="border-top:thin solid black">
                   <tr>
                       <td style="text-align:left">Invoice No. <?php
-      echo $modelHeader->nomor == '' ? '..................' : $modelHeader->nomor;
+      echo $nomor == '' ? '..................' : $nomor;
       ?>
                       </td>
                       <td style="text-align:center">
@@ -52,7 +53,7 @@ function namaBulan($i) {
         mpdf-->
       <div id="header1">
          <div>INVOICE</div>
-         <barcode style="margin-left: -13px;" code="<?php echo $modelHeader->nomor; ?>" type="C128A" class="barcode" size="0.9" height="1" />
+         <barcode style="margin-left: -13px;" code="<?php echo $nomor; ?>" type="C128A" class="barcode" size="0.9" height="1" />
       </div>		
       <div id="dari">
          <div class="nama-toko"><?php echo $branchConfig['toko.nama']; ?></div>
@@ -73,7 +74,7 @@ function namaBulan($i) {
          <table>
             <tr>
                <td>No. Invoice</td>
-               <td><b><?php echo $modelHeader->nomor; ?></b></td>
+               <td><b><?php echo $nomor; ?></b></td>
             </tr>
             <tr>
                <td>Tanggal</td>

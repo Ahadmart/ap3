@@ -196,7 +196,7 @@ class OtlDump
 		$this->panose = [];
 
 		if ($version == 0x4F54544F) {
-			throw new \Mpdf\Exception\FontException("Postscript outlines are not supported");
+			throw new \Mpdf\Exception\FontException(sprintf('Fonts with postscript outlines are not supported (%s)', $file));
 		}
 
 		if ($version == 0x74746366 && !$TTCfontID) {
@@ -543,7 +543,7 @@ class OtlDump
 				$c = $psName[$i];
 				$oc = ord($c);
 				if ($oc > 126 || strpos(' [](){}<>/%', $c) !== false) {
-					throw new \Mpdf\Exception\FontException("psName=" . $psName . " contains invalid character " . $c . " ie U+" . ord(c));
+					throw new \Mpdf\Exception\FontException("psName=" . $psName . " contains invalid character " . $c . " ie U+" . ord($c));
 				}
 			}
 		}

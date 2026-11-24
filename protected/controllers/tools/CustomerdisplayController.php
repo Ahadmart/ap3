@@ -11,11 +11,11 @@ class CustomerdisplayController extends Controller
 
     public function getInfoScan()
     {
-        $criteria            = new CDbCriteria;
-        $criteria->alias     = 'detail';
-        $criteria->join      = 'JOIN penjualan pj on detail.penjualan_id = pj.id and pj.status=' . Penjualan::STATUS_DRAFT;
-        $criteria->order     = 'detail.id desc';
-        $criteria->condition = 'detail.updated_by =' . Yii::app()->user->id . ' AND TIMESTAMPDIFF(MINUTE, detail.updated_at, NOW()) <= 2'; //detail.updated_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+        $criteria = new CDbCriteria;
+        $criteria->alias = 'detail';
+        $criteria->join = 'JOIN penjualan pj on detail.penjualan_id = pj.id and pj.status=' . Penjualan::STATUS_DRAFT;
+        $criteria->order = 'detail.id desc';
+        $criteria->condition = 'detail.updated_by =' . Yii::app()->user->id . ' AND TIMESTAMPDIFF(MINUTE, detail.updated_at, NOW()) <= 2';  // detail.updated_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
         return PenjualanDetail::model()->find($criteria);
     }
 
@@ -43,42 +43,48 @@ class CustomerdisplayController extends Controller
 
     public function actionDesktop()
     {
-        $configCD = Config::model()->find('nama=:nama', [':nama' => 'customerdisplay.wsport']);
-        $wsPort   = $configCD->nilai;
-        $ws       = [
-            'ip'   => $_SERVER['SERVER_ADDR'],
-            'port' => $wsPort,
-        ];
+        require __DIR__ . '/../../vendor/autoload.php';
+        // $configCD = Config::model()->find('nama=:nama', [':nama' => 'customerdisplay.wsport']);
+        // $wsPort = $configCD->nilai;
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');  // Yii::getPathOfAlias('application');
+        $dotenv->load();
+        $wsServerTokoUrl = $_ENV['WS_SERVER_STORE_URL'];
+        // $ws = [
+        //     'ip' => $_SERVER['SERVER_ADDR'],
+        //     'port' => $wsPort,
+        // ];
         $user = [
-            'id'          => Yii::app()->user->id,
+            'id' => Yii::app()->user->id,
             'namaLengkap' => Yii::app()->user->namaLengkap,
         ];
-        $config        = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
+        $config = Config::model()->find('nama=:nama', [':nama' => 'toko.nama']);
         $koordinatConf = Config::model()->find('nama=:nama', [':nama' => 'jadwalsholat.koordinat']);
-        $offsetConf    = Config::model()->find('nama=:nama', [':nama' => 'jadwalsholat.offset']);
-        $koordinat     = explode(';', $koordinatConf->nilai);
-        $namaToko      = $config->nilai;
-        $latitude      = trim($koordinat[0]);
-        $longitude     = trim($koordinat[1]);
-        $offset        = $offsetConf->nilai;
+        $offsetConf = Config::model()->find('nama=:nama', [':nama' => 'jadwalsholat.offset']);
+        $koordinat = explode(';', $koordinatConf->nilai);
+        $namaToko = $config->nilai;
+        $latitude = trim($koordinat[0]);
+        $longitude = trim($koordinat[1]);
+        $offset = $offsetConf->nilai;
 
-        /* Cek file jadwal sholat untuk bulan berjalan
-        Jika tidak ada, maka coba hapus file dengan pola sama
-        kemudian coba download dari internet.
-        Jika tidak berhasil tidak ditampilkan
+        /*
+         * Cek file jadwal sholat untuk bulan berjalan
+         * Jika tidak ada, maka coba hapus file dengan pola sama
+         * kemudian coba download dari internet.
+         * Jika tidak berhasil tidak ditampilkan
          */
         // $tahun    = date('Y');
         // $bulan    = date('n');
         // $periode  = date('Yn');
 
-        /* Cek file jadwal sholat untuk tahun berjalan
-        Jika tidak ada, coba download dari internet.
-        Jika tidak berhasil tidak ditampilkan
+        /*
+         * Cek file jadwal sholat untuk tahun berjalan
+         * Jika tidak ada, coba download dari internet.
+         * Jika tidak berhasil tidak ditampilkan
          */
-        $periode  = date('Y');
-        $dir      = __DIR__ . '/../../../assets/';
+        $periode = date('Y');
+        $dir = __DIR__ . '/../../../assets/';
         $fileName = "jadwalsholat_{$periode}.json";
-        $file     = $dir . $fileName;
+        $file = $dir . $fileName;
         $waktu = null;
         if (!file_exists($file)) {
             // Hapus file-file yang mungkin ada di periode sebelumnya
@@ -88,7 +94,7 @@ class CustomerdisplayController extends Controller
             $this->getJadwalSholat($periode, $latitude, $longitude, $offset, $file);
         }
 
-        if (file_exists($file)){
+        if (file_exists($file)) {
             $fileContent = file_get_contents($file);
             $jadwalSetahun = json_decode($fileContent, true, 512, JSON_UNESCAPED_UNICODE);
 
@@ -101,16 +107,15 @@ class CustomerdisplayController extends Controller
             }
         }
 
-
         $this->render('desktop', [
             'namaToko' => $namaToko,
-            'ws'       => $ws,
-            'user'     => $user,
+            // 'ws' => $ws,
+            'wsServerTokoUrl' => $wsServerTokoUrl,
+            'user' => $user,
             // 'jadwal'   => $jadwalSetahun['data'][$i],
-            'waktu'    => $waktu,
-            'logo'     => $this->getLogo(),
-            'brosurs'  => json_encode($this->getBrosurPromo()),
-
+            'waktu' => $waktu,
+            'logo' => $this->getLogo(),
+            'brosurs' => json_encode($this->getBrosurPromo()),
         ]);
     }
 
@@ -123,12 +128,12 @@ class CustomerdisplayController extends Controller
         $tahun = $periode;
         // $bulan = substr($periode, 4, 2);
         // $url   = "https://api.aladhan.com/v1/calendar/{$tahun}/{$bulan}";
-        $url   = "https://api.aladhan.com/v1/calendar/{$tahun}";
+        $url = "https://api.aladhan.com/v1/calendar/{$tahun}";
         $param = [
-            'latitude'  => $lat,
+            'latitude' => $lat,
             'longitude' => $long,
-            'method'    => 20,
-            'tune'      => $offset,
+            'method' => 20,
+            'tune' => $offset,
         ];
         if ($this->getRequest($url, $param) != null) {
             file_put_contents($file, $this->getRequest($url, $param));
@@ -146,7 +151,7 @@ class CustomerdisplayController extends Controller
         $r = curl_exec($ch);
         if ($r === false) {
             // Curl itself failed (DNS, timeout, SSL, etc.)
-            $err   = curl_error($ch);
+            $err = curl_error($ch);
             $errno = curl_errno($ch);
             Yii::log("cURL error ({$errno}): {$err}", CLogger::LEVEL_ERROR);
             $r = null;
@@ -188,7 +193,7 @@ class CustomerdisplayController extends Controller
     {
         require_once __DIR__ . '/BrosurpromoController.php';
         $assetPath = BrosurpromoController::ASSETS_PATH;
-        $imgs      = [];
+        $imgs = [];
         foreach (glob($assetPath . 'brosur*.*', GLOB_BRACE) as $filename) {
             $imgs[] = $this->createUrl($filename);
         }

@@ -118,11 +118,11 @@ class WebSocketRelay
                 ->onPong(function (Client $client, Connection $conn) {
                     $this->lastPong = time();
                 })
-                ->onTick(function(Client $client){
+                ->onTick(function (Client $client) {
                     $now     = time();
                     $selisih = $now - $this->lastPong;
                     // echo "ON TICK; lastPong: {$selisih}\n";
-                    if ($selisih > 15){
+                    if ($selisih > 15) {
                         $this->sourceClient->close();
                     }
                 });
@@ -130,6 +130,7 @@ class WebSocketRelay
             try {
                 echo "Connecting to {$this->sourceUrl}\n";
                 $this->sourceClient->setTimeout(5);
+                echo "sourceClient start\n";
                 $this->sourceClient->start();
             } catch (\Throwable $e) {
                 $this->sourceConnected = false;
@@ -149,7 +150,11 @@ class WebSocketRelay
             try {
                 echo "Trying to connect to {$url}.. \n";
                 $client = new Client($url);
+
+                echo "Setup Middleware\n";
                 $this->setupMiddleware($client);
+
+                echo "Add Middleware (PingInterval(5))\n";
                 $client->addMiddleware(new PingInterval(5));
                 // $this->sourceConnected = true;
                 // $this->updateStatus();

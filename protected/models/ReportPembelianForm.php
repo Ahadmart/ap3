@@ -68,6 +68,20 @@ class ReportPembelianForm extends CFormModel
          $profilCond .= " AND p.profil_id = :profilId";
       }
 
+      $sqlRekap = "
+      SELECT 
+         SUM(harga_beli * qty) AS total
+      FROM
+         pembelian_detail AS d
+            JOIN
+         pembelian AS p ON p.id = d.pembelian_id
+            AND p.tanggal >= :tanggalAwal
+            AND p.tanggal < :tanggalAkhir
+            AND p.status != :statusDraft
+            JOIN
+         profil ON profil.id = p.profil_id {$profilCond}
+      ";
+
       $sql = "
          SELECT
             pembelian_id,
@@ -96,6 +110,16 @@ class ReportPembelianForm extends CFormModel
          $command->bindValue(":profilId", $this->profilId);
       }
 
+      $commandR = Yii::app()->db->createCommand($sqlRekap);
+      $commandR->bindValue("tanggalAwal", $tanggalAwal);
+      $commandR->bindValue(":tanggalAkhir", $tanggalAkhir);
+      $commandR->bindValue(":statusDraft", Pembelian::STATUS_DRAFT);
+
+      if (!empty($this->profilId)) {
+         $commandR->bindValue(":profilId", $this->profilId);
+      }
+
+      $r['rekap'] = $commandR->queryRow();
       $r['detail'] = $command->queryAll();
 
       return $r;
