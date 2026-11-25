@@ -2,12 +2,29 @@
 
 class BaseApiController extends CController
 {
+    /**
+     * Pre-filter untuk semua endpoint API.
+     * Memastikan API key valid sebelum action dieksekusi.
+     *
+     * @param CAction $action action yang akan dieksekusi
+     * @return bool true jika izin diberikan, false jika response error dikirim
+     */
     protected function beforeAction($action)
     {
         $this->requireApiKey();
         return parent::beforeAction($action);
     }
 
+    /**
+     * Memastikan request API memiliki key yang valid.
+     *
+     * Key dibaca dari `API_V1_KEY` di protected/.env dan dibandingkan dengan
+     * parameter `apikey` memakai hash_equals() (constant-time). Key kosong
+     * menghasilkan JSON 500, key salah menghasilkan JSON 401, dan keduanya
+     * menghentikan aplikasi lewat fail().
+     *
+     * @return void
+     */
     protected function requireApiKey()
     {
         require Yii::getPathOfAlias('application') . '/vendor/autoload.php';
@@ -36,8 +53,7 @@ class BaseApiController extends CController
             DATABASE() AS `database`,
             VERSION() AS version,
             @@version_comment AS comment,
-            (SELECT nilai FROM config WHERE nama = 'toko.nama' LIMIT 1) AS toko
-    ")->queryRow();
+            (SELECT nilai FROM config WHERE nama = 'toko.nama' LIMIT 1) AS toko")->queryRow();
 
         $haystack = strtolower(($row['version'] ?? '') . ' ' . ($row['comment'] ?? ''));
 
@@ -75,6 +91,12 @@ class BaseApiController extends CController
         Yii::app()->end();
     }
 
+    /**
+     * Kirim respons error JSON dan berhenti aplikasi.
+     *
+     * @param int $statusCode kode HTTP (400, 401, 500)
+     * @param string $message pesan error yang akan ditampilkan
+     */
     protected function fail($statusCode, $message)
     {
         http_response_code($statusCode);
