@@ -10,10 +10,14 @@ class ItemController extends BaseApiController
         if ($from === false || $to === false || $from === null || $to === null || $from < 1 || $to < $from) {
             $this->fail(400, 'Parameter from/to tidak valid');
         }
-        // $givenKey = (string) Yii::app()->request->getQuery('apikey', '');
+
         $data = Barang::model()->getApiList($from, $to);
+        $info = $this->storeInfo();
         $data = [
             'sukses' => true,
+            'toko' => $info['toko'],
+            'database' => $info['database'],
+            'engine' => $info['engine'],
             'from' => $from,
             'to' => $to,
             'jumlah' => count($data),

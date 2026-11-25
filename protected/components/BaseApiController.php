@@ -25,6 +25,40 @@ class BaseApiController extends CController
     }
 
     /**
+     * Info sumber data: nama database, engine, dan nama toko.
+     *
+     * @return array
+     */
+    protected function storeInfo()
+    {
+        $row = Yii::app()->db->createCommand("
+        SELECT
+            DATABASE() AS `database`,
+            VERSION() AS version,
+            @@version_comment AS comment,
+            (SELECT nilai FROM config WHERE nama = 'toko.nama' LIMIT 1) AS toko
+    ")->queryRow();
+
+        $haystack = strtolower(($row['version'] ?? '') . ' ' . ($row['comment'] ?? ''));
+
+        if (strpos($haystack, 'mariadb') !== false) {
+            $engine = 'MariaDB';
+        } elseif (strpos($haystack, 'percona') !== false) {
+            $engine = 'Percona Server';
+        } elseif (strpos($haystack, 'aurora') !== false) {
+            $engine = 'Amazon Aurora';
+        } else {
+            $engine = 'MySQL';
+        }
+
+        return [
+            'database' => $row['database'],
+            'engine' => $engine,
+            'toko' => $row['toko'] !== null ? $row['toko'] : Yii::app()->name,
+        ];
+    }
+
+    /**
      * Return data to browser as JSON and end application.
      * @param array $data
      */
